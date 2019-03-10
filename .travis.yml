@@ -26,7 +26,7 @@ deploy:
   github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
   email: $GITHUB_EMAIL
   name: $GITHUB_USERNAME
-  project-name: jeremyxu2010.github.io
+  repo: jeremyxu2010.github.io
   verbose: true
   keep-history: true
   local-dir: public_github
