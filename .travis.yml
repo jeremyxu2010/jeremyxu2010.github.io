@@ -28,7 +28,7 @@ deploy:
   name: $GITHUB_USERNAME
   repo: jeremyxu2010.github.io
   verbose: true
-  keep-history: true
+  keep-history: false
   local-dir: public_github
   target_branch: master  # branch contains blog content
   on:
