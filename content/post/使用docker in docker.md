@@ -65,7 +65,7 @@ spec:
           image: 'docker:stable'
           env:
           - name: DOCKER_HOST
-            value: 127.0.0.1:2375
+            value: tcp://127.0.0.1:2375
           command: ["/bin/sh"]
           args: ["-c", "docker info >/dev/null 2>&1; while [ $? -ne 0 ] ; do sleep 3; docker info >/dev/null 2>&1; done; docker pull library/busybox:latest; docker save -o busybox-latest.tar library/busybox:latest; docker rmi library/busybox:latest; while true; do sleep 86400; done"]
       volumes:
@@ -95,6 +95,7 @@ package main
 import (
     "context"
     "os"
+    "time"
 
     "github.com/docker/docker/client"
     "github.com/docker/docker/api/types"
@@ -115,6 +116,9 @@ func main() {
         panic(err)
     }
     io.Copy(os.Stdout, reader)
+    
+    // sleep for a while before using pulled new image
+    time.Sleep(2 * time.Second)
 
     resp, err := cli.ContainerCreate(ctx, &container.Config{
         Image: "alpine",
@@ -146,7 +150,9 @@ func main() {
 }
 ```
 
-# 参考
+这里要注意，刚pull下来的镜像要稍微等一下才可以使用，否则会报错，开发中踩到这个坑了，花了些时间才搞清楚原来是这个原因。
+
+## 参考
 
 1. https://hub.docker.com/_/docker/
 2. https://docs.docker.com/registry/insecure/#use-self-signed-certificates
