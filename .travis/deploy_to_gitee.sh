@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pushd public_gitee
+cd public_gitee
 git config user.name "Jeremy Xu"
 git config user.email "jeremyxu2010@gmail.com"
 git init
@@ -9,3 +9,4 @@ msg="rebuilding site `date`"
 git commit -m "$msg"
 git remote add origin git@gitee.com:jeremy-xu/jeremy-xu.git
 git push -u --force origin master:master
+cd ..
