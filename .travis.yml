@@ -18,22 +18,38 @@ install:
     - go get github.com/gohugoio/hugo    # consume time 70.85s
 
 before_script:
+    - mkdir -p public_gitee 2> /dev/null
     - mkdir -p public_github 2> /dev/null
 
 # script - run the build script
 script:
+    - hugo --baseURL https://jeremy-xu.oschina.io/ -d public_gitee
     - hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
 
 deploy:
-  provider: pages
+- provider: pages
   skip-cleanup: true
   github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
   email: $GITHUB_EMAIL
   name: $GITHUB_USERNAME
+  github-url: github.com
   repo: jeremyxu2010/jeremyxu2010.github.io
+  target_branch: master  # branch contains blog content
   verbose: true
   keep-history: false
   local-dir: public_github
+  on:
+    branch: master  # branch contains Hugo generator code
+- provider: pages
+  skip-cleanup: true
+  github-token: $GITEE_TOKEN  # Set in travis-ci.org dashboard, marked secure
+  email: $GITEE_EMAIL
+  name: $GITEE_USERNAME
+  github-url: gitee.com
+  repo: jeremy-xu/jeremy-xu
   target_branch: master  # branch contains blog content
+  verbose: true
+  keep-history: false
+  local-dir: public_gitee
   on:
     branch: master  # branch contains Hugo generator code
