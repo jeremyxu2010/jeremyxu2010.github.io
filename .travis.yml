@@ -1,7 +1,9 @@
 dist: xenial
 language: go
 go:
-- master
+  - 1.11.x
+env:
+  - GO111MODULE=on
 cache:
   directories:
   - "$HOME/.cache/go-build"
@@ -18,7 +20,7 @@ script:
 - hugo --baseURL https://jeremy-xu.oschina.io/ -d public_gitee
 - hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
 deploy:
-  provider: pages
+- provider: pages
   skip-cleanup: true
   github-token: "$GITHUB_TOKEN"
   email: "$GITHUB_EMAIL"
@@ -31,8 +33,10 @@ deploy:
   local-dir: public_github
   on:
     branch: master
-after_success:
-- ".travis/deploy_to_gitee.sh"
+- provider: script
+  script: bash .travis/deploy_to_gitee.sh
+  on:
+    branch: master
 addons:
   ssh_known_hosts:
   - github.com
