@@ -1,0 +1,35 @@
+# https://docs.travis-ci.com/user/deployment/pages/
+# https://docs.travis-ci.com/user/reference/xenial/
+# https://docs.travis-ci.com/user/languages/go/
+# https://docs.travis-ci.com/user/customizing-the-build/
+
+dist: xenial
+language: go
+go:
+    - master
+
+# before_install
+# install - install any dependencies required
+install:
+    - go get github.com/gohugoio/hugo    # consume time 70.85s
+
+before_script:
+    - mkdir -p public_github 2> /dev/null
+
+# script - run the build script
+script:
+    - hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+  email: $GITHUB_EMAIL
+  name: $GITHUB_USERNAME
+  project-name: jeremyxu2010.github.io
+  verbose: true
+  keep-history: true
+  local-dir: public_github
+  target_branch: master  # branch contains blog content
+  on:
+    branch: master  # branch contains Hugo generator code
