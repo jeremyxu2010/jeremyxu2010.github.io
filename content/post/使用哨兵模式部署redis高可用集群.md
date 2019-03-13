@@ -73,9 +73,18 @@ NAME                READY     STATUS    RESTARTS   AGE
 redis-ha-server-0   2/2       Running   0          1h
 redis-ha-server-1   2/2       Running   0          1h
 redis-ha-server-2   2/2       Running   0          1h
+
+$ kubectl -n test get svc
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+redis-ha              ClusterIP   None             <none>        6379/TCP,26379/TCP   2h
+redis-ha-announce-0   ClusterIP   10.103.179.132   <none>        6379/TCP,26379/TCP   2h
+redis-ha-announce-1   ClusterIP   10.98.58.246     <none>        6379/TCP,26379/TCP   2h
+redis-ha-announce-2   ClusterIP   10.97.66.79      <none>        6379/TCP,26379/TCP   2h
 ```
 
 总共3个pod，每个pod里有两个容器，一个是redis，一个是sentinel。整个部署方案的相关参数默认都配置得比较合理，完整的参考列表见[这里](https://github.com/helm/charts/tree/master/stable/redis-ha#configuration)。
+
+这里有特别注意，使用哨兵模式的客户端应该要配置哨兵的访问地址，如`redis-ha-announce-0.test.svc.cluster.local:26379`。有3个哨兵的访问地址，一般客户端这边会将这3个哨兵都备份下来，这样将可以避免sentinel成为单点故障。
 
 ## 使用哨兵模式redis集群
 
@@ -113,6 +122,23 @@ func (bs *Bootstrap) loadAndRunRedisWorkerPool(ctx *env.Context, cfg *config.Con
 	}
     ......
 ```
+
+## 遇到的坑
+
+整个部署还是比较顺利的，只是部署完毕后，想用redis-cli连接试验一下，结果一直卡住：
+
+```bash
+# 这里会直接卡住
+kubectl -n test run redis-client -t -i --image=redis:5.0.3-alpine -- redis-cli -h redis-ha-announce-0.test.svc.cluster.local -p 26379
+```
+
+改成下面这样就可以了：
+
+```bash
+kubectl -n test run redis-client -t -i --image=redis:5.0.3-alpine -- sh -c "sleep 3; redis-cli -h redis-ha-announce-0.test.svc.cluster.local -p 26379"
+```
+
+这个应该填[kubernetes的bug](https://github.com/kubernetes/kubernetes/issues/28695)吧。
 
 ## 参考
 
