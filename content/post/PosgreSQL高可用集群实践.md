@@ -1,5 +1,5 @@
 ---
-title: Posgresql高可用集群实践
+title: PosgreSQL高可用集群实践
 tags:
   - posgresql
   - kubernetes
