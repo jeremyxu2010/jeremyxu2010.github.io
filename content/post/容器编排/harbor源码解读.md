@@ -4,7 +4,7 @@ tags:
   - docker
   - go
 categories:
-  - 云计算
+  - 容器编排
 date: 2018-09-10 17:50:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20180910

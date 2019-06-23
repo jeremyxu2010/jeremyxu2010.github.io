@@ -5,7 +5,7 @@ tags:
   - docker
   - golang
 categories:
-  - 云计算
+  - 容器编排
 date: 2019-02-24 19:00:00+08:00
 ---
 

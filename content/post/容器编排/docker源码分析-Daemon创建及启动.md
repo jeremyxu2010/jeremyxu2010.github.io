@@ -4,7 +4,7 @@ tags:
   - docker
   - golang
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-10-06 04:22:00+08:00
 ---
 上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂，大家看着来要有耐心了。

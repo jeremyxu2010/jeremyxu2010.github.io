@@ -4,7 +4,7 @@ tags:
   - docker
   - netns
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-09-19 00:51:00+08:00
 ---
 ## 起因

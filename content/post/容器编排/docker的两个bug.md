@@ -5,7 +5,7 @@ tags:
   - zombie
   - leak
 categories:
-  - 云计算
+  - 容器编排
 date: 2018-10-13 20:50:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20181013

@@ -5,7 +5,7 @@ tags:
   - k8s
   - devops
 categories:
-  - devops
+  - 容器编排
 date: 2018-05-05 23:00:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20180505

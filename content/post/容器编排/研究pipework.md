@@ -4,7 +4,7 @@ tags:
   - docker
   - pipework
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-09-01 22:46:00+08:00
 ---
 很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。今天终于能够抽出时间研究一下它。

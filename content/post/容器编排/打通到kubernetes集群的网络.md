@@ -6,7 +6,7 @@ tags:
   - vpn
   - strongswan
 categories:
-  - 云计算
+  - 容器编排
 date: 2019-03-31 21:21:00+08:00
 ---
 

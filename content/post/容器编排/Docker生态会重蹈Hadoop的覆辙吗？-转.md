@@ -4,7 +4,7 @@ tags:
   - docker
   - hadoop
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-08-28 22:23:00+08:00
 ---
 docker最近一年可真是火，不过刚好看到下面这篇文章，觉得还是很有道理的。转载过来研读并思考一下，转载自[这里](http://mp.weixin.qq.com/s?__biz=MzA5NDg3ODMxNw==&mid=2649535024&idx=1&sn=5e15a1afd3adfd3dca538c688e28d1e2&scene=1&srcid=0823tcjhhk21e4dFuI7CT3Iu)。

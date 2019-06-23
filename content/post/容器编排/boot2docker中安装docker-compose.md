@@ -3,7 +3,7 @@ title: boot2docker中安装docker-compose
 tags:
   - docker
 categories:
-  - devops
+  - 容器编排
 date: 2017-01-29 02:20:00+08:00
 ---
 boot2docker中未安装docker-compose，同时无法自动挂载我在宿主机上共享的目录。研究了下，终于找到办法了，记录如下：

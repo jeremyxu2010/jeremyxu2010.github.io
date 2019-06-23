@@ -4,7 +4,7 @@ tags:
   - docker
   - golang
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-10-05 15:38:00+08:00
 ---
 一直在研究docker，最近被人问到docker到底是怎么工作的却不是太清楚，在网上偶然看到一本讲[docker源码的电子书](http://www.kancloud.cn/infoq/docker-source-code-analysis/80525)，花了整晚看了下，终于对docker的实现细节比较清楚了。但这本电子书讲的是1.2版本时的docker源码，跟最新的1.12版本相比差别还是挺大的，在这本书里讲到的源码与最新源码已经对应不上了。因此我计划写一份针对1.12版本的docker源码分析。

@@ -4,7 +4,7 @@ tags:
   - prometheus
   - kubernetes
 categories:
-  - devops
+  - 容器编排
 date: 2018-11-18 15:50:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20181118

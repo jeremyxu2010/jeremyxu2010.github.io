@@ -4,7 +4,7 @@ tags:
   - kubernetes
   - tls
 categories:
-  - devops
+  - 容器编排
 date: 2018-08-26 12:30:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20180826

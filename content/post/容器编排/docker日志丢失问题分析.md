@@ -3,7 +3,7 @@ title: docker日志丢失问题分析
 tags:
   - docker
 categories:
-  - devops
+  - 容器编排
 date: 2019-01-12 23:00:00+08:00
 typora-root-url: ../../../static
 typora-copy-images-to: ../../../static/images/20190112

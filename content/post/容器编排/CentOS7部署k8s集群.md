@@ -4,7 +4,7 @@ tags:
   - docker
   - k8s
 categories:
-  - devops
+  - 容器编排
 date: 2018-01-28 22:07:00+08:00
 ---
 

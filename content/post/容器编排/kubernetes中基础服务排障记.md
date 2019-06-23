@@ -6,7 +6,7 @@ tags:
   - redis
   - iperf3
 categories:
-  - devops
+  - 容器编排
 date: 2019-05-30 18:40:00+08:00
 ---
 

@@ -4,7 +4,7 @@ tags:
   - linux
   - docker
 categories:
-  - 云计算
+  - 容器编排
 date: 2016-06-29 02:27:00+08:00
 ---
 今天又抽时间研究了一下如何搭建docker集群，终于找到配合`consul`、`docker-machine`、`swarm`搭建一个简易docker集群的办法，在这里记录一下。

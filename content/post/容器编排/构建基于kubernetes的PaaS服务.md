@@ -8,7 +8,7 @@ tags:
   - operator
   - networkpolicy
 categories:
-  - devops
+  - 容器编排
 date: 2019-06-11 20:40:00+08:00
 ---
 

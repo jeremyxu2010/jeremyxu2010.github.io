@@ -4,7 +4,7 @@ tags:
   - kubernetes
   - docker
 categories:
-  - 云计算
+  - 容器编排
 author: Jeremy Xu
 date: 2019-05-21 20:26:00+08:00
 ---
