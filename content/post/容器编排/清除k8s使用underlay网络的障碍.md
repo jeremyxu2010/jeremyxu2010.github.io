@@ -132,7 +132,7 @@ default via 10.10.20.53 dev vetha0e043dd
   # 提前将二进制文件放入CNI_PATH目录下，配置好/etc/cni/net.d目录下的cni配置文件
   # 下面会创建一个网络命名空间，并调用cni插件尝试为该网络命名空间配置好网络
   ip netns add test
-  CNI_PATH=/usr/local/bin NETCONFPATH=/etc/cni/net.d /usr/local/bin/cnitool add cni0 /var/run/netns/test
+  CNI_PATH=/usr/local/bin NETCONFPATH=/etc/cni/net.d /usr/local/bin/cnitool add cni0 test
   
   # 进入网络命名空间，检查网络接口、路由表信息
   ip netns exec /var/run/netns/test sh
