@@ -25,7 +25,7 @@ before_script:
 # script - run the build script
 script:
 - hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
-- hugo --baseURL https://jeremy-xu.github.io/ -d public_gitee
+- hugo --baseURL https://jeremy-xu.oschina.io/ -d public_gitee
 deploy:
 - provider: pages
   skip-cleanup: true
