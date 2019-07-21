@@ -26,7 +26,7 @@ typora-copy-images-to: ../../../static/images/20190714
 E0708 09:50:14.407804   26508 nestedpendingoperations.go:267] Operation for "\"kubernetes.io/rbd/k8s:kubernetes-dynamic-pvc-998825ec-9c79-11e9-a3b2-fa163ed7c802\"" failed. No retries permitted until 2019-07-08 09:50:14.907753132 +0800 CST m=+247869.135080115 (durationBeforeRetry 500ms). Error: "UnmountDevice failed for volume \"pvc-9984bdab-9c79-11e9-b8ba-fa163ed7c802\" (UniqueName: \"kubernetes.io/rbd/k8s:kubernetes-dynamic-pvc-998825ec-9c79-11e9-a3b2-fa163ed7c802\") on node \"10.125.54.133\" : rbd: failed to unmap device /dev/rbd3, error exit status 16, rbd output: [114 98 100 58 32 115 121 115 102 115 32 119 114 105 116 101 32 102 97 105 108 101 100 10 114 98 100 58 32 117 110 109 97 112 32 102 97 105 108 101 100 58 32 40 49 54 41 32 68 101 118 105 99 101 32 111 114 32 114 101 115 111 117 114 99 101 32 98 117 115 121 10]"
 ```
 
-上面的rbd output用[ascii-to-text工具](https://www.browserling.com/tools/ascii-to-text)解码为字符串为`rbd: sysfs write failed rbd: unmap failed: (16) Device or resource busy`，应该是块设备被占用了。直接用`rbd unmap`再尝试deattach volome一次，发现也报这个错，所以该块设备一直被占用着，接下来查一下到底是什么进程占用着该块设备。
+上面的rbd output用[ascii-to-text工具](https://www.browserling.com/tools/ascii-to-text)解码为字符串为`rbd: sysfs write failed rbd: unmap failed: (16) Device or resource busy`，应该是块设备被占用了。直接用`rbd unmap`detach volome一次，发现也报这个错，所以该块设备一直被占用着，接下来查一下到底是什么进程占用着该块设备。
 
 先用lsof查一下：
 
@@ -61,7 +61,7 @@ nfsnobo+ 21839 21795  0 01:26 ?        00:00:08 /bin/node_exporter --path.procfs
 
 ### 根源分析
 
-竟然是prometheus的node_exporter进程占用着该块设备文件，真的是想不到啊。将该进程杀掉，`rbd unmap`终于可以正常deattach rbd volume了。
+竟然是prometheus的node_exporter进程占用着该块设备文件，真的是想不到啊。将该进程杀掉，`rbd unmap`终于可以正常detach rbd volume了。
 
 继续搜寻了一下，发现也有人遇到[这个问题](https://github.com/kubernetes/kubernetes/issues/54214#issuecomment-341357733)，这个评论里说明的原因是node_exporter因为要查探磁盘的使用率等数值，会将根文件系统挂载到容器里，而kubernetes默认的`Mount propagation`策略是`None`，即容器一旦启动，它从宿主机中读到的挂载信息就不变了，即使在宿主机里`unmount`了某个目录，容器里对此一无所知，它仍然会将块设备挂载到容器里的某个目录。
 
