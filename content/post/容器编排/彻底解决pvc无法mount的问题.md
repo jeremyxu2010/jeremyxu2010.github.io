@@ -59,7 +59,7 @@ jbd2/rbd3  6589            root  txt   unknown                                  
 nfsnobo+ 21839 21795  0 01:26 ?        00:00:08 /bin/node_exporter --path.procfs=/host/proc --path.sysfs=/host/sys --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|tmpfs)$ --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|data/docker/.+|etc/.+|run/secrets)($|/) --path.rootfs=/host
 ```
 
-### 根源分析
+## 根源分析
 
 竟然是prometheus的node_exporter进程占用着该块设备文件，真的是想不到啊。将该进程杀掉，`rbd unmap`终于可以正常detach rbd volume了。
 
@@ -134,7 +134,7 @@ func (detacher *rbdDetacher) UnmountDevice(deviceMountPath string) error {
 
 为此，我最终还是修改了kubernetes的代码，并给官方发了[PR](https://github.com/kubernetes/kubernetes/pull/79940)
 
-### 临时解决方案
+## 临时解决方案
 
 等官方合入PR毕竟时间较长，在官方未修复该问题时，我们可以通过定时脚本规避该问题：
 
