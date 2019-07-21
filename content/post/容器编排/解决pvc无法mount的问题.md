@@ -4,7 +4,7 @@ author: Jeremy Xu
 tags:
   - k8s
   - devops
-  - cni
+  - ceph
 categories:
   - 容器编排
 date: 2019-07-07 18:00:00+08:00
