@@ -53,6 +53,11 @@ pygmentsCodefencesGuessSyntax = "true"
   identifier = "search"
   url = "/search/"
 
+[params.utter]
+  repo = "jeremyxu2010/blog_comment"
+  issueTerm = "title" #设置每篇文章对应的 issue 的名字，可选 pathname title url，
+  theme = "github-light"
+
 
 [params]
   version = "3.x"           # Used to give a friendly message when you have an incompatible update
@@ -111,12 +116,12 @@ pygmentsCodefencesGuessSyntax = "true"
     gitalkJS = '<script src="https://cdn.jsdelivr.net/npm/gitalk@1.2.2/dist/gitalk.min.js" integrity="sha256-DcjhdbufsHMHflFjZtKNFnPKOAL2ybOxGcPOR4MtnJg=" crossorigin="anonymous"></script>'
     gitalkCSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.2.2/dist/gitalk.css" integrity="sha256-rJVe5uyYRXdLM+Kkoj7JtN+9qI0bZTxkYTaNWODpg7U=" crossorigin="anonymous">'
 
-  [params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
-    owner = "jeremyxu2010"              # Your GitHub ID
-    repo = "jeremyxu2010.github.io"               # The repo to store comments
-    clientId = "b8ee83f25960b451edad"           # Your client ID
-    clientSecret = "cfab3ab3442b9d1774936fd9275e722016b53ac3"       # Your client secret
-
+  #[params.gitment]          # Gitment is a comment system based on GitHub issues. see https://github.com/imsun/gitment
+  #  owner = "jeremyxu2010"              # Your GitHub ID
+  #  repo = "jeremyxu2010.github.io"               # The repo to store comments
+  #  clientId = "b8ee83f25960b451edad"           # Your client ID
+  #  clientSecret = "cfab3ab3442b9d1774936fd9275e722016b53ac3"       # Your client secret
+  #
   #[params.gitalk]           # Gitalk is a comment system based on GitHub issues. see https://github.com/gitalk/gitalk
   #  owner = ""              # Your GitHub ID
   #  repo = ""               # The repo to store comments
