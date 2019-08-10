@@ -21,8 +21,6 @@ kuberentes里存在两种机制进行系统资源限制，一个是Resource Quot
 kubectl create namespace quota-object-example
 
 cat << EOF | kubectl -n quota-object-example create -f -
-admin/resource/quota-objects.yaml 
-
 apiVersion: v1
 kind: ResourceQuota
 metadata:
