@@ -1,5 +1,5 @@
 ---
-title: 使用casbin完成验证授权.md
+title: 使用casbin完成验证授权
 tags:
   - casbin
   - golang
