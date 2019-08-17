@@ -18,7 +18,7 @@ before_install:
 - chmod 600 ~/.ssh/id_rsa
 # install - install any dependencies required
 install:
-- go get github.com/gohugoio/hugo@v0.56.3
+- go get github.com/gohugoio/hugo
 before_script:
 - mkdir -p public_github 2> /dev/null
 - mkdir -p public_gitee 2> /dev/null
