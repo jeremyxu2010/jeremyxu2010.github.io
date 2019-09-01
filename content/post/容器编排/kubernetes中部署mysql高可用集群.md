@@ -142,10 +142,10 @@ $ kubectl cp addition_to_sys.sql demo/mysql-0:/tmp/
 $ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e 'source /tmp/addition_to_sys.sql'
 
 # 在MGR集群中创建监控用户并授权
-$ kubectl -n paas exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e "grant SELECT on sys.* to 'proxymonitor'@'%' identified by 'proxymonitor';flush privileges;"
+$ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e "grant SELECT on sys.* to 'proxymonitor'@'%' identified by 'proxymonitor';flush privileges;"
 
 # 在MGR集群中创建访问业务库的用户并授权
-$ kubectl -n paas exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e "grant all privileges on biz_db.* to 'biz_user'@'%' identified by 'bizpassword';flush privileges;"
+$ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e "grant all privileges on biz_db.* to 'biz_user'@'%' identified by 'bizpassword';flush privileges;"
 
 # 借助k8s-proxysql-cluster项目提供的helm charts部署proxysql 3实例集群
 $ git clone https://github.com/jeremyxu2010/k8s-proxysql-cluster.git
