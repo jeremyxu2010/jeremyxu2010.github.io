@@ -131,7 +131,7 @@ $ kubectl exec -it -n demo mysql-0 -- mysql -u root --password=dlNiQpjULZvEqo3B 
 
 特别对于写操作，上层应用还得先找mysql的master实例地址后，操作才能进行下去，这样太难受了。
 
-这里我们可以使用[MySQL Router方案](https://dev.mysql.com/doc/mysql-router/8.0/en/)来处理，这个在[之前的博文](https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/#%E5%88%9D%E5%A7%8B%E5%8C%96mysql-router)里也讲到。不过在MySQL官方的方案里`MySQL Router`一般是[作为应用的sidecar进行部署](https://dev.mysql.com/doc/mysql-router/8.0/en/mysql-router-general-using-deploying.html)的。我这里想更集中式地部署，于是采用了进行业界广泛实践的[ProxySQL方案](https://github.com/sysown/proxysql)。
+这里我们可以使用[MySQL Router方案](https://dev.mysql.com/doc/mysql-router/8.0/en/)来处理，这个在[之前的博文](https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/#%E5%88%9D%E5%A7%8B%E5%8C%96mysql-router)里也讲到。不过在MySQL官方的方案里`MySQL Router`一般是[作为应用的sidecar进行部署](https://dev.mysql.com/doc/mysql-router/8.0/en/mysql-router-general-using-deploying.html)的。我这里想更集中式地部署，于是采用了业界广泛实践的[ProxySQL方案](https://github.com/sysown/proxysql)。
 
 部署ProxySQL的过程如下：
 
