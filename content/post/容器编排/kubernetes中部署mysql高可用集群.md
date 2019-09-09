@@ -103,9 +103,9 @@ MySQL集群搭建好了，如何访问呢？kubedb的文档上有说明：
 
 ```bash
 # 首先找到mysql的root密码
-$ kubectl get secrets -n demo my-group-auth -o jsonpath='{.data.\username}' | base64 -d
+$ kubectl get secrets -n demo mysql-auth -o jsonpath='{.data.\username}' | base64 -d
 root
-$ kubectl get secrets -n demo my-group-auth -o jsonpath='{.data.\password}' | base64 -d
+$ kubectl get secrets -n demo mysql-auth -o jsonpath='{.data.\password}' | base64 -d
 dlNiQpjULZvEqo3B
 
 # 读数据的话，连接3个member中任何一个mysql实例都可以
