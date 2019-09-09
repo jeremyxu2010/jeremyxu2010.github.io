@@ -147,9 +147,9 @@ $ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mys
 # 在MGR集群中创建访问业务库的用户并授权
 $ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mysql-0.mysql-gvr.demo -P 3306 -e "grant all privileges on biz_db.* to 'biz_user'@'%' identified by 'bizpassword';flush privileges;"
 
-# 借助k8s-proxysql-cluster项目提供的helm charts部署proxysql 3实例集群
-$ git clone https://github.com/jeremyxu2010/k8s-proxysql-cluster.git
-$ docker build --rm -t scienta/k8s-proxysql-cluster:1.0.0 -f k8s-proxysql-cluster/docker/k8s-proxysql-cluster.Dockerfile k8s-proxysql-cluster/docker
+# 借助proxysql-cluster项目提供的helm charts部署proxysql 3实例集群
+$ git clone https://github.com/jeremyxu2010/proxysql-cluster.git
+$ docker build --rm -t severalnines/proxysql:1.4.16 -f proxysql-cluster/docker/Dockerfile proxysql-cluster/docker
 $ cat << EOF > proxysql-values.yaml
 # Default admin username
 proxysql:
@@ -159,6 +159,59 @@ proxysql:
   clusterAdmin:
     username: cluster1
     password: secret1pass
+# 在proxysql中初始化MGR集群的相关信息
+# 1. 向mysql_servers表插入MGR各member的地址信息，其中当前的master示例放入hostgroup 1中，所有示例放入hostgroup 2中
+# 2. 向mysql_group_replication_hostgroups表插入proxysql使用hostgroup的规则
+# * proxysql会导流写请求到writer_hostgroup，即hostgrup 1
+# * proxysql会导流读请求到reader_hostgroup，即hostgrup 2
+# * backup_writer_hostgroup的id为3
+# * offline_hostgroup的id为4
+# * active表明这条规则是生效的
+# * max_writers表明最多只有一个writer，如果监测到多个实例是可写的，则只会将一个实例移入writer_hostgroup，其它实例会被移入backup_writer_hostgroup
+# * writer_is_also_reader表明可写实例也会被作为reader
+# * max_transactions_behind表明后端最大允许的事务数
+# 3. 插入允许连接的帐户信息，注意要与MGR集群中的访问用户信息一致
+# 4. 插入proxysql读写分离规则
+  additionConfig: |
+    mysql_servers =
+    (
+        { address="mysql-0.mysql-gvr", port=3306 , hostgroup=1, max_connections=2048 },
+        { address="mysql-0.mysql-gvr", port=3306 , hostgroup=2, max_connections=2048 },
+        { address="mysql-1.mysql-gvr", port=3306 , hostgroup=2, max_connections=2048 },
+        { address="mysql-2.mysql-gvr", port=3306 , hostgroup=2, max_connections=2048 }
+    )
+    mysql_group_replication_hostgroups =
+    (
+        { writer_hostgroup=1 , backup_writer_hostgroup=3, reader_hostgroup=2, offline_hostgroup=4, active=1, max_writers=1, writer_is_also_reader=1, max_transactions_behind=100 }
+    )
+    mysql_users =
+    (
+        { username = "biz_user" , password = "bizpassword" , default_hostgroup = 1 , active = 1 }
+    )
+    mysql_query_rules =
+    (
+        {
+            rule_id=100
+            active=1
+            match_pattern="^SELECT .* FOR UPDATE"
+            destination_hostgroup=1
+            apply=1
+        },
+        {
+            rule_id=200
+            active=1
+            match_pattern="^SELECT .*"
+            destination_hostgroup=2
+            apply=1
+        },
+        {
+            rule_id=300
+            active=1
+            match_pattern=".*"
+            destination_hostgroup=1
+            apply=1
+        }
+    )
 # MySQL Settings
 mysql:
   # This is the monitor user, just needs usage rights on the databases
@@ -170,49 +223,14 @@ mysql:
     password: dlNiQpjULZvEqo3B
 EOF
 $ helm install --namespace demo --name proxysql k8s-proxysql-cluster/deploy/charts/proxysql-cluster/ -f proxysql-values.yaml
-
-# 在proxysql中初始化MGR集群的相关信息
-$ cat << EOF > init-proxysql.sql
-# 向mysql_servers表插入MGR各member的地址信息，其中当前的master示例放入hostgroup 1中，所有示例放入hostgroup 2中
-DELETE FROM mysql_servers;
-INSERT INTO mysql_servers (hostgroup_id, hostname, port, max_connections) VALUES (1, 'mysql-0.mysql-gvr.demo', 3306, 2048);
-INSERT INTO mysql_servers (hostgroup_id, hostname, port, max_connections) VALUES (2, 'mysql-0.mysql-gvr.demo', 3306, 2048);
-INSERT INTO mysql_servers (hostgroup_id, hostname, port, max_connections) VALUES (2, 'mysql-1.mysql-gvr.demo', 3306, 2048);
-INSERT INTO mysql_servers (hostgroup_id, hostname, port, max_connections) VALUES (2, 'mysql-2.mysql-gvr.demo', 3306, 2048);
-
-# 向mysql_group_replication_hostgroups表插入proxysql使用hostgroup的规则
-# * proxysql会导流写请求到writer_hostgroup，即hostgrup 1
-# * proxysql会导流读请求到reader_hostgroup，即hostgrup 2
-# * backup_writer_hostgroup的id为3
-# * offline_hostgroup的id为4
-# * active表明这条规则是生效的
-# * max_writers表明最多只有一个writer，如果监测到多个实例是可写的，则只会将一个实例移入writer_hostgroup，其它实例会被移入backup_writer_hostgroup
-# * writer_is_also_reader表明可写实例也会被作为reader
-# * max_transactions_behind表明后端最大允许的事务数
-DELETE FROM mysql_group_replication_hostgroups;
-insert into mysql_group_replication_hostgroups
-(writer_hostgroup,backup_writer_hostgroup,reader_hostgroup, offline_hostgroup,active,max_writers,writer_is_also_reader,max_transactions_behind)
-values (1,3,2,4,1,1,1,100);
-
-# 将mysql_servers及mysql_group_replication_hostgroups的信息刷入RUNTIME及DISK
-LOAD MYSQL SERVERS TO RUNTIME;
-SAVE MYSQL SERVERS TO DISK;
-
-# 插入允许连接的帐户信息，注意要与MGR集群中的访问用户信息一致
-DELETE FROM mysql_users;
-insert into mysql_users(username, password, default_hostgroup) values('biz_user', 'bizpassword', 1);
-
-# 将mysql_users的信息刷入RUNTIME及DISK
-LOAD MYSQL USERS TO RUNTIME;
-SAVE MYSQL USERS TO DISK;
-EOF
-
-# 连接proxysql，导入上述初始配置
-$ kubectl cp init-proxysql.sql demo/proxysql-proxysql-cluste-0:/tmp/
-$ kubectl -n demo exec -ti proxysql-proxysql-cluste-0 -- mysql -u admin -h127.0.0.1 -padmin -P6032 -e 'source /tmp/init-proxysql.sql'
 ```
 
-**这里要注意，ProxySQL做了分层的配置设计，要想配置生效并持久化，一定要将配置信息刷入RUNTIME及DISK，详见[这里](https://github.com/sysown/proxysql/wiki/Configuring-ProxySQL)**
+这里在部署时遇到了一些小波折，最开始是使用[k8s-proxysql-cluster](https://github.com/ScientaNL/k8s-proxysql-cluster)部署一套proxysql集群，并到其中手动初始化MGR集群相关信息的。但后来遇到了一系列问题：
+
+1. proxysql的配置信息未保存到pv中，这个导致某个proxysql实例重启后，proxysql集群中的MGR信息完全丢失。
+2. 某个proxysql实例pod被重新调度后，其ip地址发生变化，proxysql集群便会处于不健康状况。
+
+为了解决上述问题，直接新写了一个部署proxysql集群的helm chart，其采用config file的方式初始化MGR集群信息，同时`proxysql_servers`中不再使用IP，而是使用固定的服务。经测试通过该方式部署的proxysql集群运行得十分稳定。
 
 ## 业务访问MySQL
 
