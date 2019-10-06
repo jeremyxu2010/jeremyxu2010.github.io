@@ -36,14 +36,15 @@ OpenJDK 64-Bit Server VM (build 25.121-b13, mixed mode)
 >
 > Per default the JVM automatically configures heap size according to the spec of the machine it is running on. On my brand new MacBook Pro 2018 this yields the following heap size:
 >
-> ```
-> $ java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
->     uintx DefaultMaxRAMFraction   = 4             {product}
->     uintx MaxHeapSize             := 8589934592   {product}
->     uint64_t MaxRAM               = 137438953472  {pd product}
->     uintx MaxRAMFraction          = 4             {product}
-> ```
->
+
+  ```bash
+  $ java -XX:+PrintFlagsFinal -version | grep -Ei "maxheapsize|maxram"
+      uintx DefaultMaxRAMFraction   = 4             {product}
+      uintx MaxHeapSize             := 8589934592   {product}
+      uint64_t MaxRAM               = 137438953472  {pd product}
+      uintx MaxRAMFraction          = 4             {product}
+  ```
+
 > As you can see, the JVM defaults to 8.0 GB max heap `(8589934592 / 1024^3)` and 0.5 GB initial heap on my machine. The formula behind this is straight forward. Using the JVM configuration parameter names, we end up with: `MaxHeapSize = MaxRAM * 1 / MaxRAMFraction` where MaxRAM is the available RAM [(1](https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e#fn1-20439)) and MaxRAMFraction is 4 [(2](https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e#fn2-20439)) by default. That means the **JVM allocates up to 25% of your RAM per JVM** running on your machine.
 
 而在容器中运行的Java进程默认取到的系统内存是宿主机的内存信息：
