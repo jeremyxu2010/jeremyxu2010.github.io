@@ -149,7 +149,7 @@ $ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host=mys
 
 # 借助proxysql-cluster项目提供的helm charts部署proxysql 3实例集群
 $ git clone https://github.com/jeremyxu2010/proxysql-cluster.git
-$ docker build --rm -t severalnines/proxysql:1.4.16 -f proxysql-cluster/docker/Dockerfile proxysql-cluster/docker
+$ docker build --rm -t severalnines/proxysql:1.4.16 -f ./proxysql-cluster/docker/Dockerfile ./proxysql-cluster/docker
 $ cat << EOF > proxysql-values.yaml
 # Default admin username
 proxysql:
@@ -222,7 +222,7 @@ mysql:
     username: root
     password: dlNiQpjULZvEqo3B
 EOF
-$ helm install --namespace demo --name proxysql k8s-proxysql-cluster/deploy/charts/proxysql-cluster/ -f proxysql-values.yaml
+$ helm install --namespace demo --name proxysql ./proxysql-cluster/ -f proxysql-values.yaml
 ```
 
 这里在部署时遇到了一些小波折，最开始是使用[k8s-proxysql-cluster](https://github.com/ScientaNL/k8s-proxysql-cluster)部署一套proxysql集群，并到其中手动初始化MGR集群相关信息的。但后来遇到了一系列问题：
