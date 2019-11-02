@@ -46,33 +46,24 @@ fs.inotify.max_user_watches=524288
 
 ### etcd性能优化
 
-* Etcd对磁盘写入延迟非常敏感，因此对于负载较重的集群，etcd一定要使用local SSD或者高性能云盘。可以使用`fio`测量磁盘实际顺序 IOPS。
-
+1. Etcd对磁盘写入延迟非常敏感，因此对于负载较重的集群，etcd一定要使用local SSD或者高性能云盘。可以使用`fio`测量磁盘实际顺序 IOPS。
   ```bash
   fio -filename=/dev/sda1 -direct=1 -iodepth 1 -thread -rw=write -ioengine=psync -bs=4k -size=60G -numjobs=64 -runtime=10 -group_reporting -name=file
   ```
-
-* 由于etcd必须将数据持久保存到磁盘日志文件中，因此来自其他进程的磁盘活动可能会导致增加写入时间，结果导致etcd请求超时和临时leader丢失。因此可以给etcd进程更高的磁盘优先级，使etcd服务可以稳定地与这些进程一起运行。
-
+2. 由于etcd必须将数据持久保存到磁盘日志文件中，因此来自其他进程的磁盘活动可能会导致增加写入时间，结果导致etcd请求超时和临时leader丢失。因此可以给etcd进程更高的磁盘优先级，使etcd服务可以稳定地与这些进程一起运行。
   ```bash
   ionice -c2 -n0 -p $(pgrep etcd)
   ```
-
-* 默认etcd空间配额大小为 2G，超过 2G 将不再写入数据。通过给etcd配置 `--quota-backend-bytes` 参数增大空间配额，最大支持 8G。
-
+3. 默认etcd空间配额大小为 2G，超过 2G 将不再写入数据。通过给etcd配置 `--quota-backend-bytes` 参数增大空间配额，最大支持 8G。
   ```
   --quota-backend-bytes 8589934592
   ```
-
-* 如果etcd leader处理大量并发客户端请求，可能由于网络拥塞而延迟处理follower对等请求。在follower 节点上可能会产生如下的发送缓冲区错误的消息：
-
+4. 如果etcd leader处理大量并发客户端请求，可能由于网络拥塞而延迟处理follower对等请求。在follower 节点上可能会产生如下的发送缓冲区错误的消息：
   ```
   dropped MsgProp to 247ae21ff9436b2d since streamMsg's sending buffer is full
   dropped MsgAppResp to 247ae21ff9436b2d since streamMsg's sending buffer is full
   ```
-
   可以通过提高etcd对于对等网络流量优先级来解决这些错误。在 Linux 上，可以使用 tc 对对等流量进行优先级排序：
-
   ```bash
   tc qdisc add dev eth0 root handle 1: prio bands 3
   tc filter add dev eth0 parent 1: protocol ip prio 1 u32 match ip sport 2380 0xffff flowid 1:1
@@ -80,9 +71,7 @@ fs.inotify.max_user_watches=524288
   tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip sport 2379 0xffff flowid 1:1
   tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip dport 2379 0xffff flowid 1:1
   ```
-
-* 为了在大规模集群下提高性能，可以将events存储在单独的 ETCD 实例中，可以配置kube-apiserver参数：
-
+5. 为了在大规模集群下提高性能，可以将events存储在单独的 ETCD 实例中，可以配置kube-apiserver参数：
   ```
   --etcd-servers="http://etcd1:2379,http://etcd2:2379,http://etcd3:2379" \
   --etcd-servers-overrides="/events#http://etcd4:2379,http://etcd5:2379,http://etcd6:2379"
@@ -90,19 +79,19 @@ fs.inotify.max_user_watches=524288
 
 ### docker优化
 
-* 配置docker daemon并行拉取镜像，以提高镜像拉取效率，在`/etc/docker/daemon.json`中添加以下配置：
+1. 配置docker daemon并行拉取镜像，以提高镜像拉取效率，在`/etc/docker/daemon.json`中添加以下配置：
 
   ```
   "max-concurrent-downloads": 10
   ```
 
-* 可以使用local SSD或者高性能云盘作为docker容器的持久数据目录，在`/etc/docker/daemon.json`中添加以下配置：
+2. 可以使用local SSD或者高性能云盘作为docker容器的持久数据目录，在`/etc/docker/daemon.json`中添加以下配置：
 
   ```
   "data-root": "/ssd_mount_dir"
   ```
 
-* 启动pod时都会拉取pause镜像，为了减小拉取pause镜像网络带宽，可以每个node预加载pause镜像，在每个node节点上执行以下命令：
+3. 启动pod时都会拉取pause镜像，为了减小拉取pause镜像网络带宽，可以每个node预加载pause镜像，在每个node节点上执行以下命令：
 
   ```bash
   docker load -i /tmp/preloaded_pause_image.tar
@@ -110,42 +99,36 @@ fs.inotify.max_user_watches=524288
 
 ### kubelet优化
 
-* 设置 `--serialize-image-pulls=false`， 该选项配置串行拉取镜像，默认值时true，配置为false可以增加并发度。但是如果docker daemon 版本小于 1.9，且使用 aufs 存储则不能改动该选项。
+1. 设置 `--serialize-image-pulls=false`， 该选项配置串行拉取镜像，默认值时true，配置为false可以增加并发度。但是如果docker daemon 版本小于 1.9，且使用 aufs 存储则不能改动该选项。
 
-* 设置`--image-pull-progress-deadline=30`， 配置镜像拉取超时。默认值时1分，对于大镜像拉取需要适量增大超时时间。
+2. 设置`--image-pull-progress-deadline=30`， 配置镜像拉取超时。默认值时1分，对于大镜像拉取需要适量增大超时时间。
 
-* kubelet 单节点允许运行的最大 Pod 数：`--max-pods=110`（默认是 110，可以根据实际需要设置）
+3. kubelet 单节点允许运行的最大 Pod 数：`--max-pods=110`（默认是 110，可以根据实际需要设置）
 
 ### kube-apiserver优化
 
-* 设置 `--apiserver-count` 和 `--endpoint-reconciler-type`，可使得多个 kube-apiserver 实例加入到 Kubernetes Service 的 endpoints 中，从而实现高可用。
+1. 设置 `--apiserver-count` 和 `--endpoint-reconciler-type`，可使得多个 kube-apiserver 实例加入到 Kubernetes Service 的 endpoints 中，从而实现高可用。
 
-* 设置 `--max-requests-inflight` 和 `--max-mutating-requests-inflight`，默认是 200 和 400。
-
+2. 设置 `--max-requests-inflight` 和 `--max-mutating-requests-inflight`，默认是 200 和 400。
   节点数量在 1000 - 3000 之间时，推荐：
-
   ```
   --max-requests-inflight=1500
   --max-mutating-requests-inflight=500
   ```
-
   节点数量大于 3000 时，推荐：
-
   ```
   --max-requests-inflight=3000
   --max-mutating-requests-inflight=1000
   ```
 
-* 使用`--target-ram-mb`配置kube-apiserver的内存，按以下公式得到一个合理的值：
-
+3. 使用`--target-ram-mb`配置kube-apiserver的内存，按以下公式得到一个合理的值：
   ```
   --target-ram-mb=node_nums * 60
   ```
 
 ### kube-controller-manager优化
 
-* kube-controller-manager可以通过 leader election 实现高可用，添加以下命令行参数：
-
+1. kube-controller-manager可以通过 leader election 实现高可用，添加以下命令行参数：
   ```
   --leader-elect=true
   --leader-elect-lease-duration=15s
@@ -154,8 +137,7 @@ fs.inotify.max_user_watches=524288
   --leader-elect-retry-period=2s
   ```
 
-* 限制与kube-apiserver通信的qps，添加以下命令行参数：
-
+2. 限制与kube-apiserver通信的qps，添加以下命令行参数：
   ```
   --kube-api-qps=100
   --kube-api-burst=150
@@ -163,8 +145,7 @@ fs.inotify.max_user_watches=524288
 
 ### kube-scheduler优化
 
-* kube-scheduler可以通过 leader election 实现高可用，添加以下命令行参数：
-
+1. kube-scheduler可以通过 leader election 实现高可用，添加以下命令行参数：
   ```
   --leader-elect=true
   --leader-elect-lease-duration=15s
@@ -173,8 +154,7 @@ fs.inotify.max_user_watches=524288
   --leader-elect-retry-period=2s
   ```
 
-* 限制与kube-apiserver通信的qps，添加以下命令行参数：
-
+2. 限制与kube-apiserver通信的qps，添加以下命令行参数：
   ```
   --kube-api-qps=100
   --kube-api-burst=150
@@ -184,8 +164,7 @@ fs.inotify.max_user_watches=524288
 
 在运行Pod的时候也需要注意遵循一些最佳实践。
 
-* 为容器设置资源请求和限制，尤其是一些基础插件服务
-
+1. 为容器设置资源请求和限制，尤其是一些基础插件服务
   ```
   spec.containers[].resources.limits.cpu
   spec.containers[].resources.limits.memory
@@ -194,20 +173,17 @@ fs.inotify.max_user_watches=524288
   spec.containers[].resources.limits.ephemeral-storage
   spec.containers[].resources.requests.ephemeral-storage
   ```
-
   在k8s中，会根据pod的limit 和 requests的配置将pod划分为不同的qos类别：
-
   ```
   * Guaranteed
   * Burstable
   * BestEffort
   ```
+  当机器可用资源不够时，kubelet会根据qos级别划分迁移驱逐pod。被驱逐的优先级：`BestEffort > Burstable > Guaranteed`。
 
-   当机器可用资源不够时，kubelet会根据qos级别划分迁移驱逐pod。被驱逐的优先级：`BestEffort > Burstable > Guaranteed`。
+2. 对关键应用使用 nodeAffinity、podAffinity 和 podAntiAffinity 等保护，使其调度分散到不同的node上。比如kube-dns 配置：
 
-* 对关键应用使用 nodeAffinity、podAffinity 和 podAntiAffinity 等保护，使其调度分散到不同的node上。比如kube-dns 配置：
-
-* 尽量使用控制器来管理容器（如 Deployment、StatefulSet、DaemonSet、Job 等）
+3. 尽量使用控制器来管理容器（如 Deployment、StatefulSet、DaemonSet、Job 等）
 
 ## kubernetes集群数据备份与还原
 
