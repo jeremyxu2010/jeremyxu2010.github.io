@@ -185,7 +185,7 @@ fs.inotify.max_user_watches=524288
 在运行Pod的时候也需要注意遵循一些最佳实践。
 
 1. 为容器设置资源请求和限制，尤其是一些基础插件服务
-  
+   
    ```
    spec.containers[].resources.limits.cpu
    spec.containers[].resources.limits.memory
