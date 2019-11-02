@@ -66,47 +66,47 @@ fs.inotify.max_user_watches=524288
 
 4. 如果etcd leader处理大量并发客户端请求，可能由于网络拥塞而延迟处理follower对等请求。在follower 节点上可能会产生如下的发送缓冲区错误的消息：
 
-   ```
-   dropped MsgProp to 247ae21ff9436b2d since streamMsg's sending buffer is full
-   dropped MsgAppResp to 247ae21ff9436b2d since streamMsg's sending buffer is full
-   ```
-   
+  ```
+  dropped MsgProp to 247ae21ff9436b2d since streamMsg's sending buffer is full
+  dropped MsgAppResp to 247ae21ff9436b2d since streamMsg's sending buffer is full
+  ```
+
    可以通过提高etcd对于对等网络流量优先级来解决这些错误。在 Linux 上，可以使用 tc 对对等流量进行优先级排序：
-   
-   ```bash
-   tc qdisc add dev eth0 root handle 1: prio bands 3
-   tc filter add dev eth0 parent 1: protocol ip prio 1 u32 match ip sport 2380 0xffff flowid 1:1
-   tc filter add dev eth0 parent 1: protocol ip prio 1 u32 match ip dport 2380 0xffff flowid 1:1
-   tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip sport 2379 0xffff flowid 1:1
-   tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip dport 2379 0xffff flowid 1:1
-   ```
-   
+
+  ```bash
+  tc qdisc add dev eth0 root handle 1: prio bands 3
+  tc filter add dev eth0 parent 1: protocol ip prio 1 u32 match ip sport 2380 0xffff flowid 1:1
+  tc filter add dev eth0 parent 1: protocol ip prio 1 u32 match ip dport 2380 0xffff flowid 1:1
+  tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip sport 2379 0xffff flowid 1:1
+  tc filter add dev eth0 parent 1: protocol ip prio 2 u32 match ip dport 2379 0xffff flowid 1:1
+  ```
+
 5. 为了在大规模集群下提高性能，可以将events存储在单独的 ETCD 实例中，可以配置kube-apiserver参数：
 
-   ```
-   --etcd-servers="http://etcd1:2379,http://etcd2:2379,http://etcd3:2379" \
-   --etcd-servers-overrides="/events#http://etcd4:2379,http://etcd5:2379,http://etcd6:2379"
-   ```
+  ```
+  --etcd-servers="http://etcd1:2379,http://etcd2:2379,http://etcd3:2379" \
+  --etcd-servers-overrides="/events#http://etcd4:2379,http://etcd5:2379,http://etcd6:2379"
+  ```
 
 ### docker优化
 
 1. 配置docker daemon并行拉取镜像，以提高镜像拉取效率，在`/etc/docker/daemon.json`中添加以下配置：
 
-   ```
-   "max-concurrent-downloads": 10
-   ```
+  ```
+  "max-concurrent-downloads": 10
+  ```
 
 2. 可以使用local SSD或者高性能云盘作为docker容器的持久数据目录，在`/etc/docker/daemon.json`中添加以下配置：
 
-   ```
-   "data-root": "/ssd_mount_dir"
-   ```
+  ```
+  "data-root": "/ssd_mount_dir"
+  ```
 
 3. 启动pod时都会拉取pause镜像，为了减小拉取pause镜像网络带宽，可以每个node预加载pause镜像，在每个node节点上执行以下命令：
 
-   ```bash
-   docker load -i /tmp/preloaded_pause_image.tar
-   ```
+  ```bash
+  docker load -i /tmp/preloaded_pause_image.tar
+  ```
 
 ### kubelet优化
 
@@ -123,86 +123,86 @@ fs.inotify.max_user_watches=524288
 2. 设置 `--max-requests-inflight` 和 `--max-mutating-requests-inflight`，默认是 200 和 400。
 
    节点数量在 1000 - 3000 之间时，推荐：
-   
-   ```
-   --max-requests-inflight=1500
-   --max-mutating-requests-inflight=500
-   ```
-   
+
+  ```
+  --max-requests-inflight=1500
+  --max-mutating-requests-inflight=500
+  ```
+
    节点数量大于 3000 时，推荐：
-   
-   ```
-   --max-requests-inflight=3000
-   --max-mutating-requests-inflight=1000
-   ```
-   
+
+  ```
+  --max-requests-inflight=3000
+  --max-mutating-requests-inflight=1000
+  ```
+
 3. 使用`--target-ram-mb`配置kube-apiserver的内存，按以下公式得到一个合理的值：
-  
-   ```
-   --target-ram-mb=node_nums * 60
-   ```
-   
+
+  ```
+  --target-ram-mb=node_nums * 60
+  ```
+
 ### kube-controller-manager优化
 
 1. kube-controller-manager可以通过 leader election 实现高可用，添加以下命令行参数：
 
-   ```
-   --leader-elect=true
-   --leader-elect-lease-duration=15s
-   --leader-elect-renew-deadline=10s
-   --leader-elect-resource-lock=endpoints
-   --leader-elect-retry-period=2s
-   ```
+  ```
+  --leader-elect=true
+  --leader-elect-lease-duration=15s
+  --leader-elect-renew-deadline=10s
+  --leader-elect-resource-lock=endpoints
+  --leader-elect-retry-period=2s
+  ```
 
 2. 限制与kube-apiserver通信的qps，添加以下命令行参数：
 
-   ```
-   --kube-api-qps=100
-   --kube-api-burst=150
-   ```
+  ```
+  --kube-api-qps=100
+  --kube-api-burst=150
+  ```
 
 ### kube-scheduler优化
 
 1. kube-scheduler可以通过 leader election 实现高可用，添加以下命令行参数：
-  
-   ```
-   --leader-elect=true
-   --leader-elect-lease-duration=15s
-   --leader-elect-renew-deadline=10s
-   --leader-elect-resource-lock=endpoints
-   --leader-elect-retry-period=2s
-   ```
+
+  ```
+  --leader-elect=true
+  --leader-elect-lease-duration=15s
+  --leader-elect-renew-deadline=10s
+  --leader-elect-resource-lock=endpoints
+  --leader-elect-retry-period=2s
+  ```
 
 2. 限制与kube-apiserver通信的qps，添加以下命令行参数：
-  
-   ```
-   --kube-api-qps=100
-   --kube-api-burst=150
-   ```
+
+  ```
+  --kube-api-qps=100
+  --kube-api-burst=150
+  ```
 
 ### pod优化
 
 在运行Pod的时候也需要注意遵循一些最佳实践。
 
 1. 为容器设置资源请求和限制，尤其是一些基础插件服务
-   
-   ```
-   spec.containers[].resources.limits.cpu
-   spec.containers[].resources.limits.memory
-   spec.containers[].resources.requests.cpu
-   spec.containers[].resources.requests.memory
-   spec.containers[].resources.limits.ephemeral-storage
-   spec.containers[].resources.requests.ephemeral-storage
-   ```
-   
-   在k8s中，会根据pod的limit 和 requests的配置将pod划分为不同的qos类别：
-   
-   ```
-   * Guaranteed
-   * Burstable
-   * BestEffort
-   ```
-   
+
+  ```
+  spec.containers[].resources.limits.cpu
+  spec.containers[].resources.limits.memory
+  spec.containers[].resources.requests.cpu
+  spec.containers[].resources.requests.memory
+  spec.containers[].resources.limits.ephemeral-storage
+  spec.containers[].resources.requests.ephemeral-storage
+  ```
+
+  在k8s中，会根据pod的limit 和 requests的配置将pod划分为不同的qos类别：
+
+  ```
+  * Guaranteed
+  * Burstable
+  * BestEffort
+  ```
+
    当机器可用资源不够时，kubelet会根据qos级别划分迁移驱逐pod。被驱逐的优先级：`BestEffort > Burstable > Guaranteed`。
 
 2. 对关键应用使用 nodeAffinity、podAffinity 和 podAntiAffinity 等保护，使其调度分散到不同的node上。比如kube-dns 配置：
