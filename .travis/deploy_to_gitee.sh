@@ -8,5 +8,5 @@ git add .
 msg="rebuilding site `date`"
 git commit -m "$msg"
 git remote add origin git@gitee.com:jeremy-xu/jeremy-xu.git
-git push --force origin master:master
+git push --progress --force origin master:master
 cd ..
