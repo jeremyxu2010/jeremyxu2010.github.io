@@ -4,6 +4,8 @@ tags:
   - nginx
   - kubernetes
   - http
+  - tcp
+  - conntrack
 categories:
   - 容器编排
 date: 2019-11-10 18:35:00+08:00
@@ -61,10 +63,18 @@ date: 2019-11-10 18:35:00+08:00
 3. 集群node节点及客户端配置内核参数
    ```bash
    $ cat << EOF >> /etc/sysctl.conf
-   net.ipv4.tcp_syncookies = 0
-   net.nf_conntrack_max = 655350
-   net.netfilter.nf_conntrack_tcp_timeout_established = 1200
    net.core.somaxconn = 655350
+   net.ipv4.tcp_syncookies = 1
+   net.ipv4.tcp_timestamps = 1
+   net.ipv4.tcp_tw_reuse = 1
+   net.ipv4.tcp_fin_timeout = 30
+   net.ipv4.tcp_max_tw_buckets = 5000
+   net.nf_conntrack_max = 2097152
+   net.netfilter.nf_conntrack_max = 2097152
+   net.netfilter.nf_conntrack_tcp_timeout_close_wait = 15
+   net.netfilter.nf_conntrack_tcp_timeout_fin_wait = 30
+   net.netfilter.nf_conntrack_tcp_timeout_time_wait = 30
+   net.netfilter.nf_conntrack_tcp_timeout_established = 1200
    EOF
    
    $ sysctl -p --system
@@ -87,7 +97,13 @@ date: 2019-11-10 18:35:00+08:00
    *	soft	nofile	655350
    *	hard	nproc	6553
    *	soft	nproc	655350
+   root hard nofile 655350
+   root soft nofile 655350
+   root hard nproc 655350
+   root soft nproc 655350
       ...
+      
+   $ echo 'session required pam_limits.so' >> /etc/pam.d/common-session
    ```
 
 然后在集群中部署了一个测试应用，以模拟生产环境上的业务应用：
@@ -210,7 +226,7 @@ $ kubectl -n kube-system edit configmap nginx-configuration
 ...
 apiVersion: v1
 data:
-  keep-alive: "75"
+  keep-alive: "60"
   keep-alive-requests: "100"
   upstream-keepalive-connections: "10000"
   upstream-keepalive-requests: "100"
@@ -261,3 +277,4 @@ DONE.
 3. https://zhuanlan.zhihu.com/p/34052073
 4. http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_requests
 5. http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive
+6. https://kiswo.com/article/1018
