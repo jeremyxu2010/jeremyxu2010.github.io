@@ -10,7 +10,7 @@ hasCJKLanguage = true     # has chinese/japanese/korean ? # 自动检测是否�
 paginate = 10                                             # 首页每页显示的文章数
 disqusShortname = ""      # disqus_shortname
 googleAnalytics = ""      # UA-XXXXXXXX-X
-copyright = "&copy; Copyright 2018 Jeremy Xu"            # default: author.name ↓        # 默认为下面配置的author.name
+copyright = "&copy; Copyright 2019 Jeremy Xu"            # default: author.name ↓        # 默认为下面配置的author.name
 
 [permalinks]
   post = "/:year/:month/:title/"
