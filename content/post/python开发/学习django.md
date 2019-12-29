@@ -227,3 +227,4 @@ DONE!
 
 1. https://docs.djangoproject.com/en/1.11/intro/
 2. https://docs.djangoproject.com/en/1.11/topics/
+3. https://books.agiliq.com/projects/django-orm-cookbook/en/latest/introduction.html
