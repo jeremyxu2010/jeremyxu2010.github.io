@@ -139,3 +139,11 @@ $ pm2 start ./dist/index.js --name xx_backend --instances 4
 
 The End！
 
+## 参考
+
+1. https://juejin.im/post/6844904088048500744
+2. https://github.com/ddimaria/koa-typescript-starter/tree/upgrade-to-typescript-3
+3. https://github.com/jeremyxu2010/koa-swagger-decorator
+4. https://github.com/danielgtaylor/apisprout
+5. http://www.doocr.com/articles/5894d4713c6bfb7e3b7fe20e
+
