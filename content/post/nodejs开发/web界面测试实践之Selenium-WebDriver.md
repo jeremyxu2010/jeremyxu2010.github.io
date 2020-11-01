@@ -64,7 +64,7 @@ driver.quit();
 
 这个小例子确实简单了一些，接下来我们看一下`WebDriver`的其它一些常用的API。
 
-### 定位UI元素
+### 定位UI元素 
 
 * 根据ID定位：driver.findElement(By.id('eleID'));
 * 根据Class类名定位：driver.findElements(By.className("eleCls"))
