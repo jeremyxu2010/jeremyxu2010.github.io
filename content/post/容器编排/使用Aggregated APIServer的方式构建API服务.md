@@ -172,7 +172,7 @@ metadata:
 spec: {}' > sample/foo.yaml
 
 # 查看已经注册的api-resource类型
-kubectl --kubeconfig api-resources
+kubectl --kubeconfig kubeconfig api-resources
 # 列所有foos
 kubectl --kubeconfig kubeconfig get foos
 # 创建foo
