@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>conntrack on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/conntrack/</link>
+    <description>Recent content in conntrack on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Nov 2019 18:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/conntrack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>优化nginx-ingress-controller并发性能</title>
+      <link>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</guid>
+      <description>这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出</description>
+    </item>
+    
+  </channel>
+</rss>

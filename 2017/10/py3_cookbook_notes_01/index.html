@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>py3_cookbook_notes_01 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="最近在看Python Cookbook第三版，将看书过程中一些平时不太容易注意的知识点记录下来。 数据结构和算法 解压可迭代对象赋值给多个变量 record =" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/10/py3_cookbook_notes_01/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="py3_cookbook_notes_01" />
+<meta property="og:description" content="最近在看Python Cookbook第三版，将看书过程中一些平时不太容易注意的知识点记录下来。 数据结构和算法 解压可迭代对象赋值给多个变量 record =" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/10/py3_cookbook_notes_01/" />
+<meta property="article:published_time" content="2017-10-05T12:12:00+08:00" />
+<meta property="article:modified_time" content="2017-10-05T12:12:00+08:00" />
+<meta itemprop="name" content="py3_cookbook_notes_01">
+<meta itemprop="description" content="最近在看Python Cookbook第三版，将看书过程中一些平时不太容易注意的知识点记录下来。 数据结构和算法 解压可迭代对象赋值给多个变量 record =">
+<meta itemprop="datePublished" content="2017-10-05T12:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-10-05T12:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="4123">
+
+
+
+<meta itemprop="keywords" content="python," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="py3_cookbook_notes_01"/>
+<meta name="twitter:description" content="最近在看Python Cookbook第三版，将看书过程中一些平时不太容易注意的知识点记录下来。 数据结构和算法 解压可迭代对象赋值给多个变量 record ="/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">py3_cookbook_notes_01</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4123 字 </span>
+        <span class="more-meta"> 预计阅读 9 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">数据结构和算法</a>
+      <ul>
+        <li><a href="#heading-1">解压可迭代对象赋值给多个变量</a></li>
+        <li><a href="#-n-">保留最后 N 个元素</a></li>
+        <li><a href="#-n--1">查找最大或最小的 N 个元素</a></li>
+        <li><a href="#heading-2">实现一个优先级队列</a></li>
+        <li><a href="#heading-3">字典中的键映射多个值</a></li>
+        <li><a href="#heading-4">字典排序</a></li>
+        <li><a href="#heading-5">字典的运算</a></li>
+        <li><a href="#heading-6">查找两字典的相同点</a></li>
+        <li><a href="#heading-7">删除序列相同元素并保持顺序</a></li>
+        <li><a href="#heading-8">命名切片</a></li>
+        <li><a href="#heading-9">序列中出现次数最多的元素</a></li>
+        <li><a href="#heading-10">通过某个关键字排序一个字典列表</a></li>
+        <li><a href="#heading-11">排序不支持原生比较的对象</a></li>
+        <li><a href="#heading-12">通过某个字段将记录分组</a></li>
+        <li><a href="#heading-13">映射名称到序列元素</a></li>
+        <li><a href="#heading-14">合并多个字典或映射</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-15">字符串和文本</a>
+      <ul>
+        <li><a href="#heading-16">使用多个界定符分割字符串</a></li>
+        <li><a href="#heading-17">字符串开头或结尾匹配</a></li>
+        <li><a href="#heading-18">字符串匹配和搜索</a></li>
+        <li><a href="#heading-19">删除字符串中不需要的字符</a></li>
+        <li><a href="#heading-20">字符串对齐</a></li>
+        <li><a href="#heading-21">字符串中插入变量</a></li>
+        <li><a href="#heading-22">以指定列宽格式化字符串</a></li>
+        <li><a href="#htmlxml">在字符串中处理html和xml</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-23">数字日期和时间</a>
+      <ul>
+        <li><a href="#heading-24">执行精确的浮点数运算</a></li>
+        <li><a href="#heading-25">数字的格式化输出</a></li>
+        <li><a href="#heading-26">基本的日期与时间转换</a></li>
+        <li><a href="#heading-27">计算最后一个周五的日期</a></li>
+        <li><a href="#heading-28">计算当前月份的日期范围</a></li>
+        <li><a href="#heading-29">字符串转换为日期</a></li>
+        <li><a href="#heading-30">结合时区的日期操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-31">迭代器和生成器</a>
+      <ul>
+        <li><a href="#heading-32">手动遍历迭代器</a></li>
+        <li><a href="#heading-33">代理迭代和生成器函数</a></li>
+        <li><a href="#heading-34">反向迭代</a></li>
+        <li><a href="#heading-35">带有外部状态的生成器函数</a></li>
+        <li><a href="#heading-36">迭代器切片</a></li>
+        <li><a href="#heading-37">跳过可迭代对象的开始部分</a></li>
+        <li><a href="#heading-38">序列上索引值迭代</a></li>
+        <li><a href="#heading-39">同时迭代多个序列</a></li>
+        <li><a href="#heading-40">不同集合上元素的迭代</a></li>
+        <li><a href="#heading-41">顺序迭代合并后的排序迭代对象</a></li>
+        <li><a href="#while">迭代器代替while无限循环</a></li>
+      </ul>
+    </li>
+    <li><a href="#io">文件和IO</a>
+      <ul>
+        <li><a href="#heading-42">打印输出至文件中</a></li>
+        <li><a href="#heading-43">使用其他分隔符或行终止符打印</a></li>
+        <li><a href="#io-1">字符串的I/O操作</a></li>
+        <li><a href="#heading-44">固定大小记录的文件迭代</a></li>
+        <li><a href="#heading-45">读取二进制数据到可变缓冲区中</a></li>
+        <li><a href="#heading-46">文件路径名的操作</a></li>
+        <li><a href="#heading-47">获取文件夹中的文件列表</a></li>
+        <li><a href="#heading-48">打印不合法的文件名</a></li>
+        <li><a href="#heading-49">增加或改变已打开文件的编码</a></li>
+        <li><a href="#heading-50">将文件描述符包装成文件对象</a></li>
+        <li><a href="#heading-51">创建临时文件和文件夹</a></li>
+        <li><a href="#python">序列化Python对象</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-52">数据编码和处理</a>
+      <ul>
+        <li><a href="#csv">读写CSV数据</a></li>
+        <li><a href="#json">读写JSON数据</a></li>
+        <li><a href="#xml">解析和修改XML</a></li>
+        <li><a href="#heading-53">与关系型数据库的交互</a></li>
+        <li><a href="#heading-54">编码和解码十六进制数</a></li>
+        <li><a href="#base64">编码解码Base64数据</a></li>
+        <li><a href="#heading-55">读写二进制数组数据</a></li>
+        <li><a href="#heading-56">读取嵌套和可变长二进制数据</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近在看<a href="http://python3-cookbook.readthedocs.io/zh_CN/latest/">Python Cookbook第三版</a>，将看书过程中一些平时不太容易注意的知识点记录下来。</p>
+<h2 id="heading">数据结构和算法</h2>
+<h3 id="heading-1">解压可迭代对象赋值给多个变量</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">record <span style="color:#f92672">=</span> (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Dave</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">dave@example.com</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">773-555-1212</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">847-555-1212</span><span style="color:#e6db74">&#39;</span>)
+name, email, <span style="color:#f92672">*</span>phone_numbers <span style="color:#f92672">=</span> record
+</code></pre></div><h3 id="-n-">保留最后 N 个元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> deque
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">search</span>(lines, pattern, history<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>):
+    previous_lines <span style="color:#f92672">=</span> deque(maxlen<span style="color:#f92672">=</span>history)
+    <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> lines:
+        <span style="color:#66d9ef">if</span> pattern <span style="color:#f92672">in</span> line:
+            <span style="color:#66d9ef">yield</span> line, previous_lines
+        previous_lines<span style="color:#f92672">.</span>append(line)
+
+<span style="color:#75715e"># Example use on a file</span>
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">../../cookbook/somefile.txt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        <span style="color:#66d9ef">for</span> line, prevlines <span style="color:#f92672">in</span> search(f, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">python</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">5</span>):
+            <span style="color:#66d9ef">for</span> pline <span style="color:#f92672">in</span> prevlines:
+                <span style="color:#66d9ef">print</span>(pline, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+            <span style="color:#66d9ef">print</span>(line, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">20</span>)
+</code></pre></div><h3 id="-n--1">查找最大或最小的 N 个元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> heapq
+nums <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">7</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">42</span>, <span style="color:#ae81ff">37</span>, <span style="color:#ae81ff">2</span>]
+<span style="color:#66d9ef">print</span>(heapq<span style="color:#f92672">.</span>nlargest(<span style="color:#ae81ff">3</span>, nums)) <span style="color:#75715e"># Prints [42, 37, 23]</span>
+<span style="color:#66d9ef">print</span>(heapq<span style="color:#f92672">.</span>nsmallest(<span style="color:#ae81ff">3</span>, nums)) <span style="color:#75715e"># Prints [-4, 1, 2]</span>
+
+portfolio <span style="color:#f92672">=</span> [
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">IBM</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">100</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">91.1</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">50</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">543.22</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">FB</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">200</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">21.09</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">HPQ</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">35</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">31.75</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">YHOO</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">45</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">16.35</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">75</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">115.65</span>}
+]
+cheap <span style="color:#f92672">=</span> heapq<span style="color:#f92672">.</span>nsmallest(<span style="color:#ae81ff">3</span>, portfolio, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> s: s[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>])
+expensive <span style="color:#f92672">=</span> heapq<span style="color:#f92672">.</span>nlargest(<span style="color:#ae81ff">3</span>, portfolio, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> s: s[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>])
+
+nums <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">7</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">42</span>, <span style="color:#ae81ff">37</span>, <span style="color:#ae81ff">2</span>]
+heapq<span style="color:#f92672">.</span>heapify(nums)
+it <span style="color:#f92672">=</span> iter(<span style="color:#66d9ef">lambda</span>:heapq<span style="color:#f92672">.</span>heappop(nums) <span style="color:#66d9ef">if</span> len(nums)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span> <span style="color:#66d9ef">else</span> None, None)
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> it:
+	<span style="color:#66d9ef">print</span>(i)
+</code></pre></div><h3 id="heading-2">实现一个优先级队列</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> heapq
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PriorityQueue</span>:
+    <span style="color:#66d9ef">def</span> __init__(self):
+        self<span style="color:#f92672">.</span>_queue <span style="color:#f92672">=</span> []
+        self<span style="color:#f92672">.</span>_index <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">push</span>(self, item, priority):
+        heapq<span style="color:#f92672">.</span>heappush(self<span style="color:#f92672">.</span>_queue, (<span style="color:#f92672">-</span>priority, self<span style="color:#f92672">.</span>_index, item))
+        self<span style="color:#f92672">.</span>_index <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">pop</span>(self):
+        <span style="color:#66d9ef">return</span> heapq<span style="color:#f92672">.</span>heappop(self<span style="color:#f92672">.</span>_queue)[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+</code></pre></div><h3 id="heading-3">字典中的键映射多个值</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> defaultdict
+
+d <span style="color:#f92672">=</span> defaultdict(list)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">1</span>)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">2</span>)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">4</span>)
+
+d <span style="color:#f92672">=</span> defaultdict(set)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>add(<span style="color:#ae81ff">1</span>)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>add(<span style="color:#ae81ff">2</span>)
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">.</span>add(<span style="color:#ae81ff">4</span>)
+</code></pre></div><h3 id="heading-4">字典排序</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> OrderedDict
+d <span style="color:#f92672">=</span> OrderedDict()
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">foo</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">bar</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">spam</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">grok</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>
+<span style="color:#75715e"># Outputs &#34;foo 1&#34;, &#34;bar 2&#34;, &#34;spam 3&#34;, &#34;grok 4&#34;</span>
+<span style="color:#66d9ef">for</span> key <span style="color:#f92672">in</span> d:
+    <span style="color:#66d9ef">print</span>(key, d[key])
+</code></pre></div><h3 id="heading-5">字典的运算</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">prices <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">45.23</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">612.78</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">IBM</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">205.55</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">HPQ</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">37.20</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">FB</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">10.75</span>
+}
+min_price <span style="color:#f92672">=</span> min(zip(prices<span style="color:#f92672">.</span>values(), prices<span style="color:#f92672">.</span>keys()))
+<span style="color:#75715e"># min_price is (10.75, &#39;FB&#39;)</span>
+max_price <span style="color:#f92672">=</span> max(zip(prices<span style="color:#f92672">.</span>values(), prices<span style="color:#f92672">.</span>keys()))
+<span style="color:#75715e"># max_price is (612.78, &#39;AAPL&#39;)</span>
+</code></pre></div><h3 id="heading-6">查找两字典的相同点</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">a <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">1</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">2</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">z</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">3</span>
+}
+
+b <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">10</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">11</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">2</span>
+}
+
+<span style="color:#75715e"># Find keys in common</span>
+a<span style="color:#f92672">.</span>keys() <span style="color:#f92672">&amp;</span> b<span style="color:#f92672">.</span>keys() <span style="color:#75715e"># { &#39;x&#39;, &#39;y&#39; }</span>
+<span style="color:#75715e"># Find keys in a that are not in b</span>
+a<span style="color:#f92672">.</span>keys() <span style="color:#f92672">-</span> b<span style="color:#f92672">.</span>keys() <span style="color:#75715e"># { &#39;z&#39; }</span>
+<span style="color:#75715e"># Find (key,value) pairs in common</span>
+a<span style="color:#f92672">.</span>items() <span style="color:#f92672">&amp;</span> b<span style="color:#f92672">.</span>items() <span style="color:#75715e"># { (&#39;y&#39;, 2) }</span>
+</code></pre></div><h3 id="heading-7">删除序列相同元素并保持顺序</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dedupe</span>(items, key<span style="color:#f92672">=</span>None):
+    seen <span style="color:#f92672">=</span> set()
+    <span style="color:#66d9ef">for</span> item <span style="color:#f92672">in</span> items:
+        val <span style="color:#f92672">=</span> item <span style="color:#66d9ef">if</span> key <span style="color:#f92672">is</span> None <span style="color:#66d9ef">else</span> key(item)
+        <span style="color:#66d9ef">if</span> val <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> seen:
+            <span style="color:#66d9ef">yield</span> item
+            seen<span style="color:#f92672">.</span>add(val)
+
+a <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">9</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>]
+list(dedupe(a))
+
+a <span style="color:#f92672">=</span> [ {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">2</span>}, {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">3</span>}, {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">2</span>}, {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">4</span>}]
+list(dedupe(a, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> d: (d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>],d[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>])))
+</code></pre></div><h3 id="heading-8">命名切片</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">######    0123456789012345678901234567890123456789012345678901234567890&#39;</span>
+record <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">....................100 .......513.25 ..........</span><span style="color:#e6db74">&#39;</span>
+SHARES <span style="color:#f92672">=</span> slice(<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">23</span>)
+PRICE <span style="color:#f92672">=</span> slice(<span style="color:#ae81ff">31</span>, <span style="color:#ae81ff">37</span>)
+cost <span style="color:#f92672">=</span> int(record[SHARES]) <span style="color:#f92672">*</span> float(record[PRICE])
+
+a <span style="color:#f92672">=</span> slice(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">2</span>)
+s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">HelloWorld</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#f92672">*</span>a<span style="color:#f92672">.</span>indices(len(s))):
+  <span style="color:#66d9ef">print</span>(s[i])
+</code></pre></div><h3 id="heading-9">序列中出现次数最多的元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">words <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">look</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">into</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">my</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">look</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">into</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">my</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">the</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">the</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">the</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">not</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">around</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">the</span><span style="color:#e6db74">&#39;</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">don</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">t</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">look</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">around</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">the</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">look</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">into</span><span style="color:#e6db74">&#39;</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">my</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">eyes</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">you</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">re</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">under</span><span style="color:#e6db74">&#39;</span>
+]
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> Counter
+word_counts <span style="color:#f92672">=</span> Counter(words)
+<span style="color:#75715e"># 出现频率最高的3个单词</span>
+top_three <span style="color:#f92672">=</span> word_counts<span style="color:#f92672">.</span>most_common(<span style="color:#ae81ff">3</span>)
+<span style="color:#66d9ef">print</span>(top_three)
+<span style="color:#75715e"># Outputs [(&#39;eyes&#39;, 8), (&#39;the&#39;, 5), (&#39;look&#39;, 4)]</span>
+</code></pre></div><h3 id="heading-10">通过某个关键字排序一个字典列表</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rows <span style="color:#f92672">=</span> [
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Brian</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Jones</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uid</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1003</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">David</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Beazley</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uid</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1002</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">John</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Cleese</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uid</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1001</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Big</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lname</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Jones</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uid</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1004</span>}
+]
+<span style="color:#f92672">from</span> operator <span style="color:#f92672">import</span> itemgetter
+rows_by_fname <span style="color:#f92672">=</span> sorted(rows, key<span style="color:#f92672">=</span>itemgetter(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fname</span><span style="color:#e6db74">&#39;</span>))
+rows_by_uid <span style="color:#f92672">=</span> sorted(rows, key<span style="color:#f92672">=</span>itemgetter(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uid</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#66d9ef">print</span>(rows_by_fname)
+<span style="color:#66d9ef">print</span>(rows_by_uid)
+</code></pre></div><h3 id="heading-11">排序不支持原生比较的对象</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">User</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, user_id):
+        self<span style="color:#f92672">.</span>user_id <span style="color:#f92672">=</span> user_id
+
+    <span style="color:#66d9ef">def</span> __repr__(self):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">User({})</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(self<span style="color:#f92672">.</span>user_id)
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sort_notcompare</span>():
+    users <span style="color:#f92672">=</span> [User(<span style="color:#ae81ff">23</span>), User(<span style="color:#ae81ff">3</span>), User(<span style="color:#ae81ff">99</span>)]
+    <span style="color:#66d9ef">print</span>(users)
+    <span style="color:#66d9ef">print</span>(sorted(users, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> u: u<span style="color:#f92672">.</span>user_id))
+</code></pre></div><h3 id="heading-12">通过某个字段将记录分组</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">rows <span style="color:#f92672">=</span> [
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">5412 N CLARK</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/01/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">5148 N CLARK</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/04/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">5800 E 58TH</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/02/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2122 N CLARK</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/03/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">5645 N RAVENSWOOD</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/02/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1060 W ADDISON</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/02/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">4801 N BROADWAY</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/01/2012</span><span style="color:#e6db74">&#39;</span>},
+    {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">address</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1039 W GRANVILLE</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>: <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">07/04/2012</span><span style="color:#e6db74">&#39;</span>},
+]
+<span style="color:#f92672">from</span> operator <span style="color:#f92672">import</span> itemgetter
+<span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> groupby
+
+<span style="color:#75715e"># Sort by the desired field first</span>
+rows<span style="color:#f92672">.</span>sort(key<span style="color:#f92672">=</span>itemgetter(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#75715e"># Iterate in groups</span>
+<span style="color:#66d9ef">for</span> date, items <span style="color:#f92672">in</span> groupby(rows, key<span style="color:#f92672">=</span>itemgetter(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span>)):
+    <span style="color:#66d9ef">print</span>(date)
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> items:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#39;</span>, i)
+</code></pre></div><h3 id="heading-13">映射名称到序列元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> namedtuple
+
+Subscriber <span style="color:#f92672">=</span> namedtuple(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Subscriber</span><span style="color:#e6db74">&#39;</span>, [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">addr</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">joined</span><span style="color:#e6db74">&#39;</span>])
+sub <span style="color:#f92672">=</span> Subscriber(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jonesy@example.com</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2012-10-19</span><span style="color:#e6db74">&#39;</span>)
+sub
+sub<span style="color:#f92672">.</span>addr
+sub<span style="color:#f92672">.</span>joined
+
+Stock <span style="color:#f92672">=</span> namedtuple(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Stock</span><span style="color:#e6db74">&#39;</span>, [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span>])
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">compute_cost</span>(records):
+    total <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>
+    <span style="color:#66d9ef">for</span> rec <span style="color:#f92672">in</span> records:
+        s <span style="color:#f92672">=</span> Stock(<span style="color:#f92672">*</span>rec)
+        total <span style="color:#f92672">+</span><span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>shares <span style="color:#f92672">*</span> s<span style="color:#f92672">.</span>price
+    <span style="color:#66d9ef">return</span> total
+</code></pre></div><h3 id="heading-14">合并多个字典或映射</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">a <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">z</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">3</span> }
+b <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">z</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4</span> }
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> ChainMap
+c <span style="color:#f92672">=</span> ChainMap(a,b)
+<span style="color:#66d9ef">print</span>(c[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>]) <span style="color:#75715e"># Outputs 1 (from a)</span>
+<span style="color:#66d9ef">print</span>(c[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">y</span><span style="color:#e6db74">&#39;</span>]) <span style="color:#75715e"># Outputs 2 (from b)</span>
+<span style="color:#66d9ef">print</span>(c[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">z</span><span style="color:#e6db74">&#39;</span>]) <span style="color:#75715e"># Outputs 3 (from a)</span>
+</code></pre></div><h2 id="heading-15">字符串和文本</h2>
+<h3 id="heading-16">使用多个界定符分割字符串</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">line <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">asdf fjdk; afed, fjek,asdf, foo</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">import</span> re
+re<span style="color:#f92672">.</span>split(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(?:,|;|</span><span style="color:#e6db74">\</span><span style="color:#e6db74">s)</span><span style="color:#e6db74">\</span><span style="color:#e6db74">s*</span><span style="color:#e6db74">&#39;</span>, line)
+</code></pre></div><h3 id="heading-17">字符串开头或结尾匹配</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os
+filenames <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>listdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>)
+(name <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> filenames <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>endswith((<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.c</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.h</span><span style="color:#e6db74">&#39;</span>)))
+</code></pre></div><h3 id="heading-18">字符串匹配和搜索</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">datepat <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">\</span><span style="color:#e6db74">d+)/(</span><span style="color:#e6db74">\</span><span style="color:#e6db74">d+)/(</span><span style="color:#e6db74">\</span><span style="color:#e6db74">d+)</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> datepat<span style="color:#f92672">.</span>finditer(text):
+	<span style="color:#66d9ef">print</span>(m<span style="color:#f92672">.</span>groups())
+</code></pre></div><h3 id="heading-19">删除字符串中不需要的字符</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74"> hello world </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>strip()
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello world</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>lstrip()
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello world </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>rstrip()
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74"> hello world</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Character stripping</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> t <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-----hello=====</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> t<span style="color:#f92672">.</span>lstrip(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello=====</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> t<span style="color:#f92672">.</span>strip(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-=</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><h3 id="heading-20">字符串对齐</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text<span style="color:#f92672">.</span>ljust(<span style="color:#ae81ff">20</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World         </span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text<span style="color:#f92672">.</span>rjust(<span style="color:#ae81ff">20</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">         Hello World</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text<span style="color:#f92672">.</span>center(<span style="color:#ae81ff">20</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">    Hello World     </span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text<span style="color:#f92672">.</span>rjust(<span style="color:#ae81ff">20</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=========Hello World</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text<span style="color:#f92672">.</span>center(<span style="color:#ae81ff">20</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">****Hello World*****</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&gt;20</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">         Hello World</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;20</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World         </span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^20</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">    Hello World     </span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=&gt;20s</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=========Hello World</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*^20s</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">****Hello World*****</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{:&gt;10s} {:&gt;10s}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">World</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">     Hello      World</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><h3 id="heading-21">字符串中插入变量</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{name} has {n} messages.</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>format(name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Guido</span><span style="color:#e6db74">&#39;</span>, n<span style="color:#f92672">=</span><span style="color:#ae81ff">37</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Guido has 37 messages.</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">safesub</span>(dict):
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#e6db74">防止key找不到</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+  <span style="color:#66d9ef">def</span> __missing__(self, key):
+      <span style="color:#66d9ef">return</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> key <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> name <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Guido</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> n <span style="color:#f92672">=</span> <span style="color:#ae81ff">37</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>format_map(safesub(vars()))
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Guido has 37 messages.</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><h3 id="heading-22">以指定列宽格式化字符串</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Look into my eyes, look into my eyes, the eyes, the eyes, </span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">the eyes, not around the eyes, don</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">t look around the eyes, </span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">look into my eyes, you</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">re under.</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">import</span> textwrap
+<span style="color:#66d9ef">print</span>(textwrap<span style="color:#f92672">.</span>fill(s, <span style="color:#ae81ff">70</span>))
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> os
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>get_terminal_size()<span style="color:#f92672">.</span>columns
+<span style="color:#ae81ff">80</span>
+</code></pre></div><h3 id="htmlxml">在字符串中处理html和xml</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Elements are written as </span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&lt;tag&gt;text&lt;/tag&gt;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">print</span>(html<span style="color:#f92672">.</span>escape(s, quote<span style="color:#f92672">=</span>False))
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Spicy &amp;quot;Jalape&amp;#241;o&amp;quot.</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> html.parser <span style="color:#f92672">import</span> HTMLParser
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> p <span style="color:#f92672">=</span> HTMLParser()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> p<span style="color:#f92672">.</span>unescape(s)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Spicy </span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Jalapeño</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> t <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The prompt is &amp;gt;&amp;gt;&amp;gt;</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> xml.sax.saxutils <span style="color:#f92672">import</span> unescape
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> unescape(t)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The prompt is &gt;&gt;&gt;</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><h2 id="heading-23">数字日期和时间</h2>
+<h3 id="heading-24">执行精确的浮点数运算</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> decimal <span style="color:#f92672">import</span> Decimal
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">=</span> Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">4.2</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> b <span style="color:#f92672">=</span> Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2.1</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">+</span> b
+Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">6.3</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(a <span style="color:#f92672">+</span> b)
+<span style="color:#ae81ff">6.3</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> (a <span style="color:#f92672">+</span> b) <span style="color:#f92672">==</span> Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">6.3</span><span style="color:#e6db74">&#39;</span>)
+True
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> decimal <span style="color:#f92672">import</span> localcontext
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">=</span> Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1.3</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> b <span style="color:#f92672">=</span> Decimal(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1.7</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(a <span style="color:#f92672">/</span> b)
+<span style="color:#ae81ff">0.7647058823529411764705882353</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">with</span> localcontext() <span style="color:#66d9ef">as</span> ctx:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     ctx<span style="color:#f92672">.</span>prec <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(a <span style="color:#f92672">/</span> b)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#ae81ff">0.765</span>
+</code></pre></div><h3 id="heading-25">数字的格式化输出</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1234.56789</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Two decimal places of accuracy</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">0.2f</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1234.57</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Right justified in 10 chars, one-digit accuracy</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&gt;10.1f</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">    1234.6</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Left justified</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;10.1f</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1234.6    </span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Centered</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^10.1f</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">  1234.6  </span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Inclusion of thousands separator</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1,234.56789</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">0,.1f</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1,234.6</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">e</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1.234568e+03</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> format(x, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">0.2E</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1.23E+03</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><p>同时指定宽度和精度的一般形式是 <code>'[&lt;&gt;^]?width[,]?(.digits)?'</code> ， 其中 <code>width</code> 和 <code>digits</code> 为整数，？代表可选部分。 同样的格式也被用在字符串的 <code>format()</code> 方法中。</p>
+<h3 id="heading-26">基本的日期与时间转换</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> timedelta
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">=</span> timedelta(days<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, hours<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> b <span style="color:#f92672">=</span> timedelta(hours<span style="color:#f92672">=</span><span style="color:#ae81ff">4.5</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> b
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>days
+<span style="color:#ae81ff">2</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>seconds
+<span style="color:#ae81ff">37800</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>seconds <span style="color:#f92672">/</span> <span style="color:#ae81ff">3600</span>
+<span style="color:#ae81ff">10.5</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>total_seconds() <span style="color:#f92672">/</span> <span style="color:#ae81ff">3600</span>
+<span style="color:#ae81ff">58.5</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> dateutil.relativedelta <span style="color:#f92672">import</span> relativedelta
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">+</span> relativedelta(months<span style="color:#f92672">=</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)
+datetime<span style="color:#f92672">.</span>datetime(<span style="color:#ae81ff">2012</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">+</span> relativedelta(months<span style="color:#f92672">=</span><span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>)
+datetime<span style="color:#f92672">.</span>datetime(<span style="color:#ae81ff">2013</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">23</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+</code></pre></div><h3 id="heading-27">计算最后一个周五的日期</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> dateutil.relativedelta <span style="color:#f92672">import</span> relativedelta
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> dateutil.rrule <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> d <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(d)
+<span style="color:#ae81ff">2012</span><span style="color:#f92672">-</span><span style="color:#ae81ff">12</span><span style="color:#f92672">-</span><span style="color:#ae81ff">23</span> <span style="color:#ae81ff">16</span>:<span style="color:#ae81ff">31</span>:<span style="color:#ae81ff">52.718111</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Next Friday</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(d <span style="color:#f92672">+</span> relativedelta(weekday<span style="color:#f92672">=</span>FR))
+<span style="color:#ae81ff">2012</span><span style="color:#f92672">-</span><span style="color:#ae81ff">12</span><span style="color:#f92672">-</span><span style="color:#ae81ff">28</span> <span style="color:#ae81ff">16</span>:<span style="color:#ae81ff">31</span>:<span style="color:#ae81ff">52.718111</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Last Friday</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(d <span style="color:#f92672">+</span> relativedelta(weekday<span style="color:#f92672">=</span>FR(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)))
+<span style="color:#ae81ff">2012</span><span style="color:#f92672">-</span><span style="color:#ae81ff">12</span><span style="color:#f92672">-</span><span style="color:#ae81ff">21</span> <span style="color:#ae81ff">16</span>:<span style="color:#ae81ff">31</span>:<span style="color:#ae81ff">52.718111</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-28">计算当前月份的日期范围</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime, date, timedelta
+<span style="color:#f92672">import</span> calendar
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_month_range</span>(start_date<span style="color:#f92672">=</span>None):
+    <span style="color:#66d9ef">if</span> start_date <span style="color:#f92672">is</span> None:
+        start_date <span style="color:#f92672">=</span> date<span style="color:#f92672">.</span>today()<span style="color:#f92672">.</span>replace(day<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+    _, days_in_month <span style="color:#f92672">=</span> calendar<span style="color:#f92672">.</span>monthrange(start_date<span style="color:#f92672">.</span>year, start_date<span style="color:#f92672">.</span>month)
+    end_date <span style="color:#f92672">=</span> start_date <span style="color:#f92672">+</span> timedelta(days<span style="color:#f92672">=</span>days_in_month)
+    <span style="color:#66d9ef">return</span> (start_date, end_date)
+</code></pre></div><h3 id="heading-29">字符串转换为日期</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> text <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2012-09-20</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> y <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>strptime(text, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%</span><span style="color:#e6db74">Y-</span><span style="color:#e6db74">%</span><span style="color:#e6db74">m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="heading-30">结合时区的日期操作</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> pytz <span style="color:#f92672">import</span> timezone
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> d <span style="color:#f92672">=</span> datetime(<span style="color:#ae81ff">2012</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">21</span>, <span style="color:#ae81ff">9</span>, <span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">0</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Localize the date for Chicago</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> central <span style="color:#f92672">=</span> timezone(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">US/Central</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> loc_d <span style="color:#f92672">=</span> central<span style="color:#f92672">.</span>localize(d)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(loc_d)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Convert to Bangalore time</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> bang_d <span style="color:#f92672">=</span> loc_d<span style="color:#f92672">.</span>astimezone(timezone(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Asia/Kolkata</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(bang_d)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> utc_d <span style="color:#f92672">=</span> loc_d<span style="color:#f92672">.</span>astimezone(pytz<span style="color:#f92672">.</span>utc)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(utc_d)
+</code></pre></div><h2 id="heading-31">迭代器和生成器</h2>
+<h3 id="heading-32">手动遍历迭代器</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">manual_iter</span>():
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/etc/passwd</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        <span style="color:#66d9ef">try</span>:
+            <span style="color:#66d9ef">while</span> True:
+                line <span style="color:#f92672">=</span> next(f)
+                <span style="color:#66d9ef">print</span>(line, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">StopIteration</span>:
+            <span style="color:#66d9ef">pass</span>
+</code></pre></div><h3 id="heading-33">代理迭代和生成器函数</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">文件说明 ：演示实现深度优先遍历及广度优先遍历</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, value):
+        self<span style="color:#f92672">.</span>_value <span style="color:#f92672">=</span> value
+        self<span style="color:#f92672">.</span>_children <span style="color:#f92672">=</span> []
+
+    <span style="color:#66d9ef">def</span> __repr__(self):
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Node{!r}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(self<span style="color:#f92672">.</span>_value)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add_child</span>(self, node):
+        self<span style="color:#f92672">.</span>_children<span style="color:#f92672">.</span>append(node)
+
+    <span style="color:#66d9ef">def</span> __iter__(self):
+        <span style="color:#66d9ef">return</span> iter(self<span style="color:#f92672">.</span>_children)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">depth_first</span>(self):
+        <span style="color:#66d9ef">yield</span> self
+        <span style="color:#66d9ef">for</span> ch <span style="color:#f92672">in</span> self:
+            <span style="color:#66d9ef">yield</span> <span style="color:#f92672">from</span> ch.depth_first()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">breadth_first</span>(self):
+        stack <span style="color:#f92672">=</span> [self]
+        <span style="color:#66d9ef">while</span> stack:
+            current <span style="color:#f92672">=</span> stack<span style="color:#f92672">.</span>pop(<span style="color:#ae81ff">0</span>)
+            <span style="color:#66d9ef">yield</span> current
+            stack<span style="color:#f92672">.</span>extend(current<span style="color:#f92672">.</span>_children)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    root <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">0</span>)
+
+    child1 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">1</span>)
+    child2 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">2</span>)
+
+    child3 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">3</span>)
+    child4 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">4</span>)
+    child5 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">5</span>)
+    child6 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">6</span>)
+
+    child7 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">7</span>)
+    child8 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">8</span>)
+    child9 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">9</span>)
+    child10 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">10</span>)
+    child11 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">11</span>)
+    child12 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">12</span>)
+    child13 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">13</span>)
+    child14 <span style="color:#f92672">=</span> Node(<span style="color:#ae81ff">14</span>)
+
+    child3<span style="color:#f92672">.</span>add_child(child7)
+    child3<span style="color:#f92672">.</span>add_child(child8)
+    child5<span style="color:#f92672">.</span>add_child(child9)
+    child5<span style="color:#f92672">.</span>add_child(child10)
+    child4<span style="color:#f92672">.</span>add_child(child11)
+    child4<span style="color:#f92672">.</span>add_child(child12)
+    child6<span style="color:#f92672">.</span>add_child(child13)
+    child6<span style="color:#f92672">.</span>add_child(child14)
+
+    child1<span style="color:#f92672">.</span>add_child(child3)
+    child1<span style="color:#f92672">.</span>add_child(child5)
+    child2<span style="color:#f92672">.</span>add_child(child4)
+    child2<span style="color:#f92672">.</span>add_child(child6)
+
+    root<span style="color:#f92672">.</span>add_child(child1)
+    root<span style="color:#f92672">.</span>add_child(child2)
+
+    <span style="color:#66d9ef">for</span> ch <span style="color:#f92672">in</span> root<span style="color:#f92672">.</span>depth_first():
+        <span style="color:#66d9ef">print</span>(ch)
+
+    <span style="color:#66d9ef">for</span> ch <span style="color:#f92672">in</span> root<span style="color:#f92672">.</span>breadth_first():
+        <span style="color:#66d9ef">print</span>(ch)
+</code></pre></div><h3 id="heading-34">反向迭代</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Countdown</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, start):
+        self<span style="color:#f92672">.</span>start <span style="color:#f92672">=</span> start
+
+    <span style="color:#75715e"># Forward iterator</span>
+    <span style="color:#66d9ef">def</span> __iter__(self):
+        n <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>start
+        <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">yield</span> n
+            n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#75715e"># Reverse iterator</span>
+    <span style="color:#66d9ef">def</span> __reversed__(self):
+        n <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>start:
+            <span style="color:#66d9ef">yield</span> n
+            n <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+<span style="color:#66d9ef">for</span> rr <span style="color:#f92672">in</span> reversed(Countdown(<span style="color:#ae81ff">30</span>)):
+    <span style="color:#66d9ef">print</span>(rr)
+</code></pre></div><h3 id="heading-35">带有外部状态的生成器函数</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> deque
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">linehistory</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, lines, histlen<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>):
+        self<span style="color:#f92672">.</span>lines <span style="color:#f92672">=</span> lines
+        self<span style="color:#f92672">.</span>history <span style="color:#f92672">=</span> deque(maxlen<span style="color:#f92672">=</span>histlen)
+
+    <span style="color:#66d9ef">def</span> __iter__(self):
+        <span style="color:#66d9ef">for</span> lineno, line <span style="color:#f92672">in</span> enumerate(self<span style="color:#f92672">.</span>lines, <span style="color:#ae81ff">1</span>):
+            self<span style="color:#f92672">.</span>history<span style="color:#f92672">.</span>append((lineno, line))
+            <span style="color:#66d9ef">yield</span> line
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">clear</span>(self):
+        self<span style="color:#f92672">.</span>history<span style="color:#f92672">.</span>clear()
+     
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somefile.txt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    lines <span style="color:#f92672">=</span> linehistory(f)
+    <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> lines:
+        <span style="color:#66d9ef">if</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">python</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">in</span> line:
+            <span style="color:#66d9ef">for</span> lineno, hline <span style="color:#f92672">in</span> lines<span style="color:#f92672">.</span>history:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{}:{}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(lineno, hline), end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="heading-36">迭代器切片</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">count</span>(n):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">while</span> True:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>         <span style="color:#66d9ef">yield</span> n
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>         n <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c <span style="color:#f92672">=</span> count(<span style="color:#ae81ff">0</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> itertools
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> itertools<span style="color:#f92672">.</span>islice(c, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(x)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-37">跳过可迭代对象的开始部分</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> dropwhile
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/etc/passwd</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> dropwhile(<span style="color:#66d9ef">lambda</span> line: line<span style="color:#f92672">.</span>startswith(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">#</span><span style="color:#e6db74">&#39;</span>), f):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>         <span style="color:#66d9ef">print</span>(line, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-38">序列上索引值迭代</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> my_list <span style="color:#f92672">=</span> [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">c</span><span style="color:#e6db74">&#39;</span>]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> idx, val <span style="color:#f92672">in</span> enumerate(my_list, <span style="color:#ae81ff">1</span>):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(idx, val)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#ae81ff">1</span> a
+<span style="color:#ae81ff">2</span> b
+<span style="color:#ae81ff">3</span> c
+</code></pre></div><h3 id="heading-39">同时迭代多个序列</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> xpts <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">7</span>]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> ypts <span style="color:#f92672">=</span> [<span style="color:#ae81ff">101</span>, <span style="color:#ae81ff">78</span>, <span style="color:#ae81ff">37</span>, <span style="color:#ae81ff">15</span>, <span style="color:#ae81ff">62</span>, <span style="color:#ae81ff">99</span>]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> zip(xpts, ypts):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(x,y)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> zip_longest
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> zip_longest(a,b):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(i)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-40">不同集合上元素的迭代</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> itertools <span style="color:#f92672">import</span> chain
+<span style="color:#f92672">import</span> os
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">gen_opener</span>(filenames):
+    <span style="color:#66d9ef">for</span> filename <span style="color:#f92672">in</span> filenames:
+        <span style="color:#66d9ef">with</span> open(filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+            <span style="color:#66d9ef">yield</span> f
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">gen_concatenate</span>(files):
+    <span style="color:#66d9ef">yield</span> <span style="color:#f92672">from</span> chain.from_iterable(files)
+    <span style="color:#75715e"># for file in files:</span>
+    <span style="color:#75715e">#     yield from file</span>
+
+files <span style="color:#f92672">=</span> gen_opener(iter([os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>expanduser(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">~/.zshrc</span><span style="color:#e6db74">&#39;</span>), os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>expanduser(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">~/.bash_history</span><span style="color:#e6db74">&#39;</span>)]))
+<span style="color:#66d9ef">print</span>(files)
+lines <span style="color:#f92672">=</span> gen_concatenate(files)
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> lines:
+    <span style="color:#66d9ef">print</span>(line)
+</code></pre></div><h3 id="heading-41">顺序迭代合并后的排序迭代对象</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> heapq
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sorted_file_1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> file1, \
+    open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sorted_file_2</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> file2, \
+    open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">merged_file</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> outf:
+
+    <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> heapq<span style="color:#f92672">.</span>merge(file1, file2):
+        outf<span style="color:#f92672">.</span>write(line)
+</code></pre></div><h3 id="while">迭代器代替while无限循环</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> sys
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> f <span style="color:#f92672">=</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/etc/passwd</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> CHUNKSIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">8192</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> chunk <span style="color:#f92672">in</span> iter(<span style="color:#66d9ef">lambda</span>: f<span style="color:#f92672">.</span>read(CHUNKSIZE), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     n <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(chunk)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h2 id="io">文件和IO</h2>
+<h3 id="heading-42">打印输出至文件中</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">d:/work/test.txt</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World!</span><span style="color:#e6db74">&#39;</span>, file<span style="color:#f92672">=</span>f)
+</code></pre></div><h3 id="heading-43">使用其他分隔符或行终止符打印</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">91.5</span>)
+ACME <span style="color:#ae81ff">50</span> <span style="color:#ae81ff">91.5</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">91.5</span>, sep<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>)
+ACME,<span style="color:#ae81ff">50</span>,<span style="color:#ae81ff">91.5</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">91.5</span>, sep<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">!!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+ACME,<span style="color:#ae81ff">50</span>,<span style="color:#ae81ff">91.5</span><span style="color:#960050;background-color:#1e0010">!</span><span style="color:#960050;background-color:#1e0010">!</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> row <span style="color:#f92672">=</span> (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">91.5</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(<span style="color:#f92672">*</span>row, sep<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="io-1">字符串的I/O操作</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>StringIO()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#ae81ff">12</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">This is a test</span><span style="color:#e6db74">&#39;</span>, file<span style="color:#f92672">=</span>s)
+<span style="color:#ae81ff">15</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Get all of the data written so far</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>getvalue()
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello World</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">This is a test</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Wrap a file interface around an existing string</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>StringIO(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">World</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">4</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hell</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">World</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-44">固定大小记录的文件迭代</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> partial
+
+RECORD_SIZE <span style="color:#f92672">=</span> <span style="color:#ae81ff">32</span>
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somefile.data</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    records <span style="color:#f92672">=</span> iter(partial(f<span style="color:#f92672">.</span>read, RECORD_SIZE), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records:
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-45">读取二进制数据到可变缓冲区中</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os.path
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_into_buffer</span>(filename):
+    buf <span style="color:#f92672">=</span> bytearray(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>getsize(filename))
+    <span style="color:#66d9ef">with</span> open(filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        f<span style="color:#f92672">.</span>readinto(buf)
+    <span style="color:#66d9ef">return</span> buf
+</code></pre></div><h3 id="heading-46">文件路径名的操作</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> os
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> path <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/Users/beazley/Data/data.csv</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Get the last component of the path</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>basename(path)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.csv</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Get the directory name</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>dirname(path)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/Users/beazley/Data</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Join path components together</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tmp</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data</span><span style="color:#e6db74">&#39;</span>, os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>basename(path))
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tmp/data/data.csv</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Expand the user&#39;s home directory</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> path <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">~/Data/data.csv</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>expanduser(path)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/Users/beazley/Data/data.csv</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Split the file extension</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>splitext(path)
+(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">~/Data/data</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.csv</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-47">获取文件夹中的文件列表</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os.path
+
+<span style="color:#75715e"># Get all regular files</span>
+names <span style="color:#f92672">=</span> [name <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>listdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir</span><span style="color:#e6db74">&#39;</span>)
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>isfile(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir</span><span style="color:#e6db74">&#39;</span>, name))]
+
+<span style="color:#75715e"># Get all dirs</span>
+dirnames <span style="color:#f92672">=</span> [name <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>listdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir</span><span style="color:#e6db74">&#39;</span>)
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>isdir(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir</span><span style="color:#e6db74">&#39;</span>, name))]
+
+<span style="color:#f92672">import</span> glob
+pyfiles <span style="color:#f92672">=</span> glob<span style="color:#f92672">.</span>glob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir/*.py</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">from</span> fnmatch <span style="color:#f92672">import</span> fnmatch
+pyfiles <span style="color:#f92672">=</span> [name <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>listdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somedir</span><span style="color:#e6db74">&#39;</span>)
+            <span style="color:#66d9ef">if</span> fnmatch(name, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*.py</span><span style="color:#e6db74">&#39;</span>)]
+</code></pre></div><h3 id="heading-48">打印不合法的文件名</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bad_filename</span>(filename):
+    temp <span style="color:#f92672">=</span> filename<span style="color:#f92672">.</span>encode(sys<span style="color:#f92672">.</span>getfilesystemencoding(), errors<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">surrogateescape</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">return</span> temp<span style="color:#f92672">.</span>decode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">latin-1</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> name <span style="color:#f92672">in</span> files:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">try</span>:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>         <span style="color:#66d9ef">print</span>(name)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">UnicodeEncodeError</span>:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>         <span style="color:#66d9ef">print</span>(bad_filename(name))
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-49">增加或改变已打开文件的编码</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> sys
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>encoding
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">UTF-8</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sys<span style="color:#f92672">.</span>stdout <span style="color:#f92672">=</span> io<span style="color:#f92672">.</span>TextIOWrapper(sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>detach(), encoding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">latin-1</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>encoding
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">latin-1</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-50">将文件描述符包装成文件对象</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Open a low-level file descriptor</span>
+<span style="color:#f92672">import</span> os
+fd <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somefile.txt</span><span style="color:#e6db74">&#39;</span>, os<span style="color:#f92672">.</span>O_WRONLY <span style="color:#f92672">|</span> os<span style="color:#f92672">.</span>O_CREAT)
+
+<span style="color:#75715e"># Turn into a proper file</span>
+f <span style="color:#f92672">=</span> open(fd, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wt</span><span style="color:#e6db74">&#39;</span>)
+f<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+f<span style="color:#f92672">.</span>close()
+</code></pre></div><h3 id="heading-51">创建临时文件和文件夹</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> tempfile <span style="color:#f92672">import</span> NamedTemporaryFile, TemporaryDirectory
+<span style="color:#66d9ef">with</span> NamedTemporaryFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wt</span><span style="color:#e6db74">&#39;</span>, prefix<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tmp_</span><span style="color:#e6db74">&#39;</span>, suffix<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.txt</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    <span style="color:#66d9ef">print</span>(f<span style="color:#f92672">.</span>name)
+    
+<span style="color:#66d9ef">with</span> TemporaryDirectory(prefix<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tmp_dir_</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> dir:
+    <span style="color:#66d9ef">print</span>(dir)
+</code></pre></div><h3 id="python">序列化Python对象</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> pickle
+data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somefile</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    pickle<span style="color:#f92672">.</span>dump(data, f)
+<span style="color:#66d9ef">print</span>(pickle<span style="color:#f92672">.</span>dumps(data))
+
+<span style="color:#75715e"># Restore from a file</span>
+f <span style="color:#f92672">=</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">somefile</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>)
+data <span style="color:#f92672">=</span> pickle<span style="color:#f92672">.</span>load(f)
+<span style="color:#75715e"># Restore from a string</span>
+data <span style="color:#f92672">=</span> pickle<span style="color:#f92672">.</span>loads(s)
+
+
+<span style="color:#f92672">import</span> time
+<span style="color:#f92672">import</span> threading
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Countdown</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, n):
+        self<span style="color:#f92672">.</span>n <span style="color:#f92672">=</span> n
+        self<span style="color:#f92672">.</span>thr <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>run)
+        self<span style="color:#f92672">.</span>thr<span style="color:#f92672">.</span>daemon <span style="color:#f92672">=</span> True
+        self<span style="color:#f92672">.</span>thr<span style="color:#f92672">.</span>start()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#66d9ef">while</span> self<span style="color:#f92672">.</span>n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">T-minus</span><span style="color:#e6db74">&#39;</span>, self<span style="color:#f92672">.</span>n)
+            self<span style="color:#f92672">.</span>n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+            time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5</span>)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__getstate__</span>(self):
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>n
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__setstate__</span>(self, n):
+        self<span style="color:#f92672">.</span>__init__(n)
+</code></pre></div><h2 id="heading-52">数据编码和处理</h2>
+<h3 id="csv">读写CSV数据</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> csv
+<span style="color:#f92672">import</span> re
+col_types <span style="color:#f92672">=</span> [str, float, str, str, float, int]
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">stock.csv</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    f_csv <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>reader(f)
+    headers <span style="color:#f92672">=</span> [ re<span style="color:#f92672">.</span>sub(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">[^a-zA-Z_]</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_</span><span style="color:#e6db74">&#39;</span>, h) <span style="color:#66d9ef">for</span> h <span style="color:#f92672">in</span> next(f_csv) ]
+    Row <span style="color:#f92672">=</span> namedtuple(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Row</span><span style="color:#e6db74">&#39;</span>, headers)
+    <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> f_csv:
+    	<span style="color:#75715e"># Apply conversions to the row items</span>
+        row <span style="color:#f92672">=</span> Row(convert(value) <span style="color:#66d9ef">for</span> convert, value <span style="color:#f92672">in</span> zip(col_types, row))
+        
+headers <span style="color:#f92672">=</span> [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Symbol</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Price</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Date</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Time</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Change</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Volume</span><span style="color:#e6db74">&#39;</span>]
+rows <span style="color:#f92672">=</span> [{<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Symbol</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AA</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Price</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">39.48</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Date</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">6/11/2007</span><span style="color:#e6db74">&#39;</span>,
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Time</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">9:36am</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Change</span><span style="color:#e6db74">&#39;</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">0.18</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Volume</span><span style="color:#e6db74">&#39;</span>:<span style="color:#ae81ff">181800</span>},
+        {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Symbol</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AIG</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">71.38</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Date</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">6/11/2007</span><span style="color:#e6db74">&#39;</span>,
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Time</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">9:36am</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Change</span><span style="color:#e6db74">&#39;</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">0.15</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Volume</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">195500</span>},
+        {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Symbol</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AXP</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Price</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">62.58</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Date</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">6/11/2007</span><span style="color:#e6db74">&#39;</span>,
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Time</span><span style="color:#e6db74">&#39;</span>:<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">9:36am</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Change</span><span style="color:#e6db74">&#39;</span>:<span style="color:#f92672">-</span><span style="color:#ae81ff">0.46</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Volume</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">935000</span>},
+        ]
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">stocks.csv</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    f_csv <span style="color:#f92672">=</span> csv<span style="color:#f92672">.</span>DictWriter(f, headers)
+    f_csv<span style="color:#f92672">.</span>writeheader()
+    f_csv<span style="color:#f92672">.</span>writerows(rows)
+</code></pre></div><h3 id="json">读写JSON数据</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> json
+
+data <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span> : <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ACME</span><span style="color:#e6db74">&#39;</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">shares</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">100</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price</span><span style="color:#e6db74">&#39;</span> : <span style="color:#ae81ff">542.23</span>
+}
+
+json_str <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>dumps(data)
+data <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>loads(json_str)
+
+<span style="color:#75715e"># Writing JSON data</span>
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.json</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    json<span style="color:#f92672">.</span>dump(data, f)
+
+<span style="color:#75715e"># Reading data back</span>
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.json</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    data <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>load(f)
+</code></pre></div><h3 id="xml">解析和修改XML</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> xml.etree.ElementTree <span style="color:#f92672">import</span> parse, Element
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> doc <span style="color:#f92672">=</span> parse(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">pred.xml</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root <span style="color:#f92672">=</span> doc<span style="color:#f92672">.</span>getroot()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root
+<span style="color:#f92672">&lt;</span>Element <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">stop</span><span style="color:#e6db74">&#39;</span> at <span style="color:#ae81ff">0x100770cb0</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Remove a few elements</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root<span style="color:#f92672">.</span>remove(root<span style="color:#f92672">.</span>find(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sri</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root<span style="color:#f92672">.</span>remove(root<span style="color:#f92672">.</span>find(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">cr</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Insert a new element after &lt;nm&gt;...&lt;/nm&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root<span style="color:#f92672">.</span>getchildren()<span style="color:#f92672">.</span>index(root<span style="color:#f92672">.</span>find(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">nm</span><span style="color:#e6db74">&#39;</span>))
+<span style="color:#ae81ff">1</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> e <span style="color:#f92672">=</span> Element(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">spam</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> e<span style="color:#f92672">.</span>text <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">This is a test</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> root<span style="color:#f92672">.</span>insert(<span style="color:#ae81ff">2</span>, e)
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Write back to a file</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> doc<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">newpred.xml</span><span style="color:#e6db74">&#39;</span>, xml_declaration<span style="color:#f92672">=</span>True)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-53">与关系型数据库的交互</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">stocks <span style="color:#f92672">=</span> [
+    (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">GOOG</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">490.1</span>),
+    (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">545.75</span>),
+    (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">FB</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">7.45</span>),
+    (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">HPQ</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">75</span>, <span style="color:#ae81ff">33.2</span>),
+]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> sqlite3
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> db <span style="color:#f92672">=</span> sqlite3<span style="color:#f92672">.</span>connect(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">database.db</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">create table portfolio (symbol text, shares integer, price real)</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&lt;</span>sqlite3<span style="color:#f92672">.</span>Cursor object at <span style="color:#ae81ff">0x10067a730</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> db<span style="color:#f92672">.</span>commit()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>executemany(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">insert into portfolio values (?,?,?)</span><span style="color:#e6db74">&#39;</span>, stocks)
+<span style="color:#f92672">&lt;</span>sqlite3<span style="color:#f92672">.</span>Cursor object at <span style="color:#ae81ff">0x10067a730</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> db<span style="color:#f92672">.</span>commit()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> db<span style="color:#f92672">.</span>execute(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">select * from portfolio</span><span style="color:#e6db74">&#39;</span>):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(row)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> min_price <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> db<span style="color:#f92672">.</span>execute(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">select * from portfolio where price &gt;= ?</span><span style="color:#e6db74">&#39;</span>,
+                          (min_price,)):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">print</span>(row)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-54">编码和解码十六进制数</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Initial byte string</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Encode as hex</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> binascii
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> h <span style="color:#f92672">=</span> binascii<span style="color:#f92672">.</span>b2a_hex(s)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> h
+<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">68656c6c6f</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Decode back to bytes</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> binascii<span style="color:#f92672">.</span>a2b_hex(h)
+<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="base64">编码解码Base64数据</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Some byte data</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> s <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> base64
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Encode as Base64</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a <span style="color:#f92672">=</span> base64<span style="color:#f92672">.</span>b64encode(s)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> a
+<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">aGVsbG8=</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Decode from Base64</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> base64<span style="color:#f92672">.</span>b64decode(a)
+<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-55">读写二进制数组数据</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> struct <span style="color:#f92672">import</span> Struct
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write_records</span>(records, format, f):
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    Write a sequence of tuples to a binary file of structures.</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+    record_struct <span style="color:#f92672">=</span> Struct(format)
+    <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> records:
+        f<span style="color:#f92672">.</span>write(record_struct<span style="color:#f92672">.</span>pack(<span style="color:#f92672">*</span>r))
+
+<span style="color:#75715e"># Example</span>
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    records <span style="color:#f92672">=</span> [ (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2.3</span>, <span style="color:#ae81ff">4.5</span>),
+                (<span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">7.8</span>, <span style="color:#ae81ff">9.0</span>),
+                (<span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">13.4</span>, <span style="color:#ae81ff">56.7</span>) ]
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        write_records(records, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;idd</span><span style="color:#e6db74">&#39;</span>, f)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_records</span>(format, f):
+    record_struct <span style="color:#f92672">=</span> Struct(format)
+    chunks <span style="color:#f92672">=</span> iter(<span style="color:#66d9ef">lambda</span>: f<span style="color:#f92672">.</span>read(record_struct<span style="color:#f92672">.</span>size), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">return</span> (record_struct<span style="color:#f92672">.</span>unpack(chunk) <span style="color:#66d9ef">for</span> chunk <span style="color:#f92672">in</span> chunks)
+
+<span style="color:#75715e"># Example</span>
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.b</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        <span style="color:#66d9ef">for</span> rec <span style="color:#f92672">in</span> read_records(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;idd</span><span style="color:#e6db74">&#39;</span>, f):
+            <span style="color:#75715e"># Process rec</span>
+            <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>the first character of the format string can be used to indicate the byte order, size and alignment of the packed data, according to the following table:</p>
+<table>
+<thead>
+<tr>
+<th>Character</th>
+<th>Byte order</th>
+<th>Size</th>
+<th>Alignment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@</code></td>
+<td>native</td>
+<td>native</td>
+<td>native</td>
+</tr>
+<tr>
+<td><code>=</code></td>
+<td>native</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td>little-endian</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td>big-endian</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+<tr>
+<td><code>!</code></td>
+<td>network (= big-endian)</td>
+<td>standard</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<p>If the first character is not one of these, <code>'@'</code> is assumed.</p>
+<p>Format characters have the following meaning; the conversion between C and Python values should be obvious given their types. The ‘Standard size’ column refers to the size of the packed value in bytes when using standard size; that is, when the format string starts with one of <code>'&lt;'</code>, <code>'&gt;'</code>, <code>'!'</code> or <code>'='</code>. When using native size, the size of the packed value is platform-dependent.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>C Type</th>
+<th>Python type</th>
+<th>Standard size</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>pad byte</td>
+<td>no value</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>c</code></td>
+<td><code>char</code></td>
+<td>bytes of length 1</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>b</code></td>
+<td><code>signed char</code></td>
+<td>integer</td>
+<td>1</td>
+<td>(1),(3)</td>
+</tr>
+<tr>
+<td><code>B</code></td>
+<td><code>unsigned char</code></td>
+<td>integer</td>
+<td>1</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td><code>_Bool</code></td>
+<td>bool</td>
+<td>1</td>
+<td>(1)</td>
+</tr>
+<tr>
+<td><code>h</code></td>
+<td><code>short</code></td>
+<td>integer</td>
+<td>2</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>H</code></td>
+<td><code>unsigned short</code></td>
+<td>integer</td>
+<td>2</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>i</code></td>
+<td><code>int</code></td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>I</code></td>
+<td><code>unsigned int</code></td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>l</code></td>
+<td><code>long</code></td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>L</code></td>
+<td><code>unsigned long</code></td>
+<td>integer</td>
+<td>4</td>
+<td>(3)</td>
+</tr>
+<tr>
+<td><code>q</code></td>
+<td><code>long long</code></td>
+<td>integer</td>
+<td>8</td>
+<td>(2), (3)</td>
+</tr>
+<tr>
+<td><code>Q</code></td>
+<td><code>unsigned long long</code></td>
+<td>integer</td>
+<td>8</td>
+<td>(2), (3)</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td><code>ssize_t</code></td>
+<td>integer</td>
+<td></td>
+<td>(4)</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td><code>size_t</code></td>
+<td>integer</td>
+<td></td>
+<td>(4)</td>
+</tr>
+<tr>
+<td><code>e</code></td>
+<td>(7)</td>
+<td>float</td>
+<td>2</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td><code>float</code></td>
+<td>float</td>
+<td>4</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td><code>d</code></td>
+<td><code>double</code></td>
+<td>float</td>
+<td>8</td>
+<td>(5)</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td><code>char[]</code></td>
+<td>bytes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td><code>char[]</code></td>
+<td>bytes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td><code>void *</code></td>
+<td>integer</td>
+<td></td>
+<td>(6)</td>
+</tr>
+</tbody>
+</table>
+<p>Changed in version 3.3: Added support for the <code>'n'</code> and <code>'N'</code> formats.</p>
+<p>Changed in version 3.6: Added support for the <code>'e'</code> format.</p>
+<h3 id="heading-56">读取嵌套和可变长二进制数据</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">polys <span style="color:#f92672">=</span> [
+    [ (<span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">2.5</span>), (<span style="color:#ae81ff">3.5</span>, <span style="color:#ae81ff">4.0</span>), (<span style="color:#ae81ff">2.5</span>, <span style="color:#ae81ff">1.5</span>) ],
+    [ (<span style="color:#ae81ff">7.0</span>, <span style="color:#ae81ff">1.2</span>), (<span style="color:#ae81ff">5.1</span>, <span style="color:#ae81ff">3.0</span>), (<span style="color:#ae81ff">0.5</span>, <span style="color:#ae81ff">7.5</span>), (<span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">9.0</span>) ],
+    [ (<span style="color:#ae81ff">3.4</span>, <span style="color:#ae81ff">6.3</span>), (<span style="color:#ae81ff">1.2</span>, <span style="color:#ae81ff">0.5</span>), (<span style="color:#ae81ff">4.6</span>, <span style="color:#ae81ff">9.2</span>) ],
+]
+</code></pre></div><p>数据要被编码到一个以下列头部开始的二进制文件中去了：</p>
+<pre><code>+------+--------+------------------------------------+
+|Byte  | Type   |  Description                       |
++======+========+====================================+
+|0     | int    |  文件代码（0x1234，小端）          |
++------+--------+------------------------------------+
+|4     | double |  x 的最小值（小端）                |
++------+--------+------------------------------------+
+|12    | double |  y 的最小值（小端）                |
++------+--------+------------------------------------+
+|20    | double |  x 的最大值（小端）                |
++------+--------+------------------------------------+
+|28    | double |  y 的最大值（小端）                |
++------+--------+------------------------------------+
+|36    | int    |  三角形数量（小端）                |
++------+--------+------------------------------------+
+
+</code></pre><p>紧跟着头部是一系列的多边形记录，编码格式如下：</p>
+<pre><code>+------+--------+-------------------------------------------+
+|Byte  | Type   |  Description                              |
++======+========+===========================================+
+|0     | int    |  记录长度（N字节）                        |
++------+--------+-------------------------------------------+
+|4-N   | Points |  (X,Y) 坐标，以浮点数表示                 |
++------+--------+-------------------------------------------+
+</code></pre><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> struct
+<span style="color:#f92672">import</span> itertools
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write_polys</span>(filename, polys):
+    <span style="color:#75715e"># Determine bounding box</span>
+    flattened <span style="color:#f92672">=</span> list(itertools<span style="color:#f92672">.</span>chain(<span style="color:#f92672">*</span>polys))
+    min_x <span style="color:#f92672">=</span> min(x <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> flattened)
+    max_x <span style="color:#f92672">=</span> max(x <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> flattened)
+    min_y <span style="color:#f92672">=</span> min(y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> flattened)
+    max_y <span style="color:#f92672">=</span> max(y <span style="color:#66d9ef">for</span> x, y <span style="color:#f92672">in</span> flattened)
+    <span style="color:#66d9ef">with</span> open(filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        f<span style="color:#f92672">.</span>write(struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;iddddi</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0x1234</span>,
+                            min_x, min_y,
+                            max_x, max_y,
+                            len(polys)))
+        <span style="color:#66d9ef">for</span> poly <span style="color:#f92672">in</span> polys:
+            size <span style="color:#f92672">=</span> len(poly) <span style="color:#f92672">*</span> struct<span style="color:#f92672">.</span>calcsize(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;dd</span><span style="color:#e6db74">&#39;</span>)
+            f<span style="color:#f92672">.</span>write(struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;i</span><span style="color:#e6db74">&#39;</span>, size <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>))
+            <span style="color:#66d9ef">for</span> pt <span style="color:#f92672">in</span> poly:
+                f<span style="color:#f92672">.</span>write(struct<span style="color:#f92672">.</span>pack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;dd</span><span style="color:#e6db74">&#39;</span>, <span style="color:#f92672">*</span>pt))
+                
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">read_polys</span>(filename):
+    <span style="color:#66d9ef">with</span> open(filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        <span style="color:#75715e"># Read the header</span>
+        header <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">40</span>)
+        file_code, min_x, min_y, max_x, max_y, num_polys <span style="color:#f92672">=</span> \
+            struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;iddddi</span><span style="color:#e6db74">&#39;</span>, header)
+        polys <span style="color:#f92672">=</span> []
+        <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> range(num_polys):
+            pbytes, <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;i</span><span style="color:#e6db74">&#39;</span>, f<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">4</span>))
+            poly <span style="color:#f92672">=</span> []
+            <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> range(pbytes <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#ae81ff">16</span>):
+                pt <span style="color:#f92672">=</span> struct<span style="color:#f92672">.</span>unpack(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;dd</span><span style="color:#e6db74">&#39;</span>, f<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">16</span>))
+                poly<span style="color:#f92672">.</span>append(pt)
+            polys<span style="color:#f92672">.</span>append(poly)
+    <span style="color:#66d9ef">return</span> polys
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-10-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/10/py3_cookbook_notes_02/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">py3_cookbook_notes_02</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/10/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">数据库事务备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

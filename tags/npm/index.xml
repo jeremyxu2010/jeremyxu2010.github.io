@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>npm on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/npm/</link>
+    <description>Recent content in npm on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 03 May 2016 21:58:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/npm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>锁定NodeJS项目的依赖库</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/</link>
+      <pubDate>Tue, 03 May 2016 21:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/</guid>
+      <description>今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t</description>
+    </item>
+    
+  </channel>
+</rss>

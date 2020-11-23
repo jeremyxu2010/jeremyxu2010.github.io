@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>maven on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/maven/</link>
+    <description>Recent content in maven on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 31 Oct 2016 02:05:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/maven/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>maven阿里云仓库镜像</title>
+      <link>https://jeremyxu2010.github.io/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Mon, 31 Oct 2016 02:05:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/</guid>
+      <description>自从国内的oschina maven仓库镜像停止服务后，一直找不到稳定且速度快的maven仓库镜像，网上搜来搜去，都是说http://mirr</description>
+    </item>
+    
+  </channel>
+</rss>

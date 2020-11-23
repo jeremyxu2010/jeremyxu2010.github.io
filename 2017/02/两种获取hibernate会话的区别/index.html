@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>两种获取hibernate会话的区别 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&amp;#34;demoDao&amp;#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="两种获取hibernate会话的区别" />
+<meta property="og:description" content="今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&#34;demoDao&#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/" />
+<meta property="article:published_time" content="2017-02-09T20:30:00+08:00" />
+<meta property="article:modified_time" content="2017-02-09T20:30:00+08:00" />
+<meta itemprop="name" content="两种获取hibernate会话的区别">
+<meta itemprop="description" content="今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&#34;demoDao&#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess">
+<meta itemprop="datePublished" content="2017-02-09T20:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-02-09T20:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="774">
+
+
+
+<meta itemprop="keywords" content="java,hibernate," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="两种获取hibernate会话的区别"/>
+<meta name="twitter:description" content="今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&#34;demoDao&#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">两种获取hibernate会话的区别</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-02-09 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 774 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Repository</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;demoDao&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DemoDaoImpl</span> <span style="color:#66d9ef">extends</span> HibernateDaoSupport <span style="color:#66d9ef">implements</span> DemoDao<span style="color:#f92672">{</span>
+    <span style="color:#75715e">//通过getSession方法获取
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Demo <span style="color:#a6e22e">method1</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Integer param<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Session session <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getSession</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">//通过getHibernateTemplate().execute方法获取
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Demo <span style="color:#a6e22e">method2</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Integer param<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HibernateCallback<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> AppPzTestStats <span style="color:#a6e22e">doInHibernate</span><span style="color:#f92672">(</span>Session session<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> HibernateException<span style="color:#f92672">,</span> SQLException <span style="color:#f92672">{</span>
+                <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+</code></pre></div><p>研究了下，这两种方式还有有区别的，先看看javadoc。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	<span style="color:#75715e">/**
+</span><span style="color:#75715e">	 * Obtain a Hibernate Session, either from the current transaction or
+</span><span style="color:#75715e">	 * a new one. The latter is only allowed if the
+</span><span style="color:#75715e">	 * {@link org.springframework.orm.hibernate3.HibernateTemplate#setAllowCreate &#34;allowCreate&#34;}
+</span><span style="color:#75715e">	 * setting of this bean&#39;s {@link #setHibernateTemplate HibernateTemplate} is &#34;true&#34;.
+</span><span style="color:#75715e">	 * &lt;p&gt;&lt;b&gt;Note that this is not meant to be invoked from HibernateTemplate code
+</span><span style="color:#75715e">	 * but rather just in plain Hibernate code.&lt;/b&gt; Either rely on a thread-bound
+</span><span style="color:#75715e">	 * Session or use it in combination with {@link #releaseSession}.
+</span><span style="color:#75715e">	 * &lt;p&gt;In general, it is recommended to use HibernateTemplate, either with
+</span><span style="color:#75715e">	 * the provided convenience operations or with a custom HibernateCallback
+</span><span style="color:#75715e">	 * that provides you with a Session to work on. HibernateTemplate will care
+</span><span style="color:#75715e">	 * for all resource management and for proper exception conversion.
+</span><span style="color:#75715e">	 * @return the Hibernate Session
+</span><span style="color:#75715e">	 * @throws DataAccessResourceFailureException if the Session couldn&#39;t be created
+</span><span style="color:#75715e">	 * @throws IllegalStateException if no thread-bound Session found and allowCreate=false
+</span><span style="color:#75715e">	 * @see org.springframework.orm.hibernate3.SessionFactoryUtils#getSession(SessionFactory, boolean)
+</span><span style="color:#75715e">	 * @deprecated as of Spring 3.2.7, in favor of {@link HibernateTemplate} usage
+</span><span style="color:#75715e">	 */</span>
+	<span style="color:#a6e22e">@Deprecated</span>
+	<span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">final</span> Session <span style="color:#a6e22e">getSession</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> DataAccessResourceFailureException<span style="color:#f92672">,</span> IllegalStateException <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">return</span> getSession<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hibernateTemplate</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isAllowCreate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#75715e">/**
+</span><span style="color:#75715e">	 * Execute the action specified by the given action object within a
+</span><span style="color:#75715e">	 * {@link org.hibernate.Session}.
+</span><span style="color:#75715e">	 * &lt;p&gt;Application exceptions thrown by the action object get propagated
+</span><span style="color:#75715e">	 * to the caller (can only be unchecked). Hibernate exceptions are
+</span><span style="color:#75715e">	 * transformed into appropriate DAO ones. Allows for returning a result
+</span><span style="color:#75715e">	 * object, that is a domain object or a collection of domain objects.
+</span><span style="color:#75715e">	 * &lt;p&gt;Note: Callback code is not supposed to handle transactions itself!
+</span><span style="color:#75715e">	 * Use an appropriate transaction manager like
+</span><span style="color:#75715e">	 * {@link HibernateTransactionManager}. Generally, callback code must not
+</span><span style="color:#75715e">	 * touch any {@code Session} lifecycle methods, like close,
+</span><span style="color:#75715e">	 * disconnect, or reconnect, to let the template do its work.
+</span><span style="color:#75715e">	 * @param action callback object that specifies the Hibernate action
+</span><span style="color:#75715e">	 * @return a result object returned by the action, or {@code null}
+</span><span style="color:#75715e">	 * @throws org.springframework.dao.DataAccessException in case of Hibernate errors
+</span><span style="color:#75715e">	 * @see HibernateTransactionManager
+</span><span style="color:#75715e">	 * @see org.hibernate.Session
+</span><span style="color:#75715e">	 */</span>
+	<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> T <span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>HibernateCallback<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> action<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> DataAccessException<span style="color:#f92672">;</span>
+
+</code></pre></div><p>从文档上看，<code>getSession</code>的方式得到的Session需要由程序员自行调用<code>releaseSession</code>方法进行session的释放，而且<code>getSession</code>方法已经不推荐使用了。官方更推荐使用<code>hibernateTemplate</code>配合<code>HibernateCallback</code>的方案。这种方案由hibernate负责处理资源的管理及异常的转换。</p>
+<p>另外看到网上<a href="http://www.cnblogs.com/yangy608/archive/2012/04/26/2471787.html">一哥们的分析</a>，于是更坚信了要使用<code>hibernateTemplate</code>配合<code>HibernateCallback</code>的方案。一搜项目，竟然有700多处都是老写法，看来得花一番功夫将所有这些代码改成推荐的方案了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-02-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/hibernate/">hibernate</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">hibernate查询的一些优化写法</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/02/%E8%AE%B0%E5%BD%95%E8%A7%A3%E5%86%B3%E5%87%A0%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B0%8F%E9%97%AE%E9%A2%98%E7%9A%84%E8%BF%87%E7%A8%8B/">
+            <span class="next-text nav-default">记录解决几个前端小问题的过程</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

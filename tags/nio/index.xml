@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nio on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/nio/</link>
+    <description>Recent content in nio on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 03 Sep 2017 23:38:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/nio/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java开发小技巧</title>
+      <link>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提</description>
+    </item>
+    
+    <item>
+      <title>netty3与netty4的区别</title>
+      <link>https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Mon, 31 Oct 2016 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要</description>
+    </item>
+    
+    <item>
+      <title>JVM的Finalization Delay引起的OOM</title>
+      <link>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</link>
+      <pubDate>Wed, 13 Jul 2016 22:03:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</guid>
+      <description>今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊</description>
+    </item>
+    
+    <item>
+      <title>Netty框架研究</title>
+      <link>https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/</link>
+      <pubDate>Sat, 18 Jun 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/</guid>
+      <description>起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目</description>
+    </item>
+    
+    <item>
+      <title>通过WebSocket传输文件</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Sat, 11 Jun 2016 19:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</guid>
+      <description>工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，</description>
+    </item>
+    
+    <item>
+      <title>Java监听目录文件变更</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/</link>
+      <pubDate>Thu, 12 May 2016 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/</guid>
+      <description>Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa</description>
+    </item>
+    
+    <item>
+      <title>Java NIO File操作</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Mon, 09 May 2016 23:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/</guid>
+      <description>今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事</description>
+    </item>
+    
+    <item>
+      <title>Java NIO中Buffer使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Tue, 03 May 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经</description>
+    </item>
+    
+  </channel>
+</rss>

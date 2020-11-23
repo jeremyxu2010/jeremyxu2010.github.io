@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hexo on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/hexo/</link>
+    <description>Recent content in hexo on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 03 Jun 2017 18:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/hexo/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用mathjax</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/</link>
+      <pubDate>Sat, 03 Jun 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/</guid>
+      <description>为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax</description>
+    </item>
+    
+    <item>
+      <title>采用go编写小工具</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 22 Feb 2017 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/</guid>
+      <description>前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows</description>
+    </item>
+    
+    <item>
+      <title>使用hexo写博文</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8hexo%E5%86%99%E5%8D%9A%E6%96%87/</link>
+      <pubDate>Sun, 15 Jan 2017 22:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8hexo%E5%86%99%E5%8D%9A%E6%96%87/</guid>
+      <description>来到一个新的环境，发现周围好多同事都是用word写技术文档的，觉得有必要将markdown这么好的东西介绍给大家。同时为了方便各位技术同仁写</description>
+    </item>
+    
+    <item>
+      <title>开发者的博客写作环境</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Sun, 10 Apr 2016 13:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/</guid>
+      <description>作为一个开发者，本时有工作中肯定有技术上各种点点滴滴想记下来，毕竟好记忆不如烂笔头。当然使用一个笔记工具完全可以满足这个需求。但同时我在想能</description>
+    </item>
+    
+  </channel>
+</rss>

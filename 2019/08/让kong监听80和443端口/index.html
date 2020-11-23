@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>让kong监听80和443端口 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="让kong监听80和443端口" />
+<meta property="og:description" content="问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/" />
+<meta property="article:published_time" content="2019-08-17T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-08-17T18:00:00+08:00" />
+<meta itemprop="name" content="让kong监听80和443端口">
+<meta itemprop="description" content="问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443">
+<meta itemprop="datePublished" content="2019-08-17T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-17T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="3760">
+
+
+
+<meta itemprop="keywords" content="k8s,docker,kong," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="让kong监听80和443端口"/>
+<meta name="twitter:description" content="问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">让kong监听80和443端口</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-17 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3760 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题</a></li>
+    <li><a href="#heading-1">解决过程</a>
+      <ul>
+        <li><a href="#kubernetes">修改kubernetes清单文件</a></li>
+        <li><a href="#linux-capabilities">授予合适的Linux capabilities</a></li>
+        <li><a href="#kong">分析kong的启动过程</a></li>
+        <li><a href="#setcap">使用setcap给二进制提权</a></li>
+        <li><a href="#heading-2">更优雅的处理方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#man">看man文档的技巧</a></li>
+    <li><a href="#heading-3">总结</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">问题</h2>
+<p>使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443端口访问kong这个API网关，一般会使用kubernetes的service proxy技术或外部load balancer将流量反向代理到kong。能否直接让kong直接监听80和443端口，从而避免反向代理的网络开销，这里进行一些尝试。</p>
+<h2 id="heading-1">解决过程</h2>
+<h3 id="kubernetes">修改kubernetes清单文件</h3>
+<p>原来用kong的chart安装出来的kong其关键yaml如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-kong-proxy
+  labels:
+    app: kong
+    chart: <span style="color:#e6db74">&#34;kong-0.15.1&#34;</span>
+    release: <span style="color:#e6db74">&#34;kong&#34;</span>
+    heritage: <span style="color:#e6db74">&#34;Tiller&#34;</span>
+spec:
+  type: NodePort
+  ports:
+  - name: kong-proxy
+    port: <span style="color:#ae81ff">80</span>
+    targetPort: <span style="color:#ae81ff">8000</span>
+    protocol: TCP
+  - name: kong-proxy-tls
+    port: <span style="color:#ae81ff">443</span>
+    targetPort: <span style="color:#ae81ff">8443</span>
+    protocol: TCP
+
+  selector:
+    app: kong
+    release: kong
+    component: app
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: <span style="color:#e6db74">&#34;kong-kong&#34;</span>
+  labels:
+    app: <span style="color:#e6db74">&#34;kong&#34;</span>
+    chart: <span style="color:#e6db74">&#34;kong-0.15.1&#34;</span>
+    release: <span style="color:#e6db74">&#34;kong&#34;</span>
+    heritage: <span style="color:#e6db74">&#34;Tiller&#34;</span>
+    component: app
+spec:
+  replicas: <span style="color:#ae81ff">1</span>
+  selector:
+    matchLabels:
+      app: kong
+      release: kong
+      component: app
+  template:
+    metadata:
+      labels:
+        app: kong
+        release: kong
+        component: app
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: <span style="color:#e6db74">&#34;kong:1.2.2&#34;</span>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: KONG_PG_HOST
+          value: kong-postgresql
+        - name: KONG_PG_PORT
+          value: <span style="color:#e6db74">&#34;5432&#34;</span>
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-postgresql
+              key: postgresql-password
+
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_ADMIN_GUI_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_GUI_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_DATABASE
+          value: <span style="color:#e6db74">&#34;postgres&#34;</span>
+        - name: KONG_PORTAL_API_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PORTAL_API_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_PROXY_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PROXY_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        command: [ <span style="color:#e6db74">&#34;/bin/sh&#34;</span>, <span style="color:#e6db74">&#34;-c&#34;</span>, <span style="color:#e6db74">&#34;until kong start; do echo &#39;waiting for db&#39;; sleep 1; done; kong stop&#34;</span> ]
+
+      containers:
+      - name: kong
+        image: <span style="color:#e6db74">&#34;kong:1.2.2&#34;</span>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: KONG_ADMIN_LISTEN
+          value: <span style="color:#e6db74">&#34;0.0.0.0:8444 ssl&#34;</span>
+        - name: KONG_PROXY_LISTEN
+          value: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">8000</span>,<span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">8443</span> ssl
+        - name: KONG_NGINX_DAEMON
+          value: <span style="color:#e6db74">&#34;off&#34;</span>
+        - name: KONG_NGINX_HTTP_INCLUDE
+          value: /kong/servers.conf
+        - name: KONG_PG_HOST
+          value: kong-postgresql
+        - name: KONG_PG_PORT
+          value: <span style="color:#e6db74">&#34;5432&#34;</span>
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-postgresql
+              key: postgresql-password
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_ADMIN_GUI_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_GUI_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_DATABASE
+          value: <span style="color:#e6db74">&#34;postgres&#34;</span>
+        - name: KONG_PORTAL_API_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PORTAL_API_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_PROXY_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PROXY_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        ports:
+        - name: admin
+          containerPort: <span style="color:#ae81ff">8444</span>
+          protocol: TCP
+        - name: proxy
+          containerPort: <span style="color:#ae81ff">8000</span>
+          protocol: TCP
+        - name: proxy-tls
+          containerPort: <span style="color:#ae81ff">8443</span>
+          protocol: TCP
+        - name: metrics
+          containerPort: <span style="color:#ae81ff">9542</span>
+          protocol: TCP
+        volumeMounts:
+          - name: custom-nginx-template-volume
+            mountPath: /kong
+        readinessProbe:
+          failureThreshold: <span style="color:#ae81ff">5</span>
+          httpGet:
+            path: /status
+            port: admin
+            scheme: HTTPS
+          initialDelaySeconds: <span style="color:#ae81ff">30</span>
+          periodSeconds: <span style="color:#ae81ff">10</span>
+          successThreshold: <span style="color:#ae81ff">1</span>
+          timeoutSeconds: <span style="color:#ae81ff">1</span>
+
+        livenessProbe:
+          failureThreshold: <span style="color:#ae81ff">5</span>
+          httpGet:
+            path: /status
+            port: admin
+            scheme: HTTPS
+          initialDelaySeconds: <span style="color:#ae81ff">30</span>
+          periodSeconds: <span style="color:#ae81ff">30</span>
+          successThreshold: <span style="color:#ae81ff">1</span>
+          timeoutSeconds: <span style="color:#ae81ff">5</span>
+
+        resources:
+          {}
+
+      tolerations:
+        []
+
+      volumes:
+        - name: custom-nginx-template-volume
+          configMap:
+            name: kong-kong-default-custom-server-blocks
+---
+</code></pre></div><p>可以看到定义了一个Deployment，并用Service将pod提供的服务暴露出来了。其中<code>kong</code>这个容器有一个环境变量<code>KONG_PROXY_LISTEN</code>，其值为<code>0.0.0.0:8000,0.0.0.0:8443 ssl</code>，说明容器会监听8000和8443端口。看到这里很自然想到直接修改<code>KONG_PROXY_LISTEN</code>这个环境变量，pod直接使用<code>hostNetwork</code>，这样就很可以很轻松地让<code>kong</code>监听node节点上的80和443端口，修改成的yaml文件如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: <span style="color:#e6db74">&#34;kong-kong&#34;</span>
+  labels:
+    app: <span style="color:#e6db74">&#34;kong&#34;</span>
+    chart: <span style="color:#e6db74">&#34;kong-0.15.1&#34;</span>
+    release: <span style="color:#e6db74">&#34;kong&#34;</span>
+    heritage: <span style="color:#e6db74">&#34;Tiller&#34;</span>
+    component: app
+spec:
+  selector:
+    matchLabels:
+      app: kong
+      release: kong
+      component: app
+  template:
+    metadata:
+      labels:
+        app: kong
+        release: kong
+        component: app
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: <span style="color:#e6db74">&#34;kong:1.2.2&#34;</span>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: KONG_PG_HOST
+          value: kong-postgresql
+        - name: KONG_PG_PORT
+          value: <span style="color:#e6db74">&#34;5432&#34;</span>
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-postgresql
+              key: postgresql-password
+
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_ADMIN_GUI_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_GUI_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_DATABASE
+          value: <span style="color:#e6db74">&#34;postgres&#34;</span>
+        - name: KONG_PORTAL_API_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PORTAL_API_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_PROXY_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PROXY_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        command: [ <span style="color:#e6db74">&#34;/bin/sh&#34;</span>, <span style="color:#e6db74">&#34;-c&#34;</span>, <span style="color:#e6db74">&#34;until kong start; do echo &#39;waiting for db&#39;; sleep 1; done; kong stop&#34;</span> ]
+
+      containers:
+      - name: kong
+        image: <span style="color:#e6db74">&#34;kong:1.2.2&#34;</span>
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: KONG_ADMIN_LISTEN
+          value: <span style="color:#e6db74">&#34;0.0.0.0:8444 ssl&#34;</span>
+        - name: KONG_PROXY_LISTEN
+          value: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">80</span>,<span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">443</span> ssl
+        - name: KONG_NGINX_DAEMON
+          value: <span style="color:#e6db74">&#34;off&#34;</span>
+        - name: KONG_NGINX_HTTP_INCLUDE
+          value: /kong/servers.conf
+        - name: KONG_PG_HOST
+          value: kong-postgresql
+        - name: KONG_PG_PORT
+          value: <span style="color:#e6db74">&#34;5432&#34;</span>
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-postgresql
+              key: postgresql-password
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_ADMIN_GUI_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_ADMIN_GUI_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_DATABASE
+          value: <span style="color:#e6db74">&#34;postgres&#34;</span>
+        - name: KONG_PORTAL_API_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PORTAL_API_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        - name: KONG_PROXY_ACCESS_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stdout&#34;</span>
+        - name: KONG_PROXY_ERROR_LOG
+          value: <span style="color:#e6db74">&#34;/dev/stderr&#34;</span>
+        ports:
+        - name: admin
+          containerPort: <span style="color:#ae81ff">8444</span>
+          protocol: TCP
+        - name: proxy
+          containerPort: <span style="color:#ae81ff">80</span>
+          protocol: TCP
+        - name: proxy-tls
+          containerPort: <span style="color:#ae81ff">443</span>
+          protocol: TCP
+        - name: metrics
+          containerPort: <span style="color:#ae81ff">9542</span>
+          protocol: TCP
+        volumeMounts:
+          - name: custom-nginx-template-volume
+            mountPath: /kong
+        readinessProbe:
+          failureThreshold: <span style="color:#ae81ff">5</span>
+          httpGet:
+            path: /status
+            port: admin
+            scheme: HTTPS
+          initialDelaySeconds: <span style="color:#ae81ff">30</span>
+          periodSeconds: <span style="color:#ae81ff">10</span>
+          successThreshold: <span style="color:#ae81ff">1</span>
+          timeoutSeconds: <span style="color:#ae81ff">1</span>
+
+        livenessProbe:
+          failureThreshold: <span style="color:#ae81ff">5</span>
+          httpGet:
+            path: /status
+            port: admin
+            scheme: HTTPS
+          initialDelaySeconds: <span style="color:#ae81ff">30</span>
+          periodSeconds: <span style="color:#ae81ff">30</span>
+          successThreshold: <span style="color:#ae81ff">1</span>
+          timeoutSeconds: <span style="color:#ae81ff">5</span>
+
+        resources:
+          {}
+
+      hostNetwork: <span style="color:#66d9ef">true</span>
+      dnsPolicy: ClusterFirstWithHostNet
+
+      tolerations:
+        []
+
+      volumes:
+        - name: custom-nginx-template-volume
+          configMap:
+            name: kong-kong-default-custom-server-blocks
+---
+</code></pre></div><p>主要做了以下改动：</p>
+<ol>
+<li>将<code>Deployment</code>修改为了<code>DaemonSet</code></li>
+<li>删除了<code>Service</code></li>
+<li>将<code>8000</code>端口修改为了<code>80</code>，<code>8443</code>端口修改为了<code>443</code></li>
+<li>配置了<code>hostNetwork</code>为<code>ture</code>，<code>dnsPolicy</code>为<code>ClusterFirstWithHostNet</code>。因为<code>kong</code>这个pod还引用了kubernetes里的<code>kong-postgresql</code>服务名，以了让<code>DaemonSet</code>的pod能正确解析<code>kong-postgresql</code>服务名，必须设置使用了<code>hostNetwork</code>的pod其 <code>dnsPolicy</code>为<code>ClusterFirstWithHostNet</code>，见<a href="https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">这里</a>的说明。</li>
+</ol>
+<p>kubernetes清单文件修改完毕后，我们将之部署进kubernetes测试一下，结果pod报错：</p>
+<pre><code>2019/08/17 12:59:06 [emerg] 1#0: bind() to 0.0.0.0:80 failed (13: Permission denied)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (13: Permission denied)
+</code></pre><h3 id="linux-capabilities">授予合适的Linux capabilities</h3>
+<p>从上面的报错来看，是说没有足够的权限监听80端口，应该是没有绑定1024以下特权端口的权限。查阅下<a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">Linux capabilities</a>，得知得添加<code>CAP_NET_BIND_SERVICE</code>的capability，程序才能绑定1024以下特权端口。于是参考<a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container">kubernetes的SecurityContext的文档</a>，我给pod配置上合适的Linux capabilities。</p>
+<blockquote>
+<pre><code>   CAP_NET_BIND_SERVICE
+          Bind a socket to Internet domain privileged ports (port
+          numbers less than 1024).
+</code></pre>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">podSpec:
+  ......
+	securityContext:
+      capabilities:
+        add: 
+        - NET_BIND_SERVICE
+</code></pre></div><p>再将部署pod，发现问题依旧。</p>
+<p>通过kubernetes的SecurityContext还可以<a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/">设置很多pod安全相关的设置</a>，以后在工作中可以多实践下。</p>
+<h3 id="kong">分析kong的启动过程</h3>
+<p>已经添加了合适的Linux capabilities，竟然还不能正常监听80和443，看来问题并不是这儿。接下来我分析下kong镜像中kong进程的启动过程。</p>
+<p>找到<a href="https://github.com/Kong/docker-kong/blob/master/alpine/Dockerfile">kong镜像的Dockerfile</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine:3.10</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">LABEL</span> maintainer<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Kong Core Team &lt;team-core@konghq.com&gt;&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> KONG_VERSION 1.2.2<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENV</span> KONG_SHA256 76183d7e8ff084c86767b917da441001d0d779d35fa2464275b74226029a46bf<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> adduser -Su <span style="color:#ae81ff">1337</span> kong <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> mkdir -p <span style="color:#e6db74">&#34;/usr/local/kong&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> apk add --no-cache --virtual .build-deps wget tar ca-certificates <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> apk add --no-cache libgcc openssl pcre perl tzdata curl libcap su-exec zip <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> wget -O kong.tar.gz <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://bintray.com/kong/kong-alpine-tar/download_file?file_path=kong-</span>$KONG_VERSION<span style="color:#e6db74">.apk.tar.gz</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> echo <span style="color:#e6db74">&#34;</span>$KONG_SHA256<span style="color:#e6db74"> *kong.tar.gz</span><span style="color:#e6db74">&#34;</span> | sha256sum -c - <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> tar -xzf kong.tar.gz -C /tmp <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> rm -f kong.tar.gz <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> cp -R /tmp/usr / <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/usr <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> cp -R /tmp/etc / <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> rm -rf /tmp/etc <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> apk del .build-deps <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> chown -R kong:0 /usr/local/kong <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#f92672">&amp;&amp;</span> chmod -R g<span style="color:#f92672">=</span>u /usr/local/kong<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> docker-entrypoint.sh /docker-entrypoint.sh<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">ENTRYPOINT</span> [<span style="color:#e6db74">&#34;/docker-entrypoint.sh&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 8000 8443 8001 8444</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">STOPSIGNAL</span><span style="color:#e6db74"> SIGQUIT</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;kong&#34;</span>, <span style="color:#e6db74">&#34;docker-start&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>这个镜像的构建过程很简单，逻辑如下：</p>
+<ol>
+<li>创建kong用户</li>
+<li>安装kong的程序</li>
+<li>将docker-entrypoint.sh启动脚本拷贝到镜像里</li>
+<li>设置ENTRYPOINT及CMD</li>
+</ol>
+<p>再看一看<a href="https://github.com/Kong/docker-kong/blob/1.2.2/alpine/docker-entrypoint.sh">docker-entrypoint.sh启动脚本</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/sh
+</span><span style="color:#75715e"></span>set -e
+
+export KONG_NGINX_DAEMON<span style="color:#f92672">=</span>off
+
+has_transparent<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  echo <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> | grep -E <span style="color:#e6db74">&#34;[^\s,]+\s+transparent\b&#34;</span> &gt;/dev/null
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kong&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  PREFIX<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KONG_PREFIX:=/usr/local/kong<span style="color:#e6db74">}</span>
+
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$2<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;docker-start&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    shift <span style="color:#ae81ff">2</span>
+    kong prepare -p <span style="color:#e6db74">&#34;</span>$PREFIX<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+    
+    <span style="color:#75715e"># workaround for https://github.com/moby/moby/issues/31243</span>
+    chmod o+w /proc/self/fd/1 <span style="color:#f92672">||</span> true
+    chmod o+w /proc/self/fd/2 <span style="color:#f92672">||</span> true
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      exec /usr/local/openresty/nginx/sbin/nginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        -p <span style="color:#e6db74">&#34;</span>$PREFIX<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        -c nginx.conf
+    <span style="color:#66d9ef">else</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -z <span style="color:#e6db74">${</span>SET_CAP_NET_RAW<span style="color:#e6db74">}</span> <span style="color:#f92672">]</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_STREAM_LISTEN<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_PROXY_LISTEN<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>          <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_ADMIN_LISTEN<span style="color:#e6db74">&#34;</span>;
+      <span style="color:#66d9ef">then</span>
+        setcap cap_net_raw<span style="color:#f92672">=</span>+ep /usr/local/openresty/nginx/sbin/nginx
+      <span style="color:#66d9ef">fi</span>
+      chown -R kong:0 /usr/local/kong
+      exec su-exec kong /usr/local/openresty/nginx/sbin/nginx <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        -p <span style="color:#e6db74">&#34;</span>$PREFIX<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        -c nginx.conf
+    <span style="color:#66d9ef">fi</span>
+  <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+exec <span style="color:#e6db74">&#34;</span>$@<span style="color:#e6db74">&#34;</span>
+</code></pre></div><p>分析上面的脚本，可以知道，如果以root启动镜像，脚本里最终会以<code>kong</code>用户启动<code>/usr/local/openresty/nginx/sbin/nginx</code>二进制程序。</p>
+<pre><code>exec su-exec kong /usr/local/openresty/nginx/sbin/nginx \
+        -p &quot;$PREFIX&quot; \
+        -c nginx.conf
+</code></pre><p>即然是普通用户<code>kong</code>运行的程序，自然无法正常监听1024以下的端口。</p>
+<h3 id="setcap">使用setcap给二进制提权</h3>
+<p>这时我会问了，为啥安装了<code>apache</code>，以<code>www</code>用户运行<code>apache</code>的二进制程序，为啥又可以监听80端口呢？</p>
+<p>查阅<a href="https://www.cnblogs.com/nf01/articles/10418141.html">文档</a>，我们知道有两种办法让普通用户执行二进制程序时：</p>
+<ol>
+<li>使用chmod设置setuid位，这样一个可执行文件启动时，它不会以启动它的用户的权限运行，而是<strong>以该文件所有者的权限运行</strong>，参见<a href="https://linux.cn/article-9355-1.html">这里</a>。</li>
+<li>另一种方法是使用setcap给二进制文件添加必要的Linux capabilities，参见<a href="https://www.cnblogs.com/nf01/articles/10418141.html">这里</a>。</li>
+</ol>
+<p>一般会采用方法2，这样二进制文件的权限更受控一点。于是我在<code>docker-entrypoint.sh</code>里使用setcap命令给二进制文件添加必要的Linux capabilities。</p>
+<pre><code>setcap cap_net_bind_service=+eip /usr/local/openresty/nginx/sbin/nginx
+</code></pre><p>至此，使用kong的docker镜像，容器本身终于可以监听80和443端口了。</p>
+<h3 id="heading-2">更优雅的处理方案</h3>
+<p>问题终于解决了，偶然在kong的开源端点上发现有人为解决该问题，发了<a href="https://github.com/Kong/docker-kong/pull/213/files">一个PR</a>，看PR的代码，是通过判断一个环境变量来决定是否调用<code>setcap</code>命令的，而且还考虑了<code>setcap</code>作用被覆盖的场景，处理方案明显更优雅。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    caps<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SET_CAP_NET_RAW<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_STREAM_LISTEN<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_PROXY_LISTEN<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>        <span style="color:#f92672">||</span> has_transparent <span style="color:#e6db74">&#34;</span>$KONG_ADMIN_LISTEN<span style="color:#e6db74">&#34;</span>;
+    <span style="color:#66d9ef">then</span>
+      caps<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps:+<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">}</span><span style="color:#e6db74">cap_net_raw</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SET_CAP_NET_BIND_SERVICE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+      caps<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps:+<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">}</span><span style="color:#e6db74">cap_net_bind_service</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+      setcap <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>caps<span style="color:#e6db74">}</span><span style="color:#e6db74">=+ep</span><span style="color:#e6db74">&#34;</span> /usr/local/openresty/nginx/sbin/nginx
+    <span style="color:#66d9ef">fi</span>
+</code></pre></div><p>这个PR不知原因一直没有合进主干。</p>
+<h2 id="man">看man文档的技巧</h2>
+<p>有时看到一个命令的用法，觉得很陌生，可以使用man命令快速学习一下。比如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ man setcap
+
+NAME
+       setcap - set file capabilities
+
+SYNOPSIS
+       setcap <span style="color:#f92672">[</span>-q<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-v<span style="color:#f92672">]</span> <span style="color:#f92672">(</span>capabilities|-|-r<span style="color:#f92672">)</span> filename <span style="color:#f92672">[</span> ... capabilitiesN fileN
+       <span style="color:#f92672">]</span>
+
+DESCRIPTION
+       In the absence of the -v <span style="color:#f92672">(</span>verify<span style="color:#f92672">)</span> option setcap sets  the  capabilities
+       of  each  specified  filename  to  the  capabilities specified.  The -v
+       option is used to verify that the specified capabilities are  currently
+       associated with the file.
+
+       The   capabilities   are   specified   in   the   form   described   in
+       cap_from_text<span style="color:#f92672">(</span>3<span style="color:#f92672">)</span>.
+       
+<span style="color:#75715e"># 上述文档中说capabilities的格式在cap_from_text(3)里进行说明</span>
+
+<span style="color:#75715e"># 找不到cap_from_text(3)的man文档</span>
+$ man <span style="color:#ae81ff">3</span> cap_from_text
+No manual entry <span style="color:#66d9ef">for</span> cap_from_text in section <span style="color:#ae81ff">3</span>
+
+<span style="color:#75715e"># 安装man-pages、man-db</span>
+$ yum install -y man-pages
+$ yum install -y man-db
+$ mandb
+
+<span style="color:#75715e"># 还是找不到cap_from_text(3)的man文档</span>
+$ man <span style="color:#ae81ff">3</span> cap_from_text
+No manual entry <span style="color:#66d9ef">for</span> cap_from_text in section <span style="color:#ae81ff">3</span>
+
+<span style="color:#75715e"># 搜索下cap_from_text的man文档在哪个rpm包里，下面的输出说明在libcap-devel这个rpm包里</span>
+$ yum whatprovides */cap_from_text.*.gz
+libcap-devel-2.22-9.el7.i686 : Development files <span style="color:#66d9ef">for</span> libcap
+Repo        : os
+Matched from:
+Filename    : /usr/share/man/man3/cap_from_text.3.gz
+
+libcap-devel-2.22-9.el7.x86_64 : Development files <span style="color:#66d9ef">for</span> libcap
+Repo        : os
+Matched from:
+Filename    : /usr/share/man/man3/cap_from_text.3.gz
+
+<span style="color:#75715e"># 安装libcap-devel软件包</span>
+$ yum install -y libcap-devel
+
+<span style="color:#75715e"># 这次终于可以查寻到cap_from_text(3)的man文档，看了man文档，总算知道setcap命令里+eip是什么意思了</span>
+$ man <span style="color:#ae81ff">3</span> cap_from_text
+......
+       Each  clause consists of a list of comma-separated capability names <span style="color:#f92672">(</span>or
+       the word <span style="color:#e6db74">`</span>all<span style="color:#e6db74">&#39;), followed by an action-list.  An  action-list  consists
+</span><span style="color:#e6db74">       of  a  sequence of operator flag pairs.  Legal operators are: `=&#39;</span>, <span style="color:#e6db74">&#39;+&#39;</span>,
+       and <span style="color:#e6db74">`</span>-<span style="color:#e6db74">&#39;.  Legal flags are: `e&#39;</span>, <span style="color:#e6db74">`</span>i<span style="color:#e6db74">&#39;, and `p&#39;</span>.  These  flags  are  <span style="color:#66d9ef">case</span>-
+       sensitive  and  specify  the  Effective, Inheritable and Permitted sets
+       respectively.
+......
+</code></pre></div><h2 id="heading-3">总结</h2>
+<p>这个权限问题虽说是个小问题，但在解决的过程中查阅了kubernetes的SecurityContext的相关资料、Linux capabilities的概念及用法、分析了kong的启动过程，整个过程学到了挺多东西，还挺有意思的。</p>
+<h2 id="heading-4">参考</h2>
+<ol>
+<li><a href="https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy">https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy</a></li>
+<li><a href="http://man7.org/linux/man-pages/man7/capabilities.7.html">http://man7.org/linux/man-pages/man7/capabilities.7.html</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/">https://kubernetes.io/docs/tasks/configure-pod-container/security-context/</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container">https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container</a></li>
+<li><a href="https://linux.cn/article-9355-1.html">https://linux.cn/article-9355-1.html</a></li>
+<li><a href="https://www.cnblogs.com/nf01/articles/10418141.html">https://www.cnblogs.com/nf01/articles/10418141.html</a></li>
+<li><a href="https://github.com/Kong/docker-kong/pull/213">https://github.com/Kong/docker-kong/pull/213</a></li>
+<li><a href="https://codingbee.net/centos/man-how-to-fix-the-no-manual-entry-for">https://codingbee.net/centos/man-how-to-fix-the-no-manual-entry-for</a></li>
+<li>[https://luanlengli.github.io/2019/07/05/%E9%80%9A%E8%BF%87Linux%20capabilities%E6%9C%BA%E5%88%B6%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3.html](<a href="https://luanlengli.github.io/2019/07/05/">https://luanlengli.github.io/2019/07/05/</a>通过Linux capabilities机制让kong监听80和443端口.html)</li>
+<li><a href="https://docs.konghq.com/1.2.x/configuration/#proxy_listen">https://docs.konghq.com/1.2.x/configuration/#proxy_listen</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-08-17</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/kong/">kong</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">MQTT协议学习</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/">
+            <span class="next-text nav-default">使用casbin完成验证授权</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

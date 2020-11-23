@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes使用ceph存储卷 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="kubernetes使用ceph存储卷" />
+<meta property="og:description" content="最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/" />
+<meta property="article:published_time" content="2019-09-07T18:40:00+08:00" />
+<meta property="article:modified_time" content="2019-09-07T18:40:00+08:00" />
+<meta itemprop="name" content="kubernetes使用ceph存储卷">
+<meta itemprop="description" content="最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失">
+<meta itemprop="datePublished" content="2019-09-07T18:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-07T18:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="2867">
+
+
+
+<meta itemprop="keywords" content="kubernetes,ceph," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes使用ceph存储卷"/>
+<meta name="twitter:description" content="最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes使用ceph存储卷</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2867 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ceph-rbd">ceph rbd存储卷扩容失败</a></li>
+    <li><a href="#cephfsquota">cephfs存储卷quota失效</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。</p>
+<h2 id="ceph-rbd">ceph rbd存储卷扩容失败</h2>
+<p>第一个问题是某应用程序使用了ceph rbd存储卷，但随着时间的推移，发现原来pvc申请的存储空间不够用了，需要进行扩容。这里参考<a href="https://kubernetes.io/blog/2018/07/12/resizing-persistent-volumes-using-kubernetes/">官方指引</a>，进行了一些配置。</p>
+<p>storageclass设置<code>allowVolumeExpansion: true</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: rbd
+provisioner: ceph.com/rbd
+parameters:
+  monitors: xx.xx.xx.xx:<span style="color:#ae81ff">6789</span>
+  pool: kube
+  adminId: admin
+  adminSecretNamespace: kube-system
+  adminSecretName: ceph-admin-secret
+  userId: kube
+  userSecretNamespace: kube-system
+  userSecretName: ceph-secret
+  imageFormat: <span style="color:#e6db74">&#34;2&#34;</span>
+  imageFeatures: layering
+allowVolumeExpansion: <span style="color:#66d9ef">true</span>
+</code></pre></div><p><code>kube-controller-manager</code>及<code>kubelet</code>均开启<code>ExpandPersistentVolumes</code>、<code>PersistentVolumeClaimResize</code>、<code>ExpandInUsePersistentVolumes</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">--feature-gates ExpandPersistentVolumes<span style="color:#f92672">=</span>true,PersistentVolumeClaimResize<span style="color:#f92672">=</span>true,ExpandInUsePersistentVolumes<span style="color:#f92672">=</span>true
+</code></pre></div><p>然后edit某个pvc，将<code>spec.resources.requests.storage</code>增大：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl edit pvc resize
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: ceph.com/rbd
+  name: resize
+spec:
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: sata
+</code></pre></div><p>然后查看pvc，但过了很久，pvc仍然没有进行<code>FileSystemResizePending</code>状态。</p>
+<p>难道遇到kubernetes的bug了？</p>
+<p>查阅kubernetes的代码后，发现kubernetes是调用<code>rbd info</code>及<code>rbd resize</code>等外部命令完成rbd存储卷的扩容的：</p>
+<p><code>https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/rbd/rbd_util.go#L647</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ExpandImage runs rbd resize command to resize the specified image.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">util</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">RBDUtil</span>) <span style="color:#a6e22e">ExpandImage</span>(<span style="color:#a6e22e">rbdExpander</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rbdVolumeExpander</span>, <span style="color:#a6e22e">oldSize</span> <span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">Quantity</span>, <span style="color:#a6e22e">newSize</span> <span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">Quantity</span>) (<span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">Quantity</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">output</span> []<span style="color:#66d9ef">byte</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+
+	<span style="color:#75715e">// Convert to MB that rbd defaults on.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sz</span> <span style="color:#f92672">:=</span> int(<span style="color:#a6e22e">volumehelpers</span>.<span style="color:#a6e22e">RoundUpToMiB</span>(<span style="color:#a6e22e">newSize</span>))
+	<span style="color:#a6e22e">newVolSz</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%d&#34;</span>, <span style="color:#a6e22e">sz</span>)
+	<span style="color:#a6e22e">newSizeQuant</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">resource</span>.<span style="color:#a6e22e">MustParse</span>(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%dMi&#34;</span>, <span style="color:#a6e22e">sz</span>))
+
+	<span style="color:#75715e">// Check the current size of rbd image, if equals to or greater that the new request size, do nothing.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">curSize</span>, <span style="color:#a6e22e">infoErr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">rbdInfo</span>(<span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">infoErr</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">oldSize</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;rbd info failed, error: %v&#34;</span>, <span style="color:#a6e22e">infoErr</span>)
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">curSize</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">sz</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">newSizeQuant</span>, <span style="color:#66d9ef">nil</span>
+	}
+
+	<span style="color:#75715e">// rbd resize.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mon</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">util</span>.<span style="color:#a6e22e">kernelRBDMonitorsOpt</span>(<span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">Mon</span>)
+	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: resize %s using mon %s, pool %s id %s key %s&#34;</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">Image</span>, <span style="color:#a6e22e">mon</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">Pool</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">adminId</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">adminSecret</span>)
+	<span style="color:#a6e22e">output</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Run</span>(<span style="color:#e6db74">&#34;rbd&#34;</span>,
+		<span style="color:#e6db74">&#34;resize&#34;</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">Image</span>, <span style="color:#e6db74">&#34;--size&#34;</span>, <span style="color:#a6e22e">newVolSz</span>, <span style="color:#e6db74">&#34;--pool&#34;</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">Pool</span>, <span style="color:#e6db74">&#34;--id&#34;</span>, <span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">adminId</span>, <span style="color:#e6db74">&#34;-m&#34;</span>, <span style="color:#a6e22e">mon</span>, <span style="color:#e6db74">&#34;--key=&#34;</span><span style="color:#f92672">+</span><span style="color:#a6e22e">rbdExpander</span>.<span style="color:#a6e22e">rbdMounter</span>.<span style="color:#a6e22e">adminSecret</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">newSizeQuant</span>, <span style="color:#66d9ef">nil</span>
+	}
+
+	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to resize rbd image: %v, command output: %s&#34;</span>, <span style="color:#a6e22e">err</span>, string(<span style="color:#a6e22e">output</span>))
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">oldSize</span>, <span style="color:#a6e22e">err</span>
+}
+</code></pre></div><p>而执行这些外部命令后，代码还会解析这些命令的输出。而如果ceph的配置文件中启用了一些调试输出，则解析会发生错误。</p>
+<p>知道原因就很好办了，修改<code>/etc/ceph/ceph.conf</code>文件，注释掉调试输出的设置就好了。</p>
+<h2 id="cephfsquota">cephfs存储卷quota失效</h2>
+<p>项目里还有一些应用程序使用了cephfs的存储卷，但经过验证，发现pvc里设置的存储卷大小无效，应用程序可以随意往存储卷里写入大量数据，这就很危险了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat test.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test
+spec:
+  storageClassName: cephfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+spec:
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: test
+  containers:
+    - name: nginx-server
+      image: nginx
+      ports:
+        - containerPort: <span style="color:#ae81ff">80</span>
+          name: <span style="color:#e6db74">&#34;http-server&#34;</span>
+      volumeMounts:
+        - mountPath: <span style="color:#e6db74">&#34;/usr/share/nginx/html&#34;</span>
+          name: data
+
+<span style="color:#75715e"># pvc的容量只有1G，竟然可以写入2G的数据到存储卷</span>
+$ kubectl exec -ti test-pod -- dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>/dev/zero of<span style="color:#f92672">=</span>/usr/share/nginx/html/testfile.dat count<span style="color:#f92672">=</span><span style="color:#ae81ff">2018</span> bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1048576</span>
+</code></pre></div><p>这里使用的是<a href="https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/cephfs">cephfs-provisioner</a>来供应cephfs存储卷的。</p>
+<p>浏览<a href="https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/cephfs">cephfs-provisioner</a>的代码，发现它其实提供了一个<code>enable-quota</code>参数，用来启用pvc的quota功能。</p>
+<p><code>https://github.com/kubernetes-incubator/external-storage/blob/master/ceph/cephfs/cephfs-provisioner.go#L383</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">enableQuota</span>                   = <span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">Bool</span>(<span style="color:#e6db74">&#34;enable-quota&#34;</span>, <span style="color:#66d9ef">false</span>, <span style="color:#e6db74">&#34;Enable PVC quota&#34;</span>)
+</code></pre></div><p>于是给<a href="https://github.com/kubernetes-incubator/external-storage/tree/master/ceph/cephfs">cephfs-provisioner</a>加上参数<code>-enable-quota=true</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kubectl edit deployment cephfs-provisioner
+
+spec:
+  progressDeadlineSeconds: <span style="color:#ae81ff">600</span>
+  replicas: <span style="color:#ae81ff">1</span>
+  revisionHistoryLimit: <span style="color:#ae81ff">10</span>
+  selector:
+    matchLabels:
+      app: cephfs-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: <span style="color:#66d9ef">null</span>
+      labels:
+        app: cephfs-provisioner
+    spec:
+      containers:
+      - args:
+        ...
+        - -enable-quota=<span style="color:#66d9ef">true</span>
+        command:
+        - /usr/local/bin/cephfs-provisioner
+</code></pre></div><p>本以为会一切正常，但在创建cephfs存储卷时却报错了：</p>
+<pre><code>E0831 12:27:01.347130       1 cephfs-provisioner.go:158] failed to provision share &quot;kubernetes-dynamic-pvc-a1f36dc2-cbea-11e9-97cf-6639535e4727&quot; for &quot;kubernetes-dynamic-user-a1f36ec8-cbea-11e9-97cf-6639535e4727&quot;, err: exit status 1, output: Traceback (most recent call last):
+  File &quot;/usr/local/bin/cephfs_provisioner&quot;, line 364, in &lt;module&gt;
+    main()
+  File &quot;/usr/local/bin/cephfs_provisioner&quot;, line 358, in main
+    print cephfs.create_share(share, user, size=size)
+  File &quot;/usr/local/bin/cephfs_provisioner&quot;, line 228, in create_share
+    volume = self.volume_client.create_volume(volume_path, size=size, namespace_isolated=not self.ceph_namespace_isolation_disabled)
+  File &quot;/lib/python2.7/site-packages/ceph_volume_client.py&quot;, line 622, in create_volume
+    self.fs.setxattr(path, 'ceph.quota.max_bytes', size.__str__(), 0)
+  File &quot;cephfs.pyx&quot;, line 988, in cephfs.LibCephFS.setxattr (/home/jenkins-build/build/workspace/ceph-build/ARCH/x86_64/AVAILABLE_ARCH/x86_64/AVAILABLE_DIST/centos7/DIST/centos7/MACHINE_SIZE/huge/release/13.2.1/rpm/el7/BUILD/ceph-13.2.1/build/src/pybind/cephfs/pyrex/cephfs.c:10498)
+cephfs.OperationNotSupported: [Errno 95] error in setxattr
+</code></pre><p>继续查原因，发现<code>cephfs-provisioner</code>实际上是调用<code>libcephfs</code>中的<code>ceph_setxattr</code>函数，以实现给创建的cephfs存储卷设置quota的。而直接在ceph集群上通过命令给某个目录设置quota是正常的。看来还是哪里不太正常。</p>
+<p>继续追查，发现<code>cephfs-provisioner</code>项目的<a href="https://github.com/kubernetes-incubator/external-storage/blob/master/ceph/cephfs/Dockerfile">Dockerfile</a>里指示了安装的是<code>mimic</code>版的<code>ceph-common</code>和<code>python-cephfs</code>，而我部署的ceph集群是<code>luminous</code>版。会不会是ceph客户端与服务端不兼容？立即修改<a href="https://github.com/kubernetes-incubator/external-storage/blob/master/ceph/cephfs/Dockerfile">Dockerfile</a>文件，改成安装<code>luminous</code>版<code>ceph-common</code>和<code>python-cephfs</code>，重新编译docker镜像，更新<code>cephfs-provisioner</code>所使用的镜像，这下创建pvc时终于不报错了。这里我们再检查下cephfs存储卷目录的quota是正常的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir test
+$ ceph-fuse -c /etc/ceph/ceph.conf -m xx.xx.xx.xx:6789 -r /xxxx test
+$ getfattr -n ceph.quota.max_bytes test
+<span style="color:#ae81ff">1073741824</span>
+</code></pre></div><p>看起来一切很美好了，但经测试发现quota依然无效，应用程序还是无视quota随意往存储卷里写入大量数据。</p>
+<p>继续追查问题，发现CephFS的mount方式分为内核态mount和用户态mount，内核态使用mount命令挂载，用户态使用ceph-fuse。内核态只有在kernel 4.17 以上的版本才支持Quotas，用户态则没有限制。而我们的环境中内核明显没有这么高，而kubernetes的代码里会根据是否找得到<code>ceph-fuse</code>命令决定是否使用用户态挂载。</p>
+<p><code>https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/cephfs/cephfs.go#L245</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#75715e">// check whether it belongs to fuse, if not, default to use kernel mount.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cephfsVolume</span>.<span style="color:#a6e22e">checkFuseMount</span>() {
+		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;CephFS fuse mount.&#34;</span>)
+		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">cephfsVolume</span>.<span style="color:#a6e22e">execFuseMount</span>(<span style="color:#a6e22e">dir</span>)
+		<span style="color:#75715e">// cleanup no matter if fuse mount fail.
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">keyringPath</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cephfsVolume</span>.<span style="color:#a6e22e">GetKeyringPath</span>()
+		<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">StatErr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stat</span>(<span style="color:#a6e22e">keyringPath</span>)
+		<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">IsNotExist</span>(<span style="color:#a6e22e">StatErr</span>) {
+			<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">RemoveAll</span>(<span style="color:#a6e22e">keyringPath</span>)
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#75715e">// cephfs fuse mount succeeded.
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+		}
+		<span style="color:#75715e">// if cephfs fuse mount failed, fallback to kernel mount.
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">2</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;CephFS fuse mount failed: %v, fallback to kernel mount.&#34;</span>, <span style="color:#a6e22e">err</span>)
+
+	}
+	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;CephFS kernel mount.&#34;</span>)
+
+	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">cephfsVolume</span>.<span style="color:#a6e22e">execMount</span>(<span style="color:#a6e22e">dir</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#75715e">// cleanup upon failure.
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">CleanupMountPoint</span>(<span style="color:#a6e22e">dir</span>, <span style="color:#a6e22e">cephfsVolume</span>.<span style="color:#a6e22e">mounter</span>, <span style="color:#66d9ef">false</span>)
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+</code></pre></div><p>为了使用用户态挂载，则需要在node节点上安装<code>ceph-fuse</code>的软件包。验证一把，这下应用程序终于在受限的盒子里使用cephfs存储卷了。</p>
+<p>真正的用户场景还是涉及cephfs存储卷的扩容，在网上找了下，发现已经有人实现了，文章在<a href="https://ieevee.com/tech/2019/04/14/pvc-resize.html#4cephfs%E5%8F%AF%E4%BB%A5%E6%89%A9%E5%AE%B9%E5%90%97">这里</a>。咨询过作者，大致了解了实现方法，需要修改kubernetes的代码：</p>
+<ol>
+<li>修改<a href="http://k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go">k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go</a>， 将cephfs加入ExpandableVolumePlugins列表里</li>
+</ol>
+<pre><code class="language-go " data-lang="go ">// ProbeExpandableVolumePlugins returns volume plugins which are expandable
+func ProbeExpandableVolumePlugins(config persistentvolumeconfig.VolumeConfiguration) []volume.VolumePlugin {
+   allPlugins := []volume.VolumePlugin{}
+
+   allPlugins = append(allPlugins, awsebs.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, gcepd.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, cinder.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, portworx.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, vsphere_volume.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, glusterfs.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, rbd.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, azure_dd.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, azure_file.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, scaleio.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, storageos.ProbeVolumePlugins()...)
+   allPlugins = append(allPlugins, fc.ProbeVolumePlugins()...)
+   return allPlugins
+}
+</code></pre><ol start="2">
+<li>修改<a href="http://k8s.io/kubernetes/pkg/volume/cephfs/cephfs.go">k8s.io/kubernetes/pkg/volume/cephfs/cephfs.go</a></li>
+</ol>
+<pre><code class="language-go " data-lang="go ">type ExpandableVolumePlugin interface {
+   VolumePlugin
+   ExpandVolumeDevice(spec *Spec, newSize resource.Quantity, oldSize resource.Quantity) (resource.Quantity, error)
+   RequiresFSResize() bool
+}
+</code></pre><p>在交流的过程中还结识了一个做kubernetes的同行-<a href="https://ieevee.com/about/">伊布</a>。</p>
+<p>使用cephfs用户态挂载并不是完全没有缺陷的，在实际运营过程中，我们发现当重启了node节点上的kubelet，已经挂载的cephfs卷会失效，而使用这些cephfs卷的容器会出现<code>Transport endpoint is not connected</code>的报错。目前想到三种办法解决问题：</p>
+<ol>
+<li>
+<p>通过<code>kubectl describe pod</code>、<code>docker inspect</code>等命令找到需要挂载cephfs卷的目录，通过<code>kubectl describe pv</code>命令找到cephfs卷的连接信息，然后使用<code>ceph-fuse</code>命令将cephfs卷挂载起来，参考如下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ceph-fuse -c /etc/ceph/ceph.conf -m xx.xx.xx.xx:6789 -r /xxxx /yyyy
+</code></pre></div></li>
+<li>
+<p>使用<code>kubectl delete pod</code>删除pod，kubernetes重建pod时会重新将cephfs卷挂载上。</p>
+</li>
+<li>
+<p>最后一招是一劳永逸的，修改kubernetes的代码，使用 <code>systemd-run</code> 来执行 <code>ceph-fuse</code>命令，这样重启kubelet后，这些<code>ceph-fuse</code>用户态进程不会随着kubelet进程的退出而退出，因此cephfs卷的挂载就不会失效，参考这个<a href="https://github.com/kubernetes/kubernetes/issues/77209">bug提交</a>，抽空把这个bug改了，给社区做点贡献。</p>
+</li>
+</ol>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://kubernetes.io/blog/2018/07/12/resizing-persistent-volumes-using-kubernetes/">https://kubernetes.io/blog/2018/07/12/resizing-persistent-volumes-using-kubernetes/</a></li>
+<li><a href="https://ieevee.com/tech/2019/04/14/pvc-resize.html">https://ieevee.com/tech/2019/04/14/pvc-resize.html</a></li>
+<li><a href="https://docs.ceph.com/docs/master/cephfs/quota/">https://docs.ceph.com/docs/master/cephfs/quota/</a></li>
+<li><a href="https://docs.ceph.com/docs/master/cephfs/kernel/">https://docs.ceph.com/docs/master/cephfs/kernel/</a></li>
+<li><a href="https://docs.ceph.com/docs/master/cephfs/fuse/">https://docs.ceph.com/docs/master/cephfs/fuse/</a></li>
+<li><a href="https://www.cnblogs.com/ltxdzh/p/9173706.html">https://www.cnblogs.com/ltxdzh/p/9173706.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-09-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/ceph/">ceph</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">编译arm64平台的软件包</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/">
+            <span class="next-text nav-default">kubernetes中部署mysql高可用集群</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

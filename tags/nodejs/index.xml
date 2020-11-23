@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nodejs on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/nodejs/</link>
+    <description>Recent content in nodejs on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 22 Nov 2020 20:54:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/nodejs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TypeScript项目小结</title>
+      <link>https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/</guid>
+      <description>最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为</description>
+    </item>
+    
+    <item>
+      <title>web浏览器自动化之playwright</title>
+      <link>https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/</link>
+      <pubDate>Sun, 01 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/</guid>
+      <description>工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver</description>
+    </item>
+    
+    <item>
+      <title>nodejs项目技术小结</title>
+      <link>https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/</guid>
+      <description>最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较</description>
+    </item>
+    
+    <item>
+      <title>修复hexo涉及中文的302问题</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E4%BF%AE%E5%A4%8Dhexo%E6%B6%89%E5%8F%8A%E4%B8%AD%E6%96%87%E7%9A%84302%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Fri, 17 Feb 2017 20:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E4%BF%AE%E5%A4%8Dhexo%E6%B6%89%E5%8F%8A%E4%B8%AD%E6%96%87%E7%9A%84302%E9%97%AE%E9%A2%98/</guid>
+      <description>今天在用hexo写博文时遇到一个涉及中文的302问题，记录一下。 当访问链接为http://middle3.dev.vivo.xyz:4000</description>
+    </item>
+    
+    <item>
+      <title>webpack的watch选项不工作原因分析</title>
+      <link>https://jeremyxu2010.github.io/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</link>
+      <pubDate>Thu, 26 Jan 2017 16:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</guid>
+      <description>今天尝试将以前创建的一个前端项目改为webpack编译，该项目使用了VueJS v2.0，原来是编写gulp脚本完成构建的。很自然就直接用vu</description>
+    </item>
+    
+    <item>
+      <title>使用create-react-app简化前端项目的建立</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/</link>
+      <pubDate>Wed, 25 Jan 2017 18:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/</guid>
+      <description>以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实</description>
+    </item>
+    
+    <item>
+      <title>使用hexo写博文</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8hexo%E5%86%99%E5%8D%9A%E6%96%87/</link>
+      <pubDate>Sun, 15 Jan 2017 22:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8hexo%E5%86%99%E5%8D%9A%E6%96%87/</guid>
+      <description>来到一个新的环境，发现周围好多同事都是用word写技术文档的，觉得有必要将markdown这么好的东西介绍给大家。同时为了方便各位技术同仁写</description>
+    </item>
+    
+    <item>
+      <title>处理一个NodeJS程序内存泄露的问题</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 29 May 2016 00:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>这几天使用WebDriver写了个网页黑盒测试脚本，使用的是NodeJS SDK，但脚本运行时间比较长时，感觉node进程的内存占用越来越多，</description>
+    </item>
+    
+    <item>
+      <title>WEB界面测试实践之Selenium WebDriver</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/</link>
+      <pubDate>Sun, 22 May 2016 22:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/</guid>
+      <description>工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了Selenium WebDriver。 WebDriver简介 The primary new feature in Selenium 2.0 is the</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_07</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/</link>
+      <pubDate>Sun, 15 May 2016 00:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/</guid>
+      <description>今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前</description>
+    </item>
+    
+    <item>
+      <title>koa框架源码解读</title>
+      <link>https://jeremyxu2010.github.io/2016/05/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Fri, 06 May 2016 00:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>虽然经常用koa作为NodeJS Web项目的框架，但一直都是只知道怎么做，但并不知道它究竟是怎么实现的。今天花了些时间来研究它，在这里记录一</description>
+    </item>
+    
+    <item>
+      <title>锁定NodeJS项目的依赖库</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/</link>
+      <pubDate>Tue, 03 May 2016 21:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/</guid>
+      <description>今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_06</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_06/</link>
+      <pubDate>Tue, 26 Apr 2016 21:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_06/</guid>
+      <description>作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说</description>
+    </item>
+    
+    <item>
+      <title>使用grunt对css中的background图片自动生成雪碧图</title>
+      <link>https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/</link>
+      <pubDate>Tue, 31 Mar 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/</guid>
+      <description>公司研发的系统为B/S架构，用户使用浏览器访问系统时，使用浏览器自带工具查看，对图片的请求数极多，多为小图片。 今天想对这个现状进行改善，网上</description>
+    </item>
+    
+    <item>
+      <title>atom-shell小例子</title>
+      <link>https://jeremyxu2010.github.io/2014/06/atom-shell%E5%B0%8F%E4%BE%8B%E5%AD%90/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/06/atom-shell%E5%B0%8F%E4%BE%8B%E5%AD%90/</guid>
+      <description>今天一个朋友问我一个问题，他想做一个win32的桌面应用程序，而且还希望程序能做出web页面那种漂亮的效果，可目前项目组的成员全是以前做前端</description>
+    </item>
+    
+    <item>
+      <title>atom-shell_mac版应用打包</title>
+      <link>https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/</guid>
+      <description>上一篇文章写了一个简单的PingDemo应用，今天参照atom-shell的文档将那个应用打包到mac应用，试了多久终于成功了，记录一下。 a</description>
+    </item>
+    
+  </channel>
+</rss>

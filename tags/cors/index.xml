@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cors on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/cors/</link>
+    <description>Recent content in cors on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Wed, 11 May 2016 00:46:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/cors/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Web跨域总结</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 11 May 2016 00:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/</guid>
+      <description>什么是同源 浏览器安全的基石是&amp;quot;同源政策&amp;rdquo;，所有浏览器都实行这个政策。所谓两个网页&amp;quot;同源&amp;quot;指的两个网</description>
+    </item>
+    
+  </channel>
+</rss>

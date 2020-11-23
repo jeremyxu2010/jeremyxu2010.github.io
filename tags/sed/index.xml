@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sed on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/sed/</link>
+    <description>Recent content in sed on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 12 Apr 2016 23:10:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/sed/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>sed命令工作原理及命令备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/04/sed%E5%91%BD%E4%BB%A4%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Tue, 12 Apr 2016 23:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/sed%E5%91%BD%E4%BB%A4%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98/</guid>
+      <description>sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查</description>
+    </item>
+    
+  </channel>
+</rss>

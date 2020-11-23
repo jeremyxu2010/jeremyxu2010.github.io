@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kong on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/kong/</link>
+    <description>Recent content in kong on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 17 Aug 2019 18:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/kong/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>让kong监听80和443端口</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</link>
+      <pubDate>Sat, 17 Aug 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</guid>
+      <description>问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443</description>
+    </item>
+    
+  </channel>
+</rss>

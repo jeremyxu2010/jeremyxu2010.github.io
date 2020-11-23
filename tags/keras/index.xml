@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>keras on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/keras/</link>
+    <description>Recent content in keras on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 07 May 2017 18:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/keras/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用keras破解验证码</title>
+      <link>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+      <pubDate>Sun, 07 May 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+      <description>今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登</description>
+    </item>
+    
+  </channel>
+</rss>

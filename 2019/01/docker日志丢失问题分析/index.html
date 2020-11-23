@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker日志丢失问题分析 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="docker日志丢失问题分析" />
+<meta property="og:description" content="今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/" />
+<meta property="article:published_time" content="2019-01-12T23:00:00+08:00" />
+<meta property="article:modified_time" content="2019-01-12T23:00:00+08:00" />
+<meta itemprop="name" content="docker日志丢失问题分析">
+<meta itemprop="description" content="今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中">
+<meta itemprop="datePublished" content="2019-01-12T23:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-01-12T23:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1715">
+
+
+
+<meta itemprop="keywords" content="docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker日志丢失问题分析"/>
+<meta name="twitter:description" content="今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker日志丢失问题分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-01-12 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1715 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题</a></li>
+    <li><a href="#heading-1">跟踪原因</a></li>
+    <li><a href="#heading-2">解决办法</a>
+      <ul>
+        <li><a href="#docker">降低docker日志的输出速率</a></li>
+        <li><a href="#journald">增大journald的速率限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">其它</a>
+      <ul>
+        <li><a href="#journald-1">journald配置文件的优化</a></li>
+        <li><a href="#journald-2">增大journald的速率限制的其它办法</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">总结</a></li>
+    <li><a href="#heading-5">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。</p>
+<h2 id="heading">问题</h2>
+<p>工作中把自己写的应用部署到kubernetes中后，用<code>kubectl -n some-ns logs some-pod -c one-container</code>命令查看不了该pod中container的日志，而用该命令去查看其它pod的日志，是可以正常显示的。</p>
+<h2 id="heading-1">跟踪原因</h2>
+<p>首先怀疑是应用本身的程序问题，将应用在本机运行了一下，是可以正常输出日志到标准输出的。</p>
+<p>接下来怀疑是kubernetes本身的问题，于是在kubernetes的某个节点上直接用docker命令运行起容器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name some-name -d some-image
+docker logs some-name <span style="color:#75715e"># 这里还是没有输出日志</span>
+</code></pre></div><p>看来跟kubernetes无关，直接用<code>docker run</code>跑容器都没有输出日志啊。</p>
+<p>不过一想应该docker本身应该不会存在这么大的问题，再做一个实验，同样的镜像，在我本机的docker环境中运行试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name some-name -d some-image
+docker logs some-name <span style="color:#75715e"># 这里输出了日志</span>
+</code></pre></div><p>看来是服务器上的docker环境有些毛病。</p>
+<p>然后看看docker的日志配置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat /etc/sysconfig/docker
+...
+OPTIONS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;--selinux-enabled --log-driver=journald --signature-verification=false --graph=/data/docker&#39;</span>
+...
+</code></pre></div><p>docker的配置里是将日志发送到journald的，于是看下docker服务本身的日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">journalctl _SYSTEMD_UNIT<span style="color:#f92672">=</span>docker.service
+</code></pre></div><p>观察日志，日志发送应该是没有什么问题的。</p>
+<p>接下来看看journald服务的日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">journalctl _SYSTEMD_UNIT<span style="color:#f92672">=</span>systemd-journald.service
+...
+Jan <span style="color:#ae81ff">10</span> 19:18:50 tshift-master systemd-journal<span style="color:#f92672">[</span>547<span style="color:#f92672">]</span>: Suppressed <span style="color:#ae81ff">1833</span> messages from /system.slice/docker.service
+Jan <span style="color:#ae81ff">10</span> 19:19:20 tshift-master systemd-journal<span style="color:#f92672">[</span>547<span style="color:#f92672">]</span>: Suppressed <span style="color:#ae81ff">1849</span> messages from /system.slice/docker.service
+Jan <span style="color:#ae81ff">10</span> 19:19:50 tshift-master systemd-journal<span style="color:#f92672">[</span>547<span style="color:#f92672">]</span>: Suppressed <span style="color:#ae81ff">1857</span> messages from /system.slice/docker.service
+Jan <span style="color:#ae81ff">10</span> 19:20:20 tshift-master systemd-journal<span style="color:#f92672">[</span>547<span style="color:#f92672">]</span>: Suppressed <span style="color:#ae81ff">2010</span> messages from /system.slice/docker.service
+Jan <span style="color:#ae81ff">10</span> 19:20:50 tshift-master systemd-journal<span style="color:#f92672">[</span>547<span style="color:#f92672">]</span>: Suppressed <span style="color:#ae81ff">1820</span> messages from /system.slice/docker.service
+...
+</code></pre></div><p>这里可以看到有大量的<code>Suppressed xxx messages from /system.slice/docker.service</code>的日志，从字面意思来理解，有很多日志被抑制了。</p>
+<p>为啥会出现这种问题呢？参阅<code>journald.conf</code>的官方文档，可以看到下面这段话：</p>
+<blockquote>
+<pre><code>man journald.conf
+...
+  RateLimitInterval=, RateLimitBurst=
+       Configures the rate limiting that is applied to all messages generated on the system. If, in the time interval defined by RateLimitInterval=, more messages than specified in RateLimitBurst= are logged by a service, all
+       further messages within the interval are dropped until the interval is over. A message about the number of dropped messages is generated. This rate limiting is applied per-service, so that two services which log do not
+       interfere with each other's limits. Defaults to 1000 messages in 30s. The time specification for RateLimitInterval= may be specified in the following units: &quot;s&quot;, &quot;min&quot;, &quot;h&quot;, &quot;ms&quot;, &quot;us&quot;. To turn off any kind of rate
+       limiting, set either value to 0.
+...
+</code></pre>
+</blockquote>
+<p>也就是说<code>docker</code>这个服务输出日志超出了每30秒1000条的速率限制，因此超出部分的日志被journald丢弃了。</p>
+<p>那么docker服务真的输出日志速率这么快吗？我这里用命令计算一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">journalctl _SYSTEMD_UNIT<span style="color:#f92672">=</span>docker.service --since <span style="color:#e6db74">&#34;2019-01-11 23:00:00&#34;</span> --until <span style="color:#e6db74">&#34;2019-01-11 23:05:00&#34;</span> | wc -l
+<span style="color:#ae81ff">10011</span> <span style="color:#75715e"># 10011/(5*60) * 30 = 1000</span>
+</code></pre></div><p>这样看来，docker服务输出日志的速度果然超出限制了。</p>
+<h2 id="heading-2">解决办法</h2>
+<p>既然是docker服务输出日志的速率超限，自然有两种解法：降低docker日志的输出速率、增大journald的速率限制。</p>
+<h3 id="docker">降低docker日志的输出速率</h3>
+<p>使用以下命令可以看到docker服务输出的日志：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">journalctl _SYSTEMD_UNIT<span style="color:#f92672">=</span>docker.service --since <span style="color:#e6db74">&#34;2019-01-11 23:00:00&#34;</span> --until <span style="color:#e6db74">&#34;2019-01-11 23:05:00&#34;</span>
+</code></pre></div><p>从命令的输出来看，基本都是一些容器的标准输出，而刚好出问题的服务器上运行了大量容器，而且有些容器确实在大量输出日志。当然改法自然是调整这些容器的程序，一般来说就是设置更合理的日志级别。</p>
+<h3 id="journald">增大journald的速率限制</h3>
+<p>如果服务器上运行了大量容器，每个容器输出一些日志，这些日志加起来也很容易超过journald的速率限制。因此还可以直接增大journald的速率限制。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 直接修改/etc/systemd/journald.conf，增大RateLimitBurst配置项的取值，修改完毕后重启journald服务</span>
+vim /etc/systemd/journald.conf
+systemctl restart systemd-journald
+</code></pre></div><h2 id="heading-3">其它</h2>
+<h3 id="journald-1">journald配置文件的优化</h3>
+<p>在修改<code>journald.conf</code>里，发现其某些配置项并不合理，可以参考<a href="https://docs.lvrui.io/2017/02/19/%E6%9B%B4%E6%94%B9docker%E7%9A%84%E6%97%A5%E5%BF%97%E5%BC%95%E6%93%8E%E4%B8%BA-journald/">这里</a>优化一下。</p>
+<h3 id="journald-2">增大journald的速率限制的其它办法</h3>
+<p>查看<code>journald.conf</code>配置文件的文档时，还发现对于较新版本的systemd来说，可以只修改某个服务对应的日志速率限制参数，这样不用修改<code>journald.conf</code>影响全局，可惜这个特性只有较新版本的systemd才有。</p>
+<blockquote>
+<pre><code>RateLimitIntervalSec=, RateLimitBurst=
+</code></pre><p>Configures the rate limiting that is applied to all messages generated on the system. If, in the time interval defined by <code>RateLimitIntervalSec=</code>, more messages than specified in <code>RateLimitBurst=</code> are logged by a service, all further messages within the interval are dropped until the interval is over. A message about the number of dropped messages is generated. This rate limiting is applied per-service, so that two services which log do not interfere with each other's limits. Defaults to 10000 messages in 30s. The time specification for <code>RateLimitIntervalSec=</code> may be specified in the following units: &ldquo;<code>s</code>&rdquo;, &ldquo;<code>min</code>&rdquo;, &ldquo;<code>h</code>&rdquo;, &ldquo;<code>ms</code>&rdquo;, &ldquo;<code>us</code>&rdquo;. To turn off any kind of rate limiting, set either value to 0.</p>
+<p>If a service provides rate limits for itself through <code>LogRateLimitIntervalSec=</code> and/or <code>LogRateLimitBurst=</code> in <a href="https://www.freedesktop.org/software/systemd/man/systemd.exec.html#">systemd.exec(5)</a>, those values will override the settings specified here.</p>
+</blockquote>
+<h2 id="heading-4">总结</h2>
+<p>docker的日志输出逻辑还是比较清晰的，这里就不具体介绍了，参考<a href="https://docs.docker.com/config/containers/logging/configure/">官方文档</a>就可以了，出了问题冷静一步步分析还是很靠谱的。</p>
+<h2 id="heading-5">参考</h2>
+<ol>
+<li><a href="https://docs.docker.com/config/containers/logging/configure/">https://docs.docker.com/config/containers/logging/configure/</a></li>
+<li><a href="https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/160.html">https://wizardforcel.gitbooks.io/vbird-linux-basic-4e/content/160.html</a></li>
+<li><a href="https://docs.lvrui.io/2017/02/19/%E6%9B%B4%E6%94%B9docker%E7%9A%84%E6%97%A5%E5%BF%97%E5%BC%95%E6%93%8E%E4%B8%BA-journald/">https://docs.lvrui.io/2017/02/19/%E6%9B%B4%E6%94%B9docker%E7%9A%84%E6%97%A5%E5%BF%97%E5%BC%95%E6%93%8E%E4%B8%BA-journald/</a></li>
+<li><a href="https://www.freedesktop.org/software/systemd/man/journald.conf.html">https://www.freedesktop.org/software/systemd/man/journald.conf.html</a></li>
+<li><a href="https://www.freedesktop.org/software/systemd/man/systemd.exec.html">https://www.freedesktop.org/software/systemd/man/systemd.exec.html</a></li>
+<li><a href="https://bani.com.br/2015/06/systemd-journal-what-does-systemd-journal-suppressed-n-messages-from-system-slice-mean/">https://bani.com.br/2015/06/systemd-journal-what-does-systemd-journal-suppressed-n-messages-from-system-slice-mean/</a></li>
+<li><a href="https://www.sulabs.net/?p=828">https://www.sulabs.net/?p=828</a></li>
+<li><a href="https://www.howtoing.com/how-to-use-journalctl-to-view-and-manipulate-systemd-logs">https://www.howtoing.com/how-to-use-journalctl-to-view-and-manipulate-systemd-logs</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-01-12</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用docker in docker</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/12/%E7%BC%96%E8%AF%91%E8%87%AA%E5%AE%9A%E4%B9%89python%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/">
+            <span class="next-text nav-default">编译自定义Python二进制程序</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

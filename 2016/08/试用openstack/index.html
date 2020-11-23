@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>试用openstack - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E8%AF%95%E7%94%A8openstack/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="试用openstack" />
+<meta property="og:description" content="公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E8%AF%95%E7%94%A8openstack/" />
+<meta property="article:published_time" content="2016-08-02T23:37:00+08:00" />
+<meta property="article:modified_time" content="2016-08-02T23:37:00+08:00" />
+<meta itemprop="name" content="试用openstack">
+<meta itemprop="description" content="公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支">
+<meta itemprop="datePublished" content="2016-08-02T23:37:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-02T23:37:00&#43;08:00" />
+<meta itemprop="wordCount" content="2213">
+
+
+
+<meta itemprop="keywords" content="openstack,kvm,linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="试用openstack"/>
+<meta name="twitter:description" content="公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">试用openstack</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-02 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/"> 云计算 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2213 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">安装环境概览</a></li>
+    <li><a href="#openstack">使用openstack</a></li>
+    <li><a href="#heading-1">使用体会</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支撑日常开发活动的服务器。之前的办法是在这些服务器利用KVM虚拟化技术手工创建虚拟机来满足需求，最常用到的命令可能就是qemu-img、virsh了。这种办法主要存在以下的问题：</p>
+<ul>
+<li>需要将每个主机上跑了哪些主机这些信息记录下来，最好形成表格，一旦有变更一定是同步更新表格</li>
+<li>虚拟机创建、销毁、迁移得手工敲命令完成，即使形成一些较通用的工具脚本，还是有不少敲命令的工作量</li>
+<li>由于公司机房安全限制，不允许机房里启动DHCP服务器，每个虚拟机镜像创建完毕之后，需要自行敲命令使用libguestfs相关命令修改虚拟机镜像文件系统中的网络配置文件，以使创建的虚拟机启动好后，自行配置好IP地址、主机名等信息。</li>
+</ul>
+<p>其实早就知道针对企业内部私有云可以采用openstack，但每次一看到openstack部署那浩浩荡荡的文档就打了退堂鼓。这个周末有空，终于有时间将看过到的openstack部署过程实践一把了。我基本上是参照<a href="http://docs.openstack.org/mitaka/install-guide-rdo/">在CentOS7上部署openstack mitaka版</a>的官方文档来操作的，这里就不记录详细的过程了，重点写一下安装过程中坑。</p>
+<h2 id="heading">安装环境概览</h2>
+<p>为了部署的方便，我仅在一台物理上部署openstack的Identity service(keystone)、Image service(glance)、Compute service(nova)、Networking service(neutron)、Block Storage service(cinder)、Dashboard(horizon)。由于只是测试部署的过程及试用openstack的功能，并没有部署Object Storage service(swift)。同时Networking service采用的是<a href="http://docs.openstack.org/mitaka/install-guide-rdo/overview.html#id4">Provider networks</a>的方案。</p>
+<p>整个部署还是比较简单的。</p>
+<p>首先看一下<a href="http://docs.openstack.org/mitaka/install-guide-rdo/overview.html">openstack各组成部分的概览</a>，大概理解各组成部分之间的关系，根据自身需求确定好网络方案。</p>
+<p>然后就是按文档<a href="http://docs.openstack.org/mitaka/install-guide-rdo/environment.html">准备环境</a>，这里主要就是生成安全的密码并记录下来、确定管理网络与工作网络的网络拓扑、配置时间同步服务、配置yum软件安装源、安装配置SQL数据库、安装配置NoSQL数据库、安装配置消息队列、安装配置内存缓存服务。</p>
+<p>然后就是按照各部分的部署文档一步步部署就是了。大部分openstack组件的安装过程无非是以下几个步骤（有的组件还需要在控制节点及计算节点分别进行安装配置）：</p>
+<ul>
+<li>创建组件对应的SQL数据库及授予访问该数据库的用户权限</li>
+<li>创建管理该组件在keystone中对应服务的用户</li>
+<li>在keystone中将该组件注册为服务，并创建服务的API访问端点（公开的、内部的、管理的）</li>
+<li>安装该组件的rpm包，修改该组件的一系列配置文件</li>
+<li>初始化组件对应的SQL数据库的表结构</li>
+<li>设置组件对应的系统服务开机自启并启动</li>
+</ul>
+<p>在安装的过程中其实也慢慢对openstack中说到的Domain、Project、Role、User有一些感觉，后来看到了<a href="http://www.ibm.com/developerworks/cn/cloud/library/1506_yuwz_keystonev3/index.html">IBM的一篇文章</a>，才对openstack中的授权模型及它的鉴权逻辑有进一步理解。</p>
+<h2 id="openstack">使用openstack</h2>
+<p>还是按照<a href="http://docs.openstack.org/mitaka/install-guide-rdo/launch-instance.html">文档</a>尝试在openstack平台上启动一个虚拟机。其实在这篇文章里的所有操作都可以通过访问dashboard来操作，而且如果只是为了使用openstack，我也建议应该使用dashboard界面操作，毕竟今后使用起来会经常创建虚拟机，早点熟悉界面操作也有益处。</p>
+<p>创建并启动虚拟机这里有一个坑，我发现完全通过界面无法使用操作系统的安装ISO给一个虚拟机全新安装系统，每次总是报&quot;no usable disks hava been found&rdquo;，后来google后才知道现在只有两种解决方法：</p>
+<ul>
+<li>要么使用传统KVM虚拟化方案，装好系统后，拿到系统的镜像文件，将镜像文件上传至openstack的镜像服务，再以此镜像创建虚拟机</li>
+<li>要么下载操作系统的虚拟机镜像文件（如<code>http://docs.openstack.org/image-guide/obtain-images.html</code>），将镜像文件上传至openstack的镜像服务，再以此镜像创建虚拟机</li>
+</ul>
+<h2 id="heading-1">使用体会</h2>
+<p>简单试用了openstack的功能后，记录一下自己的体会。</p>
+<p>openstack作为云计算IaaS的一站式解决方案，总的来说架构还是比较清晰的，各组件之间的交互方式也比较统一(都是利用keystone这个服务注册框架来完成服务之间的交互的)，各个组件在设计初也考虑了多种底层实现方案，用户可根据自己的实际情况修改配置文件来满足需求。</p>
+<p>不过缺点也比较明显，我感觉如下：</p>
+<ul>
+<li>各个逻辑组成划分得比较细，如果只是搭建一个不超过10台物理机的小型私有云环境，使用openstack就会感觉逻辑组成部分过多了，增大了部署的复杂度</li>
+<li>各个组件在设计时考虑了太多底层实现方案，导致配置文件里的配置项相当多，每个配置项的取值也相当多，十分考验部署能力</li>
+<li>对虚拟机libvirt细粒度的调整能力不足，比如想调整某个虚拟机的xml定义变得很复杂。</li>
+<li>组件过多，比较消耗系统资源，如图</li>
+</ul>
+<p><img src="/images/20160802/openstack_processes.png" alt="openstack相关进程消耗"></p>
+<p>其实这几天我一直在思考在目前研发这个环境中，最适合的私有云管理平台是什么，可以肯定openstack肯定是不太适合。经过几天的思考，大致有一个方案，接下来我会将这个方案实践一下，如果成功，我会将这个方案写出来。</p>
+<h2 id="heading-2">参考</h2>
+<p><code>http://docs.openstack.org/mitaka/install-guide-rdo</code>
+<code>http://www.ibm.com/developerworks/cn/cloud/library/1506_yuwz_keystonev3/index.html</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-02</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/openstack/">openstack</a>
+          
+          <a href="/tags/kvm/">kvm</a>
+          
+          <a href="/tags/linux/">linux</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E4%BF%9D%E5%AD%98mysql-innodb%E7%9A%84auto_increment%E5%80%BC%E5%8F%A6%E7%B1%BB%E6%96%B9%E6%A1%88/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">保存mysql InnoDB的auto_increment值另类方案</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/07/%E7%A7%81%E6%9C%89%E4%BA%91%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83ntp%E6%9C%8D%E5%8A%A1%E6%90%AD%E5%BB%BA/">
+            <span class="next-text nav-default">私有云数据中心NTP服务搭建</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

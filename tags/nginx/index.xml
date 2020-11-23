@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nginx on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/nginx/</link>
+    <description>Recent content in nginx on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Nov 2019 18:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>优化nginx-ingress-controller并发性能</title>
+      <link>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</guid>
+      <description>这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出</description>
+    </item>
+    
+    <item>
+      <title>高可用之keepalived&amp;haproxy</title>
+      <link>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</guid>
+      <description>项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功</description>
+    </item>
+    
+    <item>
+      <title>Web应用程序限速方法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Mon, 09 May 2016 00:15:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</guid>
+      <description>一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越</description>
+    </item>
+    
+    <item>
+      <title>nginx使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Mon, 02 May 2016 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般</description>
+    </item>
+    
+    <item>
+      <title>使用fail2ban进行DDOS防护</title>
+      <link>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</guid>
+      <description>朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，</description>
+    </item>
+    
+  </channel>
+</rss>

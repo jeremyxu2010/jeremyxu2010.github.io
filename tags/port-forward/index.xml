@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>port-forward on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/port-forward/</link>
+    <description>Recent content in port-forward on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 15 Dec 2018 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/port-forward/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SSH的三种端口转发</title>
+      <link>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Sat, 15 Dec 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
+      <description>最近工作中经常需要ssh登录到某台跳板机，再连接受限网络环境中的某台服务器。以前经常用SSH端口转发这一功能，但周围的同事好像对这个并不清楚</description>
+    </item>
+    
+  </channel>
+</rss>

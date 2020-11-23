@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>分析APP访问后台服务的网络故障 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="分析APP访问后台服务的网络故障" />
+<meta property="og:description" content="工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/" />
+<meta property="article:published_time" content="2020-01-06T11:30:00+08:00" />
+<meta property="article:modified_time" content="2020-01-06T11:30:00+08:00" />
+<meta itemprop="name" content="分析APP访问后台服务的网络故障">
+<meta itemprop="description" content="工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致">
+<meta itemprop="datePublished" content="2020-01-06T11:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-01-06T11:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="688">
+
+
+
+<meta itemprop="keywords" content="golang,http,android,hey," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="分析APP访问后台服务的网络故障"/>
+<meta name="twitter:description" content="工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">分析APP访问后台服务的网络故障</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-01-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 688 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">了解网络链路</a></li>
+    <li><a href="#heading-1">估算网络请求压力</a></li>
+    <li><a href="#heading-2">对后端服务进行压测</a></li>
+    <li><a href="#heading-3">在手机上压测</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。</p>
+<h2 id="heading">了解网络链路</h2>
+<p>首先大致了解下该场景的网络链路，比较简单。</p>
+<pre><code>APP  -&gt;    HTTP Proxy Server   -&gt;  APP backend Service
+</code></pre><h2 id="heading-1">估算网络请求压力</h2>
+<p>在测试场景里，有70台手机上的APP向对后端服务发出HTTP请求。假设每个APP每秒发出一个请求，这样算得后端服务需要扛住的请求压力至少为70qps。</p>
+<h2 id="heading-2">对后端服务进行压测</h2>
+<p>首先检测下后端服务是否可以扛住此压力。使用以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ hey -z 60s -c <span style="color:#ae81ff">70</span> -q <span style="color:#ae81ff">1</span> -m <span style="color:#e6db74">&#39;POST&#39;</span> -d <span style="color:#e6db74">&#39;xxxxx&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -T <span style="color:#e6db74">&#34;application/x-www-form-urlencoded; charset=UTF-8&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;accept: */*&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;accept-encoding: gzip, deflate&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;connection: keep-alive&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;content-length: 111&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;user-agent: python-requests/2.10.0&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#e6db74">&#34;http://xxx/yyyy&#34;</span>
+	
+Summary:
+  Total:	10.7173 secs
+  Slowest:	0.7229 secs
+  Fastest:	0.3527 secs
+  Average:	0.4343 secs
+  Requests/sec:	65.3150
+  
+......
+
+Latency distribution:
+  10% in 0.3806 secs
+  25% in 0.3908 secs
+  50% in 0.4115 secs
+  75% in 0.4431 secs
+  90% in 0.4941 secs
+  95% in 0.6704 secs
+  99% in 0.7166 secs
+
+Details <span style="color:#f92672">(</span>average, fastest, slowest<span style="color:#f92672">)</span>:
+  DNS+dialup:	0.0034 secs, 0.3527 secs, 0.7229 secs
+  DNS-lookup:	0.0017 secs, 0.0000 secs, 0.0188 secs
+  req write:	0.0001 secs, 0.0000 secs, 0.0012 secs
+  resp wait:	0.4305 secs, 0.3525 secs, 0.7228 secs
+  resp read:	0.0002 secs, 0.0000 secs, 0.0038 secs
+
+Status code distribution:
+  <span style="color:#f92672">[</span>200<span style="color:#f92672">]</span>	<span style="color:#ae81ff">4200</span> responses
+</code></pre></div><p>关注下结果中各关键指标，效果还是挺好的，因此认为后端服务没有问题。</p>
+<p><strong>这里为啥要用hey，而不是ab？因为hey是用golang语言编写的，很方便编译出android手机上可运行的二进制版本。</strong></p>
+<h2 id="heading-3">在手机上压测</h2>
+<p>首先要编译出一个可在Android手机上运行的hey二进制文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ brew cask install android-ndk
+$ export ANDROID_NDK_HOME<span style="color:#f92672">=</span>/usr/local/share/android-ndk
+$ git clone https://github.com/rakyll/hey.git
+$ cd hey
+$ go mod download
+$ env GOOS<span style="color:#f92672">=</span>android GOARCH<span style="color:#f92672">=</span>arm64 CC<span style="color:#f92672">=</span>/usr/local/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang CXX<span style="color:#f92672">=</span>/usr/local/share/android-ndk/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android21-clang++ CGO_ENABLED<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> go build -o hey .
+</code></pre></div><p>将编译出的二进制文件上传至Android手机：</p>
+<pre><code class="language-bash " data-lang="bash ">$ adb connect xxx.xxx.xxx.xxx:yyy
+$ adb -s xxx.xxx.xxx.xxx:yyy push hey /data/local/tmp/hey
+</code></pre><p>最后在Android手机上执行压测命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ adb -s xxx.xxx.xxx.xxx:yyy shell
+$ cd /data/local/tmp
+$ chmod +x ./hey
+$ ./hey -z 60s -c <span style="color:#ae81ff">70</span> -q <span style="color:#ae81ff">1</span> -x http://zzz.zzz.zzz.zzz:aaa -m <span style="color:#e6db74">&#39;POST&#39;</span> -d <span style="color:#e6db74">&#39;xxxxx&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -T <span style="color:#e6db74">&#34;application/x-www-form-urlencoded; charset=UTF-8&#34;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;accept: */*&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;accept-encoding: gzip, deflate&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;connection: keep-alive&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;content-length: 111&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -H <span style="color:#e6db74">&#39;user-agent: python-requests/2.10.0&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>	<span style="color:#e6db74">&#34;http://xxx/yyyy&#34;</span>
+</code></pre></div><p><strong>这里按我们的场景，压测时还指定了HTTP代理</strong></p>
+<p>果然这样测得QPS差了很多。找维护代理服务器的同学咨询了下，果然是代理服务器存在性能瓶颈。</p>
+<h2 id="heading-4">参考</h2>
+<ol>
+<li><a href="https://github.com/rakyll/hey">https://github.com/rakyll/hey</a></li>
+<li><a href="https://golang.org/misc/android/README">https://golang.org/misc/android/README</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-01-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/http/">http</a>
+          
+          <a href="/tags/android/">android</a>
+          
+          <a href="/tags/hey/">hey</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/02/%E4%BA%AB%E5%8F%97%E8%87%AA%E7%94%B1%E7%9A%84%E7%BD%91%E7%BB%9C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">享受自由的网络</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/12/%E5%AD%A6%E4%B9%A0django/">
+            <span class="next-text nav-default">学习django</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

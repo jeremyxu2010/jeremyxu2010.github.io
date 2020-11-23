@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>重新理解HTTP中的“持久连接” - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="Web页面优化中有一条很重要的规则说应在不影响代码可阅读性的前提下尽量减少请求数。以前一直以为过多的请求数会导致要建立大量连接，所以影响页面" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/09/%E9%87%8D%E6%96%B0%E7%90%86%E8%A7%A3http%E4%B8%AD%E7%9A%84%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="重新理解HTTP中的“持久连接”" />
+<meta property="og:description" content="Web页面优化中有一条很重要的规则说应在不影响代码可阅读性的前提下尽量减少请求数。以前一直以为过多的请求数会导致要建立大量连接，所以影响页面" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/09/%E9%87%8D%E6%96%B0%E7%90%86%E8%A7%A3http%E4%B8%AD%E7%9A%84%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5/" />
+<meta property="article:published_time" content="2016-09-05T23:16:00+08:00" />
+<meta property="article:modified_time" content="2016-09-05T23:16:00+08:00" />
+<meta itemprop="name" content="重新理解HTTP中的“持久连接”">
+<meta itemprop="description" content="Web页面优化中有一条很重要的规则说应在不影响代码可阅读性的前提下尽量减少请求数。以前一直以为过多的请求数会导致要建立大量连接，所以影响页面">
+<meta itemprop="datePublished" content="2016-09-05T23:16:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-09-05T23:16:00&#43;08:00" />
+<meta itemprop="wordCount" content="2712">
+
+
+
+<meta itemprop="keywords" content="HTTP, javascript," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="重新理解HTTP中的“持久连接”"/>
+<meta name="twitter:description" content="Web页面优化中有一条很重要的规则说应在不影响代码可阅读性的前提下尽量减少请求数。以前一直以为过多的请求数会导致要建立大量连接，所以影响页面"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">重新理解HTTP中的“持久连接”</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-09-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2712 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">持久连接的概念</a></li>
+    <li><a href="#heading-1">产生疑问</a></li>
+    <li><a href="#http2">HTTP/2中的改进</a></li>
+    <li><a href="#websocketweb">基于WebSocket的Web请求机制</a></li>
+    <li><a href="#heading-2">总结</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Web页面优化中有一条很重要的规则说应在不影响代码可阅读性的前提下尽量减少请求数。以前一直以为过多的请求数会导致要建立大量连接，所以影响页面加载速度。但今天看到<a href="http://www.ruanyifeng.com/blog/2016/08/http.html">阮一峰的一篇文章</a>，发现真相原来不是这样的。</p>
+<h2 id="heading">持久连接的概念</h2>
+<p>HTTP/1.0 版的主要缺点是，每个TCP连接只能发送一个请求。发送数据完毕，连接就关闭，如果还要请求其他资源，就必须再新建一个连接。
+TCP连接的新建成本很高，因为需要客户端和服务器三次握手，并且开始时发送速率较慢（slow start）。所以，HTTP 1.0版本的性能比较差。随着网页加载的外部资源越来越多，这个问题就愈发突出了。
+为了解决这个问题，HTTP/1.1引入了持久连接（persistent connection），即TCP连接默认不关闭，可以被多个请求复用，不用声明<code>Connection: keep-alive</code>。</p>
+<p>客户端和服务器发现对方一段时间没有活动，就可以主动关闭连接。不过，规范的做法是，客户端在最后一个请求时，发送Connection: close，明确要求服务器关闭TCP连接。</p>
+<pre><code>Connection: close
+</code></pre><p>目前，对于同一个域名，大多数浏览器允许同时建立6个持久连接。</p>
+<h2 id="heading-1">产生疑问</h2>
+<p>从上面的概念展开来想，HTTP/1.1中的持久连接仅仅是复用连接而已，但在HTTP协议层面并没有给每个请求添加编号，如果在一条TCP连接上同时发送多个请求，当响应返回时，并没有办法确定某个响应是对应哪个请求的。所以猜想在一条TCP连接上，所有的数据通信是按次序进行的。</p>
+<p>这一猜想果然得到印证：</p>
+<blockquote>
+<p>虽然1.1版允许复用TCP连接，但是同一个TCP连接里面，所有的数据通信是按次序进行的。服务器只有处理完一个回应，才会进行下一个回应。要是前面的回应特别慢，后面就会有许多请求排队等着。这称为&quot;队头堵塞&rdquo;（Head-of-line blocking）。</p>
+</blockquote>
+<blockquote>
+<p>为了避免这个问题，只有两种方法：一是减少请求数，二是同时多开持久连接。这导致了很多的网页优化技巧，比如合并脚本和样式表、将图片嵌入CSS代码、域名分片（domain sharding）等等。</p>
+</blockquote>
+<p>也就是说对于同一个域名，假设浏览器允许同时建立6个持久连接。通过ajax请求向服务器发送6个请求，如果这6个请求业务处理都比较慢，则此时再发起第7个ajax请求，这个请求将被阻塞住。所以说页面的异步请求问题仅靠AJAX是无法完全解决，当多个AJAX请求均阻塞TCP连接时，这个时候再怎么发送AJAX请求也达不到异步请求响应的需求。</p>
+<p>想象一下，当一个页面被加载时，会同时向服务端发起多个请求，有的在加载js、有的在加载css、有的在加载图片，一旦某个资源加载过慢，它就会阻塞在这条TCP连接上其它的请求，最终导致整个页面加载时间过长。这个才是连接数过多页面加载慢的真正原因。</p>
+<h2 id="http2">HTTP/2中的改进</h2>
+<p>HTTP/2中引入了“多工”与“数据流”的概念来对上述缺陷进行改进，如下：</p>
+<ul>
+<li>多工</li>
+</ul>
+<blockquote>
+<p>HTTP/2 复用TCP连接，在一个连接里，客户端和浏览器都可以同时发送多个请求或回应，而且不用按照顺序一一对应，这样就避免了&quot;队头堵塞&rdquo;。
+举例来说，在一个TCP连接里面，服务器同时收到了A请求和B请求，于是先回应A请求，结果发现处理过程非常耗时，于是就发送A请求已经处理好的部分， 接着回应B请求，完成后，再发送A请求剩下的部分。
+这样双向的、实时的通信，就叫做多工（Multiplexing）。</p>
+</blockquote>
+<ul>
+<li>数据流</li>
+</ul>
+<blockquote>
+<p>因为 HTTP/2 的数据包是不按顺序发送的，同一个连接里面连续的数据包，可能属于不同的回应。因此，必须要对数据包做标记，指出它属于哪个回应。
+HTTP/2 将每个请求或回应的所有数据包，称为一个数据流（stream）。每个数据流都有一个独一无二的编号。数据包发送的时候，都必须标记数据流ID，用来区分它属于哪个数据流。另外还规定，客户端发出的数据流，ID一律为奇数，服务器发出的，ID为偶数。
+数据流发送到一半的时候，客户端和服务器都可以发送信号（RST_STREAM帧），取消这个数据流。1.1版取消数据流的唯一方法，就是关闭TCP连接。这就是说，HTTP/2 可以取消某一次请求，同时保证TCP连接还打开着，可以被其他请求使用。
+客户端还可以指定数据流的优先级。优先级越高，服务器就会越早回应。</p>
+</blockquote>
+<h2 id="websocketweb">基于WebSocket的Web请求机制</h2>
+<p>看到HTTP/2中“数据流”的实现方案，突然想到我之前实现的一套基于WebSocket的Web请求机制好像也是这么完成的。下面贴一段核心的实现代码：</p>
+<p><code>webIO.js</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">socketio_client</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;socket.io-client&#39;</span>);
+
+window.<span style="color:#a6e22e">io</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">socketio_client</span>; <span style="color:#75715e">// IE8 need io
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">AppConstant</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;../constants/AppConstant.js&#39;</span>);
+
+window.<span style="color:#a6e22e">WEB_SOCKET_SWF_LOCATION</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">AppConstant</span>.<span style="color:#a6e22e">PORTAL_CONTEXT_PATH</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/flash/WebSocketMain.swf&#39;</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">EventEmitter</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;events&#39;</span>).<span style="color:#a6e22e">EventEmitter</span>;
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">inherits</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;inherits&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">when</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;when&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./Logger.js&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">AjaxAPI</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./AjaxAPI.js&#39;</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">websocketHostName</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">hostname</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">WebIO</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#a6e22e">EventEmitter</span>.<span style="color:#a6e22e">call</span>(<span style="color:#66d9ef">this</span>);
+    <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span>;
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionAttempts</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionAttempts</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">5</span>;
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionDelay</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionDelay</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">2000</span>;
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">connectTimeout</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">connectTimeout</span> <span style="color:#f92672">||</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionAttempts</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionDelay</span>);
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">disconnectTimeout</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">disconnectTimeout</span> <span style="color:#f92672">||</span> <span style="color:#ae81ff">5000</span>;
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connected</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+};
+
+<span style="color:#a6e22e">inherits</span>(<span style="color:#a6e22e">WebIO</span>, <span style="color:#a6e22e">EventEmitter</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#a6e22e">WebIO</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">connect</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">that</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">connectPromise</span>.<span style="color:#a6e22e">inspect</span>().<span style="color:#a6e22e">state</span> <span style="color:#f92672">!==</span> <span style="color:#e6db74">&#39;pending&#39;</span>){
+        <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+        <span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">when</span>.<span style="color:#a6e22e">promise</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) {
+            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span>) {
+                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">connectCb</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span> () {
+                    <span style="color:#a6e22e">resolve</span>();
+                };
+                <span style="color:#a6e22e">AjaxAPI</span>.<span style="color:#a6e22e">request</span>(<span style="color:#a6e22e">AppConstant</span>.<span style="color:#a6e22e">PORTAL_CONTEXT_PATH</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/api/getSocketIOAccessInfo&#39;</span>, {
+                    <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> {
+                        <span style="color:#a6e22e">t</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">new</span> Date().<span style="color:#a6e22e">getTime</span>()
+                    },
+                    <span style="color:#a6e22e">dataType</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;json&#39;</span>,
+                    <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;post&#39;</span>,
+                    <span style="color:#a6e22e">cache</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>
+                }).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>){
+                    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">socketIOPort</span>;
+                    <span style="color:#66d9ef">if</span>(window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">protocol</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;https:&#39;</span>){
+                        <span style="color:#a6e22e">socketIOPort</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">socketIOHttpsAccessPort</span>;
+                    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span>(window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">protocol</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;http:&#39;</span>){
+                        <span style="color:#a6e22e">socketIOPort</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">socketIOAccessPort</span>;
+                    }
+                    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">websocketHostName</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">hostname</span>;
+                    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">socketIOAccessHostName</span>){
+                        <span style="color:#a6e22e">websocketHostName</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">socketIOAccessHostName</span>;
+                    }
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">socketio_client</span>.<span style="color:#a6e22e">connect</span>(window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">protocol</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;//&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">websocketHostName</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">socketIOPort</span>, {
+                        <span style="color:#a6e22e">reconnect</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+                        <span style="color:#e6db74">&#39;max reconnection attempts&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionAttempts</span>,
+                        <span style="color:#e6db74">&#39;reconnection delay&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">reconnectionDelay</span>,
+                        <span style="color:#a6e22e">transports</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;websocket&#39;</span>, <span style="color:#e6db74">&#39;flashsocket&#39;</span>, <span style="color:#e6db74">&#39;xhr-polling&#39;</span>],
+                        <span style="color:#a6e22e">resource</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;portal_socketio&#39;</span>,
+                        <span style="color:#e6db74">&#39;force new connection&#39;</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+                    });
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;connect&#39;</span>, <span style="color:#66d9ef">function</span>(){
+                        <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+                        <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">emit</span>(<span style="color:#e6db74">&#39;open&#39;</span>);
+                    });
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;disconnect&#39;</span>, <span style="color:#66d9ef">function</span>(){
+                        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span>) {
+                            <span style="color:#66d9ef">try</span> {
+                                <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">disconnect</span>();
+                            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {}
+                            <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+                        }
+                        <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">emit</span>(<span style="color:#e6db74">&#39;close&#39;</span>);
+                    });
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;connect_failed&#39;</span>, <span style="color:#66d9ef">function</span>(){
+                        <span style="color:#a6e22e">reject</span>(<span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;connect failed&#39;</span>));
+                    });
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;data&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>){
+                        <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">emit</span>(<span style="color:#e6db74">&#39;msg&#39;</span>, <span style="color:#a6e22e">data</span>);
+                    });
+
+                    <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">once</span>(<span style="color:#e6db74">&#39;connect&#39;</span>, <span style="color:#a6e22e">connectCb</span>);
+                }, <span style="color:#66d9ef">function</span>(){
+                    <span style="color:#a6e22e">reject</span>(<span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;connect failed&#39;</span>));
+                });
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#a6e22e">resolve</span>();
+            }
+        });
+        <span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">connectPromise</span>.<span style="color:#a6e22e">timeout</span>(<span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">connectTimeout</span>, <span style="color:#e6db74">&#39;connect timeout&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+            <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">disconnect</span>();
+            <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">e</span>);
+        });
+    }
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">connectPromise</span>;
+};
+
+<span style="color:#a6e22e">WebIO</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">disconnect</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">that</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+    <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">promise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">when</span>.<span style="color:#a6e22e">promise</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) {
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span>){
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">disconnectCb</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+                <span style="color:#a6e22e">resolve</span>();
+            };
+            <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">once</span>(<span style="color:#e6db74">&#39;disconnect&#39;</span>, <span style="color:#a6e22e">disconnectCb</span>);
+            <span style="color:#66d9ef">try</span> {
+                <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">disconnect</span>();
+            } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>){
+                <span style="color:#a6e22e">reject</span>(<span style="color:#a6e22e">e</span>);
+            }
+        } <span style="color:#66d9ef">else</span> {
+            <span style="color:#a6e22e">resolve</span>();
+        }
+    });
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">promise</span>.<span style="color:#a6e22e">timeout</span>(<span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">disconnectTimeout</span>, <span style="color:#e6db74">&#39;disconnect timeout&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">e</span>);
+    });
+};
+
+<span style="color:#a6e22e">WebIO</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">sendData</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">that</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>;
+    <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">msg</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">msg</span> <span style="color:#f92672">||</span> <span style="color:#e6db74">&#39;&#39;</span>;
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">when</span>.<span style="color:#a6e22e">resolve</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">connected</span>){
+            <span style="color:#a6e22e">that</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">emit</span>(<span style="color:#e6db74">&#39;data&#39;</span>, <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">msg</span>);
+        } <span style="color:#66d9ef">else</span> {
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;not connected&#39;</span>);
+        }
+    }).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">error</span>(<span style="color:#a6e22e">e</span>);
+    });
+};
+
+<span style="color:#a6e22e">WebIO</span>.<span style="color:#a6e22e">prototype</span>.<span style="color:#a6e22e">isConnected</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connected</span>;
+};
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebIO</span>();
+</code></pre></div><p><code>webAPI.js</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webIO</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./webIO.js&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">when</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;when&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Logger</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./Logger.js&#39;</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">msgIdCounter</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">REQ_TIMEOUT</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">60</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">5</span>;
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">reqCb</span> <span style="color:#f92672">=</span> {};
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">nextMsgId</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+    <span style="color:#a6e22e">msgIdCounter</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">msgIdCounter</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> (Number.<span style="color:#a6e22e">MAX_VALUE</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>);
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">msgIdCounter</span>;
+
+};
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">MSG_TYPE</span> <span style="color:#f92672">=</span> {
+    <span style="color:#a6e22e">REQ_MSG</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>,
+    <span style="color:#a6e22e">RES_MSG</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>,
+    ...
+};
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webAPI</span> <span style="color:#f92672">=</span> {};
+
+<span style="color:#a6e22e">webAPI</span>.<span style="color:#a6e22e">request</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">path</span>){
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#e6db74">&#39;path must not be empty&#39;</span>);
+    }
+    <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">data</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">reqId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nextMsgId</span>();
+    window.<span style="color:#a6e22e">isDebug</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">debug</span>(<span style="color:#e6db74">&#34;webAPI request&#34;</span>, <span style="color:#a6e22e">reqId</span>, <span style="color:#a6e22e">opts</span>);
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">promise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">when</span>.<span style="color:#a6e22e">promise</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) {
+        <span style="color:#a6e22e">webAPI</span>.<span style="color:#a6e22e">connect</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">sendReqMsg</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">msg</span> <span style="color:#f92672">=</span> {
+                    <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">MSG_TYPE</span>.<span style="color:#a6e22e">REQ_MSG</span>,
+                    <span style="color:#a6e22e">reqId</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">reqId</span>,
+                    <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">path</span>,
+                    <span style="color:#a6e22e">body</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">opts</span>.<span style="color:#a6e22e">data</span>
+                };
+                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">webIO</span>.<span style="color:#a6e22e">sendData</span>({
+                    <span style="color:#a6e22e">msg</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">msg</span>)
+                });
+            };
+            <span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;resovle&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">resolve</span>, <span style="color:#e6db74">&#39;reject&#39;</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">reject</span>};
+            <span style="color:#a6e22e">sendReqMsg</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#a6e22e">reject</span>);
+        }, <span style="color:#a6e22e">reject</span>);
+    });
+    <span style="color:#a6e22e">promise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">promise</span>.<span style="color:#a6e22e">timeout</span>(<span style="color:#a6e22e">REQ_TIMEOUT</span>, <span style="color:#e6db74">&#39;request timeout&#39;</span>).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>]) {
+            <span style="color:#66d9ef">delete</span> <span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>];
+        }
+        <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;webAPI.request :&#39;</span>, <span style="color:#a6e22e">e</span>);
+        <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">e</span>;
+    });
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">promise</span>;
+};
+
+<span style="color:#a6e22e">webAPI</span>.<span style="color:#a6e22e">connect</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">opts</span>){
+    <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">||</span> {};
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">===</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">connectPromise</span>.<span style="color:#a6e22e">inspect</span>().<span style="color:#a6e22e">state</span> <span style="color:#f92672">!==</span> <span style="color:#e6db74">&#39;pending&#39;</span>){
+        <span style="color:#a6e22e">connectPromise</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">when</span>.<span style="color:#a6e22e">promise</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>) {
+            <span style="color:#a6e22e">webIO</span>.<span style="color:#a6e22e">connect</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+                <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">connected</span>) {
+                    <span style="color:#a6e22e">resolve</span>();
+                } <span style="color:#66d9ef">else</span> {
+                    <span style="color:#a6e22e">reject</span>();
+                }
+            }, <span style="color:#a6e22e">reject</span>);
+        });
+    }
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">connectPromise</span>;
+};
+
+...
+
+<span style="color:#a6e22e">webIO</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;msg&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>){
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">msg</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">data</span>);
+    window.<span style="color:#a6e22e">isDebug</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">Logger</span>.<span style="color:#a6e22e">debug</span>(<span style="color:#e6db74">&#34;webAPI response&#34;</span>, <span style="color:#a6e22e">msg</span>);
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">msgType</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">type</span>;
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">msgType</span> <span style="color:#f92672">===</span> <span style="color:#a6e22e">MSG_TYPE</span>.<span style="color:#a6e22e">RES_MSG</span>){
+        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">reqId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">reqId</span>;
+        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">resp</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">msg</span>.<span style="color:#a6e22e">body</span>;
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>]){
+            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">success</span>) {
+                <span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>].<span style="color:#a6e22e">resovle</span>(<span style="color:#a6e22e">resp</span>);
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">e</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Error(<span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">msg</span>);
+                <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">msg</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">msg</span>;
+                <span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>].<span style="color:#a6e22e">reject</span>(<span style="color:#a6e22e">e</span>);
+            }
+            <span style="color:#66d9ef">delete</span> <span style="color:#a6e22e">reqCb</span>[<span style="color:#a6e22e">reqId</span>];
+        }
+    }
+    ...
+});
+
+...
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">webAPI</span>;
+</code></pre></div><p>上述代码中<code>webIO.js</code>比较复杂，因为封装了与WebSocket连接的相关细节，但只需要知道<code>webIO</code>利用<code>socketio-client</code>连接WebSocket服务端，并将其常用方法进行了封闭，均返回Promise对象就好了。<code>webAPI.js</code>就比较简单了，这里的request方法与HTTP/2的“数据流”实现一致，也是给每个请求加上一个编号，当响应回来时，根据这个编号找到对应的回调方法执行回调。</p>
+<h2 id="heading-2">总结</h2>
+<p>看<a href="http://www.ruanyifeng.com/blog/2016/08/http.html">阮一峰的这篇文章</a>终于扭转了我之前对HTTP异步请求的误解，看来还是应该多看书多思考。另外发现只要是认真思考出来的思路也不会太差。</p>
+<h2 id="heading-3">参考</h2>
+<p><code>http://www.ruanyifeng.com/blog/2016/08/http.html</code>
+<code>https://developer.mozilla.org/en-US/docs/Web/HTTP/Connection_management_in_HTTP_1.x</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-09-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/http/">HTTP</a>
+          
+          <a href="/tags/javascript/"> javascript</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">研究Open vSwitch</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/">
+            <span class="next-text nav-default">java中用好cache</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

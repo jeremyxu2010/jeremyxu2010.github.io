@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Open vSwitch on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/open-vswitch/</link>
+    <description>Recent content in Open vSwitch on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 09 Sep 2016 01:48:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/open-vswitch/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>研究Open vSwitch</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</link>
+      <pubDate>Fri, 09 Sep 2016 01:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</guid>
+      <description>概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来</description>
+    </item>
+    
+  </channel>
+</rss>

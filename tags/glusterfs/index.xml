@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>glusterfs on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/glusterfs/</link>
+    <description>Recent content in glusterfs on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 25 Jul 2016 02:27:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/glusterfs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>初识glusterfs</title>
+      <link>https://jeremyxu2010.github.io/2016/07/%E5%88%9D%E8%AF%86glusterfs/</link>
+      <pubDate>Mon, 25 Jul 2016 02:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/%E5%88%9D%E8%AF%86glusterfs/</guid>
+      <description>工作中经常发现公司机房里有些服务器上的硬盘空间不足，但还存在一些服务器上有很多空余空间，所以一直在想如何高效利用这些硬盘空间的问题。最初的解</description>
+    </item>
+    
+  </channel>
+</rss>

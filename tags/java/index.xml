@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>java on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/java/</link>
+    <description>Recent content in java on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 06 Oct 2019 13:19:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/java/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>避免容器中运行的Java应用被杀掉</title>
+      <link>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</link>
+      <pubDate>Sun, 06 Oct 2019 13:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</guid>
+      <description>今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先</description>
+    </item>
+    
+    <item>
+      <title>servicecomb-saga源码解读</title>
+      <link>https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Sat, 18 Aug 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个</description>
+    </item>
+    
+    <item>
+      <title>mongodb的两阶段提交实战</title>
+      <link>https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Tue, 03 Jul 2018 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/</guid>
+      <description>项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数</description>
+    </item>
+    
+    <item>
+      <title>servicecomb-saga开发实战</title>
+      <link>https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Mon, 02 Jul 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/</guid>
+      <description>最近的工作主要是微服务框架的设计与开发，期间要解决多个微服务的分布式事务问题，由于要解决的主要场景是用spring boot写的java项目，</description>
+    </item>
+    
+    <item>
+      <title>Java开发小技巧_02</title>
+      <link>https://jeremyxu2010.github.io/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/</link>
+      <pubDate>Tue, 24 Oct 2017 21:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/</guid>
+      <description>最近阿里发布了一个插件p3c，用于进行Java开发规约的检查扫描。由于插件的代码是开源，于是第一时间也翻查了代码，发现目前实现的检查规则主要</description>
+    </item>
+    
+    <item>
+      <title>apk反编译步骤</title>
+      <link>https://jeremyxu2010.github.io/2017/10/apk%E5%8F%8D%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4/</link>
+      <pubDate>Mon, 16 Oct 2017 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/apk%E5%8F%8D%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4/</guid>
+      <description>最近的工作中需要反编译第三方的apk，以也了解对方的签名逻辑，这里将用到的反编译技巧记录一下。 apk文件转成jar文件 首先需要使用工具将ap</description>
+    </item>
+    
+    <item>
+      <title>Java VisualVM使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 01 Oct 2017 11:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>Java VisualVM使用备忘 一直觉得JDK带的新版诊断工具VisualVM功能都没有原来的jconsole强大，今天偶然翻到了VisualVM</description>
+    </item>
+    
+    <item>
+      <title>Spring Boot学习备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Mon, 18 Sep 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</guid>
+      <description>Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&amp;quot;run&amp;quot;就能创建一个独立的，产品级别的Spring</description>
+    </item>
+    
+    <item>
+      <title>Gearman使用范例</title>
+      <link>https://jeremyxu2010.github.io/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/</link>
+      <pubDate>Wed, 06 Sep 2017 03:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/</guid>
+      <description>Gearman使用范例 Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的</description>
+    </item>
+    
+    <item>
+      <title>Java开发小技巧</title>
+      <link>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提</description>
+    </item>
+    
+    <item>
+      <title>Retrying_Library_For_Java</title>
+      <link>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</link>
+      <pubDate>Thu, 15 Jun 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</guid>
+      <description>最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人</description>
+    </item>
+    
+    <item>
+      <title>开发小技巧备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/04/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Mon, 24 Apr 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/04/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7%E5%A4%87%E5%BF%98/</guid>
+      <description>今天一段时间一直在忙工作上的事，并没有系统地学习研究某一个具体的问题，但回顾这一个月的工作，发现还是有一些经验可以记录一下的。但这些经验没法</description>
+    </item>
+    
+    <item>
+      <title>mybatis-generator使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 05 Mar 2017 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D</description>
+    </item>
+    
+    <item>
+      <title>hibernate查询的一些优化写法</title>
+      <link>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</link>
+      <pubDate>Mon, 13 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</guid>
+      <description>项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出</description>
+    </item>
+    
+    <item>
+      <title>两种获取hibernate会话的区别</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Thu, 09 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&amp;#34;demoDao&amp;#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess</description>
+    </item>
+    
+    <item>
+      <title>分发JavaWeb项目之docker方案</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sat, 28 Jan 2017 23:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</guid>
+      <description>最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc</description>
+    </item>
+    
+    <item>
+      <title>Hibernate里使用SQLQuery</title>
+      <link>https://jeremyxu2010.github.io/2017/01/hibernate%E9%87%8C%E4%BD%BF%E7%94%A8sqlquery/</link>
+      <pubDate>Fri, 20 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/hibernate%E9%87%8C%E4%BD%BF%E7%94%A8sqlquery/</guid>
+      <description>最近在做一个老旧项目，项目后台使用了hibernate。以前虽说也用过hibernate，但用得不够深入，一般最多两个表关联查询一下，比较简</description>
+    </item>
+    
+    <item>
+      <title>redis研究</title>
+      <link>https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/</link>
+      <pubDate>Sun, 13 Nov 2016 01:18:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/</guid>
+      <description>最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不</description>
+    </item>
+    
+    <item>
+      <title>给tomcat7配置SSL证书</title>
+      <link>https://jeremyxu2010.github.io/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/</link>
+      <pubDate>Mon, 07 Nov 2016 22:31:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/</guid>
+      <description>今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是</description>
+    </item>
+    
+    <item>
+      <title>SSM项目脚手架</title>
+      <link>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</link>
+      <pubDate>Sun, 06 Nov 2016 00:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</guid>
+      <description>使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm</description>
+    </item>
+    
+    <item>
+      <title>maven阿里云仓库镜像</title>
+      <link>https://jeremyxu2010.github.io/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Mon, 31 Oct 2016 02:05:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/</guid>
+      <description>自从国内的oschina maven仓库镜像停止服务后，一直找不到稳定且速度快的maven仓库镜像，网上搜来搜去，都是说http://mirr</description>
+    </item>
+    
+    <item>
+      <title>netty3与netty4的区别</title>
+      <link>https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Mon, 31 Oct 2016 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要</description>
+    </item>
+    
+    <item>
+      <title>java中用好cache</title>
+      <link>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</link>
+      <pubDate>Thu, 01 Sep 2016 23:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</guid>
+      <description>在java开发中经常会遇到下面的代码： Graph get(Key key) { Graph result = get( key ); if( null == result ) { result = createNewGraph( key ); put( key, result ); } return result; } 即根据某个Key值，到缓存里查找是否有对应的</description>
+    </item>
+    
+    <item>
+      <title>JVM的Finalization Delay引起的OOM</title>
+      <link>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</link>
+      <pubDate>Wed, 13 Jul 2016 22:03:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</guid>
+      <description>今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊</description>
+    </item>
+    
+    <item>
+      <title>Netty框架研究</title>
+      <link>https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/</link>
+      <pubDate>Sat, 18 Jun 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/</guid>
+      <description>起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目</description>
+    </item>
+    
+    <item>
+      <title>实例变量的懒初始化</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E6%87%92%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
+      <pubDate>Sat, 11 Jun 2016 22:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E6%87%92%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
+      <description>今天遇到一个很有趣的问题，由于业务要求，需要懒初始化一个实例变量。 简单方法 很顺手就写出下面的代码。 public class LazyFieldInitializer { private Object obj = null; public LazyFieldInitializer(){ } public void someOp(){ if(obj == null){ obj = new</description>
+    </item>
+    
+    <item>
+      <title>通过WebSocket传输文件</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Sat, 11 Jun 2016 19:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</guid>
+      <description>工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，</description>
+    </item>
+    
+    <item>
+      <title>获取后台任务进度的另类办法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</guid>
+      <description>今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &amp;#34;/AsyncServlet&amp;#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private</description>
+    </item>
+    
+    <item>
+      <title>Java监听目录文件变更</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/</link>
+      <pubDate>Thu, 12 May 2016 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/</guid>
+      <description>Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa</description>
+    </item>
+    
+    <item>
+      <title>Java NIO File操作</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/</link>
+      <pubDate>Mon, 09 May 2016 23:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/</guid>
+      <description>今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事</description>
+    </item>
+    
+    <item>
+      <title>Web应用程序限速方法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Mon, 09 May 2016 00:15:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</guid>
+      <description>一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越</description>
+    </item>
+    
+    <item>
+      <title>Java NIO中Buffer使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Tue, 03 May 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经</description>
+    </item>
+    
+    <item>
+      <title>JVM底层知识备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/04/jvm%E5%BA%95%E5%B1%82%E7%9F%A5%E8%AF%86%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Thu, 14 Apr 2016 00:28:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/jvm%E5%BA%95%E5%B1%82%E7%9F%A5%E8%AF%86%E5%A4%87%E5%BF%98/</guid>
+      <description>今天的工作涉及了不少JVM底层的知识，趁着今天刚翻阅资料，还记得一些内容，将我常用的JVM知识整理一下。 JVM组成 JVM = 类加载器 classloader + 执行引擎 execution</description>
+    </item>
+    
+    <item>
+      <title>javacv编码mp4视频</title>
+      <link>https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/</link>
+      <pubDate>Sun, 10 Apr 2016 18:29:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/</guid>
+      <description>目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编</description>
+    </item>
+    
+    <item>
+      <title>特别要检查Java文件操作相关方法的返回值</title>
+      <link>https://jeremyxu2010.github.io/2014/03/%E7%89%B9%E5%88%AB%E8%A6%81%E6%A3%80%E6%9F%A5java%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/03/%E7%89%B9%E5%88%AB%E8%A6%81%E6%A3%80%E6%9F%A5java%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/</guid>
+      <description>今天遇到一个很狗血的问题，一个功能在开发环境没有问题，但在生产环境出错了。 代码如下： ... File tmpFile = new File(fileTmpPath); File newFileTarget = new File(filePath); tmpFile.renameTo(newFileTarget); // 修改新文件的权限 FileManageHelper.chmod(newFileTarget); .... 最后报错信</description>
+    </item>
+    
+  </channel>
+</rss>

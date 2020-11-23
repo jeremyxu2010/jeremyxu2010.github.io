@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>分发JavaWeb项目之docker方案 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="分发JavaWeb项目之docker方案" />
+<meta property="og:description" content="最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/" />
+<meta property="article:published_time" content="2017-01-28T23:08:00+08:00" />
+<meta property="article:modified_time" content="2017-01-28T23:08:00+08:00" />
+<meta itemprop="name" content="分发JavaWeb项目之docker方案">
+<meta itemprop="description" content="最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc">
+<meta itemprop="datePublished" content="2017-01-28T23:08:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-01-28T23:08:00&#43;08:00" />
+<meta itemprop="wordCount" content="1395">
+
+
+
+<meta itemprop="keywords" content="java,web,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="分发JavaWeb项目之docker方案"/>
+<meta name="twitter:description" content="最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">分发JavaWeb项目之docker方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-01-28 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1395 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">改造工程</a></li>
+    <li><a href="#docker">docker相关配置</a></li>
+    <li><a href="#pomxml">改造pom.xml文件</a></li>
+    <li><a href="#heading-1">总结</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaScript写的前端代码。本来写了一个说明，告诉用户如何将这个工程跑起来，很自然想到有好几步：</p>
+<ul>
+<li>安装前后端编译工具</li>
+<li>安装数据库，并初始化数据库结构</li>
+<li>根据数据库的具体信息，修改项目中的配置文件</li>
+<li>编译前端代码</li>
+<li>编译后端代码，最终形成war包</li>
+<li>将war包部署至应用服务器</li>
+</ul>
+<p>想了下，真的好麻烦。突然想到可以使用docker简化应用的分发，于是有了以下尝试，这里记录一下。</p>
+<h2 id="heading">改造工程</h2>
+<p>原来加载mysql连接信息配置文件的方式改造了一下，以适应在docker引擎中引用mysql。</p>
+<p><code>db.xml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">...
+<span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;propertyConfigurer&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.springframework.beans.factory.config.PropertyPlaceholderConfigurer&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;locations&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;list</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>classpath:jdbc.properties<span style="color:#f92672">&lt;/value&gt;</span>
+            <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>classpath:env.properties<span style="color:#f92672">&lt;/value&gt;</span>
+            <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>file:///external/env_overwrite.properties<span style="color:#f92672">&lt;/value&gt;</span>
+        <span style="color:#f92672">&lt;/list&gt;</span>
+    <span style="color:#f92672">&lt;/property&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;ignoreResourceNotFound&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;searchSystemEnvironment&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;systemPropertiesModeName&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;SYSTEM_PROPERTIES_MODE_OVERRIDE&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/bean&gt;</span>
+...
+</code></pre></div><p><code>jdbc.properties</code></p>
+<pre><code>jdbc_url=jdbc:mysql://${MYSQL_PORT_3306_TCP_ADDR}:${MYSQL_PORT_3306_TCP_PORT}/${MYSQL_ENV_MYSQL_DATABASE}?useUnicode=true
+jdbc_user=root
+jdbc_password=${MYSQL_ENV_MYSQL_ROOT_PASSWORD}
+jdbc_driverClass=com.mysql.jdbc.Driver
+</code></pre><p><code>env.properties</code></p>
+<pre><code>MYSQL_PORT_3306_TCP_ADDR=127.0.0.1
+MYSQL_PORT_3306_TCP_PORT=3306
+MYSQL_ENV_MYSQL_DATABASE=ssm-db
+MYSQL_ENV_MYSQL_ROOT_PASSWORD=123456
+</code></pre><p>这里设置<code>systemPropertiesModeName</code>属性为<code>SYSTEM_PROPERTIES_MODE_OVERRIDE</code>，这样在解析一个占位符的时候，会先用系统属性来尝试，如果系统属性里没有才会用<code>env.properties</code>文件里定义的。</p>
+<h2 id="docker">docker相关配置</h2>
+<p>项目下新建了<code>dockerfiles</code>目录，该目录下有一个<code>docker-compose.yml</code>文件，另外一个<code>initdb</code>目录下放数据库初始化脚本， 一个<code>wars</code>目录下放项目最后打的war包。</p>
+<pre><code>proj
+  - dockerfiles
+    - initdb
+      - initdb.sql
+    - wars
+      - proj.war
+    - docker-compose.yml
+  - src
+    - main
+      - frontend
+      - java
+      - resources
+      - webapp
+  - pom.xml
+</code></pre><p><code>docker-compose.yml</code></p>
+<pre><code>version: '2'
+services:
+  ssm-mysql:
+    image:  'mysql'
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=ssm-db
+      - MYSQL_ROOT_PASSWORD=123456
+  ssm-web:
+    image: 'jetty:9-alpine'
+    depends_on:
+      - ssm-mysql
+    links:
+      - ssm-mysql
+    volumes:
+      - ./wars:/var/lib/jetty/webapps
+    ports:
+      - &quot;8080:8080&quot;
+    environment:
+      - MYSQL_PORT_3306_TCP_ADDR=ssm-mysql
+      - MYSQL_PORT_3306_TCP_PORT=3306
+      - MYSQL_ENV_MYSQL_DATABASE=ssm-db
+      - MYSQL_ENV_MYSQL_ROOT_PASSWORD=123456
+</code></pre><p><code>docker-compose.yml</code>文件里定义了两个docker service, <code>ssm-mysql</code>是数据库服务，<code>ssm-web</code>是Web容器服务。</p>
+<p>这里遇到了一坑，本来一个容器link另一个容器时，会从另一个容器得到一些环境变量，所以<code>ssm-web</code>服务的环境变量声明原本是不需要的，但去掉之后发现<code>ssm-web</code>服务跑不起来，好像是根本没有读到原本应该得到的环境变量。查了下原因，最后原因如下：</p>
+<blockquote>
+<p>links with environment variables: As documented in the environment variables reference, environment variables created by links have been deprecated for some time. In the new Docker network system, they have been removed. You should either connect directly to the appropriate hostname or set the relevant environment variable yourself, using the link hostname:</p>
+</blockquote>
+<pre><code>web:
+  links:
+    - db
+  environment:
+    - DB_PORT=tcp://db:5432
+</code></pre><p>看来以后还是不能依赖于links带来的变量。</p>
+<h2 id="pomxml">改造pom.xml文件</h2>
+<p>最后稍微改造了下<code>pom.xml</code>文件</p>
+<p><code>pom.xml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">...
+<span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 打war包前安装npm依赖及编译前端代码 </span><span style="color:#75715e">--&gt;</span>
+<span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.codehaus.mojo<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>exec-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>1.3.2<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;executions</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;execution</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;id</span><span style="color:#f92672">&gt;</span>install_npm_dependences<span style="color:#f92672">&lt;/id&gt;</span>
+            <span style="color:#f92672">&lt;phase</span><span style="color:#f92672">&gt;</span>prepare-package<span style="color:#f92672">&lt;/phase&gt;</span>
+            <span style="color:#f92672">&lt;goals</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;goal</span><span style="color:#f92672">&gt;</span>exec<span style="color:#f92672">&lt;/goal&gt;</span>
+            <span style="color:#f92672">&lt;/goals&gt;</span>
+            <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;executable</span><span style="color:#f92672">&gt;</span>yarn<span style="color:#f92672">&lt;/executable&gt;</span>
+                <span style="color:#f92672">&lt;workingDirectory</span><span style="color:#f92672">&gt;</span>src/main/frontend<span style="color:#f92672">&lt;/workingDirectory&gt;</span>
+            <span style="color:#f92672">&lt;/configuration&gt;</span>
+        <span style="color:#f92672">&lt;/execution&gt;</span>
+        <span style="color:#f92672">&lt;execution</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;id</span><span style="color:#f92672">&gt;</span>build_frontend<span style="color:#f92672">&lt;/id&gt;</span>
+            <span style="color:#f92672">&lt;phase</span><span style="color:#f92672">&gt;</span>prepare-package<span style="color:#f92672">&lt;/phase&gt;</span>
+            <span style="color:#f92672">&lt;goals</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;goal</span><span style="color:#f92672">&gt;</span>exec<span style="color:#f92672">&lt;/goal&gt;</span>
+            <span style="color:#f92672">&lt;/goals&gt;</span>
+            <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;executable</span><span style="color:#f92672">&gt;</span>npm<span style="color:#f92672">&lt;/executable&gt;</span>
+                <span style="color:#f92672">&lt;workingDirectory</span><span style="color:#f92672">&gt;</span>src/main/frontend<span style="color:#f92672">&lt;/workingDirectory&gt;</span>
+                <span style="color:#f92672">&lt;arguments</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;argument</span><span style="color:#f92672">&gt;</span>run<span style="color:#f92672">&lt;/argument&gt;</span>
+                    <span style="color:#f92672">&lt;argument</span><span style="color:#f92672">&gt;</span>build<span style="color:#f92672">&lt;/argument&gt;</span>
+                <span style="color:#f92672">&lt;/arguments&gt;</span>
+            <span style="color:#f92672">&lt;/configuration&gt;</span>
+        <span style="color:#f92672">&lt;/execution&gt;</span>
+    <span style="color:#f92672">&lt;/executions&gt;</span>
+<span style="color:#f92672">&lt;/plugin&gt;</span>
+
+<span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 将编译后的前端代码也打入war包 </span><span style="color:#75715e">--&gt;</span>
+<span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>maven-war-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>3.0.0<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;webResources</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;resource</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> this is relative to the pom.xml directory </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;directory</span><span style="color:#f92672">&gt;</span>src/main/frontend_react/build<span style="color:#f92672">&lt;/directory&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> the default value is ** </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;includes</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;include</span><span style="color:#f92672">&gt;</span>**/*<span style="color:#f92672">&lt;/include&gt;</span>
+                <span style="color:#f92672">&lt;/includes&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> there&#39;s no default value for this </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;excludes</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>asset-manifest.json<span style="color:#f92672">&lt;/exclude&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>**/*.css.map<span style="color:#f92672">&lt;/exclude&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>**/*.js.map<span style="color:#f92672">&lt;/exclude&gt;</span>
+                <span style="color:#f92672">&lt;/excludes&gt;</span>
+            <span style="color:#f92672">&lt;/resource&gt;</span>
+        <span style="color:#f92672">&lt;/webResources&gt;</span>
+    <span style="color:#f92672">&lt;/configuration&gt;</span>
+<span style="color:#f92672">&lt;/plugin&gt;</span>
+
+<span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 将最后打出的war包拷贝至dockerfiles/wars目录 </span><span style="color:#75715e">--&gt;</span>
+<span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>maven-antrun-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>1.8<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;executions</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;execution</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;phase</span><span style="color:#f92672">&gt;</span>package<span style="color:#f92672">&lt;/phase&gt;</span>
+            <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;target</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;copy</span> <span style="color:#a6e22e">file=</span><span style="color:#e6db74">&#34;${basedir}/target/${project.artifactId}.war&#34;</span> <span style="color:#a6e22e">tofile=</span><span style="color:#e6db74">&#34;${basedir}/dockerfiles/wars/${project.artifactId}.war&#34;</span> <span style="color:#f92672">/&gt;</span>
+                <span style="color:#f92672">&lt;/target&gt;</span>
+            <span style="color:#f92672">&lt;/configuration&gt;</span>
+            <span style="color:#f92672">&lt;goals</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;goal</span><span style="color:#f92672">&gt;</span>run<span style="color:#f92672">&lt;/goal&gt;</span>
+            <span style="color:#f92672">&lt;/goals&gt;</span>
+        <span style="color:#f92672">&lt;/execution&gt;</span>
+    <span style="color:#f92672">&lt;/executions&gt;</span>
+<span style="color:#f92672">&lt;/plugin&gt;</span>
+...
+</code></pre></div><h2 id="heading-1">总结</h2>
+<p>像上述这样改造后，分发项目就变得很简单了。</p>
+<ul>
+<li>在工程根目录下执行<code>mvn package</code>完成war的构建</li>
+<li>在<code>dockerfiles</code>目录下执行<code>docker-compose up</code></li>
+<li>使用浏览器访问<code>http://${docker_host_ip}:8080</code></li>
+</ul>
+<p>进一步想，其实很多依赖组件较多的项目都可以考虑这样分发。记得以前做的一个项目依赖了<code>mysql</code>, <code>mongodb</code>, <code>redis</code>, <code>mq</code>, <code>zookeeper</code>，当时每个新加入团队的成员至少要花大半天来搭建开发环境，如果工程这样组织的话，一个新人就能很快将项目运行起来。</p>
+<p>本工程源码地址：<code>http://git.oschina.net/jeremy-xu/ssm-scaffold</code></p>
+<h2 id="heading-2">参考</h2>
+<p><code>http://javablog.blog.163.com/blog/static/20971116420127109200710/</code>
+<code>https://docs.docker.com/compose/compose-file/</code>
+<code>https://yeasy.gitbooks.io/docker_practice/content/compose/install.html</code>
+<code>https://hub.docker.com/_/mysql/</code>
+<code>https://hub.docker.com/_/jetty/</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-01-28</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/web/">web</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">boot2docker中安装docker-compose</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/">
+            <span class="next-text nav-default">webpack的watch选项不工作原因分析</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

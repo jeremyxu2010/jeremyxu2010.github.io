@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>SSM项目脚手架 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="SSM项目脚手架" />
+<meta property="og:description" content="使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/" />
+<meta property="article:published_time" content="2016-11-06T00:09:00+08:00" />
+<meta property="article:modified_time" content="2016-11-06T00:09:00+08:00" />
+<meta itemprop="name" content="SSM项目脚手架">
+<meta itemprop="description" content="使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm">
+<meta itemprop="datePublished" content="2016-11-06T00:09:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-11-06T00:09:00&#43;08:00" />
+<meta itemprop="wordCount" content="3750">
+
+
+
+<meta itemprop="keywords" content="java,spring,springmvc,mybatis," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="SSM项目脚手架"/>
+<meta name="twitter:description" content="使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">SSM项目脚手架</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-11-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3750 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ssm">SSM项目脚手架项目</a></li>
+    <li><a href="#mysql">MySQL主从读写分离源码实现</a>
+      <ul>
+        <li><a href="#heading">配置具体步骤</a></li>
+        <li><a href="#heading-1">源码实现分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#mysqljdbcurlmysql">MySQL的jdbc连接url连接多个MySQL服务分析</a></li>
+    <li><a href="#heading-2">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在<a href="https://git.oschina.net/jeremy-xu/ssm-scaffold">这里</a>，便于以后快速创建这类项目。</p>
+<h2 id="ssm">SSM项目脚手架项目</h2>
+<p>在网上找到一个<a href="https://github.com/1994/ssm-scaffold">ssm项目的脚手架工程</a>，我把它clone下来，做了少量修改，做出的修改如下：</p>
+<ul>
+<li>java包都改成personal.jeremyxu包下，也相应地修改了配置文件</li>
+<li>springmvc的url-pattern修改为/api/*</li>
+<li>拆分了spring配置文件，spring配置文件放置于resources/spring目录下</li>
+<li>修改了db.xml里的property-placeholder定义，以允许外部覆盖配置文件</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">    <span style="color:#f92672">&lt;context:property-placeholder</span> <span style="color:#a6e22e">location=</span><span style="color:#e6db74">&#34;classpath:jdbc.properties,file:///external/jdbc_overwrite.properties&#34;</span> <span style="color:#a6e22e">ignore-resource-not-found=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+</code></pre></div><ul>
+<li>修改README.md文件，说明如何覆盖默认的log4j.properties配置文件</li>
+<li>修改jdbc.properties文件的注释，说明如何配置读写分离。至于mysql主从复制配置文件可参考<a href="http://369369.blog.51cto.com/319630/790921">这里</a></li>
+</ul>
+<h2 id="mysql">MySQL主从读写分离源码实现</h2>
+<p>上一节基本是拿别人已经搭好的ssm脚手架工程简单改了一下。不过在改动过程中还是加入了自己的一些想法，其中最重要的就是配置MySQL主从读写分离。这一小节简单分析一下这个功能源码层面是如何实现的。</p>
+<h3 id="heading">配置具体步骤</h3>
+<p>要实现MySQL主从读写分离，首先是配置MySQL服务主从复制，这个比较简单，不再赘述，可参考<a href="http://369369.blog.51cto.com/319630/790921">这里</a>。</p>
+<p>然后再配置jdbc.properties文件。</p>
+<pre><code># 普通模式 jdbc_driverClass=com.mysql.jdbc.Driver
+jdbc_driverClass=com.mysql.jdbc.ReplicationDriver
+# 普通模式 jdbc:mysql://127.0.0.1:3306/test?useUnicode=true
+jdbc_url=jdbc:mysql:replication://master:3306,slave1:3306,slave2:3306/test?useUnicode=true
+jdbc_user=accessop
+jdbc_password=123456
+</code></pre><p>最后在数据库事务管理定义处添加一些AOP advice，当遇到某些只读查询时，设置readonly。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">  <span style="color:#75715e">&lt;!--</span><span style="color:#75715e">事务管理</span><span style="color:#75715e">--&gt;</span>
+  <span style="color:#f92672">&lt;tx:advice</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;txAdvice&#34;</span> <span style="color:#a6e22e">transaction-manager=</span><span style="color:#e6db74">&#34;transactionManager&#34;</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;tx:attributes</span><span style="color:#f92672">&gt;</span>
+          <span style="color:#f92672">&lt;tx:method</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;select*&#34;</span> <span style="color:#a6e22e">read-only=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+          <span style="color:#f92672">&lt;tx:method</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;find*&#34;</span> <span style="color:#a6e22e">read-only=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+          <span style="color:#f92672">&lt;tx:method</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;get*&#34;</span> <span style="color:#a6e22e">read-only=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+          <span style="color:#f92672">&lt;tx:method</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;*&#34;</span> <span style="color:#f92672">/&gt;</span>
+      <span style="color:#f92672">&lt;/tx:attributes&gt;</span>
+  <span style="color:#f92672">&lt;/tx:advice&gt;</span>
+  <span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;transactionManager&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.springframework.jdbc.datasource.DataSourceTransactionManager&#34;</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#a6e22e">ref=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#f92672">/&gt;</span>
+  <span style="color:#f92672">&lt;/bean&gt;</span>
+</code></pre></div><h3 id="heading-1">源码实现分析</h3>
+<p>可以看到与普通模式最大的不同在于<code>jdbc_driverClass</code>，<code>jdbc_url</code>发生变化了。我从<code>com.mysql.jdbc.ReplicationDriver</code>分析起。</p>
+<p><code>ReplicationDriver.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ReplicationDriver</span> <span style="color:#66d9ef">extends</span> NonRegisteringReplicationDriver
+		<span style="color:#66d9ef">implements</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">sql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Driver</span> <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+			java<span style="color:#f92672">.</span><span style="color:#a6e22e">sql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">DriverManager</span>
+					<span style="color:#f92672">.</span><span style="color:#a6e22e">registerDriver</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> NonRegisteringReplicationDriver<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>SQLException E<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> RuntimeException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Can&#39;t register driver!&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ReplicationDriver</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+		<span style="color:#75715e">// Required for Class.forName().newInstance()
+</span><span style="color:#75715e"></span>	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这个代码比较简单，其中最重要的部分是在static代码块里注册驱动<code>NonRegisteringReplicationDriver</code>，这个也是一般jdbc驱动的写法。</p>
+<p><code>NonRegisteringReplicationDriver.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NonRegisteringReplicationDriver</span> <span style="color:#66d9ef">extends</span> NonRegisteringDriver <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">NonRegisteringReplicationDriver</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">super</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">public</span> Connection <span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span>String url<span style="color:#f92672">,</span> Properties info<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+		Properties parsedProps <span style="color:#f92672">=</span> parseURL<span style="color:#f92672">(</span>url<span style="color:#f92672">,</span> info<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>parsedProps <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		Properties masterProps <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Properties<span style="color:#f92672">)</span>parsedProps<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Properties slavesProps <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Properties<span style="color:#f92672">)</span>parsedProps<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#75715e">// Marker used for further testing later on, also when
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// debugging
+</span><span style="color:#75715e"></span>		slavesProps<span style="color:#f92672">.</span><span style="color:#a6e22e">setProperty</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.mysql.jdbc.ReplicationConnection.isSlave&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		String hostValues <span style="color:#f92672">=</span> parsedProps<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>HOST_PROPERTY_KEY<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostValues <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			StringTokenizer st <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringTokenizer<span style="color:#f92672">(</span>hostValues<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;,&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+			StringBuffer masterHost <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuffer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			StringBuffer slaveHosts <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuffer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+			<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>st<span style="color:#f92672">.</span><span style="color:#a6e22e">hasMoreTokens</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> hostPortPair <span style="color:#f92672">=</span> parseHostPortPair<span style="color:#f92672">(</span>st<span style="color:#f92672">.</span><span style="color:#a6e22e">nextToken</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+				<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>HOST_NAME_INDEX<span style="color:#f92672">]</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+					masterHost<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>HOST_NAME_INDEX<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span>
+
+				<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>PORT_NUMBER_INDEX<span style="color:#f92672">]</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+					masterHost<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+					masterHost<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>PORT_NUMBER_INDEX<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span>
+			<span style="color:#f92672">}</span>
+
+			<span style="color:#66d9ef">boolean</span> firstSlaveHost <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+
+			<span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>st<span style="color:#f92672">.</span><span style="color:#a6e22e">hasMoreTokens</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> hostPortPair <span style="color:#f92672">=</span> parseHostPortPair<span style="color:#f92672">(</span>st<span style="color:#f92672">.</span><span style="color:#a6e22e">nextToken</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+				<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>firstSlaveHost<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+					slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;,&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+					firstSlaveHost <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span>
+
+				<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>HOST_NAME_INDEX<span style="color:#f92672">]</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+					slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>HOST_NAME_INDEX<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span>
+
+				<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>PORT_NUMBER_INDEX<span style="color:#f92672">]</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+					slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+					slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>PORT_NUMBER_INDEX<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+				<span style="color:#f92672">}</span>
+			<span style="color:#f92672">}</span>
+
+			<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				<span style="color:#66d9ef">throw</span> SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLException</span><span style="color:#f92672">(</span>
+						<span style="color:#e6db74">&#34;Must specify at least one slave host to connect to for master/slave replication load-balancing functionality&#34;</span><span style="color:#f92672">,</span>
+						SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">SQL_STATE_INVALID_CONNECTION_ATTRIBUTE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span>
+
+			masterProps<span style="color:#f92672">.</span><span style="color:#a6e22e">setProperty</span><span style="color:#f92672">(</span>HOST_PROPERTY_KEY<span style="color:#f92672">,</span> masterHost<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			slavesProps<span style="color:#f92672">.</span><span style="color:#a6e22e">setProperty</span><span style="color:#f92672">(</span>HOST_PROPERTY_KEY<span style="color:#f92672">,</span> slaveHosts<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ReplicationConnection<span style="color:#f92672">(</span>masterProps<span style="color:#f92672">,</span> slavesProps<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>NonRegisteringReplicationDriver</code>继承自普通模式驱动<code>NonRegisteringDriver</code>，覆盖了其<code>public Connection connect(String url, Properties info) throws SQLException</code>方法，解析jdbc_url，将其中第一个主机端口组与后面其它主机端口组解析出来，分别拼接为<code>masterHost</code>、<code>slaveHosts</code>。最后以构建好的<code>masterProps</code>、<code>slavesProps</code>构造<code>ReplicationConnection</code>，即一个包含主从连接的抽象概念连接。</p>
+<p><code>ReplicationConnection.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ReplicationConnection</span><span style="color:#f92672">(</span>Properties masterProperties<span style="color:#f92672">,</span>
+		Properties slaveProperties<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	Driver driver <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Driver<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	StringBuffer masterUrl <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuffer<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;jdbc:mysql://&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      StringBuffer slaveUrl <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuffer<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;jdbc:mysql://&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      String masterHost <span style="color:#f92672">=</span> masterProperties
+      	<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">HOST_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>masterHost <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      	masterUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>masterHost<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+
+      String slaveHost <span style="color:#f92672">=</span> slaveProperties
+      	<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">HOST_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>slaveHost <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      	slaveUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>slaveHost<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+
+      String masterDb <span style="color:#f92672">=</span> masterProperties
+      	<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">DBNAME_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      masterUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>masterDb <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      	masterUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>masterDb<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+
+      String slaveDb <span style="color:#f92672">=</span> slaveProperties
+      	<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">DBNAME_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      slaveUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>slaveDb <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      	slaveUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>slaveDb<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+
+      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">masterConnection</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">mysql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jdbc</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Connection</span><span style="color:#f92672">)</span> driver<span style="color:#f92672">.</span><span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span>
+              masterUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> masterProperties<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">slavesConnection</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">mysql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jdbc</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Connection</span><span style="color:#f92672">)</span> driver<span style="color:#f92672">.</span><span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span>
+              slaveUrl<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> slaveProperties<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">currentConnection</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">masterConnection</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>上面的代码比较清楚了，就是以正常的连接模式使用<code>masterProperties</code>、<code>slaveProperties</code>构造两个普通的JDBC连接，并且设置当前连接<code>currentConnection</code>为<code>masterConnection</code>。</p>
+<p>如上所述，当数据库事务管理配置的的AOP advice执行时，会调用<code>Connection</code>的<code>setReadOnly</code>方法。我们看一下<code>ReplicationConnection</code>的<code>setReadOnly</code>方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setReadOnly</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> readOnly<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>readOnly<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>currentConnection <span style="color:#f92672">!</span><span style="color:#f92672">=</span> slavesConnection<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			switchToSlavesConnection<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>currentConnection <span style="color:#f92672">!</span><span style="color:#f92672">=</span> masterConnection<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			switchToMasterConnection<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">switchToMasterConnection</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	swapConnections<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">masterConnection</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">slavesConnection</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">switchToSlavesConnection</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	swapConnections<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">slavesConnection</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">masterConnection</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">swapConnections</span><span style="color:#f92672">(</span>Connection switchToConnection<span style="color:#f92672">,</span>
+		Connection switchFromConnection<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	String switchFromCatalog <span style="color:#f92672">=</span> switchFromConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getCatalog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	String switchToCatalog <span style="color:#f92672">=</span> switchToConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getCatalog</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>switchToCatalog <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#f92672">!</span>switchToCatalog<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>switchFromCatalog<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		switchToConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">setCatalog</span><span style="color:#f92672">(</span>switchFromCatalog<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>switchFromCatalog <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		switchToConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">setCatalog</span><span style="color:#f92672">(</span>switchFromCatalog<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">boolean</span> switchToAutoCommit <span style="color:#f92672">=</span> switchToConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getAutoCommit</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">boolean</span> switchFromConnectionAutoCommit <span style="color:#f92672">=</span> switchFromConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getAutoCommit</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>switchFromConnectionAutoCommit <span style="color:#f92672">!</span><span style="color:#f92672">=</span> switchToAutoCommit<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		switchToConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">setAutoCommit</span><span style="color:#f92672">(</span>switchFromConnectionAutoCommit<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">int</span> switchToIsolation <span style="color:#f92672">=</span> switchToConnection
+			<span style="color:#f92672">.</span><span style="color:#a6e22e">getTransactionIsolation</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">int</span> switchFromIsolation <span style="color:#f92672">=</span> switchFromConnection<span style="color:#f92672">.</span><span style="color:#a6e22e">getTransactionIsolation</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>switchFromIsolation <span style="color:#f92672">!</span><span style="color:#f92672">=</span> switchToIsolation<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		switchToConnection
+				<span style="color:#f92672">.</span><span style="color:#a6e22e">setTransactionIsolation</span><span style="color:#f92672">(</span>switchFromIsolation<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">currentConnection</span> <span style="color:#f92672">=</span> switchToConnection<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>当<code>currentConnection</code>与根据<code>readOnly</code>应该使用的<code>Connection</code>不是同一个时，就会发生<code>currentConnection</code>连接的切换，切换的过程还需要保证<code>Catalog</code>、<code>AutoCommit</code>、<code>TransactionIsolation</code>与切换前一致。至此MySQL的主从读写分离就完成了。</p>
+<h2 id="mysqljdbcurlmysql">MySQL的jdbc连接url连接多个MySQL服务分析</h2>
+<p>从上面的代码来看，当存在多个MySQL slave服务时，这些是由普通连接驱动<code>NonRegisteringDriver</code>完成的。也就是说普通的jdbc_url中主机端口组处也是可以设置多个主机服务的。这个功能以前倒是没用过。这里分析一下它的代码。</p>
+<p>先看看<code>NonRegisteringDriver</code>的<code>connect</code>方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">sql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Connection</span> <span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span>String url<span style="color:#f92672">,</span> Properties info<span style="color:#f92672">)</span>
+		<span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>url <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>StringUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">startsWithIgnoreCase</span><span style="color:#f92672">(</span>url<span style="color:#f92672">,</span> LOADBALANCE_URL_PREFIX<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">return</span> connectLoadBalanced<span style="color:#f92672">(</span>url<span style="color:#f92672">,</span> info<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>StringUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">startsWithIgnoreCase</span><span style="color:#f92672">(</span>url<span style="color:#f92672">,</span>
+				REPLICATION_URL_PREFIX<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">return</span> connectReplicationConnection<span style="color:#f92672">(</span>url<span style="color:#f92672">,</span> info<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span>
+
+	Properties props <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>props <span style="color:#f92672">=</span> parseURL<span style="color:#f92672">(</span>url<span style="color:#f92672">,</span> info<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+		Connection newConn <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> com<span style="color:#f92672">.</span><span style="color:#a6e22e">mysql</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jdbc</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Connection</span><span style="color:#f92672">(</span>host<span style="color:#f92672">(</span>props<span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+				port<span style="color:#f92672">(</span>props<span style="color:#f92672">)</span><span style="color:#f92672">,</span> props<span style="color:#f92672">,</span> database<span style="color:#f92672">(</span>props<span style="color:#f92672">)</span><span style="color:#f92672">,</span> url<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">return</span> newConn<span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>SQLException sqlEx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#75715e">// Don&#39;t wrap SQLExceptions, throw
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// them un-changed.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">throw</span> sqlEx<span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">throw</span> SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLException</span><span style="color:#f92672">(</span>Messages
+				<span style="color:#f92672">.</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;NonRegisteringDriver.17&#34;</span><span style="color:#f92672">)</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>				<span style="color:#f92672">+</span> ex<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+				<span style="color:#f92672">+</span> Messages<span style="color:#f92672">.</span><span style="color:#a6e22e">getString</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;NonRegisteringDriver.18&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>				SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">SQL_STATE_UNABLE_TO_CONNECT_TO_DATASOURCE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里可以看到实际上MySQL的jdbc_url支持三种URL_PREFIX，实现是四种。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String REPLICATION_URL_PREFIX <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jdbc:mysql:replication://&#34;</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String URL_PREFIX <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jdbc:mysql://&#34;</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String MXJ_URL_PREFIX <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jdbc:mysql:mxj://&#34;</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String LOADBALANCE_URL_PREFIX <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;jdbc:mysql:loadbalance://&#34;</span><span style="color:#f92672">;</span>
+</code></pre></div><p>我们最常用的是<code>jdbc:mysql://</code>，前面一节我也用到了<code>jdbc:mysql:replication://</code>，<code>jdbc:mysql:loadbalance://</code>可以针对多个MySQL服务采取不同的负载策略，平时也是用得着的。<code>jdbc:mysql:mxj://</code>与<code>jdbc:mysql://</code>很类似，只不过它会使用自定义的SocketFactory <code>com.mysql.management.driverlaunched.ServerLauncherSocketFactory</code>，我没有去阅读它的源码，不过从名称猜测如果使用这个，可以通过JMX管理MySQL连接。</p>
+<p>如果是普通的<code>jdbc:mysql://</code>，则会直接创建<code>Connection</code>。</p>
+<p><code>com.mysql.jdbc.Connection#Connection</code>方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Connection<span style="color:#f92672">(</span>String hostToConnectTo<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> portToConnectTo<span style="color:#f92672">,</span> Properties info<span style="color:#f92672">,</span>
+			String databaseToConnectTo<span style="color:#f92672">,</span> String url<span style="color:#f92672">)</span>
+			<span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">charsetToNumBytesMap</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">connectionCreationTimeMillis</span> <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pointOfOrigin</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Throwable<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">// Stash away for later, used to clone this connection for Statement.cancel
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// and Statement.setQueryTimeout().
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//
+</span><span style="color:#75715e"></span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">origHostToConnectTo</span> <span style="color:#f92672">=</span> hostToConnectTo<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">origPortToConnectTo</span> <span style="color:#f92672">=</span> portToConnectTo<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">origDatabaseToConnectTo</span> <span style="color:#f92672">=</span> databaseToConnectTo<span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+		Blob<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;truncate&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Class<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#f92672">{</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE</span><span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isRunningOnJDK13</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>NoSuchMethodException nsme<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isRunningOnJDK13</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sessionCalendar</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> GregorianCalendar<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">utcCalendar</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> GregorianCalendar<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">utcCalendar</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setTimeZone</span><span style="color:#f92672">(</span>TimeZone<span style="color:#f92672">.</span><span style="color:#a6e22e">getTimeZone</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;GMT&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">//
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Normally, this code would be in initializeDriverProperties,
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// but we need to do this as early as possible, so we can start
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// logging to the &#39;correct&#39; place as early as possible...this.log
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// points to &#39;NullLogger&#39; for every connection at startup to avoid
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// NPEs and the overhead of checking for NULL at every logging call.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// We will reset this to the configured logger during properties
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// initialization.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">log</span> <span style="color:#f92672">=</span> LogFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>getLogger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> LOGGER_INSTANCE_NAME<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#75715e">// We store this per-connection, due to static synchronization
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// issues in Java&#39;s built-in TimeZone class...
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">defaultTimeZone</span> <span style="color:#f92672">=</span> Util<span style="color:#f92672">.</span><span style="color:#a6e22e">getDefaultTimeZone</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;GMT&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equalsIgnoreCase</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">defaultTimeZone</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getID</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isClientTzUTC</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isClientTzUTC</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">openStatements</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">serverVariables</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostToConnectTo <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">host</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">host</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostToConnectTo<span style="color:#f92672">.</span><span style="color:#a6e22e">indexOf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;,&#34;</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#75715e">// multiple hosts separated by commas (failover)
+</span><span style="color:#75715e"></span>		StringTokenizer hostTokenizer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringTokenizer<span style="color:#f92672">(</span>
+				hostToConnectTo<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;,&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>hostTokenizer<span style="color:#f92672">.</span><span style="color:#a6e22e">hasMoreTokens</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>hostTokenizer<span style="color:#f92672">.</span><span style="color:#a6e22e">nextToken</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">trim</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">host</span> <span style="color:#f92672">=</span> hostToConnectTo<span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">host</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostListSize</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">port</span> <span style="color:#f92672">=</span> portToConnectTo<span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>databaseToConnectTo <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		databaseToConnectTo <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">database</span> <span style="color:#f92672">=</span> databaseToConnectTo<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">myURL</span> <span style="color:#f92672">=</span> url<span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> info<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">USER_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">password</span> <span style="color:#f92672">=</span> info
+			<span style="color:#f92672">.</span><span style="color:#a6e22e">getProperty</span><span style="color:#f92672">(</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">PASSWORD_PROPERTY_KEY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">user</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">password</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">password</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">props</span> <span style="color:#f92672">=</span> info<span style="color:#f92672">;</span>
+	initializeDriverProperties<span style="color:#f92672">(</span>info<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+		createNewIO<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">dbmd</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DatabaseMetaData<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">database</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>SQLException ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		cleanup<span style="color:#f92672">(</span>ex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#75715e">// don&#39;t clobber SQL exceptions
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">throw</span> ex<span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		cleanup<span style="color:#f92672">(</span>ex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		StringBuffer mesg <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StringBuffer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>getParanoid<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Cannot connect to MySQL server on &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">host</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;:&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">port</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;.\n\n&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Make sure that there is a MySQL server &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;running on the machine/port you are trying &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg
+					<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;to connect to and that the machine this software is &#34;</span>
+							<span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;running on &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;is able to connect to this host/port &#34;</span>
+					<span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;(i.e. not firewalled). &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg
+					<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Also make sure that the server has not been started &#34;</span>
+							<span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;with the --skip-networking &#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;flag.\n\n&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Unable to connect to database.&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Underlying exception: \n\n&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>ex<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>getParanoid<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">append</span><span style="color:#f92672">(</span>Util<span style="color:#f92672">.</span><span style="color:#a6e22e">stackTraceToString</span><span style="color:#f92672">(</span>ex<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#66d9ef">throw</span> SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLException</span><span style="color:#f92672">(</span>mesg<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+				SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">SQL_STATE_COMMUNICATION_LINK_FAILURE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里代码比较多，但整个逻辑是根据参数，构造好<code>hostList</code>、<code>port</code>、<code>database</code>、<code>user</code>、<code>password</code>、<code>props</code>内部变量，最后调用<code>createNewIO(false);</code>建立数据库连接。</p>
+<p><code>com.mysql.jdbc.Connection#createNewIO</code>方法最后会根据上述内部变量建立数据库连接。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>getRoundRobinLoadBalance<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+	hostIndex <span style="color:#f92672">=</span> getNextRoundRobinHostIndex<span style="color:#f92672">(</span>getURL<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+			<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#f92672">;</span> hostIndex <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostListSize</span><span style="color:#f92672">;</span> hostIndex<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostIndex <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hasTriedMasterFlag</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+		String newHostPortPair <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>String<span style="color:#f92672">)</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span>
+				<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>hostIndex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">int</span> newPort <span style="color:#f92672">=</span> 3306<span style="color:#f92672">;</span>
+
+		String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> hostPortPair <span style="color:#f92672">=</span> NonRegisteringDriver
+				<span style="color:#f92672">.</span><span style="color:#a6e22e">parseHostPortPair</span><span style="color:#f92672">(</span>newHostPortPair<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		String newHost <span style="color:#f92672">=</span> hostPortPair<span style="color:#f92672">[</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">HOST_NAME_INDEX</span><span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>newHost <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> newHost<span style="color:#f92672">.</span><span style="color:#a6e22e">trim</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			newHost <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">PORT_NUMBER_INDEX</span><span style="color:#f92672">]</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+				newPort <span style="color:#f92672">=</span> Integer
+						<span style="color:#f92672">.</span><span style="color:#a6e22e">parseInt</span><span style="color:#f92672">(</span>hostPortPair<span style="color:#f92672">[</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">PORT_NUMBER_INDEX</span><span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>NumberFormatException nfe<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				<span style="color:#66d9ef">throw</span> SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLException</span><span style="color:#f92672">(</span>
+						<span style="color:#e6db74">&#34;Illegal connection port value &#39;&#34;</span>
+								<span style="color:#f92672">+</span> hostPortPair<span style="color:#f92672">[</span>NonRegisteringDriver<span style="color:#f92672">.</span><span style="color:#a6e22e">PORT_NUMBER_INDEX</span><span style="color:#f92672">]</span>
+								<span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;&#39;&#34;</span><span style="color:#f92672">,</span>
+						SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">SQL_STATE_INVALID_CONNECTION_ATTRIBUTE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MysqlIO<span style="color:#f92672">(</span>newHost<span style="color:#f92672">,</span> newPort<span style="color:#f92672">,</span> mergedProps<span style="color:#f92672">,</span>
+				getSocketFactoryClassName<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">,</span>
+				getSocketTimeout<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">doHandshake</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">user</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">password</span><span style="color:#f92672">,</span>
+				<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">database</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">connectionId</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getThreadId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isClosed</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+
+		<span style="color:#75715e">// save state from old connection
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">boolean</span> oldAutoCommit <span style="color:#f92672">=</span> getAutoCommit<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">int</span> oldIsolationLevel <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isolationLevel</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">boolean</span> oldReadOnly <span style="color:#f92672">=</span> isReadOnly<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		String oldCatalog <span style="color:#f92672">=</span> getCatalog<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#75715e">// Server properties might be different
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// from previous connection, so initialize
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// again...
+</span><span style="color:#75715e"></span>		initializePropsFromServer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isForReconnect<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#75715e">// Restore state from old connection
+</span><span style="color:#75715e"></span>			setAutoCommit<span style="color:#f92672">(</span>oldAutoCommit<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+			<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hasIsolationLevels</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				setTransactionIsolation<span style="color:#f92672">(</span>oldIsolationLevel<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span>
+
+			setCatalog<span style="color:#f92672">(</span>oldCatalog<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>hostIndex <span style="color:#f92672">!</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			setFailedOverState<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			queriesIssuedFailedOverCopy <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">failedOver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+			queriesIssuedFailedOverCopy <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+
+			<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostListSize</span> <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				setReadOnlyInternal<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+				setReadOnlyInternal<span style="color:#f92672">(</span>oldReadOnly<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span>
+		<span style="color:#f92672">}</span>
+
+		connectionGood <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">break</span><span style="color:#f92672">;</span> <span style="color:#75715e">// low-level connection succeeded
+</span><span style="color:#75715e"></span>	<span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception EEE<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span><span style="color:#f92672">.</span><span style="color:#a6e22e">forceClose</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+
+		connectionNotEstablishedBecause <span style="color:#f92672">=</span> EEE<span style="color:#f92672">;</span>
+
+		connectionGood <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>EEE <span style="color:#66d9ef">instanceof</span> SQLException<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			SQLException sqlEx <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>SQLException<span style="color:#f92672">)</span>EEE<span style="color:#f92672">;</span>
+
+			String sqlState <span style="color:#f92672">=</span> sqlEx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSQLState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+			<span style="color:#75715e">// If this isn&#39;t a communications failure, it will probably never succeed, so
+</span><span style="color:#75715e"></span>			<span style="color:#75715e">// give up right here and now ....
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>sqlState <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span>
+					<span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#f92672">!</span>sqlState
+							<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>SQLError<span style="color:#f92672">.</span><span style="color:#a6e22e">SQL_STATE_COMMUNICATION_LINK_FAILURE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+				<span style="color:#66d9ef">throw</span> sqlEx<span style="color:#f92672">;</span>
+			<span style="color:#f92672">}</span>
+		<span style="color:#f92672">}</span>
+
+		<span style="color:#75715e">// Check next host, it might be up...
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>getRoundRobinLoadBalance<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			hostIndex <span style="color:#f92672">=</span> getNextRoundRobinHostIndex<span style="color:#f92672">(</span>getURL<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+					<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostList</span><span style="color:#f92672">)</span> <span style="color:#f92672">-</span> 1 <span style="color:#75715e">/* incremented by for loop next time around */</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hostListSize</span> <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> hostIndex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			<span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> CommunicationsException<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span>
+					<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">?</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">io</span>
+							<span style="color:#f92672">.</span><span style="color:#a6e22e">getLastPacketSentTimeMs</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">:</span> 0<span style="color:#f92672">,</span>
+							EEE<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+	<span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这样可以看到， 如果设置了<code>RoundRobinLoadBalance</code>，则会根据<code>RoundRobin</code>规则，在多个MySQL服务里选择一个建立连接，否则仅按顺序逐个尝试建立MySQL连接，如果前面一个建立成功，则后面的不再再继续尝试。</p>
+<p>所以这里得到一个经验，如果设置了多个MySQL slave，为了多个slave服务的负载比较均衡，还是应该设置<code>roundRobinLoadBalance</code>参数，因此比较安全且合适的读写分离jdbc_url可能是下面这样的。</p>
+<pre><code>jdbc_url=jdbc:mysql:replication://master:3306,slave1:3306,slave2:3306/test?roundRobinLoadBalance=true&amp;allowMasterDownConnections=true&amp;allowSlavesDownConnections=true&amp;readFromMasterNoSlaves=true&amp;useUnicode=true
+</code></pre><h2 id="heading-2">总结</h2>
+<p>MySQL的JDBC驱动功能还是挺丰富的，原来没有阅读代码，有很多功能其实并不清楚，这次认真阅读代码，对JDBC的使用有更深刻的认识了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-11-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/spring/">spring</a>
+          
+          <a href="/tags/springmvc/">springmvc</a>
+          
+          <a href="/tags/mybatis/">mybatis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">给tomcat7配置SSL证书</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/">
+            <span class="next-text nav-default">maven阿里云仓库镜像</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/kubernetes/</link>
+    <description>Recent content in kubernetes on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Nov 2019 18:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>优化nginx-ingress-controller并发性能</title>
+      <link>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</guid>
+      <description>这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出</description>
+    </item>
+    
+    <item>
+      <title>kubernetes集群部署运营实践总结</title>
+      <link>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</guid>
+      <description>最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku</description>
+    </item>
+    
+    <item>
+      <title>kubernetes使用ceph存储卷</title>
+      <link>https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/</link>
+      <pubDate>Sat, 07 Sep 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/</guid>
+      <description>最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失</description>
+    </item>
+    
+    <item>
+      <title>kubernetes中部署mysql高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服</description>
+    </item>
+    
+    <item>
+      <title>清除k8s使用underlay网络的障碍</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</link>
+      <pubDate>Sun, 30 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</guid>
+      <description>k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se</description>
+    </item>
+    
+    <item>
+      <title>kuberntes中的redis集群性能调优</title>
+      <link>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
+      <pubDate>Sun, 23 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
+      <description>上周在kubernetes里发布了一个redis PaaS服务，不过其它同学简单测了一下，虽说功能上没啥问题，但性能相比物理上运行的Redis</description>
+    </item>
+    
+    <item>
+      <title>构建基于kubernetes的PaaS服务</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要向外部提供一些诸如MySQL、Redis、MongoDB、Kafka之类的基础PaaS服务。以前每做一个PaaS都要自己去实现工作</description>
+    </item>
+    
+    <item>
+      <title>kubernetes中基础服务排障记</title>
+      <link>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</link>
+      <pubDate>Thu, 30 May 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</guid>
+      <description>工作中需要将原本部署在物理机或虚拟机上的一些基础服务搬到kubernetes中，在搬的过程中遇到了不少坑，这里记录一下。 异常网络引起的问题 之</description>
+    </item>
+    
+    <item>
+      <title>保持Kubernetes容器平台稳定性</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</link>
+      <pubDate>Tue, 21 May 2019 20:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</guid>
+      <description>这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录</description>
+    </item>
+    
+    <item>
+      <title>编写Kubernetes Operator</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</link>
+      <pubDate>Sun, 12 May 2019 10:31:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</guid>
+      <description>这周的工作主要是验证几个Kubernetes Operator： mysql-operator redis-operator Redis-Operator percona-server-mongodb-operator 这些operator基本上都是用来部署、管理、维护一些基础服务的。在验</description>
+    </item>
+    
+    <item>
+      <title>打通到kubernetes集群的网络</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</guid>
+      <description>最近在工作中验证istio的网格扩展方案，其中涉及打通网络的需求，也即希望在外部虚拟机可以连通kubernetes集群内部的服务IP、Pod</description>
+    </item>
+    
+    <item>
+      <title>使用vagrant搭建验证环境</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Sun, 24 Mar 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/</guid>
+      <description>这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant</description>
+    </item>
+    
+    <item>
+      <title>PosgreSQL高可用集群实践</title>
+      <link>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Fri, 15 Mar 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</guid>
+      <description>工作中一个第三方软件使用了Posgresql数据库，而在我们的场景里，我们需要保证Posgresql数据库的高可用，网上查找了一下，发现st</description>
+    </item>
+    
+    <item>
+      <title>使用哨兵模式部署redis高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Tue, 12 Mar 2019 10:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很早以前就听说过redis社区推崇一种哨兵模式的高可用集群部署模式，今天花时间研究了一下，正好记录下来。 哨兵模式 哨兵简介 哨兵模式是在Redi</description>
+    </item>
+    
+    <item>
+      <title>使用prometheus监控多k8s集群</title>
+      <link>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sun, 18 Nov 2018 15:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</guid>
+      <description>最近在做k8s相关的开发工作，涉及不少k8s的相关知识，这里记录下。 问题引出 遇到一个需求，要使用prometheus监控多个k8s集群。 调研</description>
+    </item>
+    
+    <item>
+      <title>k8s中使用cert-manager玩转证书</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</link>
+      <pubDate>Sun, 26 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</guid>
+      <description>前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很</description>
+    </item>
+    
+    <item>
+      <title>k8s加入TLS安全访问</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</link>
+      <pubDate>Sun, 12 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</guid>
+      <description>以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服</description>
+    </item>
+    
+  </channel>
+</rss>

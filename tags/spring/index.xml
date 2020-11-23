@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>spring on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/spring/</link>
+    <description>Recent content in spring on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 18 Sep 2017 00:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/spring/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Spring Boot学习备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Mon, 18 Sep 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</guid>
+      <description>Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&amp;quot;run&amp;quot;就能创建一个独立的，产品级别的Spring</description>
+    </item>
+    
+    <item>
+      <title>Retrying_Library_For_Java</title>
+      <link>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</link>
+      <pubDate>Thu, 15 Jun 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</guid>
+      <description>最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人</description>
+    </item>
+    
+    <item>
+      <title>mybatis-generator使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 05 Mar 2017 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D</description>
+    </item>
+    
+    <item>
+      <title>hibernate查询的一些优化写法</title>
+      <link>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</link>
+      <pubDate>Mon, 13 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</guid>
+      <description>项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出</description>
+    </item>
+    
+    <item>
+      <title>SSM项目脚手架</title>
+      <link>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</link>
+      <pubDate>Sun, 06 Nov 2016 00:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</guid>
+      <description>使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm</description>
+    </item>
+    
+  </channel>
+</rss>

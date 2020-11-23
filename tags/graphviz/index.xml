@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>graphviz on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/graphviz/</link>
+    <description>Recent content in graphviz on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 16 Feb 2020 18:12:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/graphviz/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>python图算法实战</title>
+      <link>https://jeremyxu2010.github.io/2020/02/python%E5%9B%BE%E7%AE%97%E6%B3%95%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sun, 16 Feb 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/02/python%E5%9B%BE%E7%AE%97%E6%B3%95%E5%AE%9E%E6%88%98/</guid>
+      <description>复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。 纯手工写 最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也</description>
+    </item>
+    
+  </channel>
+</rss>

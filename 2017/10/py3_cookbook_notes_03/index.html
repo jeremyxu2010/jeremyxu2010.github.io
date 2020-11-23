@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>py3_cookbook_notes_03 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="并发编程 启动与停止线程 # Code to execute in an independent thread import time def countdown(n): while n &amp;gt; 0: print(&amp;#39;T-minus&amp;#39;, n) n -= 1 time.sleep(5) # Create and launch a thread from threading import Thread t = Thread(target=countdown, args=(10,)) t.start() if t.is_alive(): print(&amp;#39;Still running&amp;#39;) else: print(&amp;#39;Completed&amp;#39;) t.join() t.daemon=True 如果线程执行一些像I/O这样" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/10/py3_cookbook_notes_03/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="py3_cookbook_notes_03" />
+<meta property="og:description" content="并发编程 启动与停止线程 # Code to execute in an independent thread import time def countdown(n): while n &gt; 0: print(&#39;T-minus&#39;, n) n -= 1 time.sleep(5) # Create and launch a thread from threading import Thread t = Thread(target=countdown, args=(10,)) t.start() if t.is_alive(): print(&#39;Still running&#39;) else: print(&#39;Completed&#39;) t.join() t.daemon=True 如果线程执行一些像I/O这样" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/10/py3_cookbook_notes_03/" />
+<meta property="article:published_time" content="2017-10-23T12:12:00+08:00" />
+<meta property="article:modified_time" content="2017-10-23T12:12:00+08:00" />
+<meta itemprop="name" content="py3_cookbook_notes_03">
+<meta itemprop="description" content="并发编程 启动与停止线程 # Code to execute in an independent thread import time def countdown(n): while n &gt; 0: print(&#39;T-minus&#39;, n) n -= 1 time.sleep(5) # Create and launch a thread from threading import Thread t = Thread(target=countdown, args=(10,)) t.start() if t.is_alive(): print(&#39;Still running&#39;) else: print(&#39;Completed&#39;) t.join() t.daemon=True 如果线程执行一些像I/O这样">
+<meta itemprop="datePublished" content="2017-10-23T12:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-10-23T12:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="5732">
+
+
+
+<meta itemprop="keywords" content="python," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="py3_cookbook_notes_03"/>
+<meta name="twitter:description" content="并发编程 启动与停止线程 # Code to execute in an independent thread import time def countdown(n): while n &gt; 0: print(&#39;T-minus&#39;, n) n -= 1 time.sleep(5) # Create and launch a thread from threading import Thread t = Thread(target=countdown, args=(10,)) t.start() if t.is_alive(): print(&#39;Still running&#39;) else: print(&#39;Completed&#39;) t.join() t.daemon=True 如果线程执行一些像I/O这样"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">py3_cookbook_notes_03</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-23 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5732 字 </span>
+        <span class="more-meta"> 预计阅读 12 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">并发编程</a>
+      <ul>
+        <li><a href="#heading-1">启动与停止线程</a></li>
+        <li><a href="#heading-2">判断线程是否已经启动</a></li>
+        <li><a href="#heading-3">线程间通信</a></li>
+        <li><a href="#heading-4">给关键部分加锁</a></li>
+        <li><a href="#heading-5">防止死锁的加锁机制</a></li>
+        <li><a href="#heading-6">保存线程的状态信息</a></li>
+        <li><a href="#heading-7">创建一个线程池</a></li>
+        <li><a href="#heading-8">简单的并行编程</a></li>
+        <li><a href="#python">Python的全局锁问题</a></li>
+        <li><a href="#actor">定义一个Actor任务</a></li>
+        <li><a href="#heading-9">实现消息发布/订阅模型</a></li>
+        <li><a href="#heading-10">使用生成器代替线程</a></li>
+        <li><a href="#heading-11">多个线程队列轮询</a></li>
+        <li><a href="#unix">在Unix系统上面启动守护进程</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-12">脚本编程与系统管理</a>
+      <ul>
+        <li><a href="#heading-13">通过重定向/管道/文件接受输入</a></li>
+        <li><a href="#heading-14">终止程序并给出错误信息</a></li>
+        <li><a href="#heading-15">解析命令行选项</a></li>
+        <li><a href="#heading-16">运行时弹出密码输入提示</a></li>
+        <li><a href="#heading-17">获取终端的大小</a></li>
+        <li><a href="#heading-18">执行外部命令并获取它的输出</a></li>
+        <li><a href="#heading-19">复制或者移动文件和目录</a></li>
+        <li><a href="#heading-20">创建和解压归档文件</a></li>
+        <li><a href="#heading-21">通过文件名查找文件</a></li>
+        <li><a href="#heading-22">读取配置文件</a></li>
+        <li><a href="#heading-23">给简单脚本增加日志功能</a></li>
+        <li><a href="#heading-24">给函数库增加日志功能</a></li>
+        <li><a href="#heading-25">实现一个计时器</a></li>
+        <li><a href="#cpu">限制内存和CPU的使用量</a></li>
+        <li><a href="#web">启动一个WEB浏览器</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-26">测试、调试、异常</a>
+      <ul>
+        <li><a href="#stdout">测试stdout输出</a></li>
+        <li><a href="#heading-27">在单元测试中给对象打补丁</a></li>
+        <li><a href="#heading-28">在单元测试中测试异常情况</a></li>
+        <li><a href="#heading-29">将测试输出用日志记录到文件中</a></li>
+        <li><a href="#heading-30">忽略或期望测试失败</a></li>
+        <li><a href="#heading-31">输出警告信息</a></li>
+        <li><a href="#heading-32">调试基本的程序崩溃错误</a></li>
+        <li><a href="#heading-33">给你的程序做性能测试</a></li>
+        <li><a href="#heading-34">加速程序运行</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-35">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">并发编程</h2>
+<h3 id="heading-1">启动与停止线程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Code to execute in an independent thread</span>
+<span style="color:#f92672">import</span> time
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countdown</span>(n):
+    <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">T-minus</span><span style="color:#e6db74">&#39;</span>, n)
+        n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5</span>)
+
+<span style="color:#75715e"># Create and launch a thread</span>
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread
+t <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>countdown, args<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>,))
+t<span style="color:#f92672">.</span>start()
+
+<span style="color:#66d9ef">if</span> t<span style="color:#f92672">.</span>is_alive():
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Still running</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">else</span>:
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Completed</span><span style="color:#e6db74">&#39;</span>)
+    
+t<span style="color:#f92672">.</span>join()
+
+t<span style="color:#f92672">.</span>daemon<span style="color:#f92672">=</span>True
+</code></pre></div><p>如果线程执行一些像I/O这样的阻塞操作，那么通过轮询来终止线程将使得线程之间的协调变得非常棘手。比如，如果一个线程一直阻塞在一个I/O操作上，它就永远无法返回，也就无法检查自己是否已经被结束了。要正确处理这些问题，你需要利用超时循环来小心操作线程。 例子如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">IOTask</span>:
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">terminate</span>(self):
+        self<span style="color:#f92672">.</span>_running <span style="color:#f92672">=</span> False
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self, sock):
+        <span style="color:#75715e"># sock is a socket</span>
+        sock<span style="color:#f92672">.</span>settimeout(<span style="color:#ae81ff">5</span>)        <span style="color:#75715e"># Set timeout period</span>
+        <span style="color:#66d9ef">while</span> self<span style="color:#f92672">.</span>_running:
+            <span style="color:#75715e"># Perform a blocking I/O operation w/ timeout</span>
+            <span style="color:#66d9ef">try</span>:
+                data <span style="color:#f92672">=</span> sock<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">8192</span>)
+                <span style="color:#66d9ef">break</span>
+            <span style="color:#66d9ef">except</span> socket<span style="color:#f92672">.</span>timeout:
+                <span style="color:#66d9ef">continue</span>
+            <span style="color:#75715e"># Continued processing</span>
+            <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#75715e"># Terminated</span>
+        <span style="color:#66d9ef">return</span>
+</code></pre></div><h3 id="heading-2">判断线程是否已经启动</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread, Event
+<span style="color:#f92672">import</span> time
+
+<span style="color:#75715e"># Code to execute in an independent thread</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countdown</span>(n, started_evt):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">countdown starting</span><span style="color:#e6db74">&#39;</span>)
+    started_evt<span style="color:#f92672">.</span>set()
+    <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">T-minus</span><span style="color:#e6db74">&#39;</span>, n)
+        n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5</span>)
+
+<span style="color:#75715e"># Create the event object that will be used to signal startup</span>
+started_evt <span style="color:#f92672">=</span> Event()
+
+<span style="color:#75715e"># Launch the thread and pass the startup event</span>
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Launching countdown</span><span style="color:#e6db74">&#39;</span>)
+t <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>countdown, args<span style="color:#f92672">=</span>(<span style="color:#ae81ff">10</span>,started_evt))
+t<span style="color:#f92672">.</span>start()
+
+<span style="color:#75715e"># Wait for the thread to start</span>
+started_evt<span style="color:#f92672">.</span>wait()
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">countdown is running</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>wait与notify机制：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Condition, Thread
+<span style="color:#f92672">import</span> time
+<span style="color:#f92672">import</span> random
+
+num <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+cv <span style="color:#f92672">=</span> Condition()
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decr_num</span>():
+    <span style="color:#66d9ef">global</span> num
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#66d9ef">while</span> num <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">with</span> cv:
+                cv<span style="color:#f92672">.</span>wait(<span style="color:#ae81ff">3</span>)
+        num <span style="color:#f92672">=</span> num <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+        time<span style="color:#f92672">.</span>sleep(random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3</span>))
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">incr_num</span>():
+    <span style="color:#66d9ef">global</span> num
+    <span style="color:#66d9ef">while</span> True:
+        time<span style="color:#f92672">.</span>sleep(random<span style="color:#f92672">.</span>randint(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3</span>))
+        num <span style="color:#f92672">=</span> num <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">with</span> cv:
+            cv<span style="color:#f92672">.</span>notify_all()
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_num</span>():
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#66d9ef">print</span>(num)
+        time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">1</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    decr_thread <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>decr_num)
+    decr_thread<span style="color:#f92672">.</span>start()
+    incr_thread <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>incr_num)
+    incr_thread<span style="color:#f92672">.</span>start()
+    print_thread <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>print_num)
+    print_thread<span style="color:#f92672">.</span>start()
+</code></pre></div><p>信号量：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Semaphore, Thread
+<span style="color:#75715e"># Worker thread</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">worker</span>(n, sema):
+    <span style="color:#75715e"># Wait to be signaled</span>
+    sema<span style="color:#f92672">.</span>acquire()
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#75715e"># Do some work</span>
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Working</span><span style="color:#e6db74">&#39;</span>, n)
+    <span style="color:#66d9ef">finally</span>:
+        sema<span style="color:#f92672">.</span>release()
+
+<span style="color:#75715e"># Create some threads</span>
+sema <span style="color:#f92672">=</span> Semaphore(<span style="color:#ae81ff">3</span>)
+nworkers <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>
+<span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> range(nworkers):
+    t <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>worker, args<span style="color:#f92672">=</span>(n, sema,))
+    t<span style="color:#f92672">.</span>start()
+</code></pre></div><h3 id="heading-3">线程间通信</h3>
+<p>从一个线程向另一个线程发送数据最安全的方式可能就是使用 <code>queue</code> 库中的队列了。创建一个被多个线程共享的 <code>Queue</code> 对象，这些线程通过使用 <code>put()</code> 和 <code>get()</code> 操作来向队列中添加或者删除元素。 例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread
+
+<span style="color:#75715e"># A thread that produces data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">producer</span>(out_q):
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># Produce some data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        out_q<span style="color:#f92672">.</span>put(data)
+
+<span style="color:#75715e"># A thread that consumes data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(in_q):
+    <span style="color:#66d9ef">while</span> True:
+<span style="color:#75715e"># Get some data</span>
+        data <span style="color:#f92672">=</span> in_q<span style="color:#f92672">.</span>get()
+        <span style="color:#75715e"># Process the data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e"># Create the shared queue and launch both threads</span>
+q <span style="color:#f92672">=</span> Queue()
+t1 <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>consumer, args<span style="color:#f92672">=</span>(q,))
+t2 <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>producer, args<span style="color:#f92672">=</span>(q,))
+t1<span style="color:#f92672">.</span>start()
+t2<span style="color:#f92672">.</span>start()
+</code></pre></div><p>当使用队列时，协调生产者和消费者的关闭问题可能会有一些麻烦。一个通用的解决方法是在队列中放置一个特殊的值，当消费者读到这个值的时候，终止执行。例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread
+
+<span style="color:#75715e"># Object that signals shutdown</span>
+_sentinel <span style="color:#f92672">=</span> object()
+
+<span style="color:#75715e"># A thread that produces data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">producer</span>(out_q):
+    <span style="color:#66d9ef">while</span> running:
+        <span style="color:#75715e"># Produce some data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        out_q<span style="color:#f92672">.</span>put(data)
+
+    <span style="color:#75715e"># Put the sentinel on the queue to indicate completion</span>
+    out_q<span style="color:#f92672">.</span>put(_sentinel)
+
+<span style="color:#75715e"># A thread that consumes data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(in_q):
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># Get some data</span>
+        data <span style="color:#f92672">=</span> in_q<span style="color:#f92672">.</span>get()
+
+        <span style="color:#75715e"># Check for termination</span>
+        <span style="color:#66d9ef">if</span> data <span style="color:#f92672">is</span> _sentinel:
+            in_q<span style="color:#f92672">.</span>put(_sentinel)
+            <span style="color:#66d9ef">break</span>
+
+        <span style="color:#75715e"># Process the data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>使用队列来进行线程间通信是一个单向、不确定的过程。通常情况下，你没有办法知道接收数据的线程是什么时候接收到的数据并开始工作的。不过队列对象提供一些基本完成的特性，比如下边这个例子中的 <code>task_done()</code> 和 <code>join()</code> ：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread
+
+<span style="color:#75715e"># A thread that produces data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">producer</span>(out_q):
+    <span style="color:#66d9ef">while</span> running:
+        <span style="color:#75715e"># Produce some data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        out_q<span style="color:#f92672">.</span>put(data)
+
+<span style="color:#75715e"># A thread that consumes data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(in_q):
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># Get some data</span>
+        data <span style="color:#f92672">=</span> in_q<span style="color:#f92672">.</span>get()
+
+        <span style="color:#75715e"># Process the data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#75715e"># Indicate completion</span>
+        in_q<span style="color:#f92672">.</span>task_done()
+
+<span style="color:#75715e"># Create the shared queue and launch both threads</span>
+q <span style="color:#f92672">=</span> Queue()
+t1 <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>consumer, args<span style="color:#f92672">=</span>(q,))
+t2 <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>producer, args<span style="color:#f92672">=</span>(q,))
+t1<span style="color:#f92672">.</span>start()
+t2<span style="color:#f92672">.</span>start()
+
+<span style="color:#75715e"># Wait for all produced items to be consumed</span>
+q<span style="color:#f92672">.</span>join()
+</code></pre></div><p>如果一个线程需要在一个“消费者”线程处理完特定的数据项时立即得到通知，你可以把要发送的数据和一个 <code>Event</code> 放到一起使用，这样“生产者”就可以通过这个Event对象来监测处理的过程了。示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread, Event
+
+<span style="color:#75715e"># A thread that produces data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">producer</span>(out_q):
+    <span style="color:#66d9ef">while</span> running:
+        <span style="color:#75715e"># Produce some data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#75715e"># Make an (data, event) pair and hand it to the consumer</span>
+        evt <span style="color:#f92672">=</span> Event()
+        out_q<span style="color:#f92672">.</span>put((data, evt))
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#75715e"># Wait for the consumer to process the item</span>
+        evt<span style="color:#f92672">.</span>wait()
+
+<span style="color:#75715e"># A thread that consumes data</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(in_q):
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># Get some data</span>
+        data, evt <span style="color:#f92672">=</span> in_q<span style="color:#f92672">.</span>get()
+        <span style="color:#75715e"># Process the data</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#75715e"># Indicate completion</span>
+        evt<span style="color:#f92672">.</span>set()
+</code></pre></div><h3 id="heading-4">给关键部分加锁</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> threading
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SharedCounter</span>:
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    A counter object that can be shared by multiple threads.</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+    <span style="color:#66d9ef">def</span> __init__(self, initial_value <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>):
+        self<span style="color:#f92672">.</span>_value <span style="color:#f92672">=</span> initial_value
+        self<span style="color:#f92672">.</span>_value_lock <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Lock()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">incr</span>(self,delta<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Increment the counter with locking</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_value_lock:
+             self<span style="color:#f92672">.</span>_value <span style="color:#f92672">+</span><span style="color:#f92672">=</span> delta
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">decr</span>(self,delta<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Decrement the counter with locking</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_value_lock:
+             self<span style="color:#f92672">.</span>_value <span style="color:#f92672">-</span><span style="color:#f92672">=</span> delta
+</code></pre></div><h3 id="heading-5">防止死锁的加锁机制</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> threading
+<span style="color:#f92672">from</span> contextlib <span style="color:#f92672">import</span> contextmanager
+
+<span style="color:#75715e"># Thread-local state to stored information on locks already acquired</span>
+_local <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>local()
+
+<span style="color:#a6e22e">@contextmanager</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">acquire</span>(<span style="color:#f92672">*</span>locks):
+    <span style="color:#75715e"># Sort locks by object identifier</span>
+    locks <span style="color:#f92672">=</span> sorted(locks, key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x: id(x))
+
+    <span style="color:#75715e"># Make sure lock order of previously acquired locks is not violated</span>
+    acquired <span style="color:#f92672">=</span> getattr(_local,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">acquired</span><span style="color:#e6db74">&#39;</span>,[])
+    <span style="color:#66d9ef">if</span> acquired <span style="color:#f92672">and</span> max(id(lock) <span style="color:#66d9ef">for</span> lock <span style="color:#f92672">in</span> acquired) <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> id(locks[<span style="color:#ae81ff">0</span>]):
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Lock Order Violation</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#75715e"># Acquire all of the locks</span>
+    acquired<span style="color:#f92672">.</span>extend(locks)
+    _local<span style="color:#f92672">.</span>acquired <span style="color:#f92672">=</span> acquired
+
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#66d9ef">for</span> lock <span style="color:#f92672">in</span> locks:
+            lock<span style="color:#f92672">.</span>acquire()
+        <span style="color:#66d9ef">yield</span>
+    <span style="color:#66d9ef">finally</span>:
+        <span style="color:#75715e"># Release locks in reverse order of acquisition</span>
+        <span style="color:#66d9ef">for</span> lock <span style="color:#f92672">in</span> reversed(locks):
+            lock<span style="color:#f92672">.</span>release()
+        <span style="color:#66d9ef">del</span> acquired[<span style="color:#f92672">-</span>len(locks):]
+
+<span style="color:#f92672">import</span> threading
+x_lock <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Lock()
+y_lock <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Lock()
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">thread_1</span>():
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#66d9ef">with</span> acquire(x_lock, y_lock):
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Thread-1</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">thread_2</span>():
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#66d9ef">with</span> acquire(y_lock, x_lock):
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Thread-2</span><span style="color:#e6db74">&#39;</span>)
+
+t1 <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>thread_1)
+t1<span style="color:#f92672">.</span>daemon <span style="color:#f92672">=</span> True
+t1<span style="color:#f92672">.</span>start()
+
+t2 <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>thread_2)
+t2<span style="color:#f92672">.</span>daemon <span style="color:#f92672">=</span> True
+t2<span style="color:#f92672">.</span>start()
+</code></pre></div><p>避免死锁的主要思想是，单纯地按照对象id递增的顺序加锁不会产生循环依赖，而循环依赖是 死锁的一个必要条件，从而避免程序进入死锁状态。</p>
+<h3 id="heading-6">保存线程的状态信息</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> socket <span style="color:#f92672">import</span> socket, AF_INET, SOCK_STREAM
+<span style="color:#f92672">import</span> threading
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LazyConnection</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, address, family<span style="color:#f92672">=</span>AF_INET, type<span style="color:#f92672">=</span>SOCK_STREAM):
+        self<span style="color:#f92672">.</span>address <span style="color:#f92672">=</span> address
+        self<span style="color:#f92672">.</span>family <span style="color:#f92672">=</span> AF_INET
+        self<span style="color:#f92672">.</span>type <span style="color:#f92672">=</span> SOCK_STREAM
+        self<span style="color:#f92672">.</span>local <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>local()
+
+    <span style="color:#66d9ef">def</span> __enter__(self):
+        <span style="color:#66d9ef">if</span> hasattr(self<span style="color:#f92672">.</span>local, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sock</span><span style="color:#e6db74">&#39;</span>):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Already connected</span><span style="color:#e6db74">&#39;</span>)
+        self<span style="color:#f92672">.</span>local<span style="color:#f92672">.</span>sock <span style="color:#f92672">=</span> socket(self<span style="color:#f92672">.</span>family, self<span style="color:#f92672">.</span>type)
+        self<span style="color:#f92672">.</span>local<span style="color:#f92672">.</span>sock<span style="color:#f92672">.</span>connect(self<span style="color:#f92672">.</span>address)
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>local<span style="color:#f92672">.</span>sock
+
+    <span style="color:#66d9ef">def</span> __exit__(self, exc_ty, exc_val, tb):
+        self<span style="color:#f92672">.</span>local<span style="color:#f92672">.</span>sock<span style="color:#f92672">.</span>close()
+        <span style="color:#66d9ef">del</span> self<span style="color:#f92672">.</span>local<span style="color:#f92672">.</span>sock
+        
+<span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> partial
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test</span>(conn):
+    <span style="color:#66d9ef">with</span> conn <span style="color:#66d9ef">as</span> s:
+        s<span style="color:#f92672">.</span>send(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">GET /index.html HTTP/1.0</span><span style="color:#ae81ff">\r</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+        s<span style="color:#f92672">.</span>send(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Host: www.python.org</span><span style="color:#ae81ff">\r</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+        s<span style="color:#f92672">.</span>send(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+        resp <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>join(iter(partial(s<span style="color:#f92672">.</span>recv, <span style="color:#ae81ff">8192</span>), <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>))
+
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Got {} bytes</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(len(resp)))
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    conn <span style="color:#f92672">=</span> LazyConnection((<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">www.python.org</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">80</span>))
+
+    t1 <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>test, args<span style="color:#f92672">=</span>(conn,))
+    t2 <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>test, args<span style="color:#f92672">=</span>(conn,))
+    t1<span style="color:#f92672">.</span>start()
+    t2<span style="color:#f92672">.</span>start()
+    t1<span style="color:#f92672">.</span>join()
+    t2<span style="color:#f92672">.</span>join()
+</code></pre></div><h3 id="heading-7">创建一个线程池</h3>
+<p>python自带的<code>concurrent.futures.ThreadPoolExecutor</code>，连提交的任务队列都没有限制的，还好可以比较方便的扩展功能：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> concurrent.futures.thread <span style="color:#f92672">import</span> ThreadPoolExecutor
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Lock, Condition
+
+<span style="color:#f92672">import</span> time
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MaxPendingThreadPoolExecutor</span>(ThreadPoolExecutor):
+    <span style="color:#66d9ef">def</span> __init__(self, <span style="color:#f92672">*</span>args, max_pending<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+        super()<span style="color:#f92672">.</span>__init__(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+        self<span style="color:#f92672">.</span>_pending_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+        self<span style="color:#f92672">.</span>_max_pending <span style="color:#f92672">=</span> max_pending
+        self<span style="color:#f92672">.</span>_count_lock <span style="color:#f92672">=</span> Lock()
+        self<span style="color:#f92672">.</span>_cv <span style="color:#f92672">=</span> Condition()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_decr_pending_count</span>(self):
+        <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_count_lock:
+            self<span style="color:#f92672">.</span>_pending_count <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+            <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_cv:
+                self<span style="color:#f92672">.</span>_cv<span style="color:#f92672">.</span>notify_all()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">submit</span>(self, fn, <span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+        <span style="color:#66d9ef">while</span> self<span style="color:#f92672">.</span>_max_pending <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> self<span style="color:#f92672">.</span>_pending_count <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_max_pending:
+            <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_cv:
+                self<span style="color:#f92672">.</span>_cv<span style="color:#f92672">.</span>wait(<span style="color:#ae81ff">2</span>)
+        f <span style="color:#f92672">=</span> super()<span style="color:#f92672">.</span>submit(fn, <span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+        <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>_count_lock:
+            self<span style="color:#f92672">.</span>_pending_count <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        f<span style="color:#f92672">.</span>add_done_callback(<span style="color:#66d9ef">lambda</span> _ : self<span style="color:#f92672">.</span>_decr_pending_count())
+        <span style="color:#66d9ef">return</span> f
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_work</span>(n):
+    time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">5</span>)
+    <span style="color:#66d9ef">print</span>(n)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#66d9ef">with</span> MaxPendingThreadPoolExecutor(max_workers<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, max_pending<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">as</span> executor:
+        <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">50</span>):
+            executor<span style="color:#f92672">.</span>submit(do_work, n)
+        executor<span style="color:#f92672">.</span>shutdown()
+</code></pre></div><h3 id="heading-8">简单的并行编程</h3>
+<p>有个程序要执行CPU密集型工作，想利用多核CPU的优势来运行的快一点。<code>concurrent.futures</code> 库提供了一个 <code>ProcessPoolExecutor</code> 类， 可被用来在一个单独的Python解释器中执行计算密集型函数。</p>
+<p><code>ProcessPoolExecutor</code> 的典型用法如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> concurrent.futures <span style="color:#f92672">import</span> ProcessPoolExecutor
+
+<span style="color:#66d9ef">with</span> ProcessPoolExecutor() <span style="color:#66d9ef">as</span> pool:
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    do work <span style="color:#f92672">in</span> parallel using pool
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>其原理是，一个 <code>ProcessPoolExecutor</code> 创建N个独立的Python解释器， N是系统上面可用CPU的个数。你可以通过提供可选参数给 <code>ProcessPoolExecutor(N)</code> 来修改 处理器数量。这个处理池会一直运行到with块中最后一个语句执行完成， 然后处理池被关闭。不过，程序会一直等待直到所有提交的工作被处理完成。</p>
+<h3 id="python">Python的全局锁问题</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Processing pool (see below for initiazation)</span>
+pool <span style="color:#f92672">=</span> None
+
+<span style="color:#75715e"># Performs a large calculation (CPU bound)</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">some_work</span>(args):
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">return</span> result
+
+<span style="color:#75715e"># A thread that calls the above function</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">some_thread</span>():
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        r <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span>apply(some_work, (args))
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e"># Initiaze the pool</span>
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#f92672">import</span> multiprocessing
+    pool <span style="color:#f92672">=</span> multiprocessing<span style="color:#f92672">.</span>Pool()
+</code></pre></div><p>这个通过使用一个技巧利用进程池解决了GIL的问题。 当一个线程想要执行CPU密集型工作时，会将任务发给进程池。 然后进程池会在另外一个进程中启动一个单独的Python解释器来工作。 当线程等待结果的时候会释放GIL。 并且，由于计算任务在单独解释器中执行，那么就不会受限于GIL了。 在一个多核系统上面，你会发现这个技术可以让你很好的利用多CPU的优势。</p>
+<h3 id="actor">定义一个Actor任务</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> queue <span style="color:#f92672">import</span> Queue
+<span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Thread, Event
+
+<span style="color:#75715e"># Sentinel used for shutdown</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ActorExit</span>(<span style="color:#a6e22e">Exception</span>):
+    <span style="color:#66d9ef">pass</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Actor</span>:
+    <span style="color:#66d9ef">def</span> __init__(self):
+        self<span style="color:#f92672">.</span>_mailbox <span style="color:#f92672">=</span> Queue()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send</span>(self, msg):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Send a message to the actor</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        self<span style="color:#f92672">.</span>_mailbox<span style="color:#f92672">.</span>put(msg)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">recv</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Receive an incoming message</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        msg <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_mailbox<span style="color:#f92672">.</span>get()
+        <span style="color:#66d9ef">if</span> msg <span style="color:#f92672">is</span> ActorExit:
+            <span style="color:#66d9ef">raise</span> ActorExit()
+        <span style="color:#66d9ef">return</span> msg
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">close</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Close the actor, thus shutting it down</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        self<span style="color:#f92672">.</span>send(ActorExit)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Start concurrent execution</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        self<span style="color:#f92672">.</span>_terminated <span style="color:#f92672">=</span> Event()
+        t <span style="color:#f92672">=</span> Thread(target<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>_bootstrap)
+
+        t<span style="color:#f92672">.</span>daemon <span style="color:#f92672">=</span> True
+        t<span style="color:#f92672">.</span>start()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_bootstrap</span>(self):
+        <span style="color:#66d9ef">try</span>:
+            self<span style="color:#f92672">.</span>run()
+        <span style="color:#66d9ef">except</span> ActorExit:
+            <span style="color:#66d9ef">pass</span>
+        <span style="color:#66d9ef">finally</span>:
+            self<span style="color:#f92672">.</span>_terminated<span style="color:#f92672">.</span>set()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">join</span>(self):
+        self<span style="color:#f92672">.</span>_terminated<span style="color:#f92672">.</span>wait()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Run method to be implemented by the user</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#66d9ef">while</span> True:
+            msg <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>recv()
+
+<span style="color:#75715e"># Sample ActorTask</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PrintActor</span>(Actor):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#66d9ef">while</span> True:
+            msg <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>recv()
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Got:</span><span style="color:#e6db74">&#39;</span>, msg)
+
+<span style="color:#75715e"># Sample use</span>
+p <span style="color:#f92672">=</span> PrintActor()
+p<span style="color:#f92672">.</span>start()
+p<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#39;</span>)
+p<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">World</span><span style="color:#e6db74">&#39;</span>)
+p<span style="color:#f92672">.</span>close()
+p<span style="color:#f92672">.</span>join()
+</code></pre></div><p>可以以元组形式传递标签消息，让actor执行不同的操作，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TaggedActor</span>(Actor):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#66d9ef">while</span> True:
+             tag, <span style="color:#f92672">*</span>payload <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>recv()
+             getattr(self,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">do_</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">+</span>tag)(<span style="color:#f92672">*</span>payload)
+
+    <span style="color:#75715e"># Methods correponding to different message tags</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_A</span>(self, x):
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Running A</span><span style="color:#e6db74">&#39;</span>, x)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">do_B</span>(self, x, y):
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Running B</span><span style="color:#e6db74">&#39;</span>, x, y)
+
+<span style="color:#75715e"># Example</span>
+a <span style="color:#f92672">=</span> TaggedActor()
+a<span style="color:#f92672">.</span>start()
+a<span style="color:#f92672">.</span>send((<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">1</span>))      <span style="color:#75715e"># Invokes do_A(1)</span>
+a<span style="color:#f92672">.</span>send((<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">B</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>))   <span style="color:#75715e"># Invokes do_B(2,3)</span>
+</code></pre></div><p>许在一个工作者中运行任意的函数， 并且通过一个特殊的Result对象返回结果：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> threading <span style="color:#f92672">import</span> Event
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Result</span>:
+    <span style="color:#66d9ef">def</span> __init__(self):
+        self<span style="color:#f92672">.</span>_evt <span style="color:#f92672">=</span> Event()
+        self<span style="color:#f92672">.</span>_result <span style="color:#f92672">=</span> None
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_result</span>(self, value):
+        self<span style="color:#f92672">.</span>_result <span style="color:#f92672">=</span> value
+
+        self<span style="color:#f92672">.</span>_evt<span style="color:#f92672">.</span>set()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">result</span>(self):
+        self<span style="color:#f92672">.</span>_evt<span style="color:#f92672">.</span>wait()
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_result
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Worker</span>(Actor):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">submit</span>(self, func, <span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+        r <span style="color:#f92672">=</span> Result()
+        self<span style="color:#f92672">.</span>send((func, args, kwargs, r))
+        <span style="color:#66d9ef">return</span> r
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#66d9ef">while</span> True:
+            func, args, kwargs, r <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>recv()
+            r<span style="color:#f92672">.</span>set_result(func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs))
+
+<span style="color:#75715e"># Example use</span>
+worker <span style="color:#f92672">=</span> Worker()
+worker<span style="color:#f92672">.</span>start()
+r <span style="color:#f92672">=</span> worker<span style="color:#f92672">.</span>submit(pow, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)
+<span style="color:#66d9ef">print</span>(r<span style="color:#f92672">.</span>result())
+</code></pre></div><p>如果放宽对于同步和异步消息发送的要求（标准的Actor模型里消息是异步发送的），类actor对象还可以通过生成器来简化定义。例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_actor</span>():
+    <span style="color:#66d9ef">while</span> True:
+
+        <span style="color:#66d9ef">try</span>:
+            msg <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span>      <span style="color:#75715e"># Get a message</span>
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Got:</span><span style="color:#e6db74">&#39;</span>, msg)
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">GeneratorExit</span>:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Actor terminating</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#75715e"># Sample use</span>
+p <span style="color:#f92672">=</span> print_actor()
+next(p)     <span style="color:#75715e"># Advance to the yield (ready to receive)</span>
+p<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#39;</span>)
+p<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">World</span><span style="color:#e6db74">&#39;</span>)
+p<span style="color:#f92672">.</span>close()
+</code></pre></div><p>Actor模型的理解可参考<a href="http://www.jianshu.com/p/449850aa8e82">10 分钟了解 Actor 模型</a></p>
+<h3 id="heading-9">实现消息发布/订阅模型</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> contextlib <span style="color:#f92672">import</span> contextmanager
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> defaultdict
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Exchange</span>:
+    <span style="color:#66d9ef">def</span> __init__(self):
+        self<span style="color:#f92672">.</span>_subscribers <span style="color:#f92672">=</span> set()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">attach</span>(self, task):
+        self<span style="color:#f92672">.</span>_subscribers<span style="color:#f92672">.</span>add(task)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">detach</span>(self, task):
+        self<span style="color:#f92672">.</span>_subscribers<span style="color:#f92672">.</span>remove(task)
+
+    <span style="color:#a6e22e">@contextmanager</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">subscribe</span>(self, <span style="color:#f92672">*</span>tasks):
+        <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> tasks:
+            self<span style="color:#f92672">.</span>attach(task)
+        <span style="color:#66d9ef">try</span>:
+            <span style="color:#66d9ef">yield</span>
+        <span style="color:#66d9ef">finally</span>:
+            <span style="color:#66d9ef">for</span> task <span style="color:#f92672">in</span> tasks:
+                self<span style="color:#f92672">.</span>detach(task)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send</span>(self, msg):
+        <span style="color:#66d9ef">for</span> subscriber <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>_subscribers:
+            subscriber<span style="color:#f92672">.</span>send(msg)
+
+<span style="color:#75715e"># Dictionary of all created exchanges</span>
+_exchanges <span style="color:#f92672">=</span> defaultdict(Exchange)
+
+<span style="color:#75715e"># Return the Exchange instance associated with a given name</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_exchange</span>(name):
+    <span style="color:#66d9ef">return</span> _exchanges[name]
+
+<span style="color:#75715e"># Example of using the subscribe() method</span>
+exc <span style="color:#f92672">=</span> get_exchange(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">with</span> exc<span style="color:#f92672">.</span>subscribe(task_a, task_b):
+     <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+     exc<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">msg1</span><span style="color:#e6db74">&#39;</span>)
+     exc<span style="color:#f92672">.</span>send(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">msg2</span><span style="color:#e6db74">&#39;</span>)
+     <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e"># task_a and task_b detached here</span>
+</code></pre></div><h3 id="heading-10">使用生成器代替线程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Two simple generator functions</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countdown</span>(n):
+    <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">T-minus</span><span style="color:#e6db74">&#39;</span>, n)
+        <span style="color:#66d9ef">yield</span>
+        n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Blastoff!</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countup</span>(n):
+    x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">while</span> x <span style="color:#f92672">&lt;</span> n:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Counting up</span><span style="color:#e6db74">&#39;</span>, x)
+        <span style="color:#66d9ef">yield</span>
+        x <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> deque
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TaskScheduler</span>:
+    <span style="color:#66d9ef">def</span> __init__(self):
+        self<span style="color:#f92672">.</span>_task_queue <span style="color:#f92672">=</span> deque()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">new_task</span>(self, task):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Admit a newly started task to the scheduler</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        self<span style="color:#f92672">.</span>_task_queue<span style="color:#f92672">.</span>append(task)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Run until there are no more tasks</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#66d9ef">while</span> self<span style="color:#f92672">.</span>_task_queue:
+            task <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_task_queue<span style="color:#f92672">.</span>popleft()
+            <span style="color:#66d9ef">try</span>:
+                <span style="color:#75715e"># Run until the next yield statement</span>
+                next(task)
+                self<span style="color:#f92672">.</span>_task_queue<span style="color:#f92672">.</span>append(task)
+            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">StopIteration</span>:
+                <span style="color:#75715e"># Generator is no longer executing</span>
+                <span style="color:#66d9ef">pass</span>
+
+<span style="color:#75715e"># Example use</span>
+sched <span style="color:#f92672">=</span> TaskScheduler()
+sched<span style="color:#f92672">.</span>new_task(countdown(<span style="color:#ae81ff">10</span>))
+sched<span style="color:#f92672">.</span>new_task(countdown(<span style="color:#ae81ff">5</span>))
+sched<span style="color:#f92672">.</span>new_task(countup(<span style="color:#ae81ff">15</span>))
+sched<span style="color:#f92672">.</span>run()
+</code></pre></div><h3 id="heading-11">多个线程队列轮询</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> queue
+<span style="color:#f92672">import</span> socket
+<span style="color:#f92672">import</span> os
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PollableQueue</span>(queue<span style="color:#f92672">.</span>Queue):
+    <span style="color:#66d9ef">def</span> __init__(self):
+        super()<span style="color:#f92672">.</span>__init__()
+        <span style="color:#75715e"># Create a pair of connected sockets</span>
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>name <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">posix</span><span style="color:#e6db74">&#39;</span>:
+            self<span style="color:#f92672">.</span>_putsocket, self<span style="color:#f92672">.</span>_getsocket <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socketpair()
+        <span style="color:#66d9ef">else</span>:
+            <span style="color:#75715e"># Compatibility on non-POSIX systems</span>
+            server <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM)
+            server<span style="color:#f92672">.</span>bind((<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">127.0.0.1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>))
+            server<span style="color:#f92672">.</span>listen(<span style="color:#ae81ff">1</span>)
+            self<span style="color:#f92672">.</span>_putsocket <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span>socket(socket<span style="color:#f92672">.</span>AF_INET, socket<span style="color:#f92672">.</span>SOCK_STREAM)
+            self<span style="color:#f92672">.</span>_putsocket<span style="color:#f92672">.</span>connect(server<span style="color:#f92672">.</span>getsockname())
+            self<span style="color:#f92672">.</span>_getsocket, _ <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span>accept()
+            server<span style="color:#f92672">.</span>close()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fileno</span>(self):
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_getsocket<span style="color:#f92672">.</span>fileno()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">put</span>(self, item):
+        super()<span style="color:#f92672">.</span>put(item)
+        self<span style="color:#f92672">.</span>_putsocket<span style="color:#f92672">.</span>send(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">x</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get</span>(self):
+        self<span style="color:#f92672">.</span>_getsocket<span style="color:#f92672">.</span>recv(<span style="color:#ae81ff">1</span>)
+        <span style="color:#66d9ef">return</span> super()<span style="color:#f92672">.</span>get()
+
+<span style="color:#f92672">import</span> select
+<span style="color:#f92672">import</span> threading
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(queues):
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    Consumer that reads data on multiple queues simultaneously</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+    <span style="color:#66d9ef">while</span> True:
+        can_read, _, _ <span style="color:#f92672">=</span> select<span style="color:#f92672">.</span>select(queues,[],[])
+        <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> can_read:
+            item <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span>get()
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Got:</span><span style="color:#e6db74">&#39;</span>, item)
+
+q1 <span style="color:#f92672">=</span> PollableQueue()
+q2 <span style="color:#f92672">=</span> PollableQueue()
+q3 <span style="color:#f92672">=</span> PollableQueue()
+t <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Thread(target<span style="color:#f92672">=</span>consumer, args<span style="color:#f92672">=</span>([q1,q2,q3],))
+t<span style="color:#f92672">.</span>daemon <span style="color:#f92672">=</span> True
+t<span style="color:#f92672">.</span>start()
+
+<span style="color:#75715e"># Feed data to the queues</span>
+q1<span style="color:#f92672">.</span>put(<span style="color:#ae81ff">1</span>)
+q2<span style="color:#f92672">.</span>put(<span style="color:#ae81ff">10</span>)
+q3<span style="color:#f92672">.</span>put(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>)
+q2<span style="color:#f92672">.</span>put(<span style="color:#ae81ff">15</span>)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="unix">在Unix系统上面启动守护进程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python3</span>
+<span style="color:#75715e"># daemon.py</span>
+
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#f92672">import</span> atexit
+<span style="color:#f92672">import</span> signal
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">daemonize</span>(pidfile, <span style="color:#f92672">*</span>, stdin<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/dev/null</span><span style="color:#e6db74">&#39;</span>,
+                          stdout<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/dev/null</span><span style="color:#e6db74">&#39;</span>,
+                          stderr<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/dev/null</span><span style="color:#e6db74">&#39;</span>):
+
+    <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(pidfile):
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Already running</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#75715e"># First fork (detaches from parent)</span>
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>fork() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">0</span>)   <span style="color:#75715e"># Parent exit</span>
+    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">OSError</span> <span style="color:#66d9ef">as</span> e:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fork #1 failed.</span><span style="color:#e6db74">&#39;</span>)
+
+    os<span style="color:#f92672">.</span>chdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/</span><span style="color:#e6db74">&#39;</span>)
+    os<span style="color:#f92672">.</span>umask(<span style="color:#ae81ff">0</span>)
+    os<span style="color:#f92672">.</span>setsid()
+    <span style="color:#75715e"># Second fork (relinquish session leadership)</span>
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>fork() <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">0</span>)
+    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">OSError</span> <span style="color:#66d9ef">as</span> e:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fork #2 failed.</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#75715e"># Flush I/O buffers</span>
+    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>flush()
+    sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>flush()
+
+    <span style="color:#75715e"># Replace file descriptors for stdin, stdout, and stderr</span>
+    <span style="color:#66d9ef">with</span> open(stdin, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">as</span> f:
+        os<span style="color:#f92672">.</span>dup2(f<span style="color:#f92672">.</span>fileno(), sys<span style="color:#f92672">.</span>stdin<span style="color:#f92672">.</span>fileno())
+    <span style="color:#66d9ef">with</span> open(stdout, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ab</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">as</span> f:
+        os<span style="color:#f92672">.</span>dup2(f<span style="color:#f92672">.</span>fileno(), sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>fileno())
+    <span style="color:#66d9ef">with</span> open(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ab</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0</span>) <span style="color:#66d9ef">as</span> f:
+        os<span style="color:#f92672">.</span>dup2(f<span style="color:#f92672">.</span>fileno(), sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>fileno())
+
+    <span style="color:#75715e"># Write the PID file</span>
+    <span style="color:#66d9ef">with</span> open(pidfile,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        <span style="color:#66d9ef">print</span>(os<span style="color:#f92672">.</span>getpid(),file<span style="color:#f92672">=</span>f)
+
+    <span style="color:#75715e"># Arrange to have the PID file removed on exit/signal</span>
+    atexit<span style="color:#f92672">.</span>register(<span style="color:#66d9ef">lambda</span>: os<span style="color:#f92672">.</span>remove(pidfile))
+
+    <span style="color:#75715e"># Signal handler for termination (required)</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sigterm_handler</span>(signo, frame):
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+
+    signal<span style="color:#f92672">.</span>signal(signal<span style="color:#f92672">.</span>SIGTERM, sigterm_handler)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#f92672">import</span> time
+    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Daemon started with pid {}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(os<span style="color:#f92672">.</span>getpid()))
+    <span style="color:#66d9ef">while</span> True:
+        sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Daemon Alive! {}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(time<span style="color:#f92672">.</span>ctime()))
+        time<span style="color:#f92672">.</span>sleep(<span style="color:#ae81ff">10</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    PIDFILE <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/tmp/daemon.pid</span><span style="color:#e6db74">&#39;</span>
+
+    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">2</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Usage: {} [start|stop]</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">0</span>]), file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+
+    <span style="color:#66d9ef">if</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">start</span><span style="color:#e6db74">&#39;</span>:
+        <span style="color:#66d9ef">try</span>:
+            daemonize(PIDFILE,
+                      stdout<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/tmp/daemon.log</span><span style="color:#e6db74">&#39;</span>,
+                      stderr<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/tmp/dameon.log</span><span style="color:#e6db74">&#39;</span>)
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">RuntimeError</span> <span style="color:#66d9ef">as</span> e:
+            <span style="color:#66d9ef">print</span>(e, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+
+        main()
+
+    <span style="color:#66d9ef">elif</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">stop</span><span style="color:#e6db74">&#39;</span>:
+        <span style="color:#66d9ef">if</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>exists(PIDFILE):
+            <span style="color:#66d9ef">with</span> open(PIDFILE) <span style="color:#66d9ef">as</span> f:
+                os<span style="color:#f92672">.</span>kill(int(f<span style="color:#f92672">.</span>read()), signal<span style="color:#f92672">.</span>SIGTERM)
+        <span style="color:#66d9ef">else</span>:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Not running</span><span style="color:#e6db74">&#39;</span>, file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+
+    <span style="color:#66d9ef">else</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Unknown command {!r}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>]), file<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr)
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+</code></pre></div><h2 id="heading-12">脚本编程与系统管理</h2>
+<h3 id="heading-13">通过重定向/管道/文件接受输入</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python3</span>
+<span style="color:#f92672">import</span> fileinput
+
+<span style="color:#66d9ef">with</span> fileinput<span style="color:#f92672">.</span>input() <span style="color:#66d9ef">as</span> f_input:
+    <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> f_input:
+        <span style="color:#66d9ef">print</span>(line, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>那么你就能以前面提到的所有方式来为此脚本提供输入。假设你将此脚本保存为 <code>filein.py</code> 并将其变为可执行文件， 那么你可以像下面这样调用它，得到期望的输出：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ls | ./filein.py          <span style="color:#75715e"># Prints a directory listing to stdout.</span>
+$ ./filein.py /etc/passwd   <span style="color:#75715e"># Reads /etc/passwd to stdout.</span>
+$ ./filein.py &lt; /etc/passwd <span style="color:#75715e"># Reads /etc/passwd to stdout.</span>
+</code></pre></div><h3 id="heading-14">终止程序并给出错误信息</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">It failed!</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#75715e"># 也可以使用复杂一些的办法</span>
+<span style="color:#f92672">import</span> sys
+sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">It failed!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+</code></pre></div><h3 id="heading-15">解析命令行选项</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># search.py</span>
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">Hypothetical command-line tool for searching a collection of</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">files for one or more text patterns.</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+<span style="color:#f92672">import</span> argparse
+parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser(description<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Search some files</span><span style="color:#e6db74">&#39;</span>)
+
+parser<span style="color:#f92672">.</span>add_argument(dest<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">filenames</span><span style="color:#e6db74">&#39;</span>,metavar<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">filename</span><span style="color:#e6db74">&#39;</span>, nargs<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>)
+
+parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-p</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">--pat</span><span style="color:#e6db74">&#39;</span>,metavar<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">pattern</span><span style="color:#e6db74">&#39;</span>, required<span style="color:#f92672">=</span>True,
+                    dest<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">patterns</span><span style="color:#e6db74">&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">append</span><span style="color:#e6db74">&#39;</span>,
+                    help<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">text pattern to search for</span><span style="color:#e6db74">&#39;</span>)
+
+parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-v</span><span style="color:#e6db74">&#39;</span>, dest<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">verbose</span><span style="color:#e6db74">&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">store_true</span><span style="color:#e6db74">&#39;</span>,
+                    help<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">verbose mode</span><span style="color:#e6db74">&#39;</span>)
+
+parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-o</span><span style="color:#e6db74">&#39;</span>, dest<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">outfile</span><span style="color:#e6db74">&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">store</span><span style="color:#e6db74">&#39;</span>,
+                    help<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">output file</span><span style="color:#e6db74">&#39;</span>)
+
+parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">--speed</span><span style="color:#e6db74">&#39;</span>, dest<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">speed</span><span style="color:#e6db74">&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">store</span><span style="color:#e6db74">&#39;</span>,
+                    choices<span style="color:#f92672">=</span>{<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">slow</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fast</span><span style="color:#e6db74">&#39;</span>}, default<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">slow</span><span style="color:#e6db74">&#39;</span>,
+                    help<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">search speed</span><span style="color:#e6db74">&#39;</span>)
+
+args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+
+<span style="color:#75715e"># Output the collected arguments</span>
+<span style="color:#66d9ef">print</span>(args<span style="color:#f92672">.</span>filenames)
+<span style="color:#66d9ef">print</span>(args<span style="color:#f92672">.</span>patterns)
+<span style="color:#66d9ef">print</span>(args<span style="color:#f92672">.</span>verbose)
+<span style="color:#66d9ef">print</span>(args<span style="color:#f92672">.</span>outfile)
+<span style="color:#66d9ef">print</span>(args<span style="color:#f92672">.</span>speed)
+</code></pre></div><h3 id="heading-16">运行时弹出密码输入提示</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> getpass
+
+user <span style="color:#f92672">=</span> getpass<span style="color:#f92672">.</span>getuser()
+passwd <span style="color:#f92672">=</span> getpass<span style="color:#f92672">.</span>getpass()
+
+<span style="color:#66d9ef">if</span> svc_login(user, passwd):    <span style="color:#75715e"># You must write svc_login()</span>
+   <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Yay!</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">else</span>:
+   <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Boo!</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="heading-17">获取终端的大小</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> os
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sz <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>get_terminal_size()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sz
+os<span style="color:#f92672">.</span>terminal_size(columns<span style="color:#f92672">=</span><span style="color:#ae81ff">80</span>, lines<span style="color:#f92672">=</span><span style="color:#ae81ff">24</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sz<span style="color:#f92672">.</span>columns
+<span style="color:#ae81ff">80</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> sz<span style="color:#f92672">.</span>lines
+<span style="color:#ae81ff">24</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-18">执行外部命令并获取它的输出</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> subprocess
+<span style="color:#66d9ef">try</span>:
+	out_bytes <span style="color:#f92672">=</span> subprocess<span style="color:#f92672">.</span>check_output([<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">netstat</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-a</span><span style="color:#e6db74">&#39;</span>], timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, stderr<span style="color:#f92672">=</span>subprocess<span style="color:#f92672">.</span>STDOUT)
+	out_text <span style="color:#f92672">=</span> out_bytes<span style="color:#f92672">.</span>decode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+    
+    out_bytes <span style="color:#f92672">=</span> subprocess<span style="color:#f92672">.</span>check_output(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">grep python | wc &gt; out</span><span style="color:#e6db74">&#39;</span>, shell<span style="color:#f92672">=</span>True)
+<span style="color:#66d9ef">except</span> subprocess<span style="color:#f92672">.</span>CalledProcessError <span style="color:#66d9ef">as</span> e:
+    out_bytes <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>output       <span style="color:#75715e"># Output generated before error</span>
+    code      <span style="color:#f92672">=</span> e<span style="color:#f92672">.</span>returncode   <span style="color:#75715e"># Return code</span>
+</code></pre></div><p>使用 <code>check_output()</code> 函数是执行外部命令并获取其返回值的最简单方式。 但是，如果你需要对子进程做更复杂的交互，比如给它发送输入，你得采用另外一种方法。 这时候可直接使用 <code>subprocess.Popen</code> 类。例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> subprocess
+
+<span style="color:#75715e"># Some text to send</span>
+text <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">hello world</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">this is a test</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">goodbye</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+
+<span style="color:#75715e"># Launch a command with pipes</span>
+p <span style="color:#f92672">=</span> subprocess<span style="color:#f92672">.</span>Popen([<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wc</span><span style="color:#e6db74">&#39;</span>],
+          stdout <span style="color:#f92672">=</span> subprocess<span style="color:#f92672">.</span>PIPE,
+          stdin <span style="color:#f92672">=</span> subprocess<span style="color:#f92672">.</span>PIPE)
+
+<span style="color:#75715e"># Send the data and get the output</span>
+stdout, stderr <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>communicate(text)
+
+<span style="color:#75715e"># To interpret as text, decode</span>
+out <span style="color:#f92672">=</span> stdout<span style="color:#f92672">.</span>decode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+err <span style="color:#f92672">=</span> stderr<span style="color:#f92672">.</span>decode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="heading-19">复制或者移动文件和目录</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> shutil
+
+<span style="color:#75715e"># Copy src to dst. (cp src dst)</span>
+shutil<span style="color:#f92672">.</span>copy(src, dst)
+
+<span style="color:#75715e"># Copy files, but preserve metadata (cp -p src dst)</span>
+shutil<span style="color:#f92672">.</span>copy2(src, dst)
+
+<span style="color:#75715e"># Copy directory tree (cp -R src dst)</span>
+shutil<span style="color:#f92672">.</span>copytree(src, dst)
+
+<span style="color:#75715e"># Move src to dst (mv src dst)</span>
+shutil<span style="color:#f92672">.</span>move(src, dst)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ignore_pyc_files</span>(dirname, filenames):
+    <span style="color:#66d9ef">return</span> [name <span style="color:#f92672">in</span> filenames <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>endswith(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.pyc</span><span style="color:#e6db74">&#39;</span>)]
+
+shutil<span style="color:#f92672">.</span>copytree(src, dst, ignore<span style="color:#f92672">=</span>ignore_pyc_files)
+
+shutil<span style="color:#f92672">.</span>copytree(src, dst, ignore<span style="color:#f92672">=</span>shutil<span style="color:#f92672">.</span>ignore_patterns(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*~</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*.pyc</span><span style="color:#e6db74">&#39;</span>))
+</code></pre></div><h3 id="heading-20">创建和解压归档文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> shutil
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> shutil<span style="color:#f92672">.</span>unpack_archive(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Python-3.3.0.tgz</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> shutil<span style="color:#f92672">.</span>make_archive(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py33</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">zip</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Python-3.3.0</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/Users/beazley/Downloads/py33.zip</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> shutil<span style="color:#f92672">.</span>get_archive_formats()
+[(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">bztar</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">bzip2</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ed tar-file</span><span style="color:#e6db74">&#34;</span>), (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">gztar</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">gzip</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ed tar-file</span><span style="color:#e6db74">&#34;</span>),
+ (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tar</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">uncompressed tar file</span><span style="color:#e6db74">&#39;</span>), (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">zip</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ZIP file</span><span style="color:#e6db74">&#39;</span>)]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h3 id="heading-21">通过文件名查找文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python3.3</span>
+<span style="color:#f92672">import</span> os
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findfile</span>(start, name):
+    <span style="color:#66d9ef">for</span> relpath, dirs, files <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>walk(start):
+        <span style="color:#66d9ef">if</span> name <span style="color:#f92672">in</span> files:
+            full_path <span style="color:#f92672">=</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(start, relpath, name)
+            <span style="color:#66d9ef">print</span>(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>normpath(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>abspath(full_path)))
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    findfile(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>], sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>])
+</code></pre></div><h3 id="heading-22">读取配置文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">from</span> configparser <span style="color:#f92672">import</span> ConfigParser
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg <span style="color:#f92672">=</span> ConfigParser()
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>read(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">config.ini</span><span style="color:#e6db74">&#39;</span>)
+[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">config.ini</span><span style="color:#e6db74">&#39;</span>]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>sections()
+[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">installation</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">debug</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#39;</span>]
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>get(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">installation</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">library</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/usr/local/lib</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>getboolean(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">debug</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">log_errors</span><span style="color:#e6db74">&#39;</span>)
+
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>getint(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">port</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#ae81ff">8080</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>getint(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">nworkers</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#ae81ff">32</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(cfg<span style="color:#f92672">.</span>get(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">signature</span><span style="color:#e6db74">&#39;</span>))
+
+\<span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">=</span>
+Brought to you by the Python Cookbook
+\<span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">==</span><span style="color:#f92672">=</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>set(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">port</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">9000</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>set(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">debug</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">log_errors</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">False</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> sys
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> cfg<span style="color:#f92672">.</span>write(sys<span style="color:#f92672">.</span>stdout)
+</code></pre></div><h3 id="heading-23">给简单脚本增加日志功能</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> logging
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#75715e"># Configure the logging system</span>
+    logging<span style="color:#f92672">.</span>basicConfig(
+        filename<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">app.log</span><span style="color:#e6db74">&#39;</span>,
+        level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>ERROR,
+        format<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74">:</span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#39;</span>
+    )
+
+    <span style="color:#75715e"># Variables (to make the calls that follow work)</span>
+    hostname <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">www.python.org</span><span style="color:#e6db74">&#39;</span>
+    item <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">spam</span><span style="color:#e6db74">&#39;</span>
+    filename <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">data.csv</span><span style="color:#e6db74">&#39;</span>
+    mode <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span>
+
+    <span style="color:#75715e"># Example logging calls (insert into your program)</span>
+    logging<span style="color:#f92672">.</span>critical(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Host </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> unknown</span><span style="color:#e6db74">&#39;</span>, hostname)
+    logging<span style="color:#f92672">.</span>error(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Couldn</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">t find </span><span style="color:#e6db74">%r</span><span style="color:#e6db74">&#34;</span>, item)
+    logging<span style="color:#f92672">.</span>warning(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Feature is deprecated</span><span style="color:#e6db74">&#39;</span>)
+    logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Opening file </span><span style="color:#e6db74">%r</span><span style="color:#e6db74">, mode=</span><span style="color:#e6db74">%r</span><span style="color:#e6db74">&#39;</span>, filename, mode)
+    logging<span style="color:#f92672">.</span>debug(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Got here</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    main()
+</code></pre></div><p>上面的日志配置都是硬编码到程序中的。如果你想使用配置文件， 可以像下面这样修改 <code>basicConfig()</code> 调用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> logging.config
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+    <span style="color:#75715e"># Configure the logging system</span>
+    logging<span style="color:#f92672">.</span>config<span style="color:#f92672">.</span>fileConfig(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">logconfig.ini</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>创建一个下面这样的文件，名字叫 <code>logconfig.ini</code> ：</p>
+<pre><code>[loggers]
+keys=root
+
+[handlers]
+keys=defaultHandler
+
+[formatters]
+keys=defaultFormatter
+
+[logger_root]
+level=INFO
+handlers=defaultHandler
+qualname=root
+
+[handler_defaultHandler]
+class=FileHandler
+formatter=defaultFormatter
+args=('app.log', 'a')
+
+[formatter_defaultFormatter]
+format=%(levelname)s:%(name)s:%(message)s
+</code></pre><h3 id="heading-24">给函数库增加日志功能</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># somelib.py</span>
+
+<span style="color:#f92672">import</span> logging
+log <span style="color:#f92672">=</span> logging<span style="color:#f92672">.</span>getLogger(__name__)
+log<span style="color:#f92672">.</span>addHandler(logging<span style="color:#f92672">.</span>NullHandler())
+
+<span style="color:#75715e"># Example function (for testing)</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">func</span>():
+    log<span style="color:#f92672">.</span>critical(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A Critical Error!</span><span style="color:#e6db74">&#39;</span>)
+    log<span style="color:#f92672">.</span>debug(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A debug message</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>使用这个配置，默认情况下不会打印日志。例如：</p>
+<pre><code>&gt;&gt;&gt; import somelib
+&gt;&gt;&gt; somelib.func()
+&gt;&gt;&gt;
+</code></pre><p>不过，如果配置过日志系统，那么日志消息打印就开始生效，例如：</p>
+<pre><code>&gt;&gt;&gt; import logging
+&gt;&gt;&gt; logging.basicConfig()
+&gt;&gt;&gt; somelib.func()
+CRITICAL:somelib:A Critical Error!
+&gt;&gt;&gt;
+</code></pre><h3 id="heading-25">实现一个计时器</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> time
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Timer</span>:
+    <span style="color:#66d9ef">def</span> __init__(self, func<span style="color:#f92672">=</span>time<span style="color:#f92672">.</span>perf_counter):
+        self<span style="color:#f92672">.</span>elapsed <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>
+        self<span style="color:#f92672">.</span>_func <span style="color:#f92672">=</span> func
+        self<span style="color:#f92672">.</span>_start <span style="color:#f92672">=</span> None
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start</span>(self):
+        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>_start <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Already started</span><span style="color:#e6db74">&#39;</span>)
+        self<span style="color:#f92672">.</span>_start <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_func()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">stop</span>(self):
+        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>_start <span style="color:#f92672">is</span> None:
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">RuntimeError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Not started</span><span style="color:#e6db74">&#39;</span>)
+        end <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_func()
+        self<span style="color:#f92672">.</span>elapsed <span style="color:#f92672">+</span><span style="color:#f92672">=</span> end <span style="color:#f92672">-</span> self<span style="color:#f92672">.</span>_start
+        self<span style="color:#f92672">.</span>_start <span style="color:#f92672">=</span> None
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">reset</span>(self):
+        self<span style="color:#f92672">.</span>elapsed <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.0</span>
+
+    <span style="color:#a6e22e">@property</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">running</span>(self):
+        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_start <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None
+
+    <span style="color:#66d9ef">def</span> __enter__(self):
+        self<span style="color:#f92672">.</span>start()
+        <span style="color:#66d9ef">return</span> self
+
+    <span style="color:#66d9ef">def</span> __exit__(self, <span style="color:#f92672">*</span>args):
+        self<span style="color:#f92672">.</span>stop()
+        
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countdown</span>(n):
+    <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+        
+<span style="color:#66d9ef">with</span> Timer() <span style="color:#66d9ef">as</span> t2:
+    countdown(<span style="color:#ae81ff">1000000</span>)
+<span style="color:#66d9ef">print</span>(t2<span style="color:#f92672">.</span>elapsed)
+</code></pre></div><p><code>time.perf_counter()</code> 和 <code>time.process_time()</code> 都会返回小数形式的秒数时间。 实际的时间值没有任何意义，为了得到有意义的结果，你得执行两次函数然后计算它们的差值。</p>
+<h3 id="cpu">限制内存和CPU的使用量</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> signal
+<span style="color:#f92672">import</span> resource
+<span style="color:#f92672">import</span> os
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">time_exceeded</span>(signo, frame):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Time</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s up!</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">SystemExit</span>(<span style="color:#ae81ff">1</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_max_runtime</span>(seconds):
+    <span style="color:#75715e"># Install the signal handler and set a resource limit</span>
+    soft, hard <span style="color:#f92672">=</span> resource<span style="color:#f92672">.</span>getrlimit(resource<span style="color:#f92672">.</span>RLIMIT_CPU)
+    resource<span style="color:#f92672">.</span>setrlimit(resource<span style="color:#f92672">.</span>RLIMIT_CPU, (seconds, hard))
+    signal<span style="color:#f92672">.</span>signal(signal<span style="color:#f92672">.</span>SIGXCPU, time_exceeded) <span style="color:#75715e"># 程序运行时，SIGXCPU 信号在时间过期时被生成，然后执行清理并退出。</span>
+    
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">limit_memory</span>(maxsize):
+    soft, hard <span style="color:#f92672">=</span> resource<span style="color:#f92672">.</span>getrlimit(resource<span style="color:#f92672">.</span>RLIMIT_AS)
+    resource<span style="color:#f92672">.</span>setrlimit(resource<span style="color:#f92672">.</span>RLIMIT_AS, (maxsize, hard))
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    set_max_runtime(<span style="color:#ae81ff">15</span>)
+    limit_memory(<span style="color:#ae81ff">1024</span>) <span style="color:#75715e"># 像这样设置了内存限制后，程序运行到没有多余内存时会抛出 MemoryError 异常。</span>
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#66d9ef">pass</span>
+</code></pre></div><h3 id="web">启动一个WEB浏览器</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">import</span> webbrowser
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> webbrowser<span style="color:#f92672">.</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.python.org</span><span style="color:#e6db74">&#39;</span>)
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Open the page in a new browser window</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> webbrowser<span style="color:#f92672">.</span>open_new(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.python.org</span><span style="color:#e6db74">&#39;</span>)
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e"># Open the page in a new browser tab</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> webbrowser<span style="color:#f92672">.</span>open_new_tab(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.python.org</span><span style="color:#e6db74">&#39;</span>)
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c <span style="color:#f92672">=</span> webbrowser<span style="color:#f92672">.</span>get(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">firefox</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.python.org</span><span style="color:#e6db74">&#39;</span>)
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> c<span style="color:#f92672">.</span>open_new_tab(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://docs.python.org</span><span style="color:#e6db74">&#39;</span>)
+True
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span>
+</code></pre></div><h2 id="heading-26">测试、调试、异常</h2>
+<h3 id="stdout">测试stdout输出</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># mymodule.py</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">urlprint</span>(protocol, host, domain):
+    url <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{}://{}.{}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(protocol, host, domain)
+    <span style="color:#66d9ef">print</span>(url)
+    
+<span style="color:#f92672">from</span> io <span style="color:#f92672">import</span> StringIO
+<span style="color:#f92672">from</span> unittest <span style="color:#f92672">import</span> TestCase
+<span style="color:#f92672">from</span> unittest.mock <span style="color:#f92672">import</span> patch
+<span style="color:#f92672">import</span> mymodule
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TestURLPrint</span>(TestCase):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_url_gets_to_stdout</span>(self):
+        protocol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http</span><span style="color:#e6db74">&#39;</span>
+        host <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">www</span><span style="color:#e6db74">&#39;</span>
+        domain <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">example.com</span><span style="color:#e6db74">&#39;</span>
+        expected_url <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{}://{}.{}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(protocol, host, domain)
+
+        <span style="color:#66d9ef">with</span> patch(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sys.stdout</span><span style="color:#e6db74">&#39;</span>, new<span style="color:#f92672">=</span>StringIO()) <span style="color:#66d9ef">as</span> fake_out:
+            mymodule<span style="color:#f92672">.</span>urlprint(protocol, host, domain)
+            self<span style="color:#f92672">.</span>assertEqual(fake_out<span style="color:#f92672">.</span>getvalue(), expected_url)
+</code></pre></div><h3 id="heading-27">在单元测试中给对象打补丁</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> unittest.mock <span style="color:#f92672">import</span> patch
+<span style="color:#f92672">import</span> example
+
+<span style="color:#a6e22e">@patch</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">example.func</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test1</span>(x, mock_func):
+    example<span style="color:#f92672">.</span>func(x)       <span style="color:#75715e"># Uses patched example.func</span>
+    mock_func<span style="color:#f92672">.</span>assert_called_with(x)
+</code></pre></div><h3 id="heading-28">在单元测试中测试异常情况</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> unittest
+
+<span style="color:#75715e"># A simple function to illustrate</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_int</span>(s):
+    <span style="color:#66d9ef">return</span> int(s)
+  
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TestConversion</span>(unittest<span style="color:#f92672">.</span>TestCase):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_bad_int</span>(self):
+        <span style="color:#66d9ef">with</span> self<span style="color:#f92672">.</span>assertRaisesRegex(<span style="color:#a6e22e">ValueError</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">invalid literal .*</span><span style="color:#e6db74">&#39;</span>):
+            r <span style="color:#f92672">=</span> parse_int(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">N/A</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h3 id="heading-29">将测试输出用日志记录到文件中</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> unittest
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyTest</span>(unittest<span style="color:#f92672">.</span>TestCase):
+    <span style="color:#66d9ef">pass</span>
+  
+<span style="color:#f92672">import</span> sys
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(out<span style="color:#f92672">=</span>sys<span style="color:#f92672">.</span>stderr, verbosity<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>):
+    loader <span style="color:#f92672">=</span> unittest<span style="color:#f92672">.</span>TestLoader()
+    suite <span style="color:#f92672">=</span> loader<span style="color:#f92672">.</span>loadTestsFromModule(sys<span style="color:#f92672">.</span>modules[__name__])
+    unittest<span style="color:#f92672">.</span>TextTestRunner(out,verbosity<span style="color:#f92672">=</span>verbosity)<span style="color:#f92672">.</span>run(suite)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">testing.out</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        main(f)
+</code></pre></div><p><code>unittest</code>模块中一些值得关注的内部工作原理。</p>
+<p><code>unittest</code> 模块首先会组装一个测试套件。 这个测试套件包含了你定义的各种方法。一旦套件组装完成，它所包含的测试就可以被执行了。</p>
+<p>这两步是分开的，<code>unittest.TestLoader</code> 实例被用来组装测试套件。 <code>loadTestsFromModule()</code> 是它定义的方法之一，用来收集测试用例。 它会为 <code>TestCase</code> 类扫描某个模块并将其中的测试方法提取出来。 如果你想进行细粒度的控制， 可以使用 <code>loadTestsFromTestCase()</code> 方法来从某个继承TestCase的类中提取测试方法。 <code>TextTestRunner</code> 类是一个测试运行类的例子， 这个类的主要用途是执行某个测试套件中包含的测试方法。 这个类跟执行 <code>unittest.main()</code> 函数所使用的测试运行器是一样的。 不过，我们在这里对它进行了一些列底层配置，包括输出文件和提升级别。</p>
+<h3 id="heading-30">忽略或期望测试失败</h3>
+<p><code>unittest</code> 模块有装饰器可用来控制对指定测试方法的处理，例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> unittest
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> platform
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Tests</span>(unittest<span style="color:#f92672">.</span>TestCase):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_0</span>(self):
+        self<span style="color:#f92672">.</span>assertTrue(True)
+
+    <span style="color:#a6e22e">@unittest.skip</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">skipped test</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_1</span>(self):
+        self<span style="color:#f92672">.</span>fail(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">should have failed!</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#a6e22e">@unittest.skipIf</span>(os<span style="color:#f92672">.</span>name<span style="color:#f92672">==</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">posix</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Not supported on Unix</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_2</span>(self):
+        <span style="color:#f92672">import</span> winreg
+
+    <span style="color:#a6e22e">@unittest.skipUnless</span>(platform<span style="color:#f92672">.</span>system() <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Darwin</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Mac specific test</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_3</span>(self):
+        self<span style="color:#f92672">.</span>assertTrue(True)
+
+    <span style="color:#a6e22e">@unittest.expectedFailure</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_4</span>(self):
+        self<span style="color:#f92672">.</span>assertEqual(<span style="color:#ae81ff">2</span><span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    unittest<span style="color:#f92672">.</span>main()
+</code></pre></div><h3 id="heading-31">输出警告信息</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> warnings
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">func</span>(x, y, logfile<span style="color:#f92672">=</span>None, debug<span style="color:#f92672">=</span>False):
+    <span style="color:#66d9ef">if</span> logfile <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+         warnings<span style="color:#f92672">.</span>warn(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">logfile argument deprecated</span><span style="color:#e6db74">&#39;</span>, <span style="color:#a6e22e">DeprecationWarning</span>)
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><h3 id="heading-32">调试基本的程序崩溃错误</h3>
+<p>如果你的程序因为某个异常而崩溃，运行 <code>python3 -i someprogram.py</code> 可执行简单的调试。 <code>-i</code> 选项可让程序结束后打开一个交互式shell。 然后你就能查看环境，例如，假设你有下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># sample.py</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">func</span>(n):
+    <span style="color:#66d9ef">return</span> n <span style="color:#f92672">+</span> <span style="color:#ae81ff">10</span>
+
+func(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>运行 <code>python3 -i sample.py</code> 会有类似如下的输出：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash % python3 -i sample.py
+Traceback <span style="color:#f92672">(</span>most recent call last<span style="color:#f92672">)</span>:
+  File <span style="color:#e6db74">&#34;sample.py&#34;</span>, line 6, in &lt;module&gt;
+    func<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Hello&#39;</span><span style="color:#f92672">)</span>
+  File <span style="color:#e6db74">&#34;sample.py&#34;</span>, line 4, in func
+    <span style="color:#66d9ef">return</span> n + <span style="color:#ae81ff">10</span>
+TypeError: Can<span style="color:#e6db74">&#39;t convert &#39;</span>int<span style="color:#960050;background-color:#1e0010">&#39;</span> object to str implicitly
+&gt;&gt;&gt; func<span style="color:#f92672">(</span>10<span style="color:#f92672">)</span>
+<span style="color:#ae81ff">20</span>
+&gt;&gt;&gt;
+</code></pre></div><h3 id="heading-33">给你的程序做性能测试</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash % python3 -m cProfile someprogram.py
+         <span style="color:#ae81ff">859647</span> <span style="color:#66d9ef">function</span> calls in 16.016 CPU seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno<span style="color:#f92672">(</span><span style="color:#66d9ef">function</span><span style="color:#f92672">)</span>
+   <span style="color:#ae81ff">263169</span>    0.080    0.000    0.080    0.000 someprogram.py:16<span style="color:#f92672">(</span>frange<span style="color:#f92672">)</span>
+      <span style="color:#ae81ff">513</span>    0.001    0.000    0.002    0.000 someprogram.py:30<span style="color:#f92672">(</span>generate_mandel<span style="color:#f92672">)</span>
+   <span style="color:#ae81ff">262656</span>    0.194    0.000   15.295    0.000 someprogram.py:32<span style="color:#f92672">(</span>&lt;genexpr&gt;<span style="color:#f92672">)</span>
+        <span style="color:#ae81ff">1</span>    0.036    0.036   16.077   16.077 someprogram.py:4<span style="color:#f92672">(</span>&lt;module&gt;<span style="color:#f92672">)</span>
+   <span style="color:#ae81ff">262144</span>   15.021    0.000   15.021    0.000 someprogram.py:4<span style="color:#f92672">(</span>in_mandelbrot<span style="color:#f92672">)</span>
+        <span style="color:#ae81ff">1</span>    0.000    0.000    0.000    0.000 os.py:746<span style="color:#f92672">(</span>urandom<span style="color:#f92672">)</span>
+        <span style="color:#ae81ff">1</span>    0.000    0.000    0.000    0.000 png.py:1056<span style="color:#f92672">(</span>_readable<span style="color:#f92672">)</span>
+        <span style="color:#ae81ff">1</span>    0.000    0.000    0.000    0.000 png.py:1073<span style="color:#f92672">(</span>Reader<span style="color:#f92672">)</span>
+        <span style="color:#ae81ff">1</span>    0.227    0.227    0.438    0.438 png.py:163<span style="color:#f92672">(</span>&lt;module&gt;<span style="color:#f92672">)</span>
+      <span style="color:#ae81ff">512</span>    0.010    0.000    0.010    0.000 png.py:200<span style="color:#f92672">(</span>group<span style="color:#f92672">)</span>
+    ...
+bash %
+</code></pre></div><p>或者用装饰器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> time
+<span style="color:#f92672">from</span> functools <span style="color:#f92672">import</span> wraps
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">timethis</span>(func):
+    <span style="color:#a6e22e">@wraps</span>(func)
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wrapper</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs):
+        start <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter()
+        r <span style="color:#f92672">=</span> func(<span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwargs)
+        end <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter()
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{}.{} : {}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(func<span style="color:#f92672">.</span>__module__, func<span style="color:#f92672">.</span>__name__, end <span style="color:#f92672">-</span> start))
+        <span style="color:#66d9ef">return</span> r
+    <span style="color:#66d9ef">return</span> wrapper
+  
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">@timethis</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">countdown</span>(n):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>             n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>或者用上下文：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> contextlib <span style="color:#f92672">import</span> contextmanager
+
+<span style="color:#a6e22e">@contextmanager</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">timeblock</span>(label):
+    start <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter()
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#66d9ef">yield</span>
+    <span style="color:#66d9ef">finally</span>:
+        end <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>perf_counter()
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{} : {}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(label, end <span style="color:#f92672">-</span> start))
+        
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">with</span> timeblock(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">counting</span><span style="color:#e6db74">&#39;</span>):
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     n <span style="color:#f92672">=</span> <span style="color:#ae81ff">10000000</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>     <span style="color:#66d9ef">while</span> n <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>             n <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+</code></pre></div><p>对于测试很小的代码片段运行性能，使用 <code>timeit</code> 模块会很方便，例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> timeit(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sqrt(2)</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">from math import sqrt</span><span style="color:#e6db74">&#39;</span>, number<span style="color:#f92672">=</span><span style="color:#ae81ff">10000000</span>)
+<span style="color:#ae81ff">1.0270336690009572</span>
+</code></pre></div><h3 id="heading-34">加速程序运行</h3>
+<ul>
+<li>
+<p>由于局部变量和全局变量的实现方式（使用局部变量要更快些），因此脚本语句放入函数中会运行得更快一些</p>
+</li>
+<li>
+<p>通常你可以使用 <code>from module import name</code> 这样的导入形式，尽可能去掉属性访问</p>
+</li>
+<li>
+<p>对于频繁访问的名称，通过将这些名称变成局部变量可以加速程序运行</p>
+</li>
+<li>
+<p>任何时候当你使用额外的处理层（比如装饰器、属性访问、描述器）去包装你的代码时，都会让程序运行变慢，避免不必要的抽象</p>
+</li>
+<li>
+<p>使用内置的容器</p>
+</li>
+<li>
+<p>避免创建不必要的数据结构或复制</p>
+</li>
+</ul>
+<h2 id="heading-35">总结</h2>
+<p>终于大体看完了<a href="http://python3-cookbook.readthedocs.io/zh_CN/latest/">Python Cookbook 3rd Edition</a>这本书，这次看书还是比较细致的，除了与C语言扩展相关的部分没看外，其它部分都看过来了，将一些容易忘记的代码也摘录到博客里以备忘。另外在网上发现别人写的一篇<a href="https://juejin.im/entry/59e4754951882578e27b1e7c">《流畅的python》阅读笔记</a>，也挺不错的，抽空也去看看这篇笔记。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-10-23</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Java开发小技巧_02</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/10/apk%E5%8F%8D%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4/">
+            <span class="next-text nav-default">apk反编译步骤</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

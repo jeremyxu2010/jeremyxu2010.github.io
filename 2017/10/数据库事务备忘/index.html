@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>数据库事务备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="数据库事务备忘 以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。 数据库事务的特性 原子性（At" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/10/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="数据库事务备忘" />
+<meta property="og:description" content="数据库事务备忘 以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。 数据库事务的特性 原子性（At" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/10/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2017-10-01T23:36:00+08:00" />
+<meta property="article:modified_time" content="2017-10-01T23:36:00+08:00" />
+<meta itemprop="name" content="数据库事务备忘">
+<meta itemprop="description" content="数据库事务备忘 以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。 数据库事务的特性 原子性（At">
+<meta itemprop="datePublished" content="2017-10-01T23:36:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-10-01T23:36:00&#43;08:00" />
+<meta itemprop="wordCount" content="1940">
+
+
+
+<meta itemprop="keywords" content="mysql,transaction,isolation," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="数据库事务备忘"/>
+<meta name="twitter:description" content="数据库事务备忘 以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。 数据库事务的特性 原子性（At"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">数据库事务备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-10-01 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%80%E5%8F%91/"> 数据库开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1940 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading-1">数据库事务的特性</a></li>
+    <li><a href="#heading-2">事务隔离性问题</a></li>
+    <li><a href="#heading-3">不可重复读与幻读的区别</a>
+      <ul>
+        <li><a href="#heading-4">不可重复读</a></li>
+        <li><a href="#heading-5">幻读</a></li>
+      </ul>
+    </li>
+    <li><a href="#mysql">mysql事务相关操作</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="heading">数据库事务备忘</h1>
+<p>以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。</p>
+<h2 id="heading-1">数据库事务的特性</h2>
+<ul>
+<li>原子性（Atomicity）：原子性是指事务是一个不可分割的工作单位，事务中的操作要么都发生，要么都不发生。</li>
+<li>一致性（Consistency）：事务前后数据的完整性必须保持一致。在事务执行之前数据库是符合数据完整性约束的，无论事务是否执行成功，事务结束后的数据库中的数据也应该是符合完整性约束的。在某一时间点，如果数据库中的所有记录都能保证满足当前数据库中的所有约束，则可以说当前的数据库是符合数据完整性约束的。比如删部门表前应该删掉关联员工（已经建立外键），如果数据库服务器发生错误，有一个员工没删掉，那么此时员工的部门表已经删除，那么就不符合完整性约束了，所以这样的数据库也就性能太差啦！</li>
+<li>隔离性（Isolation）：事务的隔离性是指多个用户并发访问数据库时，一个用户的事务不能被其它用户的事务所干扰，多个并发事务之间数据要相互隔离。</li>
+<li>持久性（Durability）：持久性是指一个事务一旦被提交，它对数据库中数据的改变就是永久性的，接下来即使数据库发生故障也不应该对其有任何影响。</li>
+</ul>
+<h2 id="heading-2">事务隔离性问题</h2>
+<p>如果不考虑事务的隔离性，会出现以下问题：</p>
+<ul>
+<li>
+<p>脏读：指一个线程中的事务读取到了另外一个线程中未提交的数据。</p>
+</li>
+<li>
+<p>不可重复读（虚读）：指一个线程中的事务读取到了另外一个线程中提交的update的数据。</p>
+</li>
+<li>
+<p>幻读：指一个线程中的事务读取到了另外一个线程中提交的insert的数据。</p>
+</li>
+</ul>
+<p>将数据库设计为串行化程的数据库，让一张表在同一时间内只能有一个线程来操作。如果将数据库设计为这样，那数据库的效率太低了。所以数据库的设计并没有直接将数据库设计为串行化，而是为数据库提供多个隔离级别选项，使数据库的使用者可以根据使用情况自己定义到底需要什么样的隔离级别，不同隔离级别可以解决一些问题：</p>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读（Dirty Read）</th>
+<th>不可重复读（NonRepeatable Read）</th>
+<th>幻读（Phantom Read）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读（Read uncommitted）</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>已提交读（Read committed）</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可重复读（Repeatable read）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可串行化（Serializable ）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+<p>级别越高，数据越安全，但性能越低。</p>
+<h2 id="heading-3">不可重复读与幻读的区别</h2>
+<p>不可重复读与幻读比较相似，都是在一个事务中多次读取到不同的数据，但两者还是有一些区别。</p>
+<h3 id="heading-4">不可重复读</h3>
+<p>所谓的虚读，也就是大家经常说的不可重复读，是指在数据库访问中，一个事务范围内两个相同的查询却返回了不同数据。这是由于查询时系统中其他事务修改的提交而引起的。比如事务T1读取某一数据，事务T2读取并修改了该数据，T1为了对读取值进行检验而再次读取该数据，便得到了不同的结果。 一种更易理解的说法是：在一个事务内，多次读同一个数据。在这个事务还没有结束时，另 一个事务也访问该同一数据。那么，在第一个事务的两次读数据之间。由于第二个事务的修改，那么第一个事务读到的数据可能不一样，这样就发生了在一个事务内 两次读到的数据是不一样的，因此称为不可重复读，即原始读取不可重复。</p>
+<h3 id="heading-5">幻读</h3>
+<p>所谓幻读，是指事务A读取与搜索条件相匹配的若干行。事务B以插入或删除行等方式来修改事务A的结果集，然后再提交。 幻读是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，比如这种修改涉及到表中的“全部数据行”。同时，第二个事务也 修改这个表中的数据，这种修改是向表中插入“一行新数据”。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，就好象发生了幻觉一 样，一般解决幻读的方法是增加范围锁RangeS，锁定检索范围为只读，这样就避免了幻读。简单来说，幻读是由插入或者删除引起的。</p>
+<p>两者大致的区别在于不可重复读是由于另一个事务对数据的更改所造成的，而幻读是由于另一个事务插入或删除引起的。</p>
+<p>从总的结果来看, 似乎两者都表现为两次读取的结果不一致，但如果你从控制的角度来看, 两者的区别就比较大：</p>
+<ul>
+<li>
+<p>对于前者, 只需要锁住满足条件的记录</p>
+</li>
+<li>
+<p>对于后者, 要锁住满足条件及其相近的记录</p>
+</li>
+</ul>
+<h2 id="mysql">mysql事务相关操作</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#66d9ef">show</span> engines; <span style="color:#75715e"># 查看数据库支持的存储引擎
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">show</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%storage_engine%</span><span style="color:#e6db74">&#39;</span>;       <span style="color:#75715e"># 当前的存储引擎
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span><span style="color:#f92672">@</span>tx_isolation; <span style="color:#75715e"># 查看当前的事务隔离级别，InnoDB的默认隔离级别是REPEATABLE-READ
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span><span style="color:#f92672">@</span>global.tx_isolation; <span style="color:#75715e"># 查看系统当前隔离级别
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">set</span> [global<span style="color:#f92672">/</span>session] transaction isolation level xxxx; <span style="color:#75715e"># 设置隔离级别
+</span></code></pre></div><p>另外理论上在MySQL中InnoDB的默认隔离级别是REPEATABLE-READ，还是会有幻读的问题，但MySQL5.5以上版本InnoDB存储引擎通过多版本并发控制(MVCC，<a href="https://dev.mysql.com/doc/refman/5.5/en/innodb-multi-versioning.html">Multiversion Concurrency Control</a>)机制解决了该问题。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-10-01</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mysql/">mysql</a>
+          
+          <a href="/tags/transaction/">transaction</a>
+          
+          <a href="/tags/isolation/">isolation</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/10/py3_cookbook_notes_01/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">py3_cookbook_notes_01</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">Java VisualVM使用备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>multiprocessing on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/multiprocessing/</link>
+    <description>Recent content in multiprocessing on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 27 Sep 2020 18:12:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/multiprocessing/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>python多进程实战</title>
+      <link>https://jeremyxu2010.github.io/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sun, 27 Sep 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/</guid>
+      <description>最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用</description>
+    </item>
+    
+  </channel>
+</rss>

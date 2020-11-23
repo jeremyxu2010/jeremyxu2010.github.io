@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dubbo on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/dubbo/</link>
+    <description>Recent content in dubbo on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 09 Dec 2016 12:02:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/dubbo/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>解决dubbo导致tomcat无法优雅shutdown的问题</title>
+      <link>https://jeremyxu2010.github.io/2016/12/%E8%A7%A3%E5%86%B3dubbo%E5%AF%BC%E8%87%B4tomcat%E6%97%A0%E6%B3%95%E4%BC%98%E9%9B%85shutdown%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Fri, 09 Dec 2016 12:02:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/12/%E8%A7%A3%E5%86%B3dubbo%E5%AF%BC%E8%87%B4tomcat%E6%97%A0%E6%B3%95%E4%BC%98%E9%9B%85shutdown%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>问题由来 今天运行工程时，发现停止tomcat时，java进程并不会退出，而是必须kill -9杀掉tomcat进程。 问题出现时将线程dump出</description>
+    </item>
+    
+  </channel>
+</rss>

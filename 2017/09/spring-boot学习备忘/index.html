@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Spring Boot学习备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&amp;quot;run&amp;quot;就能创建一个独立的，产品级别的Spring" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Spring Boot学习备忘" />
+<meta property="og:description" content="Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&quot;run&quot;就能创建一个独立的，产品级别的Spring" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2017-09-18T00:20:00+08:00" />
+<meta property="article:modified_time" content="2017-09-18T00:20:00+08:00" />
+<meta itemprop="name" content="Spring Boot学习备忘">
+<meta itemprop="description" content="Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&quot;run&quot;就能创建一个独立的，产品级别的Spring">
+<meta itemprop="datePublished" content="2017-09-18T00:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-09-18T00:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="906">
+
+
+
+<meta itemprop="keywords" content="java,spring,spring boot," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring Boot学习备忘"/>
+<meta name="twitter:description" content="Spring Boot学习备忘 Spring Boot简化了基于Spring的应用开发，只需要&quot;run&quot;就能创建一个独立的，产品级别的Spring"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Spring Boot学习备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-09-18 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 906 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#spring-boot-cli">Spring Boot Cli</a>
+      <ul>
+        <li><a href="#spring-boot-cli-1">安装Spring Boot Cli</a></li>
+        <li><a href="#spring-boot--cli">使用Spring Boot  Cli</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading">编写测试用例</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="spring-boot">Spring Boot学习备忘</h1>
+<p>Spring Boot简化了基于Spring的应用开发，只需要&quot;run&quot;就能创建一个独立的，产品级别的Spring应用。工作即将使用到Spring Boot，这里将自学Spring Boot的一些操作经验记录一下。</p>
+<h2 id="spring-boot-cli">Spring Boot Cli</h2>
+<p>创建第一个Spring Boot应用有多种方式，我这里选用最简单的Spring Boot Cli方案。</p>
+<h3 id="spring-boot-cli-1">安装Spring Boot Cli</h3>
+<p>我是使用macOS系统的，已经安装了Java8、maven、OSX Homebrew，安装Spring Cli就变得很简单了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew tap pivotal/tap
+brew install springboot
+spring version <span style="color:#75715e">#验证安装的Spring Boot版本</span>
+</code></pre></div><h3 id="spring-boot--cli">使用Spring Boot  Cli</h3>
+<p>验证Spring Boot  Cli是否可正常工作也比较简单，先写一个<code>app.groovy</code>, 内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-groovy" data-lang="groovy"><span style="color:#a6e22e">@RestController</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ThisWillActuallyRun</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/&#34;</span><span style="color:#f92672">)</span>
+    String <span style="color:#a6e22e">home</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#34;Hello World!&#34;</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p>然后执行下面的命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spring run app.groovy
+</code></pre></div><p>最后请求测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080
+</code></pre></div><p>使用Spring Boot Cli创建工程：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spring init --groupId<span style="color:#f92672">=</span>personal.jeremyxu --artifactId<span style="color:#f92672">=</span>springboottest --name<span style="color:#f92672">=</span>springboottest --description<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Spring Boot Test Project&#34;</span> --dependencies<span style="color:#f92672">=</span>web
+mkdir springboottest
+unzip springboottest.zip -d springboottest
+</code></pre></div><p><code>spring init</code>执行时可以有不少参数，可以通过执行<code>spring init --list</code>命令来查看，详细文档可以参看<a href="https://docs.spring.io/spring-boot/docs/current/reference/html/cli-using-the-cli.html">这里</a>。</p>
+<p>工程创建后，简单地添加一个测试Controller，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> personal.jeremyxu.springboottest.controller<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.springframework.web.bind.annotation.RequestMapping<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.web.bind.annotation.RestController<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 2017/9/10.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@RestController</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GreetingController</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@RequestMapping</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">sayHello</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Hello World!&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>再在<code>SpringboottestApplication</code>里加上<code>@EnableAutoConfiguration</code>，然后便可运行Spring Boot应用了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd springboottest
+spring run .
+</code></pre></div><p>还是通过命令测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://127.0.0.1:8080
+</code></pre></div><p>代码写完后，执行下面的命令打包：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd springboottest
+mkdir -p ./target
+spring jar ./target/springboottest.jar .
+</code></pre></div><p>后面执行下面的命令就可以简单将工程运行起来了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">java -jar ./target/springboottest.jar
+</code></pre></div><h2 id="heading">编写测试用例</h2>
+<p>以前写代码时不怎么关注测试用例，其实测试用例还是很重要的，这里将上面的小例子补上测试用例，测试用例的写法可以参考<a href="https://github.com/spring-projects/spring-boot/blob/master/spring-boot-samples/spring-boot-sample-test/src/main/java/sample/test/SampleTestApplication.java">这里</a>。</p>
+<p><code>SpringboottestApplicationTests.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.junit.Assert<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.Rule<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.Test<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.runner.RunWith<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.test.context.SpringBootTest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.test.rule.OutputCapture<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.context.junit4.SpringRunner<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.util.StringUtils<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.util.ArrayList<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Arrays<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#a6e22e">@RunWith</span><span style="color:#f92672">(</span>SpringRunner<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@SpringBootTest</span><span style="color:#f92672">(</span>webEnvironment <span style="color:#f92672">=</span> SpringBootTest<span style="color:#f92672">.</span><span style="color:#a6e22e">WebEnvironment</span><span style="color:#f92672">.</span><span style="color:#a6e22e">RANDOM_PORT</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SpringboottestApplicationTests</span> <span style="color:#f92672">{</span>
+
+	<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> String SPRING_STARTUP <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root of context hierarchy&#34;</span><span style="color:#f92672">;</span>
+
+	<span style="color:#a6e22e">@Rule</span>
+	<span style="color:#66d9ef">public</span> OutputCapture outputCapture <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OutputCapture<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+	<span style="color:#a6e22e">@Test</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">contextLoads</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		SpringboottestApplication<span style="color:#f92672">.</span><span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>getArgs<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertTrue</span><span style="color:#f92672">(</span>getOutput<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">contains</span><span style="color:#f92672">(</span>SPRING_STARTUP<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">private</span> String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">getArgs</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">asList</span><span style="color:#f92672">(</span>
+				<span style="color:#e6db74">&#34;--spring.main.webEnvironment=false&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;--spring.main.showBanner=OFF&#34;</span><span style="color:#f92672">,</span>
+				<span style="color:#e6db74">&#34;--spring.main.registerShutdownHook=false&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>args<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+			list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;--spring.main.sources=&#34;</span>
+					<span style="color:#f92672">+</span> StringUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">arrayToCommaDelimitedString</span><span style="color:#f92672">(</span>args<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		<span style="color:#f92672">}</span>
+		<span style="color:#66d9ef">return</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">toArray</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span>list<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+	<span style="color:#66d9ef">private</span> String <span style="color:#a6e22e">getOutput</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">outputCapture</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+	<span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>GreetingControllerTests.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.hamcrest.Matchers<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.Test<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.runner.RunWith<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.http.MediaType<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.context.junit4.SpringRunner<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.web.servlet.MockMvc<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.web.servlet.request.MockMvcRequestBuilders<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.web.servlet.result.MockMvcResultMatchers<span style="color:#f92672">;</span>
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 2017/9/10.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@RunWith</span><span style="color:#f92672">(</span>SpringRunner<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@WebMvcTest</span><span style="color:#f92672">(</span>GreetingController<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GreetingControllerTests</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Autowired</span>
+    <span style="color:#66d9ef">private</span> MockMvc mvc<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Test</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">sayHello</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+        mvc<span style="color:#f92672">.</span><span style="color:#a6e22e">perform</span><span style="color:#f92672">(</span>MockMvcRequestBuilders<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/sayHello&#34;</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">(</span>MediaType<span style="color:#f92672">.</span><span style="color:#a6e22e">TEXT_PLAIN</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">andExpect</span><span style="color:#f92672">(</span>MockMvcResultMatchers<span style="color:#f92672">.</span><span style="color:#a6e22e">status</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isOk</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">andExpect</span><span style="color:#f92672">(</span>MockMvcResultMatchers<span style="color:#f92672">.</span><span style="color:#a6e22e">content</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">string</span><span style="color:#f92672">(</span>Matchers<span style="color:#f92672">.</span><span style="color:#a6e22e">equalTo</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Hello World!&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在IDEA里选中工程包，然后<code>Run 'Tests in …' with Coverage</code>, 然后就可以看到源代码的测试代码覆盖率为100%了，perfect!</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-09-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/spring/">spring</a>
+          
+          <a href="/tags/spring-boot/">spring boot</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/09/%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98%E4%B9%8Bbsdiff/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">疑难问题之bsdiff</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/">
+            <span class="next-text nav-default">Gearman使用范例</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

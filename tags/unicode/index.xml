@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>unicode on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/unicode/</link>
+    <description>Recent content in unicode on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 30 Sep 2017 22:12:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/unicode/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>python开发小技巧</title>
+      <link>https://jeremyxu2010.github.io/2017/09/python%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Sat, 30 Sep 2017 22:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/python%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>python开发小技巧 今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。 判断字符串仅包含英文 直接通过</description>
+    </item>
+    
+  </channel>
+</rss>

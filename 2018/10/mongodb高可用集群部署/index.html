@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>mongodb高可用集群部署 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="mongodb高可用集群部署" />
+<meta property="og:description" content="最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/" />
+<meta property="article:published_time" content="2018-10-13T12:50:00+08:00" />
+<meta property="article:modified_time" content="2018-10-13T12:50:00+08:00" />
+<meta itemprop="name" content="mongodb高可用集群部署">
+<meta itemprop="description" content="最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记">
+<meta itemprop="datePublished" content="2018-10-13T12:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-10-13T12:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="2014">
+
+
+
+<meta itemprop="keywords" content="mongodb,devop," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="mongodb高可用集群部署"/>
+<meta name="twitter:description" content="最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">mongodb高可用集群部署</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-10-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2014 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">环境准备</a>
+      <ul>
+        <li><a href="#heading-1">操作系统信息</a></li>
+        <li><a href="#heading-2">服务器规划</a></li>
+        <li><a href="#heading-3">端口分配</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">集群搭建</a>
+      <ul>
+        <li><a href="#mongodb">安装mongodb</a></li>
+        <li><a href="#heading-5">初始化分片的复制集</a></li>
+        <li><a href="#heading-6">初始化配置服务的复制集</a></li>
+        <li><a href="#heading-7">配置路由服务器</a></li>
+        <li><a href="#heading-8">启用用户认证登录</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-9">部署测试</a></li>
+    <li><a href="#heading-10">总结</a></li>
+    <li><a href="#heading-11">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记录一下，这第一篇记录一下mongodb的高可用集群部署。</p>
+<h2 id="heading">环境准备</h2>
+<h3 id="heading-1">操作系统信息</h3>
+<p>系统系统：centos7.2</p>
+<p>三台服务器：10.211.55.11/12/13</p>
+<p>安装包：https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/</p>
+<h3 id="heading-2">服务器规划</h3>
+<table>
+<thead>
+<tr>
+<th>服务器mongo11</th>
+<th>服务器mongo12</th>
+<th>服务器mongo13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mongos</td>
+<td>mongos</td>
+<td>mongos</td>
+</tr>
+<tr>
+<td>mongo config server</td>
+<td>mongo config server</td>
+<td>mongo config server</td>
+</tr>
+<tr>
+<td>shard server1 复制集节点1</td>
+<td>shard server1 复制集节点2</td>
+<td>shard server1 复制集节点3</td>
+</tr>
+<tr>
+<td>shard server2 复制集节点1</td>
+<td>shard server2 复制集节点2</td>
+<td>shard server2 复制集节点3</td>
+</tr>
+<tr>
+<td>shard server3 复制集节点1</td>
+<td>shard server3 复制集节点2</td>
+<td>shard server3 复制集节点3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-3">端口分配</h3>
+<pre><code>mongos：27088
+config：27077
+shard1：27017
+shard2：27018
+shard3：27019
+</code></pre><h2 id="heading-4">集群搭建</h2>
+<h3 id="mongodb">安装mongodb</h3>
+<p>3台服务器上均安装mongodb的rpm包</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum install -y https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/mongodb-org-4.0.3-1.el7.x86_64.rpm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/mongodb-org-mongos-4.0.3-1.el7.x86_64.rpm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/mongodb-org-server-4.0.3-1.el7.x86_64.rpm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/mongodb-org-shell-4.0.3-1.el7.x86_64.rpm <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  https://repo.mongodb.org/yum/redhat/7/mongodb-org/4.0/x86_64/RPMS/mongodb-org-tools-4.0.3-1.el7.x86_64.rpm
+</code></pre></div><p>分别在每台机器建立conf、mongos、config、shard1、shard2、shard3六个目录，因为mongos不存储数据，只需要建立日志文件目录即可。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p /etc/mongodb/conf
+mkdir -p /var/lib/mongodb/mongos/log
+mkdir -p /var/lib/mongodb/config/data
+mkdir -p /var/lib/mongodb/config/log
+mkdir -p /var/lib/mongodb/shard1/data
+mkdir -p /var/lib/mongodb/shard1/log
+mkdir -p /var/lib/mongodb/shard2/data
+mkdir -p /var/lib/mongodb/shard2/log
+mkdir -p /var/lib/mongodb/shard3/data
+mkdir -p /var/lib/mongodb/shard3/log
+</code></pre></div><p>关闭selinux</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">setenforce <span style="color:#ae81ff">0</span>
+sed -i -e <span style="color:#e6db74">&#39;s/^SELINUX=.*$/SELINUX=disabled/g&#39;</span> /etc/selinux/config
+</code></pre></div><h3 id="heading-5">初始化分片的复制集</h3>
+<p>首先初始化分片shard1的复制集，在每台服务器上创建其配置文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/mongodb/conf/shard1.conf
+</span><span style="color:#e6db74">systemLog:
+</span><span style="color:#e6db74">  destination: file
+</span><span style="color:#e6db74">  logAppend: true
+</span><span style="color:#e6db74">  path: /var/lib/mongodb/shard1/log/mongod.log
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># Where and how to store data.
+</span><span style="color:#e6db74">storage:
+</span><span style="color:#e6db74">  dbPath: /var/lib/mongodb/shard1/data
+</span><span style="color:#e6db74">  journal:
+</span><span style="color:#e6db74">    enabled: true
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># how the process runs
+</span><span style="color:#e6db74">processManagement:
+</span><span style="color:#e6db74">  fork: true  # fork and run in background
+</span><span style="color:#e6db74">  pidFilePath: /var/lib/mongodb/shard1/log/mongod.pid  # location of pidfile
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># network interfaces
+</span><span style="color:#e6db74">net:
+</span><span style="color:#e6db74">  port: 27017
+</span><span style="color:#e6db74">  bindIp: 0.0.0.0  # Listen to local interface only, comment to listen on all interfaces.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">replication:
+</span><span style="color:#e6db74">  replSetName: shard1
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">sharding:
+</span><span style="color:#e6db74">    clusterRole: &#34;shardsvr&#34;
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>在每台服务器上创建该分片复制节点的systemd启动脚本：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /usr/lib/systemd/system/mongod-shard1.service
+</span><span style="color:#e6db74">[Unit]
+</span><span style="color:#e6db74">Description=MongoDB Database shard1 Service
+</span><span style="color:#e6db74">Wants=network.target
+</span><span style="color:#e6db74">After=network.target
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Service]
+</span><span style="color:#e6db74">Type=forking
+</span><span style="color:#e6db74">PIDFile=/var/lib/mongodb/shard1/log/mongod.pid
+</span><span style="color:#e6db74">ExecStart=/usr/bin/mongod -f /etc/mongodb/conf/shard1.conf
+</span><span style="color:#e6db74">ExecReload=/bin/kill -HUP $MAINPID
+</span><span style="color:#e6db74">Restart=always
+</span><span style="color:#e6db74">StandardOutput=syslog
+</span><span style="color:#e6db74">StandardError=syslog
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Install]
+</span><span style="color:#e6db74">WantedBy=multi-user.target
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>在每台服务器上启动该分片的复制集各节点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">systemctl enable mongod-shard1
+systemctl start mongod-shard1
+</code></pre></div><p>在任意一台服务上初始化复制集配置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#连接</span>
+$ mongo --port <span style="color:#ae81ff">27017</span>
+&gt; use admin
+switched to db admin
+&gt; config <span style="color:#f92672">=</span> <span style="color:#f92672">{</span> 
+... _id : <span style="color:#e6db74">&#34;shard1&#34;</span>,
+... members : <span style="color:#f92672">[</span>
+...... <span style="color:#f92672">{</span>_id : 0, host : <span style="color:#e6db74">&#34;10.211.55.11:27017&#34;</span> <span style="color:#f92672">}</span>,
+...... <span style="color:#f92672">{</span>_id : 1, host : <span style="color:#e6db74">&#34;10.211.55.12:27017&#34;</span> <span style="color:#f92672">}</span>,
+...... <span style="color:#f92672">{</span>_id : 2, host : <span style="color:#e6db74">&#34;10.211.55.13:27017&#34;</span> <span style="color:#f92672">}</span>
+... <span style="color:#f92672">]</span>
+... <span style="color:#f92672">}</span>
+&gt; rs.initiate<span style="color:#f92672">(</span>config<span style="color:#f92672">)</span>
+&gt; rs.status<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><p>稍微等一会儿，复制集就初始化好了。</p>
+<p>以同样的方法安装配置分片shard2、shard3的复制集。</p>
+<h3 id="heading-6">初始化配置服务的复制集</h3>
+<p>这个过程跟初始化某一个分片的复制集类似，这里就直接贴配置命令了。</p>
+<p>在每台服务器上执行下面的命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/mongodb/conf/config.conf
+</span><span style="color:#e6db74">systemLog:
+</span><span style="color:#e6db74">  destination: file
+</span><span style="color:#e6db74">  logAppend: true
+</span><span style="color:#e6db74">  path: /var/lib/mongodb/config/log/mongod.log
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># Where and how to store data.
+</span><span style="color:#e6db74">storage:
+</span><span style="color:#e6db74">  dbPath: /var/lib/mongodb/config/data
+</span><span style="color:#e6db74">  journal:
+</span><span style="color:#e6db74">    enabled: true
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># how the process runs
+</span><span style="color:#e6db74">processManagement:
+</span><span style="color:#e6db74">  fork: true  # fork and run in background
+</span><span style="color:#e6db74">  pidFilePath: /var/lib/mongodb/config/log/mongod.pid  # location of pidfile
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># network interfaces
+</span><span style="color:#e6db74">net:
+</span><span style="color:#e6db74">  port: 27077
+</span><span style="color:#e6db74">  bindIp: 0.0.0.0  # Listen to local interface only, comment to listen on all interfaces.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">replication:
+</span><span style="color:#e6db74">  replSetName: config
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">sharding:
+</span><span style="color:#e6db74">    clusterRole: &#34;configsvr&#34;
+</span><span style="color:#e6db74">EOF</span>
+
+cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /usr/lib/systemd/system/mongod-config.service
+</span><span style="color:#e6db74">[Unit]
+</span><span style="color:#e6db74">Description=MongoDB Database config Service
+</span><span style="color:#e6db74">Wants=network.target
+</span><span style="color:#e6db74">After=network.target
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Service]
+</span><span style="color:#e6db74">Type=forking
+</span><span style="color:#e6db74">PIDFile=/var/lib/mongodb/config/log/mongod.pid
+</span><span style="color:#e6db74">ExecStart=/usr/bin/mongod -f /etc/mongodb/conf/config.conf
+</span><span style="color:#e6db74">ExecReload=/bin/kill -HUP $MAINPID
+</span><span style="color:#e6db74">Restart=always
+</span><span style="color:#e6db74">StandardOutput=syslog
+</span><span style="color:#e6db74">StandardError=syslog
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Install]
+</span><span style="color:#e6db74">WantedBy=multi-user.target
+</span><span style="color:#e6db74">EOF</span>
+
+systemctl enable mongod-config
+systemctl start mongod-config
+</code></pre></div><p>在任意一台服务上初始化复制集配置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#连接</span>
+$ mongo --port <span style="color:#ae81ff">27077</span>
+&gt; use admin
+switched to db admin
+&gt; config <span style="color:#f92672">=</span> <span style="color:#f92672">{</span> 
+... _id : <span style="color:#e6db74">&#34;config&#34;</span>,
+... members : <span style="color:#f92672">[</span>
+...... <span style="color:#f92672">{</span>_id : 0, host : <span style="color:#e6db74">&#34;10.211.55.11:27077&#34;</span> <span style="color:#f92672">}</span>,
+...... <span style="color:#f92672">{</span>_id : 1, host : <span style="color:#e6db74">&#34;10.211.55.12:27077&#34;</span> <span style="color:#f92672">}</span>,
+...... <span style="color:#f92672">{</span>_id : 2, host : <span style="color:#e6db74">&#34;10.211.55.13:27077&#34;</span> <span style="color:#f92672">}</span>
+... <span style="color:#f92672">]</span>
+... <span style="color:#f92672">}</span>
+&gt; rs.initiate<span style="color:#f92672">(</span>config<span style="color:#f92672">)</span>
+&gt; rs.status<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><p>稍微等一会儿，复制集就初始化好了。</p>
+<h3 id="heading-7">配置路由服务器</h3>
+<p>最后配置路由服务器，比较简单，在每台服务器初始化其的配置文件并启动：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /etc/mongodb/conf/mongos.conf
+</span><span style="color:#e6db74">systemLog:
+</span><span style="color:#e6db74">  destination: file
+</span><span style="color:#e6db74">  logAppend: true
+</span><span style="color:#e6db74">  path: /var/lib/mongodb/mongos/log/mongod.log
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># how the process runs
+</span><span style="color:#e6db74">processManagement:
+</span><span style="color:#e6db74">  fork: true  # fork and run in background
+</span><span style="color:#e6db74">  pidFilePath: /var/lib/mongodb/mongos/log/mongod.pid  # location of pidfile
+</span><span style="color:#e6db74"> 
+</span><span style="color:#e6db74"># network interfaces
+</span><span style="color:#e6db74">net:
+</span><span style="color:#e6db74">  port: 27088
+</span><span style="color:#e6db74">  bindIp: 0.0.0.0  # Listen to local interface only, comment to listen on all interfaces.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">sharding:
+</span><span style="color:#e6db74">    configDB: &#34;config/10.211.55.11:27077,10.211.55.12:27077,10.211.55.13:27077&#34;
+</span><span style="color:#e6db74">EOF</span>
+
+cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /usr/lib/systemd/system/mongos.service
+</span><span style="color:#e6db74">[Unit]
+</span><span style="color:#e6db74">Description=MongoDB Database mongos Service
+</span><span style="color:#e6db74">Wants=network.target
+</span><span style="color:#e6db74">After=network.target
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Service]
+</span><span style="color:#e6db74">Type=forking
+</span><span style="color:#e6db74">PIDFile=/var/lib/mongodb/mongos/log/mongod.pid
+</span><span style="color:#e6db74">ExecStart=/usr/bin/mongos -f /etc/mongodb/conf/mongos.conf
+</span><span style="color:#e6db74">ExecReload=/bin/kill -HUP $MAINPID
+</span><span style="color:#e6db74">Restart=always
+</span><span style="color:#e6db74">StandardOutput=syslog
+</span><span style="color:#e6db74">StandardError=syslog
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Install]
+</span><span style="color:#e6db74">WantedBy=multi-user.target
+</span><span style="color:#e6db74">EOF</span>
+
+systemctl enable mongos
+systemctl start mongos
+</code></pre></div><p>再在任意一台服务器上依次将3个分片加入到集群中：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#连接</span>
+$ mongo --port <span style="color:#ae81ff">27088</span>
+&gt; use admin
+switched to db admin
+&gt; sh.addShard<span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;shard1/10.211.55.11:27017,10.211.55.12:27017,10.211.55.13:27017&#34;</span><span style="color:#f92672">)</span>
+&gt; sh.addShard<span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;shard2/10.211.55.11:27018,10.211.55.12:27018,10.211.55.13:27018&#34;</span><span style="color:#f92672">)</span>
+&gt; sh.addShard<span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;shard3/10.211.55.11:27019,10.211.55.12:27019,10.211.55.13:27019&#34;</span><span style="color:#f92672">)</span>
+&gt; sh.status<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><h3 id="heading-8">启用用户认证登录</h3>
+<p>创建一个超级管理员用户，在任意一台服务器上执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongo --port <span style="color:#ae81ff">27088</span>
+&gt; use admin
+&gt; db.createUser<span style="color:#f92672">(</span><span style="color:#f92672">{</span>
+  user: <span style="color:#e6db74">&#34;superadmin&#34;</span>,
+  pwd: <span style="color:#e6db74">&#34;123456&#34;</span>,
+  roles: <span style="color:#f92672">[</span>
+    <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;userAdminAnyDatabase&#34;</span>, db: <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">}</span>,
+    <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;clusterManager&#34;</span>, db : <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">}</span>
+  <span style="color:#f92672">]</span>,
+  passwordDigestor: <span style="color:#e6db74">&#34;server&#34;</span>
+<span style="color:#f92672">}</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><p>创建mongod、mongos之间通信所使用的key文件，在任意一台服务器上执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl rand -base64 <span style="color:#ae81ff">756</span> &gt; /etc/mongodb/conf/mongo.key
+chmod <span style="color:#ae81ff">400</span> /etc/mongodb/conf/mongo.key
+<span style="color:#75715e"># 将/etc/mongodb/conf/mongo.key文件拷贝到其它服务器上，保持文件权限不变</span>
+</code></pre></div><p>修改每台服务器上的<code>/etc/mongodb/conf/shard*.conf</code>、<code>/etc/mongodb/conf/config.conf</code>、<code>/etc/mongodb/conf/mongos.conf</code>，其中<code>shard*.conf</code>、<code>config.conf</code>文件中加入以下内容：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">security:
+    keyFile: <span style="color:#e6db74">&#34;/etc/mongodb/conf/mongo.key&#34;</span>
+    authorization: <span style="color:#e6db74">&#34;enabled&#34;</span>
+</code></pre></div><p><code>mongos.conf</code>文件中加入以下内容：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">security:
+    keyFile: <span style="color:#e6db74">&#34;/etc/mongodb/conf/mongo.key&#34;</span>
+</code></pre></div><p>在每台服务器上依次执行以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">systemctl restart mognod-shard1
+systemctl restart mognod-shard2
+systemctl restart mognod-shard3
+systemctl restart mognod-config
+systemctl restart mognos
+</code></pre></div><p>至此，整个mongodb高可用集群就搭建好了。</p>
+<h2 id="heading-9">部署测试</h2>
+<p>先建一个database及user测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 创建一个database的访问用户</span>
+$ mongo --username superadmin --password <span style="color:#ae81ff">123456</span> --authenticationDatabase admin --port <span style="color:#ae81ff">27088</span>  admin
+&gt; use test
+&gt; db.createUser<span style="color:#f92672">(</span><span style="color:#f92672">{</span>
+  user: <span style="color:#e6db74">&#34;testadmin&#34;</span>,
+  pwd: <span style="color:#e6db74">&#34;123456&#34;</span>,
+  roles: <span style="color:#f92672">[</span>
+    <span style="color:#f92672">{</span> role: <span style="color:#e6db74">&#34;dbOwner&#34;</span>, db: <span style="color:#e6db74">&#34;test&#34;</span> <span style="color:#f92672">}</span>,
+  <span style="color:#f92672">]</span>,
+  passwordDigestor: <span style="color:#e6db74">&#34;server&#34;</span>
+<span style="color:#f92672">}</span><span style="color:#f92672">)</span>
+&gt; exit
+
+<span style="color:#75715e"># 使用该用户访问database，并插入数据，创建索引</span>
+$ mongo --username testadmin --password <span style="color:#ae81ff">123456</span> --authenticationDatabase test --port <span style="color:#ae81ff">27088</span>  test
+&gt; db.col1.insert<span style="color:#f92672">(</span><span style="color:#f92672">{</span><span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;xxj&#34;</span><span style="color:#f92672">}</span><span style="color:#f92672">)</span>
+&gt; db.col1.createIndex<span style="color:#f92672">(</span> <span style="color:#f92672">{</span> <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#ae81ff">1</span> <span style="color:#f92672">}</span> <span style="color:#f92672">)</span>
+&gt; exit
+
+<span style="color:#75715e"># 启用该database的分片及对某个collection分片</span>
+$ mongo --username superadmin --password <span style="color:#ae81ff">123456</span> --authenticationDatabase admin --port <span style="color:#ae81ff">27088</span>  admin
+&gt; use admin
+&gt; sh.enableSharding<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test&#34;</span><span style="color:#f92672">)</span>
+&gt; sh.shardCollection<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test.col1&#34;</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#34;name&#34;</span> : <span style="color:#ae81ff">1</span> <span style="color:#f92672">}</span> <span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><h2 id="heading-10">总结</h2>
+<p>手工部署mongodb集群还是比较麻烦的，所以如果图省事儿，还是使用云厂商提供的PaaS服务好了，比如<a href="https://cloud.tencent.com/product/mongodb">云数据库 MongoDB</a>。如果一定要自己搭建，还是建议用现成的<a href="https://github.com/twoyao/ansible-mongodb-cluster">ansible-mongodb-cluster脚本</a>好了。</p>
+<h2 id="heading-11">参考</h2>
+<ol>
+<li><a href="https://zhuanlan.zhihu.com/p/28600032">https://zhuanlan.zhihu.com/p/28600032</a></li>
+<li><a href="https://gist.github.com/guileen/e2ebc1f7de2d2039fed2">https://gist.github.com/guileen/e2ebc1f7de2d2039fed2</a></li>
+<li><a href="https://gist.github.com/jwilm/5842956">https://gist.github.com/jwilm/5842956</a></li>
+<li><a href="https://docs.mongodb.com/manual/tutorial/enforce-keyfile-access-control-in-existing-replica-set/">https://docs.mongodb.com/manual/tutorial/enforce-keyfile-access-control-in-existing-replica-set/</a></li>
+<li><a href="https://docs.mongodb.com/manual/tutorial/deploy-shard-cluster/">https://docs.mongodb.com/manual/tutorial/deploy-shard-cluster/</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/method/js-collection/">https://docs.mongodb.com/manual/reference/method/js-collection/</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/method/js-sharding/">https://docs.mongodb.com/manual/reference/method/js-sharding/</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/built-in-roles/#database-administration-roles">https://docs.mongodb.com/manual/reference/built-in-roles/#database-administration-roles</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-10-13</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mongodb/">mongodb</a>
+          
+          <a href="/tags/devop/">devop</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">搭建ELFK日志采集系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <span class="next-text nav-default">harbor源码解读</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>彻底解决pvc无法mount的问题 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="彻底解决pvc无法mount的问题" />
+<meta property="og:description" content="上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/" />
+<meta property="article:published_time" content="2019-07-14T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-07-14T18:00:00+08:00" />
+<meta itemprop="name" content="彻底解决pvc无法mount的问题">
+<meta itemprop="description" content="上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac">
+<meta itemprop="datePublished" content="2019-07-14T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-14T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="2227">
+
+
+
+<meta itemprop="keywords" content="k8s,devops,ceph," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="彻底解决pvc无法mount的问题"/>
+<meta name="twitter:description" content="上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">彻底解决pvc无法mount的问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-14 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2227 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题复现</a></li>
+    <li><a href="#heading-1">问题根源</a></li>
+    <li><a href="#heading-2">根源分析</a></li>
+    <li><a href="#heading-3">问题解决</a></li>
+    <li><a href="#heading-4">临时解决方案</a></li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，<code>AttachDetachController</code>执行<code>detach</code>操作失败了。这周这个问题又出现了，这次追查了一下根源，这里记录下。</p>
+<h2 id="heading">问题复现</h2>
+<p>在某个测试环境，删除大量pod，待kubernetes重建大量pod时，该问题就复现了。</p>
+<h2 id="heading-1">问题根源</h2>
+<p>检查kubelet的日志，可以看到以下的报错</p>
+<pre><code>E0708 09:50:14.407804   26508 nestedpendingoperations.go:267] Operation for &quot;\&quot;kubernetes.io/rbd/k8s:kubernetes-dynamic-pvc-998825ec-9c79-11e9-a3b2-fa163ed7c802\&quot;&quot; failed. No retries permitted until 2019-07-08 09:50:14.907753132 +0800 CST m=+247869.135080115 (durationBeforeRetry 500ms). Error: &quot;UnmountDevice failed for volume \&quot;pvc-9984bdab-9c79-11e9-b8ba-fa163ed7c802\&quot; (UniqueName: \&quot;kubernetes.io/rbd/k8s:kubernetes-dynamic-pvc-998825ec-9c79-11e9-a3b2-fa163ed7c802\&quot;) on node \&quot;10.125.54.133\&quot; : rbd: failed to unmap device /dev/rbd3, error exit status 16, rbd output: [114 98 100 58 32 115 121 115 102 115 32 119 114 105 116 101 32 102 97 105 108 101 100 10 114 98 100 58 32 117 110 109 97 112 32 102 97 105 108 101 100 58 32 40 49 54 41 32 68 101 118 105 99 101 32 111 114 32 114 101 115 111 117 114 99 101 32 98 117 115 121 10]&quot;
+</code></pre><p>上面的rbd output用<a href="https://www.browserling.com/tools/ascii-to-text">ascii-to-text工具</a>解码为字符串为<code>rbd: sysfs write failed rbd: unmap failed: (16) Device or resource busy</code>，应该是块设备被占用了。直接用<code>rbd unmap</code>detach volome一次，发现也报这个错，所以该块设备一直被占用着，接下来查一下到底是什么进程占用着该块设备。</p>
+<p>先用lsof查一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@node133 ~<span style="color:#f92672">]</span><span style="color:#75715e"># lsof 2&gt;/dev/null | grep rbd3</span>
+rbd3-task  <span style="color:#ae81ff">6561</span>            root  cwd       DIR              253,1      <span style="color:#ae81ff">4096</span>          <span style="color:#ae81ff">2</span> /
+rbd3-task  <span style="color:#ae81ff">6561</span>            root  rtd       DIR              253,1      <span style="color:#ae81ff">4096</span>          <span style="color:#ae81ff">2</span> /
+rbd3-task  <span style="color:#ae81ff">6561</span>            root  txt   unknown                                         /proc/6561/exe
+jbd2/rbd3  <span style="color:#ae81ff">6589</span>            root  cwd       DIR              253,1      <span style="color:#ae81ff">4096</span>          <span style="color:#ae81ff">2</span> /
+jbd2/rbd3  <span style="color:#ae81ff">6589</span>            root  rtd       DIR              253,1      <span style="color:#ae81ff">4096</span>          <span style="color:#ae81ff">2</span> /
+jbd2/rbd3  <span style="color:#ae81ff">6589</span>            root  txt   unknown                                         /proc/6589/exe
+</code></pre></div><p>可以看到只有两个进程占用着该块设备。网上google了下，找到<a href="https://www.fclose.com/linux-kernels/488425/jbd2-fix-use-after-free-in-kjournald2-linux-3-18-107/">这篇文章</a>，最开始以为是内核的bug，于是将内核升级到较高的版本<code>4.4.184-1.el7.elrepo.x86_64</code>，但问题依然会重现。</p>
+<p>一愁莫展，就疯狂在网上搜寻答案，偶然看到<a href="https://unix.stackexchange.com/questions/437025/how-to-stop-jbd2-on-unmounted-filesystem">这篇帖子</a>里的一段话:</p>
+<blockquote>
+<p>I really expect, if the FS is marked as dirty (mounted), and JBD is still running&hellip; that's because it's still mounted. E.g. what does /proc/self/mountinfo show? I wonder if you can pinky-swear you're not using mount namespaces&hellip; see here for suggestions on how to find and inspect other mount namespaces. It assumes you are in the initial PID namespace, i.e. you're not running inside a sandbox where you can't see all the processes on the system. – sourcejedi May 18 &lsquo;18 at 8:55</p>
+</blockquote>
+<p>从这段话我知道了lsof查不到占用块设备文件的用户进程，很有可能是该进程在某个PID命名空间，在根PID命名空间通过普通命令查不到而已。</p>
+<p>于是我换了一种方式查，果然就查到关键的用户进程：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@node133 ~<span style="color:#f92672">]</span><span style="color:#75715e"># grep &#39;rbd3&#39; /proc/*/task/*/mountinfo</span>
+
+/proc/21839/task/28447/mountinfo:2892 <span style="color:#ae81ff">2729</span> 250:0 / /host/data/kubelet/plugins/kubernetes.io/rbd/mounts/k8s-image-kubernetes-dynamic-pvc-c838258f-9c7a-11e9-a3b2-fa163ed7c802 rw,relatime - ext4 /dev/rbd3 rw,stripe<span style="color:#f92672">=</span>1024,data<span style="color:#f92672">=</span>ordered
+
+<span style="color:#f92672">[</span>root@node133 ~<span style="color:#f92672">]</span><span style="color:#75715e"># ps -ef|grep 21839</span>
+nfsnobo+ <span style="color:#ae81ff">21839</span> <span style="color:#ae81ff">21795</span>  <span style="color:#ae81ff">0</span> 01:26 ?        00:00:08 /bin/node_exporter --path.procfs<span style="color:#f92672">=</span>/host/proc --path.sysfs<span style="color:#f92672">=</span>/host/sys --collector.filesystem.ignored-fs-types<span style="color:#f92672">=</span>^<span style="color:#f92672">(</span>autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|tmpfs<span style="color:#f92672">)</span>$ --collector.filesystem.ignored-mount-points<span style="color:#f92672">=</span>^/<span style="color:#f92672">(</span>dev|proc|sys|data/docker/.+|etc/.+|run/secrets<span style="color:#f92672">)</span><span style="color:#f92672">(</span>$|/<span style="color:#f92672">)</span> --path.rootfs<span style="color:#f92672">=</span>/host
+</code></pre></div><h2 id="heading-2">根源分析</h2>
+<p>竟然是prometheus的node_exporter进程占用着该块设备文件，真的是想不到啊。将该进程杀掉，<code>rbd unmap</code>终于可以正常detach rbd volume了。</p>
+<p>继续搜寻了一下，发现也有人遇到<a href="https://github.com/kubernetes/kubernetes/issues/54214#issuecomment-341357733">这个问题</a>，这个评论里说明的原因是node_exporter因为要查探磁盘的使用率等数值，会将根文件系统挂载到容器里，而kubernetes默认的<code>Mount propagation</code>策略是<code>None</code>，即容器一旦启动，它从宿主机中读到的挂载信息就不变了，即使在宿主机里<code>unmount</code>了某个目录，容器里对此一无所知，它仍然会将块设备挂载到容器里的某个目录。</p>
+<p>继续看<code>prometheus-node-exporter</code>这个chart的变动，发现也有人给<code>helm</code>官方报告<a href="https://github.com/helm/charts/pull/11194">这个问题</a>，并且还发了PR，在挂载卷时通过使用<code>mountPropagation: HostToContainer</code>选项以解决该问题。加上了该选项后，如果宿主机的挂载信息发生变动后，挂载信息将能传播到容器里。容器内也会<code>unmount</code>相应的目录，从而最终释放对块设备的占用。</p>
+<p>这里摘录下kubernetes提供的Mount propagation策略：</p>
+<blockquote>
+<p>Mount propagation allows for sharing volumes mounted by a Container to other Containers in the same Pod, or even to other Pods on the same node.</p>
+<p>Mount propagation of a volume is controlled by mountPropagation field in Container.volumeMounts. Its values are:</p>
+<p>None - This volume mount will not receive any subsequent mounts that are mounted to this volume or any of its subdirectories by the host. In similar fashion, no mounts created by the Container will be visible on the host. This is the default mode.
+This mode is equal to private mount propagation as described in the Linux kernel documentation</p>
+<p>HostToContainer - This volume mount will receive all subsequent mounts that are mounted to this volume or any of its subdirectories.
+In other words, if the host mounts anything inside the volume mount, the Container will see it mounted there.</p>
+<p>Similarly, if any Pod with Bidirectional mount propagation to the same volume mounts anything there, the Container with HostToContainer mount propagation will see it.</p>
+<p>This mode is equal to rslave mount propagation as described in the Linux kernel documentation</p>
+<p>Bidirectional - This volume mount behaves the same the HostToContainer mount. In addition, all volume mounts created by the Container will be propagated back to the host and to all Containers of all Pods that use the same volume.
+A typical use case for this mode is a Pod with a Flexvolume or CSI driver or a Pod that needs to mount something on the host using a hostPath volume.</p>
+<p>This mode is equal to rshared mount propagation as described in the Linux kernel documentation</p>
+<p>Caution: Bidirectional mount propagation can be dangerous. It can damage the host operating system and therefore it is allowed only in privileged Containers. Familiarity with Linux kernel behavior is strongly recommended. In addition, any volume mounts created by Containers in Pods must be destroyed (unmounted) by the Containers on termination.</p>
+</blockquote>
+<h2 id="heading-3">问题解决</h2>
+<p>经验证<code>prometheus-node-exporter</code>挂载volume时加了<code>mountPropagation: HostToContainer</code>选项后，<code>prometheus-node-exporter</code>确实不会占用块设备了。</p>
+<p>但问题还没完，毕竟是采用<code>Mount propagation</code>方式来释放块设备的，既然是传播就存在一个时延。在这个时延范围内，如果<code>detach volume</code>还是会失败的。理论上kubernetes在<code>detach volume</code>失败后，会尝试重试的，但这个重试逻辑有些问题，会导致无法重试<code>rbd unmap</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#75715e">// rbd volume will stuck when DetachDisk failed as Unmount will always returen not mounted
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">detacher</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">rbdDetacher</span>) <span style="color:#a6e22e">UnmountDevice</span>(<span style="color:#a6e22e">deviceMountPath</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> { 
+ 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">pathExists</span>, <span style="color:#a6e22e">pathErr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">volutil</span>.<span style="color:#a6e22e">PathExists</span>(<span style="color:#a6e22e">deviceMountPath</span>); <span style="color:#a6e22e">pathErr</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Error checking if path exists: %v&#34;</span>, <span style="color:#a6e22e">pathErr</span>) 
+ 	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">pathExists</span> { 
+ 		<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">Warningf</span>(<span style="color:#e6db74">&#34;Warning: Unmount skipped because path does not exist: %v&#34;</span>, <span style="color:#a6e22e">deviceMountPath</span>) 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> 
+ 	} 
+ 	<span style="color:#a6e22e">devicePath</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">GetDeviceNameFromMount</span>(<span style="color:#a6e22e">detacher</span>.<span style="color:#a6e22e">mounter</span>, <span style="color:#a6e22e">deviceMountPath</span>) 
+ 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> 
+ 	} 
+ 	<span style="color:#75715e">// Unmount the device from the device mount point. 
+</span><span style="color:#75715e"></span> 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: unmouting device mountpoint %s&#34;</span>, <span style="color:#a6e22e">deviceMountPath</span>) 
+ 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">detacher</span>.<span style="color:#a6e22e">mounter</span>.<span style="color:#a6e22e">Unmount</span>(<span style="color:#a6e22e">deviceMountPath</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> 
+ 	} 
+ 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">3</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: successfully umount device mountpath %s&#34;</span>, <span style="color:#a6e22e">deviceMountPath</span>) 
+  
+ 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">4</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: detaching device %s&#34;</span>, <span style="color:#a6e22e">devicePath</span>) 
+ 	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">detacher</span>.<span style="color:#a6e22e">manager</span>.<span style="color:#a6e22e">DetachDisk</span>(<span style="color:#a6e22e">detacher</span>.<span style="color:#a6e22e">plugin</span>, <span style="color:#a6e22e">deviceMountPath</span>, <span style="color:#a6e22e">devicePath</span>) 
+ 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> 
+ 	} 
+ 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">3</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: successfully detach device %s&#34;</span>, <span style="color:#a6e22e">devicePath</span>) 
+ 	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Remove</span>(<span style="color:#a6e22e">deviceMountPath</span>) 
+ 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> { 
+ 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span> 
+ 	} 
+ 	<span style="color:#a6e22e">klog</span>.<span style="color:#a6e22e">V</span>(<span style="color:#ae81ff">3</span>).<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;rbd: successfully remove device mount point %s&#34;</span>, <span style="color:#a6e22e">deviceMountPath</span>) 
+ 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span> 
+ } 
+</code></pre></div><p>为此，我最终还是修改了kubernetes的代码，并给官方发了<a href="https://github.com/kubernetes/kubernetes/pull/79940">PR</a></p>
+<h2 id="heading-4">临时解决方案</h2>
+<p>等官方合入PR毕竟时间较长，在官方未修复该问题时，我们可以通过定时脚本规避该问题：</p>
+<p><code>/usr/local/bin/unmap_not_used_rbd.sh</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">for</span> v in <span style="color:#66d9ef">$(</span>find /dev -name <span style="color:#e6db74">&#39;rbd*&#39;</span><span style="color:#66d9ef">)</span>; <span style="color:#66d9ef">do</span>
+   <span style="color:#75715e"># 如果设备没被占用，就正常unmap; 如果设备当前被使用，则unmap失败</span>
+   /usr/bin/rbd unmap $v
+<span style="color:#66d9ef">done</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 每分钟定时执行下上述脚本</span>
+chmod +x /usr/local/bin/unmap_not_used_rbd.sh
+echo <span style="color:#e6db74">&#39;* * * * * /usr/local/bin/unmap_not_used_rbd.sh &gt;/dev/null 2&gt;&amp;1&#39;</span> &gt;&gt; /var/spool/cron/root
+</code></pre></div><h2 id="heading-5">总结</h2>
+<p>有时候问题的根源总在一个想不到的地方，需要仔细追查。</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://www.fclose.com/linux-kernels/488425/jbd2-fix-use-after-free-in-kjournald2-linux-3-18-107/">https://www.fclose.com/linux-kernels/488425/jbd2-fix-use-after-free-in-kjournald2-linux-3-18-107/</a></li>
+<li><a href="https://www.browserling.com/tools/ascii-to-text">https://www.browserling.com/tools/ascii-to-text</a></li>
+<li><a href="https://unix.stackexchange.com/questions/437025/how-to-stop-jbd2-on-unmounted-filesystem">https://unix.stackexchange.com/questions/437025/how-to-stop-jbd2-on-unmounted-filesystem</a></li>
+<li><a href="https://github.com/kubernetes/kubernetes/issues/54214#issuecomment-341357733">https://github.com/kubernetes/kubernetes/issues/54214#issuecomment-341357733</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation">https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation</a></li>
+<li><a href="https://github.com/kubernetes/kubernetes/pull/79940">https://github.com/kubernetes/kubernetes/pull/79940</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-07-14</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+          <a href="/tags/ceph/">ceph</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用Aggregated APIServer的方式构建API服务</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">解决pvc无法mount的问题</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

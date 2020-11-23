@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>研究pipework - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="研究pipework" />
+<meta property="og:description" content="很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/" />
+<meta property="article:published_time" content="2016-09-01T22:46:00+08:00" />
+<meta property="article:modified_time" content="2016-09-01T22:46:00+08:00" />
+<meta itemprop="name" content="研究pipework">
+<meta itemprop="description" content="很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。">
+<meta itemprop="datePublished" content="2016-09-01T22:46:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-09-01T22:46:00&#43;08:00" />
+<meta itemprop="wordCount" content="1873">
+
+
+
+<meta itemprop="keywords" content="docker,pipework," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="研究pipework"/>
+<meta name="twitter:description" content="很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">研究pipework</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-09-01 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1873 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker">docker默认支持的网络模式</a></li>
+    <li><a href="#pipework">祭出pipework</a></li>
+    <li><a href="#pipework-1">研究pipework的原理</a></li>
+    <li><a href="#heading">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。今天终于能够抽出时间研究一下它。</p>
+<h2 id="docker">docker默认支持的网络模式</h2>
+<p>除了overlay网络外，docker默认支持4种网络模式，如下：</p>
+<ul>
+<li>host模式，使用&ndash;net=host指定，容器和宿主机共用一个Network Namespace。</li>
+<li>container模式，使用&ndash;net=container:NAME_or_ID指定，容器和已经存在的一个容器共享一个Network Namespace。</li>
+<li>none模式，使用&ndash;net=none指定，容器拥有自己的Network Namespace，但是，并不为Docker容器进行任何网络配置。</li>
+<li>bridge模式，使用&ndash;net=bridge指定，默认设置，为容器分配Network Namespace、设置IP等，并将容器连接到一个虚拟网桥上，默认是docker0。</li>
+</ul>
+<h2 id="pipework">祭出pipework</h2>
+<p>docker默认支持的网络模式，再配合docker的-p选项，一般场景都是可以满足需求，但有时我们就是想把某个固定IP设置到某个容器上，这时pipework就派上用场了。</p>
+<p>安装pipework很简单，直接把pipework的源代码clone下来，将pipework这个脚本拷贝至PATH路径即可。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/jpetazzo/pipework.git
+cp pipework/pipework /usr/local/bin/
+chmod +x /usr/local/bin/pipework
+</code></pre></div><p>这里做个试验</p>
+<p>首先创建一个none网络模式的容器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -ti --rm --name test --net none apline
+</code></pre></div><p>进入容器后，执行ifconfig查看一下，容器里并没有一个网络接口。</p>
+<p>再在docker主机上执行pipework命令，当然前提是先在docker主机上创建一个linux bridge网桥br1。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pipework br1 -i eth0 test 188.188.100.33/24@188.188.100.1
+</code></pre></div><p>此时再在上面那个容器里执行ifconfig查看一下，就可以发现容器里已经有一个网络接口eth0了，并且设置好了IP地址、网关地址等。</p>
+<p>这时在docker主机上执行<code>brctl show br1</code>就可以看到多了一个网络接口桥接到了br1。</p>
+<p>看一看pipework的<a href="https://github.com/jpetazzo/pipework#let-the-docker-host-communicate-over-macvlan-interfaces">官方文档</a>，其中还有一些高级用法，比如：定制主机上对应的veth peer网络接口名称、直接连接本地的物理网络接口、服务等待网络接口就绪、配置网络接口为DHCP模式、定制网络接口的MAC地址、指定容器至某个VLAN、控制容器内部的路由规则、支持Open vSwitch。</p>
+<h2 id="pipework-1">研究pipework的原理</h2>
+<p>pipework是用脚本实现的，因此很方便研究其实现原理。</p>
+<p>首先创建一个none网络模式的容器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -ti --rm --name test --net none apline
+</code></pre></div><p>再在docker主机上执行pipework命令，这里我使用<code>bash -x</code>以显示bash的执行过程。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bash -x /usr/local/bin/pipework br1 -i eth0 test 188.188.100.33/24@188.188.100.1
+</code></pre></div><p>从输出观察，可以看到以下关键过程：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#首先得到容器进程的pid</span>
+DOCKERPID<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>docker inspect <span style="color:#e6db74">&#39;--format={{ .State.Pid }}&#39;</span> test<span style="color:#66d9ef">)</span>
+<span style="color:#75715e">#在netns目录下创建至容器网络名字空间的目录链接，方便下面在docker主机上执行ip netns命令对容器的网络名字空间进行操作</span>
+rm -f /var/run/netns/31076
+ln -s /proc/31076/ns/net /var/run/netns/31076
+<span style="color:#75715e">#获取网桥网络接口上的MTU值</span>
+MTU<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>ip link show br1|awk <span style="color:#e6db74">&#39;{print $5}&#39;</span><span style="color:#66d9ef">)</span>
+<span style="color:#75715e">#创建一对veth peer链接</span>
+ip link add name veth0pl31076 mtu <span style="color:#ae81ff">1500</span> type veth peer name veth0pg31076 mtu <span style="color:#ae81ff">1500</span>
+<span style="color:#75715e">#将veth peer对的一端桥接至br1</span>
+ip link set veth0pl31076 master br1
+ip link set veth0pl31076 up
+<span style="color:#75715e">#将veth peer对的另一端放入容器的网络名字空间，并重命名为eth0</span>
+ip link set veth0pg31076 netns <span style="color:#ae81ff">31076</span>
+ip netns exec <span style="color:#ae81ff">31076</span> ip link set veth0pg31076 name eth0
+<span style="color:#75715e">#给容器里的eth0网络接口设置IP地址</span>
+ip netns exec <span style="color:#ae81ff">31076</span> ip addr add 188.188.100.33/24 brd 188.188.100.255 dev eth0
+<span style="color:#75715e">#给容器设置默认网关地址</span>
+ip netns exec <span style="color:#ae81ff">31076</span> ip route delete default
+ip netns exec <span style="color:#ae81ff">31076</span> ip link set eth0 up
+ip netns exec <span style="color:#ae81ff">31076</span> ip route replace default via 188.188.100.1
+<span style="color:#75715e">#在容器里向邻居广播arp消息</span>
+ip netns exec <span style="color:#ae81ff">31076</span> arping -c <span style="color:#ae81ff">1</span> -A -I eth0 188.188.100.33
+<span style="color:#75715e">#删除之前创建的目录链接</span>
+rm -f /var/run/netns/31076
+</code></pre></div><p>解释得已经很清楚了。pipework并没有提供反向操作的脚本，了解了其实现原理，我这里顺手写一个</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">GUESTNAME<span style="color:#f92672">=</span>test
+CONTAINER_IFNAME<span style="color:#f92672">=</span>eth0
+<span style="color:#75715e">#首先得到容器进程的pid</span>
+DOCKERPID<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>docker inspect <span style="color:#e6db74">&#39;--format={{ .State.Pid }}&#39;</span> $GUESTNAME<span style="color:#66d9ef">)</span>
+<span style="color:#75715e">#在netns目录下创建至容器网络名字空间的目录链接，方便下面在docker主机上执行ip netns命令对容器的网络名字空间进行操作</span>
+ln -s /proc/$DOCKERPID/ns/net /var/run/netns/$DOCKERPID
+<span style="color:#75715e">#停用容器中$CONTAINER_IFNAME的网络接口</span>
+ip netns exec $DOCKERPID ip link set $CONTAINER_IFNAME down
+<span style="color:#75715e">#删除容器网络名字空间中$CONTAINER_IFNAME的网络接口，同时其对应的veth peer链接也将销毁</span>
+ip netns exec $DOCKERPID ip link delete $CONTAINER_IFNAME
+<span style="color:#75715e">#删除之前创建的目录链接</span>
+rm -f /var/run/netns/$DOCKERPID
+</code></pre></div><h2 id="heading">总结</h2>
+<p>pipework实现原理还是比较简单的，就是利用了veth peer链接对及独立的网络名字空间，这个跟docker的bridge桥接模式是一样的。在本篇里用到的是linux bridge网桥，linux bridge网桥使用起来比较方便，但面对细粒度的网络隔离也不太行，下一步计划研究一下Open vSwitch。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-09-01</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/pipework/">pipework</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">java中用好cache</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/">
+            <span class="next-text nav-default">尝试docker的overlay网络</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

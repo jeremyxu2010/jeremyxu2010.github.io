@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>casbin on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/casbin/</link>
+    <description>Recent content in casbin on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 10 Aug 2019 15:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/casbin/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用casbin完成验证授权</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/</link>
+      <pubDate>Sat, 10 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/</guid>
+      <description>上一篇讲了搭建一个身份认证系统，可以看到借助dex搭建一个安全可靠的身份认证系统并不是太难。本篇再讲一下用casbin完成验证授权。 什么是验</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>api on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/api/</link>
+    <description>Recent content in api on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 20 Jul 2019 18:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/api/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用Aggregated APIServer的方式构建API服务</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Sat, 20 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上</description>
+    </item>
+    
+    <item>
+      <title>使用go开发api服务</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E4%BD%BF%E7%94%A8go%E5%BC%80%E5%8F%91api%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Sat, 04 Feb 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E4%BD%BF%E7%94%A8go%E5%BC%80%E5%8F%91api%E6%9C%8D%E5%8A%A1/</guid>
+      <description>看到有人用go语言开发api服务，分发打包的程序只需要分发一个可执行文件就可以了，真的好方便，于是我也来试一试。 依赖管理 go语言的第三方包依</description>
+    </item>
+    
+  </channel>
+</rss>

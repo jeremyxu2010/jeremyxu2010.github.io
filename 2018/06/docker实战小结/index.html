@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker实战小结 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="docker实战小结" />
+<meta property="og:description" content="好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/" />
+<meta property="article:published_time" content="2018-06-18T23:00:00+08:00" />
+<meta property="article:modified_time" content="2018-06-18T23:00:00+08:00" />
+<meta itemprop="name" content="docker实战小结">
+<meta itemprop="description" content="好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只">
+<meta itemprop="datePublished" content="2018-06-18T23:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-06-18T23:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="2091">
+
+
+
+<meta itemprop="keywords" content="docker,deployment,automation," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker实战小结"/>
+<meta name="twitter:description" content="好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker实战小结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-06-18 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2091 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker">安装docker环境</a></li>
+    <li><a href="#docker-1">docker常用操作</a>
+      <ul>
+        <li><a href="#heading">获取镜像</a></li>
+        <li><a href="#heading-1">运行镜像</a></li>
+        <li><a href="#heading-2">操作镜像</a></li>
+        <li><a href="#heading-3">编译镜像</a></li>
+        <li><a href="#heading-4">操作容器</a></li>
+        <li><a href="#heading-5">推送镜像</a></li>
+      </ul>
+    </li>
+    <li><a href="#dockerfile">编写Dockerfile</a>
+      <ul>
+        <li><a href="#arg">ARG指令</a></li>
+        <li><a href="#from">FROM指令</a></li>
+        <li><a href="#label">LABEL指令</a></li>
+        <li><a href="#copy">COPY指令</a></li>
+        <li><a href="#add">ADD指令</a></li>
+        <li><a href="#run">RUN指令</a></li>
+        <li><a href="#expose">EXPOSE指令</a></li>
+        <li><a href="#volume">VOLUME指令</a></li>
+        <li><a href="#workdir">WORKDIR指令</a></li>
+        <li><a href="#user">USER指令</a></li>
+        <li><a href="#cmd">CMD指令</a></li>
+        <li><a href="#entrypoint">ENTRYPOINT指令</a></li>
+      </ul>
+    </li>
+    <li><a href="#docker-composeyml">编写docker-compose.yml</a>
+      <ul>
+        <li><a href="#build">build</a></li>
+        <li><a href="#depends-on">depends_on</a></li>
+        <li><a href="#env-file">env_file</a></li>
+        <li><a href="#expose-1">expose</a></li>
+        <li><a href="#extra-hosts">extra_hosts</a></li>
+        <li><a href="#image">image</a></li>
+        <li><a href="#networks">networks</a></li>
+        <li><a href="#ports">ports</a></li>
+        <li><a href="#volumes">volumes</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">运行整个容器项目</a></li>
+    <li><a href="#heading-7">其它发现</a></li>
+    <li><a href="#heading-8">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。</p>
+<p>其实以前的工作也涉及过docker，只是没有记录总结下来，这次争取记录得完善一点，以备以后查阅。</p>
+<h2 id="docker">安装docker环境</h2>
+<p>安装docker环境就不用再提了，直接参考官方文档就可以了，需要注意在中国境内玩docker，最好配好镜像加速器，可参考<a href="https://yeasy.gitbooks.io/docker_practice/install/mirror.html">这里</a>。</p>
+<h2 id="docker-1">docker常用操作</h2>
+<h3 id="heading">获取镜像</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker pull centos
+docker pull centos:6.7
+docker pull <span style="color:#e6db74">${</span>inner_docker_hub_ip<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>hub_user<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span>
+</code></pre></div><h3 id="heading-1">运行镜像</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -it --rm ubuntu bash
+docker run -d ubuntu
+docker run -d -p 80:80 nginx
+docker run -d -v /tmp/data:/var/lib/mysql -p 3306:3306 mysql
+</code></pre></div><h3 id="heading-2">操作镜像</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker image ls
+docker image ls <span style="color:#e6db74">${</span>repository_name<span style="color:#e6db74">}</span>
+docker rmi <span style="color:#e6db74">${</span>image_id<span style="color:#e6db74">}</span>
+docker rmi -f <span style="color:#e6db74">${</span>image_id<span style="color:#e6db74">}</span>
+docker image prune
+docker tag <span style="color:#e6db74">${</span>image_id<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span>
+</code></pre></div><h3 id="heading-3">编译镜像</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker build --rm -t <span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span> ./Dockerfile
+</code></pre></div><h3 id="heading-4">操作容器</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker ps
+docker stop <span style="color:#e6db74">${</span>container_id<span style="color:#e6db74">}</span>
+docker start <span style="color:#e6db74">${</span>container_id<span style="color:#e6db74">}</span>
+docker logs <span style="color:#e6db74">${</span>container_id<span style="color:#e6db74">}</span>
+docker exec -it <span style="color:#e6db74">${</span>container_id<span style="color:#e6db74">}</span> bash
+selected_container_ids<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>docker ps | grep <span style="color:#e6db74">${</span>filter_word<span style="color:#e6db74">}</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#66d9ef">)</span>
+docker rm -f <span style="color:#e6db74">${</span>container_id<span style="color:#e6db74">}</span>
+</code></pre></div><h3 id="heading-5">推送镜像</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker tag <span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>inner_docker_hub_ip<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>hub_user<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span>
+docker login <span style="color:#e6db74">${</span>inner_docker_hub_ip<span style="color:#e6db74">}</span>
+docker push <span style="color:#e6db74">${</span>inner_docker_hub_ip<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>hub_user<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>image_name<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>image_tag<span style="color:#e6db74">}</span>
+</code></pre></div><h2 id="dockerfile">编写Dockerfile</h2>
+<p>最近的工作还涉及编写一些镜像的Dockerfile文件，Dockerfile的语法比较简单，常用的大概是以下的指令</p>
+<h3 id="arg">ARG指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">ARG</span>  CODE_VERSION<span style="color:#f92672">=</span>latest
+<span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> base:${CODE_VERSION}</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#arg">这里</a>。</p>
+<h3 id="from">FROM指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> centos:6.7</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#from">这里</a>。</p>
+<h3 id="label">LABEL指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">LABEL</span> maintainer<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SvenDowideit@home.org.au&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#label">这里</a>。</p>
+<h3 id="copy">COPY指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">COPY</span> package.json /usr/src/app/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> hom* /mydir/<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> hom?.txt /mydir/<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#copy">这里</a>。</p>
+<h3 id="add">ADD指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">ADD</span> ubuntu-xenial-core-cloudimg-amd64-root.tar.gz /<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#add">这里</a>。</p>
+<h3 id="run">RUN指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">RUN</span> /bin/bash -c <span style="color:#e6db74">&#39;source $HOME/.bashrc; echo $HOME&#39;</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#run">这里</a>。</p>
+<h3 id="expose">EXPOSE指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 3306</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80/tcp</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">EXPOSE</span><span style="color:#e6db74"> 80/udp</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#expose">这里</a>。</p>
+<h3 id="volume">VOLUME指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">VOLUME</span> [<span style="color:#e6db74">&#34;/data&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#volume">这里</a>。</p>
+<h3 id="workdir">WORKDIR指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /path/to/workdir</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#workdir">这里</a>。</p>
+<h3 id="user">USER指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">USER</span><span style="color:#e6db74"> mysql</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#user">这里</a>。</p>
+<h3 id="cmd">CMD指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;/usr/bin/wc&#34;</span>,<span style="color:#e6db74">&#34;--help&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#cmd">这里</a>。</p>
+<h3 id="entrypoint">ENTRYPOINT指令</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">CMD</span> [<span style="color:#e6db74">&#34;/usr/bin/wc&#34;</span>,<span style="color:#e6db74">&#34;--help&#34;</span>]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>可参考<a href="https://docs.docker.com/engine/reference/builder/#cmd">这里</a>。</p>
+<p>ENTRYPOINT指令与CMD指令共同作用时，实际效果比较复杂，可参考下面的表格：</p>
+<blockquote>
+<p>The table below shows what command is executed for different <code>ENTRYPOINT</code> / <code>CMD</code> combinations:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>No ENTRYPOINT</th>
+<th>ENTRYPOINT exec_entry p1_entry</th>
+<th>ENTRYPOINT [“exec_entry”, “p1_entry”]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>No CMD</strong></td>
+<td><em>error, not allowed</em></td>
+<td>/bin/sh -c exec_entry p1_entry</td>
+<td>exec_entry p1_entry</td>
+</tr>
+<tr>
+<td><strong>CMD [“exec_cmd”, “p1_cmd”]</strong></td>
+<td>exec_cmd p1_cmd</td>
+<td>/bin/sh -c exec_entry p1_entry</td>
+<td>exec_entry p1_entry exec_cmd p1_cmd</td>
+</tr>
+<tr>
+<td><strong>CMD [“p1_cmd”, “p2_cmd”]</strong></td>
+<td>p1_cmd p2_cmd</td>
+<td>/bin/sh -c exec_entry p1_entry</td>
+<td>exec_entry p1_entry p1_cmd p2_cmd</td>
+</tr>
+<tr>
+<td><strong>CMD exec_cmd p1_cmd</strong></td>
+<td>/bin/sh -c exec_cmd p1_cmd</td>
+<td>/bin/sh -c exec_entry p1_entry</td>
+<td>exec_entry p1_entry /bin/sh -c exec_cmd p1_cmd</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>还有一些指令<code>ONBUILD</code>、<code>HEALTHCHECK</code>、<code>ENV</code>不太常用，直接参考<a href="https://docs.docker.com/engine/reference/builder/">官方文档</a>就可以了。</p>
+<p>另外再附一个<a href="https://yeasy.gitbooks.io/docker_practice/appendix/best_practices.html">Dockerfile最佳实践</a>。</p>
+<h2 id="docker-composeyml">编写docker-compose.yml</h2>
+<p><code>docker-compose.yml</code>的编写也比较简单，参考下面的例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#39;3&#39;</span>
+
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis
+
+  db:
+    image: postgres
+</code></pre></div><p>简单扩展就可以了。下面说一下平时常用的一些指令关键字。</p>
+<h3 id="build">build</h3>
+<p>指定 <code>Dockerfile</code> 所在文件夹的路径（可以是绝对路径，或者相对 docker-compose.yml 文件的路径）。 <code>Compose</code> 将会利用它自动构建这个镜像，然后使用这个镜像。<strong>我比较少用到它，习惯于先生成好镜像，再直接使用镜像</strong></p>
+<h3 id="depends-on">depends_on</h3>
+<p>解决容器的依赖、启动先后的问题。以下例子中会先启动 <code>redis</code> <code>db</code> 再启动 <code>web</code>，如下面的例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#39;3&#39;</span>
+
+services:
+  web:
+    build: .
+    depends_on:
+      - db
+      - redis
+
+  redis:
+    image: redis
+
+  db:
+    image: postgres
+</code></pre></div><h3 id="env-file">env_file</h3>
+<p>从文件中获取环境变量，可以为单独的文件路径或列表。</p>
+<p>如果通过 <code>docker-compose -f FILE</code> 方式来指定 Compose 模板文件，则 <code>env_file</code> 中变量的路径会基于模板文件路径。</p>
+<p>如果有变量名称与 <code>environment</code> 指令冲突，则按照惯例，以后者为准。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">env_file: .env
+
+env_file:
+  - ./common.env
+  - ./apps/web.env
+  - /opt/secrets.env
+</code></pre></div><p>环境变量文件中每一行必须符合格式，支持 <code>#</code> 开头的注释行。</p>
+<pre><code># common.env: Set development environment
+PROG_ENV=development
+</code></pre><h3 id="expose-1">expose</h3>
+<p>暴露端口，但不映射到宿主机，只被连接的服务访问。</p>
+<p>仅可以指定内部端口为参数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">expose:
+ - <span style="color:#e6db74">&#34;3000&#34;</span>
+ - <span style="color:#e6db74">&#34;8000&#34;</span>
+</code></pre></div><h3 id="extra-hosts">extra_hosts</h3>
+<p>类似 Docker 中的 <code>--add-host</code> 参数，指定额外的 host 名称映射信息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">extra_hosts:
+ - <span style="color:#e6db74">&#34;googledns:8.8.8.8&#34;</span>
+ - <span style="color:#e6db74">&#34;dockerhub:52.1.157.61&#34;</span>
+</code></pre></div><p>会在启动后的服务容器中 <code>/etc/hosts</code> 文件中添加如下两条条目。</p>
+<pre><code>8.8.8.8 googledns
+52.1.157.61 dockerhub
+</code></pre><h3 id="image">image</h3>
+<p>指定为镜像名称或镜像 ID。如果镜像在本地不存在，<code>Compose</code> 将会尝试拉取这个镜像。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">image: ubuntu
+image: orchardup/postgresql
+image: a4bc65fd
+</code></pre></div><h3 id="networks">networks</h3>
+<p>配置容器连接的网络。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#34;3&#34;</span>
+services:
+
+  some-service:
+    networks:
+     - some-network
+     - other-network
+
+networks:
+  some-network:
+  other-network:
+</code></pre></div><h3 id="ports">ports</h3>
+<p>暴露端口信息。</p>
+<p>使用宿主端口：容器端口 <code>(HOST:CONTAINER)</code> 格式，或者仅仅指定容器的端口（宿主将会随机选择端口）都可以。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">ports:
+ - <span style="color:#e6db74">&#34;3000&#34;</span>
+ - <span style="color:#e6db74">&#34;8000:8000&#34;</span>
+ - <span style="color:#e6db74">&#34;49100:22&#34;</span>
+ - <span style="color:#e6db74">&#34;127.0.0.1:8001:8001&#34;</span>
+</code></pre></div><p><em>注意：当使用 HOST:CONTAINER 格式来映射端口时，如果你使用的容器端口小于 60 并且没放到引号里，可能会得到错误结果，因为 YAML 会自动解析 xx:yy 这种数字格式为 60 进制。为避免出现这种问题，建议数字串都采用引号包括起来的字符串格式。</em></p>
+<h3 id="volumes">volumes</h3>
+<p>数据卷所挂载路径设置。可以设置宿主机路径 （<code>HOST:CONTAINER</code>） 或加上访问模式 （<code>HOST:CONTAINER:ro</code>）。</p>
+<p>该指令中路径支持相对路径。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">volumes:
+ - /var/lib/mysql
+ - cache/:/tmp/cache
+ - ~/configs:/etc/configs/:ro
+</code></pre></div><p>完整的指令关键字列表见<a href="https://yeasy.gitbooks.io/docker_practice/compose/compose_file.html#compose-%E6%A8%A1%E6%9D%BF%E6%96%87%E4%BB%B6">这里</a>。</p>
+<h2 id="heading-6">运行整个容器项目</h2>
+<p>使用以下命令运行起整个容器项目：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker-compose up -f ./docker_compose.yml -d
+<span style="color:#75715e"># 停止整个容器项目</span>
+<span style="color:#75715e"># docker-compose down -f ./docker_compose.yml</span> 
+</code></pre></div><h2 id="heading-7">其它发现</h2>
+<p>整个容器项目做完后，在网上又找到一个官方给出的写可复用<a href="https://github.com/docker/app">docker-compose方案</a>，简单看了下文档，貌似很简单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 生成docker-compose.yml文件</span>
+docker-app render
+<span style="color:#75715e"># 用生成的docker-compose.yml文件运行整个容器项目</span>
+docker-app render | docker-compose -f - up
+<span style="color:#75715e"># 生成docker-compose.yml时指定一些选项</span>
+docker-app render --set version<span style="color:#f92672">=</span>0.2.3 --set port<span style="color:#f92672">=</span><span style="color:#ae81ff">4567</span> --set text<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hello production&#34;</span>
+<span style="color:#75715e"># 生成helm的Chart，这个很方便啊，有木有</span>
+docker-app helm
+</code></pre></div><h2 id="heading-8">参考</h2>
+<ol>
+<li><a href="https://yeasy.gitbooks.io/docker_practice">https://yeasy.gitbooks.io/docker_practice</a></li>
+<li><a href="https://docs.docker.com/engine/reference/builder">https://docs.docker.com/engine/reference/builder</a></li>
+<li><a href="https://github.com/docker/app">https://github.com/docker/app</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-06-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/deployment/">deployment</a>
+          
+          <a href="/tags/automation/">automation</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">servicecomb-saga开发实战</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/">
+            <span class="next-text nav-default">k8s学习记录02</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

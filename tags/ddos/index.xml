@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ddos on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/ddos/</link>
+    <description>Recent content in ddos on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 30 Jun 2015 01:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/ddos/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用fail2ban进行DDOS防护</title>
+      <link>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</guid>
+      <description>朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，</description>
+    </item>
+    
+  </channel>
+</rss>

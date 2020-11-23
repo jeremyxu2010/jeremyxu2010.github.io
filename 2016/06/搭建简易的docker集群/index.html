@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>搭建简易的docker集群 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="搭建简易的docker集群" />
+<meta property="og:description" content="今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/" />
+<meta property="article:published_time" content="2016-06-29T02:27:00+08:00" />
+<meta property="article:modified_time" content="2016-06-29T02:27:00+08:00" />
+<meta itemprop="name" content="搭建简易的docker集群">
+<meta itemprop="description" content="今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集">
+<meta itemprop="datePublished" content="2016-06-29T02:27:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-06-29T02:27:00&#43;08:00" />
+<meta itemprop="wordCount" content="3126">
+
+
+
+<meta itemprop="keywords" content="linux,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="搭建简易的docker集群"/>
+<meta name="twitter:description" content="今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">搭建简易的docker集群</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-06-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3126 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#consul">创建一个consul数据库</a></li>
+    <li><a href="#swarm">创建swarm主节点</a></li>
+    <li><a href="#swarm-1">再创建一个swarm节点</a></li>
+    <li><a href="#docker">检查docker集群</a></li>
+    <li><a href="#heading">注意事项</a></li>
+    <li><a href="#heading-1">其它集群方式</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天又抽时间研究了一下如何搭建docker集群，终于找到配合<code>consul</code>、<code>docker-machine</code>、<code>swarm</code>搭建一个简易docker集群的办法，在这里记录一下。</p>
+<h2 id="consul">创建一个consul数据库</h2>
+<p>首先需要创建一个用于swarm集群节点服务发现、健康检测的consul数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#这里`https://xxxx.mirror.aliyuncs.com`参见上一篇文件里所提及的阿里云registry加速地址</span>
+docker-machine create -d virtualbox --engine-registry-mirror<span style="color:#f92672">=</span>https://xxxx.mirror.aliyuncs.com consul-servers
+<span style="color:#75715e">#设置docker命令连接consul-servers依赖的环境变量</span>
+eval <span style="color:#66d9ef">$(</span>docker-machine env consul-servers<span style="color:#66d9ef">)</span>
+<span style="color:#75715e">#启动第一个consul server节点容器</span>
+docker run --name consul-server1 --restart<span style="color:#f92672">=</span>always -d progrium/consul -server -bootstrap-expect <span style="color:#ae81ff">3</span> -ui-dir /ui
+JOIN_IP<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>docker inspect -f <span style="color:#e6db74">&#39;{{ .NetworkSettings.IPAddress }}&#39;</span> consul-server1<span style="color:#66d9ef">)</span>
+<span style="color:#75715e">#启动第二个consul server节点容器，并加入consul集群中</span>
+docker run -d --name consul-server2 -h consul-server2 progrium/consul -server -join $JOIN_IP
+<span style="color:#75715e">#启动第三个consul server节点容器，并加入consul集群中</span>
+docker run -d --name consul-server3 -h consul-server3 progrium/consul -server -join $JOIN_IP
+<span style="color:#75715e">#启动第一个consul client节点容器，并加入consul集群中</span>
+docker run -d --restart<span style="color:#f92672">=</span>always -p 8400:8400 -p 8500:8500 -p 8600:53/udp --name consul-client1 -h consul-client1 progrium/consul -join $JOIN_IP
+<span style="color:#75715e">#启动第二个consul client节点容器，并加入consul集群中</span>
+docker run -d --restart<span style="color:#f92672">=</span>always -p 8401:8400 -p 8501:8500 -p 8601:53/udp --name consul-client2 -h consul-client2 progrium/consul -join $JOIN_IP
+</code></pre></div><p>这里解释一下启动容器时的一些参数
+<code>--name consul</code> 指定容器的名称为consul
+<code>--restart=always</code> 指定当容器退出时自动重启
+<code>-p 8400:8400</code> 将容器的8400端口映射至docker host的8400端口，这个是consul的RPC端口
+<code>-p 53:53/udp</code> 将容器的UDP 53端口映射至docker host的UDP 53端口，这个是consul内置的DNS Server端口
+<code>-d</code> 容器放在后台运行
+<code>-server</code> consul在容器里以server模式运行
+<code>-bootstrap-expect 3</code> 至少3个consul agent接入进来，则认为可以开始自启动了，设置集群当前状态为可工作。
+<code>-p 8500:8500</code> 将容器的8500端口映射至docker host的8500端口，这个是consul的HTTP端口
+<code>-ui-dir /ui</code> 启用consul的<a href="http://www.consul.io/intro/getting-started/ui.html">WebUI</a>，访问地址为<code>http://${docker_host_ip}:8500</code></p>
+<h2 id="swarm">创建swarm主节点</h2>
+<p>理论上这时应该开始创建<code>swarm</code>相关节点了，并将<code>swarm</code>相关节点加入到<code>swarm</code>集群了。但研究<code>docker-machine</code>的命令行参数，发现它其实支持一条命令自动创建。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#首先拿到`consul-servers`这个docker host IP地址，假设拿到的IP地址为${consul_client_ip}</span>
+docker-machine ip consul-servers
+<span style="color:#75715e">#创建swarm第一个主节点，swarm agent节点，并告知swarm使用consul的集群节点发现服务</span>
+docker-machine create -d virtualbox --engine-registry-mirror<span style="color:#f92672">=</span>https://xxxx.mirror.aliyuncs.com --swarm --swarm-master
+--swarm-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;replication&#34;</span>
+--swarm-discovery<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8500</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">cluster-store=consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8500</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cluster-advertise=eth1:2376&#34;</span> swarm-master1
+<span style="color:#75715e">#创建swarm第二个主节点，swarm agent节点，并告知swarm使用consul的集群节点发现服务</span>
+docker-machine create -d virtualbox --engine-registry-mirror<span style="color:#f92672">=</span>https://xxxx.mirror.aliyuncs.com --swarm --swarm-master
+--swarm-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;replication&#34;</span>
+--swarm-discovery<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8500</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">cluster-store=consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8500</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cluster-advertise=eth1:2376&#34;</span> swarm-master2
+</code></pre></div><p>这里解释一下上面创建docker host的命令
+<code>--swarm --swarm-master</code> 需要在docker host里创建swarm的主节点容器
+<code>--swarm-opt=&quot;replication&quot;</code> 启用swarm主节点之间的复制功能
+<code>--swarm-discovery=&quot;consul://${consul_client_ip}:8500&quot;</code> 指定swarm所使用的集群节点发现服务地址为<code>consul://${consul_client_ip}:8500</code>
+<code>--engine-opt=&quot;cluster-store=consul://${consul_client_ip}:8500&quot;</code> 设置<code>docker host</code>所使用的集群KV数据库地址<code>cluster-store=consul://${consul_client_ip}:8500</code></p>
+<p>最后我们看一眼这个<code>docker host</code>上的容器列表</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ &gt; eval <span style="color:#66d9ef">$(</span>docker-machine env swarm-master1<span style="color:#66d9ef">)</span>
+$ &gt; docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+ba1ed23055bf        swarm:latest        <span style="color:#e6db74">&#34;/swarm join --advert&#34;</span>   About an hour ago   Up About an hour                        swarm-agent
+aff1d873fafc        swarm:latest        <span style="color:#e6db74">&#34;/swarm manage --tlsv&#34;</span>   About an hour ago   Up About an hour                        swarm-agent-master
+</code></pre></div><p>很清楚吧，一个是swarm-agent容器，一个是swarm-master容器。</p>
+<h2 id="swarm-1">再创建一个swarm节点</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker-machine create -d virtualbox --engine-registry-mirror<span style="color:#f92672">=</span>https://xxxx.mirror.aliyuncs.com --swarm --swarm-discovery<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8501</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">cluster-store=consul://</span><span style="color:#e6db74">${</span>consul_client_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">:8501</span><span style="color:#e6db74">&#34;</span> --engine-opt<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cluster-advertise=eth1:2376&#34;</span> swarm-node1
+</code></pre></div><p>上述命令就不解释了，直接看创建的容器吧</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ &gt; eval <span style="color:#66d9ef">$(</span>docker-machine env swarm-node1<span style="color:#66d9ef">)</span>
+$ &gt; docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+527d83c7d1a9        swarm:latest        <span style="color:#e6db74">&#34;/swarm join --advert&#34;</span>   About an hour ago   Up About an hour                        swarm-agent
+</code></pre></div><h2 id="docker">检查docker集群</h2>
+<p>docker集群创建好了，用docker客户端连上去查看一下集群的状况。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ &gt; eval <span style="color:#66d9ef">$(</span>docker-machine env --swarm swarm-master1<span style="color:#66d9ef">)</span>
+$ &gt; docker info
+Containers: <span style="color:#ae81ff">5</span>
+ Running: <span style="color:#ae81ff">5</span>
+ Paused: <span style="color:#ae81ff">0</span>
+ Stopped: <span style="color:#ae81ff">0</span>
+Images: <span style="color:#ae81ff">3</span>
+Server Version: swarm/1.2.3
+Role: primary
+Strategy: spread
+Filters: health, port, containerslots, dependency, affinity, constraint
+Nodes: <span style="color:#ae81ff">3</span>
+ swarm-master1: 192.168.99.109:2376
+  └ ID: XTQ5:VQY2:OA7Y:NJ3E:6IOV:IJEA:WGCR:YQO4:4Z7L:WZOO:T3MH:BXLE
+  └ Status: Healthy
+  └ Containers: <span style="color:#ae81ff">2</span>
+  └ Reserved CPUs: <span style="color:#ae81ff">0</span> / <span style="color:#ae81ff">1</span>
+  └ Reserved Memory: <span style="color:#ae81ff">0</span> B / 1.021 GiB
+  └ Labels: executiondriver<span style="color:#f92672">=</span>, kernelversion<span style="color:#f92672">=</span>4.4.12-boot2docker, operatingsystem<span style="color:#f92672">=</span>Boot2Docker 1.11.2 <span style="color:#f92672">(</span>TCL 7.1<span style="color:#f92672">)</span>; HEAD : a6645c3 - Wed Jun  <span style="color:#ae81ff">1</span> 22:59:51 UTC 2016, provider<span style="color:#f92672">=</span>virtualbox, storagedriver<span style="color:#f92672">=</span>aufs
+  └ UpdatedAt: 2016-06-29T15:50:13Z
+  └ ServerVersion: 1.11.2
+ swarm-master2: 192.168.99.110:2376
+  └ ID: EDG6:QK6E:EWY5:SKJK:Y2KI:YURB:C3LV:2WDR:THNP:A5VB:WLQZ:2G4S
+  └ Status: Healthy
+  └ Containers: <span style="color:#ae81ff">2</span>
+  └ Reserved CPUs: <span style="color:#ae81ff">0</span> / <span style="color:#ae81ff">1</span>
+  └ Reserved Memory: <span style="color:#ae81ff">0</span> B / 1.021 GiB
+  └ Labels: executiondriver<span style="color:#f92672">=</span>, kernelversion<span style="color:#f92672">=</span>4.4.12-boot2docker, operatingsystem<span style="color:#f92672">=</span>Boot2Docker 1.11.2 <span style="color:#f92672">(</span>TCL 7.1<span style="color:#f92672">)</span>; HEAD : a6645c3 - Wed Jun  <span style="color:#ae81ff">1</span> 22:59:51 UTC 2016, provider<span style="color:#f92672">=</span>virtualbox, storagedriver<span style="color:#f92672">=</span>aufs
+  └ UpdatedAt: 2016-06-29T15:50:10Z
+  └ ServerVersion: 1.11.2
+ swarm-node1: 192.168.99.111:2376
+  └ ID: CD43:U7OL:FIZI:Y753:RBHU:65SL:ZEXK:RIUI:HJTE:UTUG:J3IB:TUAT
+  └ Status: Healthy
+  └ Containers: <span style="color:#ae81ff">1</span>
+  └ Reserved CPUs: <span style="color:#ae81ff">0</span> / <span style="color:#ae81ff">1</span>
+  └ Reserved Memory: <span style="color:#ae81ff">0</span> B / 1.021 GiB
+  └ Labels: executiondriver<span style="color:#f92672">=</span>, kernelversion<span style="color:#f92672">=</span>4.4.12-boot2docker, operatingsystem<span style="color:#f92672">=</span>Boot2Docker 1.11.2 <span style="color:#f92672">(</span>TCL 7.1<span style="color:#f92672">)</span>; HEAD : a6645c3 - Wed Jun  <span style="color:#ae81ff">1</span> 22:59:51 UTC 2016, provider<span style="color:#f92672">=</span>virtualbox, storagedriver<span style="color:#f92672">=</span>aufs
+  └ UpdatedAt: 2016-06-29T15:50:36Z
+  └ ServerVersion: 1.11.2
+Plugins:
+ Volume:
+ Network:
+Kernel Version: 4.4.12-boot2docker
+Operating System: linux
+Architecture: amd64
+CPUs: <span style="color:#ae81ff">3</span>
+Total Memory: 3.063 GiB
+Name: swarm-master1
+Docker Root Dir:
+Debug mode <span style="color:#f92672">(</span>client<span style="color:#f92672">)</span>: false
+Debug mode <span style="color:#f92672">(</span>server<span style="color:#f92672">)</span>: false
+WARNING: No kernel memory limit support
+</code></pre></div><p>这里要注意<code>docker-machine env --swarm swarm-master1</code>，如果不加<code>--swarm</code>参数，则是设置连接<code>swarm-master1</code>这个<code>docker host</code>的环境变量，加了<code>--swarm</code>参数，则是设置连接swarm集群的环境变量。</p>
+<h2 id="heading">注意事项</h2>
+<ul>
+<li>本方案中考虑了consul集群中consul server节点的单点故障问题，创建了多个consul server节点，如其中有某个consul server节点出现故障，会自动选举出一个新的Leader consul server节点</li>
+<li>本方案中通过多个consul client节点减少转发请求至consul server节点的延时及资源消耗，同时也确保部分consul client节点出现故障不会导致整个consul集群不可用</li>
+<li>本方案中考虑了swarm集群中swarm manager节点单点故障问题，创建了两个互相复制的swarm manager节点，一旦发觉其中一个出现故障，可很方便地连接另一个swarm manager节点进行操作</li>
+<li>在正式生产环境里不会将所有consul节点都部署在一个docker host里。为了确保consul server节点不出现单点故障，一般创建3-5个consul server节点，并将consul server节点部署在不同的docker host里。为了通过多个consul client节点减少转发请求至consul server节点的延时及资源消耗，一般在一个数据中心会在不同的docker host上部署多个consul client节点，一个数据中心的所有swarm节点分成几组，每组里面的所有swarm节点使用一个consul client地址</li>
+<li>我自己研究是在一台物理机上使用<code>docker-machine</code>开设多个virtualbox虚机来模拟集群环境的，而如果不指定其它参数，默认docker daemon创建的容器是使用docker0虚拟交换机实现网接接入的。docker0默认仅保证单机上的容器是可通信。而一般真实环境是多个主机上建立集群的，所以可能需要采用划分独立的网段、组VLAN、基于SDN等方式确保多个主机本身可通信，同时在创建<code>docker host</code>时需合理指定<code>cluster-advertise=eth1:2376</code>参数</li>
+<li>目前看到简单实现跨主机实现容器间联通有两种方案，一种是自定义Docker Daemon启动时的桥接网桥，见<a href="http://wiki.jikexueyuan.com/project/docker-technology-and-combat/container_connect.html">这里</a>；另一种是使用Overlay Network，见<a href="http://www.dockone.io/article/840">这里</a>。我个人是更倾向于后一种，网络安全性更可控一点，只是不知道性能如何，需实际应用场景测试一下。</li>
+<li>在使用swarm集群时，还可以自定义调度策略及选择节点的逻辑，可参考《Docker-从入门到实践》书中介绍的“Docker Swarm项目 - 调度器“，“Docker Swarm项目 - 过滤器“</li>
+</ul>
+<h2 id="heading-1">其它集群方式</h2>
+<p>事实上还是比我这个教程更简单的docker集群创建办法，可参考《Docker-从入门到实践》书中介绍的“Docker Swarm项目 - 使用DockerHub提供的服务发现功能”、“Docker Swarm项目 - 使用文件”这两个章节，但这两个办法存在比较致命的缺陷。第一个方法要求docker集群能通畅地连结国外的DockerHub服务；第2个方法不能很好适合集群节点的动态变更。所以这两种方法都不建议生产环境使用。</p>
+<h2 id="heading-2">参考</h2>
+<ul>
+<li><code>https://docs.docker.com/v1.10/engine/reference/commandline/daemon/</code></li>
+<li><code>http://dockone.io/article/667</code></li>
+<li><code>http://dockone.io/article/1298</code></li>
+<li><code>http://yunshen0909.iteye.com/blog/2245926</code></li>
+</ul>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-06-29</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/07/%E4%BD%BF%E7%94%A8cgroup%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用cgroup控制系统资源</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/">
+            <span class="next-text nav-default">试用docker功能</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>批量处理docker镜像 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="批量处理docker镜像" />
+<meta property="og:description" content="这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/" />
+<meta property="article:published_time" content="2019-05-19T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-05-19T18:00:00+08:00" />
+<meta itemprop="name" content="批量处理docker镜像">
+<meta itemprop="description" content="这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry">
+<meta itemprop="datePublished" content="2019-05-19T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-19T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="646">
+
+
+
+<meta itemprop="keywords" content="bash,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="批量处理docker镜像"/>
+<meta name="twitter:description" content="这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">批量处理docker镜像</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E5%85%B7/"> 工具 </a>
+            
+          </div>
+        <span class="more-meta"> 约 646 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">小技巧</a>
+      <ul>
+        <li><a href="#registry">列出registry中的镜像</a></li>
+        <li><a href="#registry-1">删除registry中的某个镜像</a></li>
+        <li><a href="#heading-1">修改镜像的名字</a></li>
+        <li><a href="#kubernetes">列出kubernetes中目前使用到的镜像</a></li>
+        <li><a href="#heading-2">建个远程隧道</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。</p>
+<h2 id="heading">小技巧</h2>
+<h3 id="registry">列出registry中的镜像</h3>
+<p>官方的docker registry虽然提供了一系列操作镜像的Restful API，但查看镜像列表并不直观，于是可以使用以下脚本查看registry中的镜像列表：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">DOCKER_REGISTRY_ADDR<span style="color:#f92672">=</span>127.0.0.1:5000
+
+<span style="color:#66d9ef">for</span> img in <span style="color:#e6db74">`</span>curl -s <span style="color:#e6db74">${</span>DOCKER_REGISTRY_ADDR<span style="color:#e6db74">}</span>/v2/_catalog | python -m json.tool | jq <span style="color:#e6db74">&#34;.repositories[]&#34;</span> | tr -d <span style="color:#e6db74">&#39;&#34;&#39;</span><span style="color:#e6db74">`</span>; <span style="color:#66d9ef">do</span>
+  <span style="color:#66d9ef">for</span> tag in <span style="color:#e6db74">`</span>curl -s 10.10.30.21:5000/v2/<span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>/tags/list|jq <span style="color:#e6db74">&#34;.tags[]&#34;</span> | tr -d <span style="color:#e6db74">&#39;&#34;&#39;</span><span style="color:#e6db74">`</span>; <span style="color:#66d9ef">do</span>
+    echo $img:$tag
+  <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">done</span>
+</code></pre></div><h3 id="registry-1">删除registry中的某个镜像</h3>
+<p>docker registry上的镜像默认是不允许删除的，如要删除，需要在启动docker registry时指定环境变量<code>REGISTRY_STORAGE_DELETE_ENABLED=true</code>，然后可以利用以下脚本删除镜像：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">DOCKER_REGISTRY_ADDR<span style="color:#f92672">=</span>127.0.0.1:5000
+
+<span style="color:#66d9ef">function</span> delete_image <span style="color:#f92672">{</span>
+    imgFullName<span style="color:#f92672">=</span>$1
+    img<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $imgFullName | awk -F <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#e6db74">`</span>
+    tag<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $imgFullName | awk -F <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#e6db74">&#39;{print $2}&#39;</span><span style="color:#e6db74">`</span>
+    
+    <span style="color:#75715e"># delete image&#39;s blobs</span>
+    <span style="color:#66d9ef">for</span> digest in <span style="color:#e6db74">`</span>curl -H <span style="color:#e6db74">&#39;Accept: application/vnd.docker.distribution.manifest.v2+json&#39;</span> -s <span style="color:#e6db74">${</span>DOCKER_REGISTRY_ADDR<span style="color:#e6db74">}</span>/v2/<span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>/manifests/<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span> | jq <span style="color:#e6db74">&#34;.layers[].digest&#34;</span> | tr -d <span style="color:#e6db74">&#39;&#34;&#39;</span><span style="color:#e6db74">`</span>; <span style="color:#66d9ef">do</span>
+      curl -X DELETE <span style="color:#e6db74">${</span>DOCKER_REGISTRY_ADDR<span style="color:#e6db74">}</span>/v2/<span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>/blobs/<span style="color:#e6db74">${</span>digest<span style="color:#e6db74">}</span>      
+    <span style="color:#66d9ef">done</span>
+    
+    <span style="color:#75715e"># delete image&#39;s manifest</span>
+    imgDigest<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -H <span style="color:#e6db74">&#39;Accept: application/vnd.docker.distribution.manifest.v2+json&#39;</span> -s <span style="color:#e6db74">${</span>DOCKER_REGISTRY_ADDR<span style="color:#e6db74">}</span>/v2/<span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>/manifests/<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span> | jq <span style="color:#e6db74">&#34;.config.digest&#34;</span> | tr -d <span style="color:#e6db74">&#39;&#34;&#39;</span><span style="color:#e6db74">`</span>
+    curl -X DELETE <span style="color:#e6db74">${</span>DOCKER_REGISTRY_ADDR<span style="color:#e6db74">}</span>/v2/<span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>//manifests/<span style="color:#e6db74">${</span>imgDigest<span style="color:#e6db74">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading-1">修改镜像的名字</h3>
+<p>一般手工用<code>docker tag</code>命令改镜像名字，一两个镜像这么做还行，如要批量操作，还是需要用脚本：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pulledImageName<span style="color:#f92672">=</span>127.0.0.1:5000/test/testdb/db:v1.0.0
+
+<span style="color:#75715e"># 只取不包含127.0.0.1:5000的镜像名</span>
+shortImageName<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>pulledImageName#*/<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># 将repository的前缀修改为test2</span>
+changedShortImageName<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>shortImageName/#test/test2<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># 将tag修改为1.0.0</span>
+changed2ShortImageName<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>changedShortImageName/%v1.0.0/1.0.0<span style="color:#e6db74">}</span>
+
+docker tag $pulledImageName $changed2ShortImageName
+</code></pre></div><h3 id="kubernetes">列出kubernetes中目前使用到的镜像</h3>
+<p>有时需要列出Kubernetes中目前使用到的所有镜像，可以用以下脚本：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#66d9ef">for</span> img in <span style="color:#e6db74">`</span>kubectl get pod -o yaml --all-namespaces | grep <span style="color:#e6db74">&#39;image:&#39;</span> | cut -c14- | sort | uniq<span style="color:#e6db74">`</span>; <span style="color:#66d9ef">do</span>
+   echo $img
+   <span style="color:#75715e"># save image to tar file</span>
+   save_dir<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>img%/*<span style="color:#e6db74">}</span>
+   mkdir -p $save_dir
+   docker save -o <span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>.tar <span style="color:#e6db74">${</span>img<span style="color:#e6db74">}</span>
+<span style="color:#66d9ef">done</span>
+</code></pre></div><h3 id="heading-2">建个远程隧道</h3>
+<p>在家工作，需要建个隧道连到远程服务器上去，可使用以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Make PubkeyAuthentication enabled</span>
+ssh-copy-id root@<span style="color:#e6db74">${</span>remote_ip<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># make tunnel with autossh</span>
+autossh -f -M <span style="color:#ae81ff">34567</span> -ND <span style="color:#ae81ff">7070</span> root@<span style="color:#e6db74">${</span>remote_ip<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># use web browser with Socks 5 Proxy Server 127.0.0.1:7070</span> 
+</code></pre></div><h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://docs.docker.com/registry/spec/api/">https://docs.docker.com/registry/spec/api/</a></li>
+<li><a href="https://www.jianshu.com/p/6a7b80122602">https://www.jianshu.com/p/6a7b80122602</a></li>
+<li><a href="https://www.cnblogs.com/chengmo/archive/2010/10/02/1841355.html">https://www.cnblogs.com/chengmo/archive/2010/10/02/1841355.html</a></li>
+<li><a href="https://www.cnblogs.com/eshizhan/archive/2012/07/16/2592902.html">https://www.cnblogs.com/eshizhan/archive/2012/07/16/2592902.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-05-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/bash/">bash</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">保持Kubernetes容器平台稳定性</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/">
+            <span class="next-text nav-default">编写Kubernetes Operator</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

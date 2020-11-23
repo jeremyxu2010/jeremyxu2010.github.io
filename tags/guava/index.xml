@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>guava on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/guava/</link>
+    <description>Recent content in guava on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 03 Sep 2017 23:38:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/guava/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java开发小技巧</title>
+      <link>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提</description>
+    </item>
+    
+    <item>
+      <title>java中用好cache</title>
+      <link>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</link>
+      <pubDate>Thu, 01 Sep 2016 23:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</guid>
+      <description>在java开发中经常会遇到下面的代码： Graph get(Key key) { Graph result = get( key ); if( null == result ) { result = createNewGraph( key ); put( key, result ); } return result; } 即根据某个Key值，到缓存里查找是否有对应的</description>
+    </item>
+    
+    <item>
+      <title>Web应用程序限速方法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Mon, 09 May 2016 00:15:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</guid>
+      <description>一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越</description>
+    </item>
+    
+  </channel>
+</rss>

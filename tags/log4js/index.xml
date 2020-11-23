@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>log4js on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/log4js/</link>
+    <description>Recent content in log4js on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 22 Nov 2020 20:54:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/log4js/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TypeScript项目小结</title>
+      <link>https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/</guid>
+      <description>最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为</description>
+    </item>
+    
+  </channel>
+</rss>

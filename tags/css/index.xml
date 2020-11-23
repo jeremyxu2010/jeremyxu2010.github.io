@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>css on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/css/</link>
+    <description>Recent content in css on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 31 Mar 2015 01:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/css/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用grunt对css中的background图片自动生成雪碧图</title>
+      <link>https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/</link>
+      <pubDate>Tue, 31 Mar 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/</guid>
+      <description>公司研发的系统为B/S架构，用户使用浏览器访问系统时，使用浏览器自带工具查看，对图片的请求数极多，多为小图片。 今天想对这个现状进行改善，网上</description>
+    </item>
+    
+  </channel>
+</rss>

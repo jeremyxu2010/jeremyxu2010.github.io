@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>获取后台任务进度的另类办法 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &amp;#34;/AsyncServlet&amp;#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="获取后台任务进度的另类办法" />
+<meta property="og:description" content="今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &#34;/AsyncServlet&#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/" />
+<meta property="article:published_time" content="2016-05-16T01:07:00+08:00" />
+<meta property="article:modified_time" content="2016-05-16T01:07:00+08:00" />
+<meta itemprop="name" content="获取后台任务进度的另类办法">
+<meta itemprop="description" content="今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &#34;/AsyncServlet&#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private">
+<meta itemprop="datePublished" content="2016-05-16T01:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-16T01:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="1516">
+
+
+
+<meta itemprop="keywords" content="java,html5,ajax,servlet,jdeferred," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="获取后台任务进度的另类办法"/>
+<meta name="twitter:description" content="今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &#34;/AsyncServlet&#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">获取后台任务进度的另类办法</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1516 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天看到<code>jdeferred</code>文档中一个关于<code>Asynchronous Servlet</code>的<a href="https://github.com/jdeferred/jdeferred">例子</a>，如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@WebServlet</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/AsyncServlet&#34;</span><span style="color:#f92672">,</span> asyncSupported <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncServlet</span> <span style="color:#66d9ef">extends</span> HttpServlet <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> serialVersionUID <span style="color:#f92672">=</span> 1L<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> ExecutorService executorService <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newCachedThreadPool</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> DeferredManager dm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DefaultDeferredManager<span style="color:#f92672">(</span>executorService<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doGet</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">,</span>
+                       HttpServletResponse response<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> ServletException<span style="color:#f92672">,</span> IOException <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> AsyncContext actx <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">startAsync</span><span style="color:#f92672">(</span>request<span style="color:#f92672">,</span> response<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    dm<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Callable<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#a6e22e">@Override</span>
+      <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>actx<span style="color:#f92672">.</span><span style="color:#a6e22e">getRequest</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getParameter</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;fail&#34;</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;oops!&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>2000<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Hello World!&#34;</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">then</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DoneCallback<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#a6e22e">@Override</span>
+      <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onDone</span><span style="color:#f92672">(</span>String result<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        actx<span style="color:#f92672">.</span><span style="color:#a6e22e">getRequest</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setAttribute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;message&#34;</span><span style="color:#f92672">,</span> result<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        actx<span style="color:#f92672">.</span><span style="color:#a6e22e">dispatch</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/hello.jsp&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">fail</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FailCallback<span style="color:#f92672">&lt;</span>Throwable<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#a6e22e">@Override</span>
+      <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onFail</span><span style="color:#f92672">(</span>Throwable exception<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        actx<span style="color:#f92672">.</span><span style="color:#a6e22e">getRequest</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setAttribute</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;exception&#34;</span><span style="color:#f92672">,</span> exception<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        actx<span style="color:#f92672">.</span><span style="color:#a6e22e">dispatch</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/error.jsp&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>突然想到在以前工作中经常前端向后端提交了一个长时间任务，为了良好的用户体验，前端还需要定时获取该任务的进度信息。之前的方案如下：</p>
+<ol>
+<li>前端提交任务创建需要的信息至后台，后台为该任务创建对应Task，仅将该Task的ID返回至前端</li>
+<li>后端向线程池提交该任务对应的Task Runnable，该Runnable的执行体里以任务的进度信息更新该Task的progress字段</li>
+<li>前端定时发AJAX请求凭借Task的ID取进度</li>
+</ol>
+<p>以前我一直有个疑问：就为了更新进度信息，浏览器要不停地向后端发请求，是不是代价太大了。曾经也尝试过以一个WebSocket请求代替轮寻询AJAX请求，但还是觉得比较麻烦。</p>
+<p>今天看到异步Servlet，又想起以前看过的监控AJAX下载进度的例子，感觉可以有另一种解决方案。直接粘代码吧。</p>
+<p>首先是获取任务进度的后端代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> personal.xxj.servlet<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.jdeferred.DeferredManager<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.jdeferred.DoneCallback<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.jdeferred.FailCallback<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.jdeferred.impl.DefaultDeferredManager<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> javax.servlet.AsyncContext<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> javax.servlet.ServletException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> javax.servlet.http.HttpServlet<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> javax.servlet.http.HttpServletRequest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> javax.servlet.http.HttpServletResponse<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Random<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.Callable<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.ExecutorService<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.Executors<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/5/15.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GetTaskProgressServlet</span> <span style="color:#66d9ef">extends</span> HttpServlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> ExecutorService executorService <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newCachedThreadPool</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> DeferredManager dm <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DefaultDeferredManager<span style="color:#f92672">(</span>executorService<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> Random random <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Random<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doGet</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">,</span> HttpServletResponse response<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> ServletException<span style="color:#f92672">,</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> AsyncContext actx <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">startAsync</span><span style="color:#f92672">(</span>request<span style="color:#f92672">,</span> response<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        actx<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimeout</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        dm<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Callable<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                HttpServletResponse resp <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>HttpServletResponse<span style="color:#f92672">)</span> actx<span style="color:#f92672">.</span><span style="color:#a6e22e">getResponse</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                resp<span style="color:#f92672">.</span><span style="color:#a6e22e">setContentType</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;text/html&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                resp<span style="color:#f92672">.</span><span style="color:#a6e22e">setCharacterEncoding</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;UTF-8&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                resp<span style="color:#f92672">.</span><span style="color:#a6e22e">setContentLength</span><span style="color:#f92672">(</span>100<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 100<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>random<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span>10<span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 10<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        resp<span style="color:#f92672">.</span><span style="color:#a6e22e">getWriter</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;*&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        resp<span style="color:#f92672">.</span><span style="color:#a6e22e">getWriter</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">flush</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                    e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+                    actx<span style="color:#f92672">.</span><span style="color:#a6e22e">complete</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;web-app</span> <span style="color:#a6e22e">xmlns=</span><span style="color:#e6db74">&#34;http://xmlns.jcp.org/xml/ns/javaee&#34;</span>
+         <span style="color:#a6e22e">xmlns:xsi=</span><span style="color:#e6db74">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+         <span style="color:#a6e22e">xsi:schemaLocation=</span><span style="color:#e6db74">&#34;http://xmlns.jcp.org/xml/ns/javaee
+</span><span style="color:#e6db74">		 http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd&#34;</span>
+         <span style="color:#a6e22e">version=</span><span style="color:#e6db74">&#34;3.1&#34;</span><span style="color:#f92672">&gt;</span>
+
+  <span style="color:#f92672">&lt;display-name</span><span style="color:#f92672">&gt;</span>Java Web Demo<span style="color:#f92672">&lt;/display-name&gt;</span>
+  <span style="color:#f92672">&lt;servlet</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;servlet-name</span><span style="color:#f92672">&gt;</span>GetTaskProgressServlet<span style="color:#f92672">&lt;/servlet-name&gt;</span>
+    <span style="color:#f92672">&lt;servlet-class</span><span style="color:#f92672">&gt;</span>personal.xxj.servlet.GetTaskProgressServlet<span style="color:#f92672">&lt;/servlet-class&gt;</span>
+    <span style="color:#f92672">&lt;async-supported</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/async-supported&gt;</span>
+  <span style="color:#f92672">&lt;/servlet&gt;</span>
+  <span style="color:#f92672">&lt;servlet-mapping</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;servlet-name</span><span style="color:#f92672">&gt;</span>GetTaskProgressServlet<span style="color:#f92672">&lt;/servlet-name&gt;</span>
+    <span style="color:#f92672">&lt;url-pattern</span><span style="color:#f92672">&gt;</span>/api/getTaskProgress<span style="color:#f92672">&lt;/url-pattern&gt;</span>
+  <span style="color:#f92672">&lt;/servlet-mapping&gt;</span>
+<span style="color:#f92672">&lt;/web-app&gt;</span>
+</code></pre></div><p>可以看到这里用到了<code>jdeferred</code>与<code>Asynchronous Servlet</code>，工作逻辑就是模拟一个任务在慢慢地执行，每执行<code>1%</code>则向<code>response</code>里打印一个<code>*</code>。</p>
+<p>为啥一定要用<code>Asynchronous Servlet</code>？最大的原因是不想这些长时间运行的任务占用http线程，但又想持有请求响应上下文，可以在任务运行过程中输出合理的响应。</p>
+<p>这里有几点要注意：</p>
+<ul>
+<li>像<code>actx.setTimeout(Long.MAX_VALUE)</code>这样根据实际场景设置超时时间，默认好像才30秒，对于一个长时间任务来说太短了</li>
+<li><code>resp.setContentType</code>，<code>resp.setCharacterEncoding</code>，<code>resp.setContentLength</code>最后都调用一遍，以免前端由于收到不这样响应头，非得接收完整的响应内容后才触发<code>XMLHttpRequest</code>的<code>progress</code>事件。(唉，入坑数小时，说多都是泪)</li>
+<li>每向response里打印一个<code>*</code>后需要调用<code>resp.getWriter().flush();</code>，尽快将响应刷回客户端。</li>
+<li>任务完成后要保证<code>actx.complete();</code>得到调用。</li>
+<li>注册异步servlet时，在web.xml里需要<code>&lt;async-supported&gt;true&lt;/async-supported&gt;</code></li>
+</ul>
+<p>然后是前端代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!DOCTYPE html&gt;</span>
+&lt;<span style="color:#f92672">html</span> <span style="color:#a6e22e">lang</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;en&#34;</span>&gt;
+&lt;<span style="color:#f92672">head</span>&gt;
+    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>&gt;
+    &lt;<span style="color:#f92672">title</span>&gt;Task Progress Demo&lt;/<span style="color:#f92672">title</span>&gt;
+&lt;/<span style="color:#f92672">head</span>&gt;
+&lt;<span style="color:#f92672">body</span>&gt;
+&lt;<span style="color:#f92672">h1</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;output&#34;</span>&gt;&lt;/<span style="color:#f92672">h1</span>&gt;
+&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span>&gt;
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">xhr</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">XMLHttpRequest</span>();
+    <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">timeout</span> <span style="color:#f92672">=</span> Number.<span style="color:#a6e22e">MAX_VALUE</span>;
+    <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#39;GET&#39;</span>, <span style="color:#e6db74">&#39;/javawebdemo/api/getTaskProgress&#39;</span>);
+    <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">onprogress</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">event</span>){
+        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">lengthComputable</span>) {
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">percentComplete</span> <span style="color:#f92672">=</span> parseInt((<span style="color:#ae81ff">100</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">loaded</span>) <span style="color:#f92672">/</span> <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">total</span>);
+            document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#34;output&#34;</span>).<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Task&#39;s progress is &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">percentComplete</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span>;
+        }
+    };
+    <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">onerror</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+        document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#34;output&#34;</span>).<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Task&#39;s execution is failed&#34;</span>;
+    };
+    <span style="color:#a6e22e">xhr</span>.<span style="color:#a6e22e">send</span>();
+&lt;/<span style="color:#f92672">script</span>&gt;
+&lt;/<span style="color:#f92672">body</span>&gt;
+&lt;/<span style="color:#f92672">html</span>&gt;
+</code></pre></div><p>前端代码倒没有太多要注意的地方，只有一点要注意设置<code>xhr.timeout</code>。</p>
+<p>本例使用了<code>Servlet 3.0 API</code>及<code>HTML5</code>中的<code>XMLHttpRequest 2</code>，<code>XMLHttpRequest 2</code>现在较新的主流浏览器都支持。</p>
+<p>另外我查阅<code>XMLHttpRequest 2</code>的文档时还发现在<code>XMLHttpRequest 2</code>里不仅可以监控下载的进度，也可以监控上传的进度，参见<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload">XMLHttpRequest.upload</a>的progress事件。</p>
+<p><code>XMLHttpRequest 2</code>还可以上传文件，接收二进制数据，参见<a href="http://www.ruanyifeng.com/blog/2012/09/xmlhttprequest_level_2.html">这里</a>，真是强大地不要不要的。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/html5/">html5</a>
+          
+          <a href="/tags/ajax/">ajax</a>
+          
+          <a href="/tags/servlet/">servlet</a>
+          
+          <a href="/tags/jdeferred/">jdeferred</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">WEB界面测试实践之Selenium WebDriver</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/">
+            <span class="next-text nav-default">现代Web开发系列教程_07</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

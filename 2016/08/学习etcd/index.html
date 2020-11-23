@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>学习etcd - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="学习etcd" />
+<meta property="og:description" content="很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/" />
+<meta property="article:published_time" content="2016-08-24T01:24:00+08:00" />
+<meta property="article:modified_time" content="2016-08-24T01:24:00+08:00" />
+<meta itemprop="name" content="学习etcd">
+<meta itemprop="description" content="很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时">
+<meta itemprop="datePublished" content="2016-08-24T01:24:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-24T01:24:00&#43;08:00" />
+<meta itemprop="wordCount" content="1405">
+
+
+
+<meta itemprop="keywords" content="etcd,python,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="学习etcd"/>
+<meta name="twitter:description" content="很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">学习etcd</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/"> 云计算 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1405 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">部署</a>
+      <ul>
+        <li><a href="#docker">创建一个docker主机</a></li>
+        <li><a href="#etcdetcd">etcd发现创建etcd集群</a></li>
+      </ul>
+    </li>
+    <li><a href="#etcd">使用etcd集群</a></li>
+    <li><a href="#heading-1">总结</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时怎么保证高可用，除了分布式锁外是否还有其它趣的功能。今天下班回家研究了下这个东东，很有收获，这里记录一下。</p>
+<h2 id="heading">部署</h2>
+<h3 id="docker">创建一个docker主机</h3>
+<p>由于我本机并没安装etcd，于是想就直接在docker里玩etcd好了，所以先创建一个docker主机。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker-machine create --driver virtualbox --engine-registry-mirror<span style="color:#f92672">=</span>https://xxxxx.mirror.aliyuncs.com etcd-servers
+<span style="color:#75715e">#执行下面的命令拿到这个docker主机的ip，假设是192.168.99.100</span>
+docker-machine ip etcd-servers
+<span style="color:#75715e">#设置好使用docker命令依赖的环境变量</span>
+eval <span style="color:#66d9ef">$(</span>docker-machine env etcd-servers<span style="color:#66d9ef">)</span>
+</code></pre></div><h3 id="etcdetcd">etcd发现创建etcd集群</h3>
+<p>为了保证etcd服务的高可用性，我决定还是创建一个etcd服务集群。官方文档里讲到了三种方式：静态、etcd发现、DNS发现。见<a href="https://github.com/coreos/etcd/blob/master/Documentation/op-guide/clustering.md#static">这里</a>。我感觉静态方式必须全都预先规划好才行，而DNS发现依赖于可控的域名解析服务，这些都挺不灵活的。所以最终还是选择了etcd发现的方式创建etcd集群。</p>
+<p>首先创建一个单节点的etcd服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm -p 2380:2380 -p 2379:2379 --name etcd0 quay.io/coreos/etcd etcd --name etcd0 --initial-advertise-peer-urls http://192.168.99.100:2380 --listen-peer-urls http://0.0.0.0:2380 --advertise-client-urls http://192.168.99.100:2379 --listen-client-urls http://0.0.0.0:2379 --initial-cluster etcd0<span style="color:#f92672">=</span>http://192.168.99.100:2380
+</code></pre></div><p>生成一个唯一的UUID</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#假设生成的UUID为C7167DFB-6031-443B-9ED5-01DC3815F720</span>
+uuidgen
+</code></pre></div><p>在单节点的etcd服务上创建集群服务发现的目录，并配置成当3个节点加入集群，整个集群开始启动。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -X PUT http://192.168.99.100:2379/v2/keys/discovery/C7167DFB-6031-443B-9ED5-01DC3815F720/_config/size -d value<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+</code></pre></div><p>分别启动三个etcd服务节点，并加入集群，当然这里只是试验，正常部署场景为了保证高可用，避免单点故障，集群节点需要部署在多台机器上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --restart<span style="color:#f92672">=</span>always -d -p 2382:2382 -p 2381:2381 --name etcd1 quay.io/coreos/etcd etcd --name etcd1 --initial-advertise-peer-urls http://192.168.99.100:2382 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-peer-urls http://0.0.0.0:2382 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-client-urls http://0.0.0.0:2381 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --advertise-client-urls http://192.168.99.100:2381 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --discovery http://192.168.99.100:2379/v2/keys/discovery/C7167DFB-6031-443B-9ED5-01DC3815F720
+
+docker run --restart<span style="color:#f92672">=</span>always -d -p 2384:2384 -p 2383:2383 --name etcd2 quay.io/coreos/etcd etcd --name etcd2 --initial-advertise-peer-urls http://192.168.99.100:2384 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-peer-urls http://0.0.0.0:2384 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-client-urls http://0.0.0.0:2383 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --advertise-client-urls http://192.168.99.100:2383 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --discovery http://192.168.99.100:2379/v2/keys/discovery/C7167DFB-6031-443B-9ED5-01DC3815F720
+
+docker run --restart<span style="color:#f92672">=</span>always -d -p 2386:2386 -p 2385:2385 --name etcd3 quay.io/coreos/etcd etcd --name etcd3 --initial-advertise-peer-urls http://192.168.99.100:2386 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-peer-urls http://0.0.0.0:2386 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --listen-client-urls http://0.0.0.0:2385 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --advertise-client-urls http://192.168.99.100:2385 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  --discovery http://192.168.99.100:2379/v2/keys/discovery/C7167DFB-6031-443B-9ED5-01DC3815F720
+</code></pre></div><p>稍等一小会儿，然后就可以检查集群的运行状态了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --rm --name etcdctl quay.io/coreos/etcd etcdctl --endpoints http://192.168.99.100:2381,http://192.168.99.100:2383,http://192.168.99.100:2385 member list
+<span style="color:#75715e">#上述命令的输出一般为下面这样，表示其中有一个节点已被选举为Leader了</span>
+<span style="color:#75715e">#294e0faabf651c4: name=etcd1 peerURLs=http://192.168.99.100:2382 clientURLs=http://192.168.99.100:2381 isLeader=false</span>
+<span style="color:#75715e">#74afde18c4466428: name=etcd2 peerURLs=http://192.168.99.100:2384 clientURLs=http://192.168.99.100:2383 isLeader=false</span>
+<span style="color:#75715e">#f979555993d104ee: name=etcd3 peerURLs=http://192.168.99.100:2386 clientURLs=http://192.168.99.100:2385 isLeader=true</span>
+
+docker run --rm --name etcdctl quay.io/coreos/etcd etcdctl --endpoints http://192.168.99.100:2381,http://192.168.99.100:2383,http://192.168.99.100:2385 cluster-health
+<span style="color:#75715e">#上述命令的输出一般为下面这样，表示集群是健康的</span>
+<span style="color:#75715e">#member 294e0faabf651c4 is healthy: got healthy result from http://192.168.99.100:2381</span>
+<span style="color:#75715e">#member 74afde18c4466428 is healthy: got healthy result from http://192.168.99.100:2383</span>
+<span style="color:#75715e">#member f979555993d104ee is healthy: got healthy result from http://192.168.99.100:2385</span>
+<span style="color:#75715e">#cluster is healthy</span>
+</code></pre></div><p>然后就可以把先前创建的单节点etcd服务停止了</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker stop etcd0
+docker rm etcd0
+</code></pre></div><p>后续可参考官方文档对集群作进一步调整，如增删成员节点，见<a href="https://github.com/coreos/etcd/blob/master/Documentation/op-guide/runtime-configuration.md">官方文档</a></p>
+<h2 id="etcd">使用etcd集群</h2>
+<p>etcd通过HTTP API对外提供服务，同时etcd还提供了一个etcdctl的命令，使用也很简单，就里就不重复描述了。可参考<a href="http://cizixs.com/2016/08/02/intro-to-etcd">这里</a>。</p>
+<p>python版本的etcd客户端在<a href="https://github.com/jplana/python-etcd">这里</a>，使用方法也很简单，项目首页文档写得很清楚。</p>
+<p>搭建docker swarm集群如要使用etcd作为外部配置存储服务，可在docker daemon的启动参数里加入<code>–cluster-store=etcd://${etcd服务所在主机IP}:2379/store -–cluster-advertise=${docker daemon服务所在主机外部可访问IP}:2376</code></p>
+<h2 id="heading-1">总结</h2>
+<ul>
+<li>etcd相对于consul来看，提供了更多的访问方式，特别是HTTP API服务，对于调试问题来说很方便。之前搭建docker swarm集群使用的是consul，后面找个机会尝试一下使用etcd。</li>
+<li>翻阅etcd文档后，发现etcd提供的功能比我数年前见到的zookeeper功能丰富了不少，很强大。以后项目中如果遇到分布式锁、监听变更事件、监测主机alive场景，可以考虑使用它。</li>
+</ul>
+<h2 id="heading-2">参考</h2>
+<p><code>http://soft.dog/2016/02/16/etcd-cluster/#section-7</code>
+<code>http://www.alauda.cn/2016/01/18/docker-1-9-network/</code>
+<code>https://github.com/jplana/python-etcd</code>
+<code>https://coreos.com/etcd/docs/latest/docker_guide.html</code>
+<code>https://github.com/coreos/etcd/blob/master/Documentation/dev-internal/discovery_protocol.md</code>
+<code>https://github.com/coreos/etcd/blob/master/Documentation/op-guide/runtime-configuration.md</code>
+<code>https://github.com/coreos/etcd/blob/master/Documentation/op-guide/clustering.md#static</code>
+<code>https://coreos.com/etcd/docs/latest/configuration.html#member-flags</code>
+<code>https://skyao.gitbooks.io/leaning-etcd3/content/</code>
+<code>http://dockone.io/article/801</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/etcd/">etcd</a>
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">云服务器上ssh服务安全加固</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E4%BD%BF%E7%94%A8%E9%98%BF%E9%87%8C%E4%BA%91api%E5%88%B7%E6%96%B0cdn%E7%BC%93%E5%AD%98/">
+            <span class="next-text nav-default">使用阿里云API刷新CDN缓存</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

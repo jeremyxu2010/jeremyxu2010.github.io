@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>webpack on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/webpack/</link>
+    <description>Recent content in webpack on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 26 Jan 2017 16:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/webpack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>webpack的watch选项不工作原因分析</title>
+      <link>https://jeremyxu2010.github.io/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</link>
+      <pubDate>Thu, 26 Jan 2017 16:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/</guid>
+      <description>今天尝试将以前创建的一个前端项目改为webpack编译，该项目使用了VueJS v2.0，原来是编写gulp脚本完成构建的。很自然就直接用vu</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>研究consul的service mesh功能 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="研究consul的service mesh功能" />
+<meta property="og:description" content="之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/" />
+<meta property="article:published_time" content="2018-07-06T10:53:00+08:00" />
+<meta property="article:modified_time" content="2018-07-06T10:53:00+08:00" />
+<meta itemprop="name" content="研究consul的service mesh功能">
+<meta itemprop="description" content="之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi">
+<meta itemprop="datePublished" content="2018-07-06T10:53:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-07-06T10:53:00&#43;08:00" />
+<meta itemprop="wordCount" content="2391">
+
+
+
+<meta itemprop="keywords" content="consul,golang,service mesh," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="研究consul的service mesh功能"/>
+<meta name="twitter:description" content="之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">研究consul的service mesh功能</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-07-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2391 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#consulservice-mesh">试用consul的service mesh</a>
+      <ul>
+        <li><a href="#consul12">升级consul至1.2版本</a></li>
+        <li><a href="#heading">写两个模拟的微服务</a></li>
+        <li><a href="#consul">在consul里配置两个服务</a></li>
+        <li><a href="#heading-1">跑起来</a></li>
+        <li><a href="#heading-2">其它使用方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#consulservice-mesh-1">consul的service mesh原理分析</a></li>
+    <li><a href="#consulservice-mesh-2">consul的service mesh优缺点分析</a></li>
+    <li><a href="#heading-3">总结</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天<a href="https://www.hashicorp.com/blog/consul-1-2-service-mesh">consul发布了1.2版本</a>，宣称其实现了Service Mesh方案，最近在做Service Mesh相关的工作，正好有一点时间，就花时间研究一下。</p>
+<h2 id="consulservice-mesh">试用consul的service mesh</h2>
+<h3 id="consul12">升级consul至1.2版本</h3>
+<p>macOS下升级consul很简单，简单用brew命令就好</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew update consul
+</code></pre></div><p>为了方便后面修改consul的配置文件，添加一个<code>-config-dir</code>参数</p>
+<p><code>/usr/local/opt/consul/homebrew.mxcl.consul.plist</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;?xml version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span> encoding<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>?&gt;
+&lt;!DOCTYPE plist PUBLIC <span style="color:#e6db74">&#34;-//Apple//DTD PLIST 1.0//EN&#34;</span> <span style="color:#e6db74">&#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;</span>&gt;
+&lt;plist version<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;1.0&#34;</span>&gt;
+  &lt;dict&gt;
+    &lt;key&gt;KeepAlive&lt;/key&gt;
+    &lt;dict&gt;
+      &lt;key&gt;SuccessfulExit&lt;/key&gt;
+      &lt;false/&gt;
+    &lt;/dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;homebrew.mxcl.consul&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+      &lt;string&gt;/usr/local/opt/consul/bin/consul&lt;/string&gt;
+      &lt;string&gt;agent&lt;/string&gt;
+      &lt;string&gt;-dev&lt;/string&gt;
+      &lt;string&gt;-advertise&lt;/string&gt;
+      &lt;string&gt;127.0.0.1&lt;/string&gt;
+      &lt;string&gt;-config-dir&lt;/string&gt;
+      &lt;string&gt;/usr/local/etc/consul.d&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;RunAtLoad&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;WorkingDirectory&lt;/key&gt;
+    &lt;string&gt;/usr/local/var&lt;/string&gt;
+    &lt;key&gt;StandardErrorPath&lt;/key&gt;
+    &lt;string&gt;/usr/local/var/log/consul.log&lt;/string&gt;
+    &lt;key&gt;StandardOutPath&lt;/key&gt;
+    &lt;string&gt;/usr/local/var/log/consul.log&lt;/string&gt;
+  &lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div><p>这个配置文件中，我添加了以下两行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;string</span><span style="color:#f92672">&gt;</span>-config-dir<span style="color:#f92672">&lt;/string&gt;</span>
+<span style="color:#f92672">&lt;string</span><span style="color:#f92672">&gt;</span>/usr/local/etc/consul.d<span style="color:#f92672">&lt;/string&gt;</span>
+</code></pre></div><h3 id="heading">写两个模拟的微服务</h3>
+<p>用golang写两个小程序，用以模拟两个微服务。</p>
+<p><code>service1.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;net/http&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;io&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestServer</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+	<span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#e6db74">&#34;http://127.0.0.1:8082/test2&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">resp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>.<span style="color:#a6e22e">Close</span>()
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#e6db74">&#34;make request failed\n&#34;</span>))
+		<span style="color:#66d9ef">return</span>
+	}
+	<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Copy</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/test1&#34;</span>, <span style="color:#a6e22e">TestServer</span>)
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8081&#34;</span>, <span style="color:#66d9ef">nil</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;ListenAndServe: &#34;</span>, <span style="color:#a6e22e">err</span>)
+	}
+}
+</code></pre></div><p><code>service2.go</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;io&#34;</span>
+	<span style="color:#e6db74">&#34;net/http&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestServer</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+	<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">WriteString</span>(<span style="color:#a6e22e">w</span>, <span style="color:#e6db74">&#34;hello, world!\n&#34;</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/test2&#34;</span>, <span style="color:#a6e22e">TestServer</span>)
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8082&#34;</span>, <span style="color:#66d9ef">nil</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;ListenAndServe: &#34;</span>, <span style="color:#a6e22e">err</span>)
+	}
+}
+</code></pre></div><p>这里模拟微服务<code>service1</code>调用<code>service2</code>。</p>
+<h3 id="consul">在consul里配置两个服务</h3>
+<p>在consul的配置文件目录下新建两个json文件，用来配置上述两个服务。</p>
+<p><code>/usr/local/etc/consul.d/01_service1.json</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;service&#34;</span>: {
+      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;service1&#34;</span>,
+      <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">8081</span>,
+      <span style="color:#f92672">&#34;connect&#34;</span>: {
+        <span style="color:#f92672">&#34;proxy&#34;</span>: {
+          <span style="color:#f92672">&#34;config&#34;</span>: {
+            <span style="color:#f92672">&#34;upstreams&#34;</span>: [{
+               <span style="color:#f92672">&#34;destination_name&#34;</span>: <span style="color:#e6db74">&#34;service2&#34;</span>,
+               <span style="color:#f92672">&#34;local_bind_port&#34;</span>: <span style="color:#ae81ff">38082</span>
+            }]
+          }
+        }
+      }
+    }
+  }
+</code></pre></div><p><code>/usr/local/etc/consul.d/01_service2.json</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;service&#34;</span>: {
+      <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;service2&#34;</span>,
+      <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">8082</span>,
+      <span style="color:#f92672">&#34;connect&#34;</span>: {
+        <span style="color:#f92672">&#34;proxy&#34;</span>: {
+        }
+      }
+    }
+  }
+</code></pre></div><p>然后执行命令重新加载consul的配置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">consul reload
+</code></pre></div><p>修改service1中引用service2的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestServer</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">req</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+	<span style="color:#75715e">//resp, err := http.Get(&#34;http://127.0.0.1:8082/test2&#34;)
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#e6db74">&#34;http://127.0.0.1:38082/test2&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">resp</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>.<span style="color:#a6e22e">Close</span>()
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>([]byte(<span style="color:#e6db74">&#34;make request failed\n&#34;</span>))
+		<span style="color:#66d9ef">return</span>
+	}
+	<span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Copy</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">Body</span>)
+}
+<span style="color:#f92672">...</span><span style="color:#f92672">...</span>
+</code></pre></div><h3 id="heading-1">跑起来</h3>
+<p>将service1、service2跑起来，然后用curl命令访问service1</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; go run service1.go &amp;&gt; /dev/null
+&gt; go run service2.go &amp;&gt; /dev/null
+&gt; curl http://127.0.0.1:8081/test1
+<span style="color:#75715e"># 如果出现以下输出，则说明一切正常，Bingo!</span>
+hello, world!
+</code></pre></div><h3 id="heading-2">其它使用方法</h3>
+<p>除了Service Mesh的玩法，consul 1.2还提供了SDK的用法。简单来说就是Go语言开发的微服务按照它的规范修改服务提供方、服务消费方的代码，服务间的调用将会自动使用底层的connect隧道。这个使用方法不太符合service mesh的初衷，做过微服务框架sdk的我不是太喜欢，这里就不详细讲了，可以参考官方给出的文档。</p>
+<p><a href="https://www.consul.io/docs/connect/native.html">Connect Native原理</a></p>
+<p><a href="https://www.consul.io/docs/connect/native/go.html">Connect Native Go语言项目改造指引</a></p>
+<h2 id="consulservice-mesh-1">consul的service mesh原理分析</h2>
+<p>其实consul的文档本身说的比较明白，这里结合consul-ui及代码大概分析一下。</p>
+<p>当给consul的服务配置里添加了<code>&quot;connect&quot;: { &quot;proxy&quot;: { } }</code>后，consul将会为每个服务实例创建一个专门的隧道代理，如下图所示：</p>
+<p><img src="/images/20180708/image-20180708231726604.png" alt="image-20180708231726604"></p>
+<p>隧道代理的作用是当以connect模式连入时，会自动建立一条到原服务实例的tcp隧道，后面tcp层以上的应用协议数据流将在这条tcp隧道上传输，具体代码在<code>https://github.com/hashicorp/consul/blob/master/connect/proxy/listener.go#NewPublicListener</code>。</p>
+<p>而涉及服务间调用时，在consul服务配置里添加服务<code>UpstreamListener</code>声明，服务消费方访问服务时需使用<code>UpstreamListener</code>的地址。<code>UpstreamListener</code>实际上是一个反向代理，当访问它时，它会以connect模式连接对应的服务实例<code>Connect Proxy</code>，具体代码在<code>https://github.com/hashicorp/consul/blob/master/connect/proxy/listener.go#NewUpstreamListener</code>。</p>
+<p>结合上述两条规则，整个数据链路就通了。</p>
+<p>这里有一个问题，为啥一定要connect模式的隧道代理呢？反向代理服务不能直接连接原来的目标服务地址吗？</p>
+<p>看了下<code>https://github.com/hashicorp/consul/blob/master/connect/service.go#Dial</code>，大概知道原因了。因为connect模式的隧道代理是使用TLS加密的，这样物理服务器节点之间的网络流量就走TLS安全连接了，再加上<a href="https://www.consul.io/docs/connect/intentions.html">intentions</a>机制，服务间的调用安全性上有了很大保障。还有一个原因，如果采用<a href="https://www.consul.io/docs/connect/native/go.html">Connect-Native</a>的方式集成consul的service mesh功能，底层连接是TLS，上层就可以很方便地走HTTP/2.0协议了。</p>
+<h2 id="consulservice-mesh-2">consul的service mesh优缺点分析</h2>
+<p>优点：</p>
+<ol>
+<li>
+<p>直接使用tcp隧道，因此直接支持各类基于tcp的协议代理，如HTTP/1.1、HTTP/2.0、GRPC。</p>
+</li>
+<li>
+<p>实现原理简单，<code>https://github.com/hashicorp/consul/blob/master/connect/</code>、<code>https://github.com/hashicorp/consul/tree/master/api/connect*.go</code>、<code>https://github.com/hashicorp/consul/tree/master/agent/connect/</code>下的关键文件不超过20个，逻辑很容易就看清了。</p>
+</li>
+<li>
+<p>直接结合consul做服务注册与服务发现，集成度高。</p>
+</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>
+<p>目前的负载均衡算法还很简单，就是随机，见下面：</p>
+<p><img src="/images/20180708/image-20180708231828625.png" alt="image-20180708231828625"></p>
+</li>
+<li>
+<p>一些微服务框架的基本功能还不具备，如超时、重试、熔断、流量分配等，可以从<code>https://github.com/hashicorp/consul/blob/master/connect/proxy/listener.go#handleConn</code>这里开始扩展。</p>
+</li>
+<li>
+<p>需要手动修改consul的服务配置；服务消费方要根据consul里的服务配置，修改调用其它服务的地址（这里跟service mesh的初衷有些不符）。</p>
+</li>
+</ol>
+<h2 id="heading-3">总结</h2>
+<p>目前来看consul的service mesh方案还比较简单，功能很基本，但具备进一步扩展的空间，可以好好研究学习它的代码。</p>
+<h2 id="heading-4">参考</h2>
+<ol>
+<li><a href="https://www.hashicorp.com/blog/consul-1-2-service-mesh">https://www.hashicorp.com/blog/consul-1-2-service-mesh</a></li>
+<li><a href="https://www.consul.io/intro/getting-started/connect.html">https://www.consul.io/intro/getting-started/connect.html</a></li>
+<li><a href="https://www.consul.io/docs/agent/options.html">https://www.consul.io/docs/agent/options.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/intentions.html">https://www.consul.io/docs/connect/intentions.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/native.html">https://www.consul.io/docs/connect/native.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/native/go.html">https://www.consul.io/docs/connect/native/go.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/configuration.html">https://www.consul.io/docs/connect/configuration.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/proxies.html">https://www.consul.io/docs/connect/proxies.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/dev.html">https://www.consul.io/docs/connect/dev.html</a></li>
+<li><a href="https://www.consul.io/docs/connect/ca/consul.html">https://www.consul.io/docs/connect/ca/consul.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-07-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/consul/">consul</a>
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/service-mesh/">service mesh</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/07/%E7%A0%94%E7%A9%B6%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%9F%E8%B8%AA%E6%8A%80%E6%9C%AF%E4%B9%8Bjaeger/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">研究调用链跟踪技术之jaeger</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/">
+            <span class="next-text nav-default">mongodb的两阶段提交实战</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

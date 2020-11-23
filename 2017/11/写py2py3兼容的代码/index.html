@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>写py2、py3兼容的代码 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="写py2、py3兼容的代码 用到一段时间python，之前也重点复习了一次python3。但工作中运行环境是python2.7，于是要求写出p" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/11/%E5%86%99py2py3%E5%85%BC%E5%AE%B9%E7%9A%84%E4%BB%A3%E7%A0%81/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="写py2、py3兼容的代码" />
+<meta property="og:description" content="写py2、py3兼容的代码 用到一段时间python，之前也重点复习了一次python3。但工作中运行环境是python2.7，于是要求写出p" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/11/%E5%86%99py2py3%E5%85%BC%E5%AE%B9%E7%9A%84%E4%BB%A3%E7%A0%81/" />
+<meta property="article:published_time" content="2017-11-05T12:12:00+08:00" />
+<meta property="article:modified_time" content="2017-11-05T12:12:00+08:00" />
+<meta itemprop="name" content="写py2、py3兼容的代码">
+<meta itemprop="description" content="写py2、py3兼容的代码 用到一段时间python，之前也重点复习了一次python3。但工作中运行环境是python2.7，于是要求写出p">
+<meta itemprop="datePublished" content="2017-11-05T12:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-11-05T12:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="2363">
+
+
+
+<meta itemprop="keywords" content="python," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="写py2、py3兼容的代码"/>
+<meta name="twitter:description" content="写py2、py3兼容的代码 用到一段时间python，之前也重点复习了一次python3。但工作中运行环境是python2.7，于是要求写出p"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">写py2、py3兼容的代码</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-11-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2363 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#print">print函数</a></li>
+    <li><a href="#unicode">Unicode</a></li>
+    <li><a href="#heading">除法运算</a></li>
+    <li><a href="#heading-1">异常</a></li>
+    <li><a href="#heading-2">八进制字面量表示</a></li>
+    <li><a href="#heading-3">不等运算符</a></li>
+    <li><a href="#heading-4">数据类型</a></li>
+    <li><a href="#dict">dict的相关方法调整</a></li>
+    <li><a href="#heading-5">标准库及函数名称变更</a></li>
+    <li><a href="#heading-6">版本指示变量</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="py2py3">写py2、py3兼容的代码</h1>
+<p>用到一段时间python，之前也重点复习了一次python3。但工作中运行环境是python2.7，于是要求写出py2、py3都兼容的代码。下面将涉及到的几点技巧列举出来以备忘。</p>
+<h2 id="print">print函数</h2>
+<p>py3中print语句没有了，取而代之的是print()函数。 Python 2.6与Python 2.7部分地支持这种形式的print语法。因此保险起见，新写的代码都使用print函数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> print_function
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fish</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">panda</span><span style="color:#e6db74">&#34;</span>, sep<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">, </span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h2 id="unicode">Unicode</h2>
+<p>Python 2 有 ASCII str() 类型，unicode() 是单独的，不是 byte 类型。</p>
+<p>现在， 在 Python 3，我们最终有了 Unicode (utf-8) 字符串，以及一个字节类：byte 和 bytearrays。</p>
+<p>由于 Python3.X 源码文件默认使用utf-8编码，这就使得以下代码是合法的：</p>
+<pre><code>&gt;&gt;&gt; 中国 = 'china' 
+&gt;&gt;&gt;print(中国) 
+china
+</code></pre><p>Python 2.x</p>
+<pre><code>&gt;&gt;&gt; str = &quot;我爱北京天安门&quot;
+&gt;&gt;&gt; str
+'\xe6\x88\x91\xe7\x88\xb1\xe5\x8c\x97\xe4\xba\xac\xe5\xa4\xa9\xe5\xae\x89\xe9\x97\xa8'
+&gt;&gt;&gt; str = u&quot;我爱北京天安门&quot;
+&gt;&gt;&gt; str
+u'\u6211\u7231\u5317\u4eac\u5929\u5b89\u95e8'
+</code></pre><p>Python 3.x</p>
+<pre><code>&gt;&gt;&gt; str = &quot;我爱北京天安门&quot;
+&gt;&gt;&gt; str
+'我爱北京天安门'
+</code></pre><p>个人还是喜欢py3的这种明确两种不同类型的方案，因此新写的代码都使用以下方案。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> unicode_literals
+txt<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">中国</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> txt
+<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u4e2d</span><span style="color:#ae81ff">\u56fd</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> type(txt)
+<span style="color:#f92672">&lt;</span>type <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">unicode</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(txt)
+<span style="color:#960050;background-color:#1e0010">中</span><span style="color:#960050;background-color:#1e0010">国</span>
+arr<span style="color:#f92672">=</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abcd</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> arr
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abcd</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> type(arr)
+<span style="color:#f92672">&lt;</span>type <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">str</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">print</span>(arr)
+abcd
+</code></pre></div><h2 id="heading">除法运算</h2>
+<p>在python 2.x中/除法就跟我们熟悉的大多数语言，比如Java啊C啊差不多，整数相除的结果是一个整数，把小数部分完全忽略掉，浮点数除法会保留小数点的部分得到一个浮点数的结果。</p>
+<p>在python 3.x中/除法不再这么做了，对于整数之间的相除，结果也会是浮点数。</p>
+<p>而对于//除法，这种除法叫做floor除法，会对除法的结果自动进行一个floor操作，在python 2.x和python 3.x中是一致的。注意的是floor除法并不是舍弃小数部分，而是执行floor操作，如果要截取小数部分，那么需要使用math模块的trunc函数。</p>
+<p>个人还是喜欢py3这种方案，毕竟是从java转过来的，因此新定的代码都使用以下方案。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> division
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
+<span style="color:#ae81ff">0.5</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
+<span style="color:#ae81ff">0</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> trunc(<span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>)
+<span style="color:#ae81ff">0</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>
+<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+<span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> trunc(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>)
+<span style="color:#ae81ff">0</span>
+</code></pre></div><h2 id="heading-1">异常</h2>
+<p>在 Python 3 中处理异常也轻微的改变了，在 Python 3 中我们现在使用 as 作为关键词。</p>
+<p>捕获异常的语法由 <strong>except exc, var</strong> 改为 <strong>except exc as var</strong>。</p>
+<p>使用语法except (exc1, exc2) as var可以同时捕获多种类别的异常。 Python 2.6已经支持这两种语法。</p>
+<ul>
+<li>在2.x时代，所有类型的对象都是可以被直接抛出的，在3.x时代，只有继承自BaseException的对象才可以被抛出。</li>
+<li>2.x raise语句使用逗号将抛出对象类型和参数分开，3.x取消了这种奇葩的写法，直接调用构造函数抛出对象即可。</li>
+</ul>
+<p>这里倒没有异议了，本来就常见原来py2那种奇葩写法很奇怪，只使用py3的写法就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">try</span>:
+    <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">BaseException</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fdf</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">BaseException</span> <span style="color:#66d9ef">as</span> err:
+    <span style="color:#66d9ef">print</span>(err)
+</code></pre></div><h2 id="heading-2">八进制字面量表示</h2>
+<p>八进制数必须写成0o777，原来的形式0777不能用了；二进制必须写成0b111。</p>
+<p>新增了一个bin()函数用于将一个整数转换成二进制字串。 Python 2.6已经支持这两种语法。</p>
+<p>在Python 3.x中，表示八进制字面量的方式只有一种，就是0o1000。</p>
+<p>很简单，只使用py3支持的写法。</p>
+<h2 id="heading-3">不等运算符</h2>
+<p>Python 2.x中不等于有两种写法 != 和 &lt;&gt;。</p>
+<p>Python 3.x中去掉了&lt;&gt;, 只有!=一种写法，还好，我从来没有使用&lt;&gt;的习惯。</p>
+<h2 id="heading-4">数据类型</h2>
+<ul>
+<li>Py3.X去除了long类型，现在只有一种整型——int，但它的行为就像2.X版本的long</li>
+<li>新增了bytes类型，对应于2.X版本的八位串</li>
+</ul>
+<p>这里如果要进行类型判断，优先使用six模块提供的兼容功能。</p>
+<blockquote>
+<ul>
+<li>
+<p><code>six.class_types</code></p>
+<p>Possible class types. In Python 2, this encompasses old-style and new-style classes. In Python 3, this is just new-styles.</p>
+</li>
+<li>
+<p><code>six.integer_types</code></p>
+<p>Possible integer types. In Python 2, this is <code>long</code> and <code>int</code>, and in Python 3, just <code>int</code>.</p>
+</li>
+<li>
+<p><code>six.string_types</code></p>
+<p>Possible types for text data. This is <a href="https://docs.python.org/2/library/functions.html#basestring"><code>basestring()</code></a> in Python 2 and <code>str</code> in Python 3.</p>
+</li>
+<li>
+<p><code>six.text_type</code></p>
+<p>Type for representing (Unicode) textual data. This is <a href="https://docs.python.org/2/library/functions.html#unicode"><code>unicode()</code></a> in Python 2 and <code>str</code> in Python 3.</p>
+</li>
+<li>
+<p><code>six.binary_type</code></p>
+<p>Type for representing binary data. This is <code>str</code> in Python 2 and <code>bytes</code> in Python 3.</p>
+</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> six
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dispatch_types</span>(value):
+    <span style="color:#66d9ef">if</span> isinstance(value, six<span style="color:#f92672">.</span>integer_types):
+        handle_integer(value)
+    <span style="color:#66d9ef">elif</span> isinstance(value, six<span style="color:#f92672">.</span>class_types):
+        handle_class(value)
+    <span style="color:#66d9ef">elif</span> isinstance(value, six<span style="color:#f92672">.</span>string_types):
+        handle_string(value)
+</code></pre></div><h2 id="dict">dict的相关方法调整</h2>
+<p>dict的.keys()、.items 和.values()方法返回迭代器，而之前的iterkeys()等函数都被废弃。同时去掉的还有 dict.has_key()，用 in替代它吧。</p>
+<p>这里还是使用six模块提供的兼容功能。</p>
+<blockquote>
+<ul>
+<li>
+<p><code>six.iterkeys</code>(<em>dictionary</em>, *<em>*kwargs</em>)</p>
+<p>Returns an iterator over <em>dictionary</em>‘s keys. This replaces <code>dictionary.iterkeys()</code> on Python 2 and <code>dictionary.keys()</code> on Python 3. <em>kwargs</em> are passed through to the underlying method.</p>
+</li>
+<li>
+<p><code>six.itervalues</code>(<em>dictionary</em>, *<em>*kwargs</em>)</p>
+<p>Returns an iterator over <em>dictionary</em>‘s values. This replaces <code>dictionary.itervalues()</code> on Python 2 and <code>dictionary.values()</code> on Python 3. <em>kwargs</em> are passed through to the underlying method.</p>
+</li>
+<li>
+<p><code>six.iteritems</code>(<em>dictionary</em>, *<em>*kwargs</em>)</p>
+<p>Returns an iterator over <em>dictionary</em>‘s items. This replaces <code>dictionary.iteritems()</code> on Python 2 and <code>dictionary.items()</code> on Python 3. <em>kwargs</em> are passed through to the underlying method.</p>
+</li>
+<li>
+<p><code>six.iterlists</code>(<em>dictionary</em>, *<em>*kwargs</em>)</p>
+<p>Calls <code>dictionary.iterlists()</code> on Python 2 and <code>dictionary.lists()</code> on Python 3. No builtin Python mapping type has such a method; this method is intended for use with multi-valued dictionaries like <a href="http://werkzeug.pocoo.org/docs/datastructures/#werkzeug.datastructures.MultiDict">Werkzeug’s</a>.<em>kwargs</em> are passed through to the underlying method.</p>
+</li>
+<li>
+<p><code>six.viewkeys</code>(<em>dictionary</em>)</p>
+<p>Return a view over <em>dictionary</em>‘s keys. This replaces <a href="https://docs.python.org/2/library/stdtypes.html#dict.viewkeys"><code>dict.viewkeys()</code></a> on Python 2.7 and <a href="https://docs.python.org/3/library/stdtypes.html#dict.keys"><code>dict.keys()</code></a> on Python 3.</p>
+</li>
+<li>
+<p><code>six.viewvalues</code>(<em>dictionary</em>)</p>
+<p>Return a view over <em>dictionary</em>‘s values. This replaces <a href="https://docs.python.org/2/library/stdtypes.html#dict.viewvalues"><code>dict.viewvalues()</code></a> on Python 2.7 and <a href="https://docs.python.org/3/library/stdtypes.html#dict.values"><code>dict.values()</code></a> on Python 3.</p>
+</li>
+<li>
+<p><code>six.viewitems</code>(<em>dictionary</em>)</p>
+<p>Return a view over <em>dictionary</em>‘s items. This replaces <a href="https://docs.python.org/2/library/stdtypes.html#dict.viewitems"><code>dict.viewitems()</code></a> on Python 2.7 and <a href="https://docs.python.org/3/library/stdtypes.html#dict.items"><code>dict.items()</code></a> on Python 3.</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="heading-5">标准库及函数名称变更</h2>
+<p>py3重新组织了一些标准库及一些函数，为了保证在py2、py3下代码都工作正常，这里使用six模块提供的兼容功能。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> six.moves.cPickle <span style="color:#f92672">import</span> loads
+</code></pre></div><p>Supported renames:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Python 2 name</th>
+<th>Python 3 name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>builtins</code></td>
+<td><a href="https://docs.python.org/2/library/__builtin__.html#module-__builtin__"><code>__builtin__</code></a></td>
+<td><a href="https://docs.python.org/3/library/builtins.html#module-builtins"><code>builtins</code></a></td>
+</tr>
+<tr>
+<td><code>configparser</code></td>
+<td><a href="https://docs.python.org/2/library/configparser.html#module-ConfigParser"><code>ConfigParser</code></a></td>
+<td><a href="https://docs.python.org/3/library/configparser.html#module-configparser"><code>configparser</code></a></td>
+</tr>
+<tr>
+<td><code>copyreg</code></td>
+<td><a href="https://docs.python.org/2/library/copy_reg.html#module-copy_reg"><code>copy_reg</code></a></td>
+<td><a href="https://docs.python.org/3/library/copyreg.html#module-copyreg"><code>copyreg</code></a></td>
+</tr>
+<tr>
+<td><code>cPickle</code></td>
+<td><a href="https://docs.python.org/2/library/pickle.html#module-cPickle"><code>cPickle</code></a></td>
+<td><a href="https://docs.python.org/3/library/pickle.html#module-pickle"><code>pickle</code></a></td>
+</tr>
+<tr>
+<td><code>cStringIO</code></td>
+<td><a href="https://docs.python.org/2/library/stringio.html#cStringIO.StringIO"><code>cStringIO.StringIO()</code></a></td>
+<td><a href="https://docs.python.org/3/library/io.html#io.StringIO"><code>io.StringIO</code></a></td>
+</tr>
+<tr>
+<td><code>dbm_gnu</code></td>
+<td><code>gdbm</code></td>
+<td><code>dbm.gnu</code></td>
+</tr>
+<tr>
+<td><code>_dummy_thread</code></td>
+<td><a href="https://docs.python.org/2/library/dummy_thread.html#module-dummy_thread"><code>dummy_thread</code></a></td>
+<td><a href="https://docs.python.org/3/library/_dummy_thread.html#module-_dummy_thread"><code>_dummy_thread</code></a></td>
+</tr>
+<tr>
+<td><code>email_mime_multipart</code></td>
+<td><code>email.MIMEMultipart</code></td>
+<td><code>email.mime.multipart</code></td>
+</tr>
+<tr>
+<td><code>email_mime_nonmultipart</code></td>
+<td><code>email.MIMENonMultipart</code></td>
+<td><code>email.mime.nonmultipart</code></td>
+</tr>
+<tr>
+<td><code>email_mime_text</code></td>
+<td><code>email.MIMEText</code></td>
+<td><code>email.mime.text</code></td>
+</tr>
+<tr>
+<td><code>email_mime_base</code></td>
+<td><code>email.MIMEBase</code></td>
+<td><code>email.mime.base</code></td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td><a href="https://docs.python.org/2/library/itertools.html#itertools.ifilter"><code>itertools.ifilter()</code></a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#filter"><code>filter()</code></a></td>
+</tr>
+<tr>
+<td><code>filterfalse</code></td>
+<td><a href="https://docs.python.org/2/library/itertools.html#itertools.ifilterfalse"><code>itertools.ifilterfalse()</code></a></td>
+<td><a href="https://docs.python.org/3/library/itertools.html#itertools.filterfalse"><code>itertools.filterfalse()</code></a></td>
+</tr>
+<tr>
+<td><code>getcwd</code></td>
+<td><a href="https://docs.python.org/2/library/os.html#os.getcwdu"><code>os.getcwdu()</code></a></td>
+<td><a href="https://docs.python.org/3/library/os.html#os.getcwd"><code>os.getcwd()</code></a></td>
+</tr>
+<tr>
+<td><code>getcwdb</code></td>
+<td><a href="https://docs.python.org/2/library/os.html#os.getcwd"><code>os.getcwd()</code></a></td>
+<td><a href="https://docs.python.org/3/library/os.html#os.getcwdb"><code>os.getcwdb()</code></a></td>
+</tr>
+<tr>
+<td><code>http_cookiejar</code></td>
+<td><a href="https://docs.python.org/2/library/cookielib.html#module-cookielib"><code>cookielib</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.cookiejar.html#module-http.cookiejar"><code>http.cookiejar</code></a></td>
+</tr>
+<tr>
+<td><code>http_cookies</code></td>
+<td><a href="https://docs.python.org/2/library/cookie.html#module-Cookie"><code>Cookie</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.cookies.html#module-http.cookies"><code>http.cookies</code></a></td>
+</tr>
+<tr>
+<td><code>html_entities</code></td>
+<td><a href="https://docs.python.org/2/library/htmllib.html#module-htmlentitydefs"><code>htmlentitydefs</code></a></td>
+<td><a href="https://docs.python.org/3/library/html.entities.html#module-html.entities"><code>html.entities</code></a></td>
+</tr>
+<tr>
+<td><code>html_parser</code></td>
+<td><a href="https://docs.python.org/2/library/htmlparser.html#module-HTMLParser"><code>HTMLParser</code></a></td>
+<td><a href="https://docs.python.org/3/library/html.parser.html#module-html.parser"><code>html.parser</code></a></td>
+</tr>
+<tr>
+<td><code>http_client</code></td>
+<td><a href="https://docs.python.org/2/library/httplib.html#module-httplib"><code>httplib</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.client.html#module-http.client"><code>http.client</code></a></td>
+</tr>
+<tr>
+<td><code>BaseHTTPServer</code></td>
+<td><a href="https://docs.python.org/2/library/basehttpserver.html#module-BaseHTTPServer"><code>BaseHTTPServer</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.server.html#module-http.server"><code>http.server</code></a></td>
+</tr>
+<tr>
+<td><code>CGIHTTPServer</code></td>
+<td><a href="https://docs.python.org/2/library/cgihttpserver.html#module-CGIHTTPServer"><code>CGIHTTPServer</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.server.html#module-http.server"><code>http.server</code></a></td>
+</tr>
+<tr>
+<td><code>SimpleHTTPServer</code></td>
+<td><a href="https://docs.python.org/2/library/simplehttpserver.html#module-SimpleHTTPServer"><code>SimpleHTTPServer</code></a></td>
+<td><a href="https://docs.python.org/3/library/http.server.html#module-http.server"><code>http.server</code></a></td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#raw_input"><code>raw_input()</code></a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#input"><code>input()</code></a></td>
+</tr>
+<tr>
+<td><code>intern</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#intern"><code>intern()</code></a></td>
+<td><a href="https://docs.python.org/3/library/sys.html#sys.intern"><code>sys.intern()</code></a></td>
+</tr>
+<tr>
+<td><code>map</code></td>
+<td><a href="https://docs.python.org/2/library/itertools.html#itertools.imap"><code>itertools.imap()</code></a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#map"><code>map()</code></a></td>
+</tr>
+<tr>
+<td><code>queue</code></td>
+<td><a href="https://docs.python.org/2/library/queue.html#module-Queue"><code>Queue</code></a></td>
+<td><a href="https://docs.python.org/3/library/queue.html#module-queue"><code>queue</code></a></td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#xrange"><code>xrange()</code></a></td>
+<td><code>range</code></td>
+</tr>
+<tr>
+<td><code>reduce</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#reduce"><code>reduce()</code></a></td>
+<td><a href="https://docs.python.org/3/library/functools.html#functools.reduce"><code>functools.reduce()</code></a></td>
+</tr>
+<tr>
+<td><code>reload_module</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#reload"><code>reload()</code></a></td>
+<td><a href="https://docs.python.org/3/library/imp.html#imp.reload"><code>imp.reload()</code></a>, <a href="https://docs.python.org/3/library/importlib.html#importlib.reload"><code>importlib.reload()</code></a> on Python 3.4+</td>
+</tr>
+<tr>
+<td><code>reprlib</code></td>
+<td><code>repr</code></td>
+<td><a href="https://docs.python.org/3/library/reprlib.html#module-reprlib"><code>reprlib</code></a></td>
+</tr>
+<tr>
+<td><code>shlex_quote</code></td>
+<td><code>pipes.quote</code></td>
+<td><code>shlex.quote</code></td>
+</tr>
+<tr>
+<td><code>socketserver</code></td>
+<td><a href="https://docs.python.org/2/library/socketserver.html#module-SocketServer"><code>SocketServer</code></a></td>
+<td><a href="https://docs.python.org/3/library/socketserver.html#module-socketserver"><code>socketserver</code></a></td>
+</tr>
+<tr>
+<td><code>_thread</code></td>
+<td><a href="https://docs.python.org/2/library/thread.html#module-thread"><code>thread</code></a></td>
+<td><a href="https://docs.python.org/3/library/_thread.html#module-_thread"><code>_thread</code></a></td>
+</tr>
+<tr>
+<td><code>tkinter</code></td>
+<td><a href="https://docs.python.org/2/library/tkinter.html#module-Tkinter"><code>Tkinter</code></a></td>
+<td><a href="https://docs.python.org/3/library/tkinter.html#module-tkinter"><code>tkinter</code></a></td>
+</tr>
+<tr>
+<td><code>tkinter_dialog</code></td>
+<td><code>Dialog</code></td>
+<td><code>tkinter.dialog</code></td>
+</tr>
+<tr>
+<td><code>tkinter_filedialog</code></td>
+<td><code>FileDialog</code></td>
+<td><code>tkinter.FileDialog</code></td>
+</tr>
+<tr>
+<td><code>tkinter_scrolledtext</code></td>
+<td><a href="https://docs.python.org/2/library/scrolledtext.html#module-ScrolledText"><code>ScrolledText</code></a></td>
+<td><a href="https://docs.python.org/3/library/tkinter.scrolledtext.html#module-tkinter.scrolledtext"><code>tkinter.scrolledtext</code></a></td>
+</tr>
+<tr>
+<td><code>tkinter_simpledialog</code></td>
+<td><code>SimpleDialog</code></td>
+<td><code>tkinter.simpledialog</code></td>
+</tr>
+<tr>
+<td><code>tkinter_ttk</code></td>
+<td><a href="https://docs.python.org/2/library/ttk.html#module-ttk"><code>ttk</code></a></td>
+<td><a href="https://docs.python.org/3/library/tkinter.ttk.html#module-tkinter.ttk"><code>tkinter.ttk</code></a></td>
+</tr>
+<tr>
+<td><code>tkinter_tix</code></td>
+<td><a href="https://docs.python.org/2/library/tix.html#module-Tix"><code>Tix</code></a></td>
+<td><a href="https://docs.python.org/3/library/tkinter.tix.html#module-tkinter.tix"><code>tkinter.tix</code></a></td>
+</tr>
+<tr>
+<td><code>tkinter_constants</code></td>
+<td><code>Tkconstants</code></td>
+<td><code>tkinter.constants</code></td>
+</tr>
+<tr>
+<td><code>tkinter_dnd</code></td>
+<td><code>Tkdnd</code></td>
+<td><code>tkinter.dnd</code></td>
+</tr>
+<tr>
+<td><code>tkinter_colorchooser</code></td>
+<td><code>tkColorChooser</code></td>
+<td><code>tkinter.colorchooser</code></td>
+</tr>
+<tr>
+<td><code>tkinter_commondialog</code></td>
+<td><code>tkCommonDialog</code></td>
+<td><code>tkinter.commondialog</code></td>
+</tr>
+<tr>
+<td><code>tkinter_tkfiledialog</code></td>
+<td><code>tkFileDialog</code></td>
+<td><code>tkinter.filedialog</code></td>
+</tr>
+<tr>
+<td><code>tkinter_font</code></td>
+<td><code>tkFont</code></td>
+<td><code>tkinter.font</code></td>
+</tr>
+<tr>
+<td><code>tkinter_messagebox</code></td>
+<td><code>tkMessageBox</code></td>
+<td><code>tkinter.messagebox</code></td>
+</tr>
+<tr>
+<td><code>tkinter_tksimpledialog</code></td>
+<td><code>tkSimpleDialog</code></td>
+<td><code>tkinter.simpledialog</code></td>
+</tr>
+<tr>
+<td><code>urllib.parse</code></td>
+<td>See <a href="http://pythonhosted.org/six/#module-six.moves.urllib.parse"><code>six.moves.urllib.parse</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.parse.html#module-urllib.parse"><code>urllib.parse</code></a></td>
+</tr>
+<tr>
+<td><code>urllib.error</code></td>
+<td>See <a href="http://pythonhosted.org/six/#module-six.moves.urllib.error"><code>six.moves.urllib.error</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.error.html#module-urllib.error"><code>urllib.error</code></a></td>
+</tr>
+<tr>
+<td><code>urllib.request</code></td>
+<td>See <a href="http://pythonhosted.org/six/#module-six.moves.urllib.request"><code>six.moves.urllib.request</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.request.html#module-urllib.request"><code>urllib.request</code></a></td>
+</tr>
+<tr>
+<td><code>urllib.response</code></td>
+<td>See <a href="http://pythonhosted.org/six/#module-six.moves.urllib.response"><code>six.moves.urllib.response</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.request.html#module-urllib.response"><code>urllib.response</code></a></td>
+</tr>
+<tr>
+<td><code>urllib.robotparser</code></td>
+<td><a href="https://docs.python.org/2/library/robotparser.html#module-robotparser"><code>robotparser</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.robotparser.html#module-urllib.robotparser"><code>urllib.robotparser</code></a></td>
+</tr>
+<tr>
+<td><code>urllib_robotparser</code></td>
+<td><a href="https://docs.python.org/2/library/robotparser.html#module-robotparser"><code>robotparser</code></a></td>
+<td><a href="https://docs.python.org/3/library/urllib.robotparser.html#module-urllib.robotparser"><code>urllib.robotparser</code></a></td>
+</tr>
+<tr>
+<td><code>UserDict</code></td>
+<td><a href="https://docs.python.org/2/library/userdict.html#UserDict.UserDict"><code>UserDict.UserDict</code></a></td>
+<td><a href="https://docs.python.org/3/library/collections.html#collections.UserDict"><code>collections.UserDict</code></a></td>
+</tr>
+<tr>
+<td><code>UserList</code></td>
+<td><a href="https://docs.python.org/2/library/userdict.html#UserList.UserList"><code>UserList.UserList</code></a></td>
+<td><a href="https://docs.python.org/3/library/collections.html#collections.UserList"><code>collections.UserList</code></a></td>
+</tr>
+<tr>
+<td><code>UserString</code></td>
+<td><a href="https://docs.python.org/2/library/userdict.html#UserString.UserString"><code>UserString.UserString</code></a></td>
+<td><a href="https://docs.python.org/3/library/collections.html#collections.UserString"><code>collections.UserString</code></a></td>
+</tr>
+<tr>
+<td><code>winreg</code></td>
+<td><a href="https://docs.python.org/2/library/_winreg.html#module-_winreg"><code>_winreg</code></a></td>
+<td><a href="https://docs.python.org/3/library/winreg.html#module-winreg"><code>winreg</code></a></td>
+</tr>
+<tr>
+<td><code>xmlrpc_client</code></td>
+<td><a href="https://docs.python.org/2/library/xmlrpclib.html#module-xmlrpclib"><code>xmlrpclib</code></a></td>
+<td><a href="https://docs.python.org/3/library/xmlrpc.client.html#module-xmlrpc.client"><code>xmlrpc.client</code></a></td>
+</tr>
+<tr>
+<td><code>xmlrpc_server</code></td>
+<td><a href="https://docs.python.org/2/library/simplexmlrpcserver.html#module-SimpleXMLRPCServer"><code>SimpleXMLRPCServer</code></a></td>
+<td><a href="https://docs.python.org/3/library/xmlrpc.server.html#module-xmlrpc.server"><code>xmlrpc.server</code></a></td>
+</tr>
+<tr>
+<td><code>xrange</code></td>
+<td><a href="https://docs.python.org/2/library/functions.html#xrange"><code>xrange()</code></a></td>
+<td><code>range</code></td>
+</tr>
+<tr>
+<td><code>zip</code></td>
+<td><a href="https://docs.python.org/2/library/itertools.html#itertools.izip"><code>itertools.izip()</code></a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#zip"><code>zip()</code></a></td>
+</tr>
+<tr>
+<td><code>zip_longest</code></td>
+<td><a href="https://docs.python.org/2/library/itertools.html#itertools.izip_longest"><code>itertools.izip_longest()</code></a></td>
+<td><a href="https://docs.python.org/3/library/itertools.html#itertools.zip_longest"><code>itertools.zip_longest()</code></a></td>
+</tr>
+</tbody>
+</table>
+<p>这里用得比较多的是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> six.moves.configparser
+<span style="color:#f92672">import</span> six.moves.cPickle
+<span style="color:#f92672">import</span> six.moves.cStringIO
+<span style="color:#f92672">import</span> six.moves.filter
+<span style="color:#f92672">import</span> six.moves.filterfalse
+<span style="color:#f92672">import</span> six.moves.getcwd
+<span style="color:#f92672">import</span> six.moves.http_cookies
+<span style="color:#f92672">import</span> six.moves.html_entities
+<span style="color:#f92672">import</span> six.moves.html_parser
+<span style="color:#f92672">import</span> six.moves.http_client
+<span style="color:#f92672">import</span> six.moves.BaseHTTPServer
+<span style="color:#f92672">import</span> six.moves.CGIHTTPServer
+<span style="color:#f92672">import</span> six.moves.SimpleHTTPServer
+<span style="color:#f92672">import</span> six.moves.input
+<span style="color:#f92672">import</span> six.moves.map
+<span style="color:#f92672">import</span> six.moves.queue
+<span style="color:#f92672">import</span> six.moves.range
+<span style="color:#f92672">import</span> six.moves.reduce
+<span style="color:#f92672">import</span> six.moves.socketserver
+<span style="color:#f92672">import</span> six.moves.zip
+<span style="color:#f92672">import</span> six.moves.zip_longest
+<span style="color:#f92672">import</span> six.moves.urllib.parse
+<span style="color:#f92672">import</span> six.moves.urllib.error
+<span style="color:#f92672">import</span> six.moves.urllib.request
+<span style="color:#f92672">import</span> six.moves.urllib.response
+</code></pre></div><p>只有按这个方案导入其它模块，即可保证在py2、py3下都可正确导入模块，详细可参看<a href="http://pythonhosted.org/six/#module-six.moves">six模块的文档</a>。</p>
+<h2 id="heading-6">版本指示变量</h2>
+<p>最后如果在py2、py3下逻辑不一致，可使用版本指示变量。</p>
+<blockquote>
+<ul>
+<li>
+<p><code>six.PY2</code></p>
+<p>A boolean indicating if the code is running on Python 2.</p>
+</li>
+<li>
+<p><code>six.PY3</code></p>
+<p>A boolean indicating if the code is running on Python 3.</p>
+</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> six
+
+<span style="color:#66d9ef">if</span> six<span style="color:#f92672">.</span>PY2:
+    <span style="color:#75715e"># do some thing</span>
+    <span style="color:#66d9ef">pass</span>
+<span style="color:#66d9ef">elif</span> six<span style="color:#f92672">.</span>PY3:
+    <span style="color:#75715e"># do other thing</span>
+    <span style="color:#66d9ef">pass</span>
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-11-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">CentOS7部署k8s集群</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/">
+            <span class="next-text nav-default">Java开发小技巧_02</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>netty3与netty4的区别 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="netty3与netty4的区别" />
+<meta property="og:description" content="今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/10/netty3%E4%B8%8Enetty4%E7%9A%84%E5%8C%BA%E5%88%AB/" />
+<meta property="article:published_time" content="2016-10-31T01:40:00+08:00" />
+<meta property="article:modified_time" content="2016-10-31T01:40:00+08:00" />
+<meta itemprop="name" content="netty3与netty4的区别">
+<meta itemprop="description" content="今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要">
+<meta itemprop="datePublished" content="2016-10-31T01:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-10-31T01:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="4607">
+
+
+
+<meta itemprop="keywords" content="java,nio,netty," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="netty3与netty4的区别"/>
+<meta name="twitter:description" content="今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">netty3与netty4的区别</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-10-31 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4607 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">线程模型的变化</a>
+      <ul>
+        <li><a href="#netty-3x-">Netty 3.X 版本线程模型</a></li>
+        <li><a href="#netty-4x-">Netty 4.X 版本线程模型</a></li>
+        <li><a href="#heading-1">自己的进一步理解</a></li>
+      </ul>
+    </li>
+    <li><a href="#channelhandler">事件对象从ChannelHandler中消失了</a></li>
+    <li><a href="#4xnettychannelwriteflush">4.x的netty里Channel的write方法不再自动flush</a></li>
+    <li><a href="#heading-2">入站流量挂起</a></li>
+    <li><a href="#io">调度任意的任务到一个I/O线程里运行</a></li>
+    <li><a href="#attributemap">AttributeMap</a></li>
+    <li><a href="#channelfuturechannelfuturechannelpromise">ChannelFuture拆分为ChannelFuture和ChannelPromise</a></li>
+    <li><a href="#executionhandler">不再有ExecutionHandler</a></li>
+    <li><a href="#io-1">灵活的I/O线程分配</a></li>
+    <li><a href="#heading-3">简化的关闭</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天遇到一个人问我netty3与netty4有什么区别。因为我之前使用netty做过网络程序开发，心里还是有点谱的。很自然地就说到了一些主要区别</p>
+<ul>
+<li>一些术语的变化，如Upstream变为了Inbound，Downstream变为了Outbound</li>
+<li>netty3对每个读或写的操作，还会额外创建一个新的ChannelBuffer对象，这带来了很大的GC压力，为了缓解频繁申请回收Buffer时的GC压力，引入了池化的ByteBufs，当然在使用完Buffer后要注意需使用BufUtil.release释放。</li>
+</ul>
+<p>那人再问，还有其它区别吗？然后我就说不上来了，惭愧。</p>
+<p>回家查阅资料，终于将这个问题又深入理解了一次，这里记录一下以备忘。</p>
+<h2 id="heading">线程模型的变化</h2>
+<h3 id="netty-3x-">Netty 3.X 版本线程模型</h3>
+<p>Netty 3.X的I/O操作线程模型比较复杂，它的处理模型包括两部分：</p>
+<p>Inbound：主要包括链路建立事件、链路激活事件、读事件、I/O异常事件、链路关闭事件等；
+Outbound：主要包括写事件、连接事件、监听绑定事件、刷新事件等。
+我们首先分析下Inbound操作的线程模型：</p>
+<p><img src="/images/20161031/netty3_inbound.png" alt="netty3_inbound.png"></p>
+<p>从上图可以看出，Inbound操作的主要处理流程如下：</p>
+<ul>
+<li>I/O线程（Work线程）将消息从TCP缓冲区读取到SocketChannel的接收缓冲区中；</li>
+<li>由I/O线程负责生成相应的事件，触发事件向上执行，调度到ChannelPipeline中；</li>
+<li>I/O线程调度执行ChannelPipeline中Handler链的对应方法，直到业务实现的Last Handler;</li>
+<li>Last Handler将消息封装成Runnable，放入到业务线程池中执行，I/O线程返回，继续读/写等I/O操作；</li>
+<li>业务线程池从任务队列中弹出消息，并发执行业务逻辑。</li>
+</ul>
+<p>通过对Netty 3的Inbound操作进行分析我们可以看出，Inbound的Handler都是由Netty的I/O Work线程负责执行。</p>
+<p>下面我们继续分析Outbound操作的线程模型：</p>
+<p><img src="/images/20161031/netty3_outbound.png" alt="netty3_outbound.png"></p>
+<p>从上图可以看出，Outbound操作的主要处理流程如下：</p>
+<p>业务线程发起Channel Write操作，发送消息；</p>
+<ul>
+<li>Netty将写操作封装成写事件，触发事件向下传播；</li>
+<li>写事件被调度到ChannelPipeline中，由业务线程按照Handler Chain串行调用支持Downstream事件的Channel Handler;</li>
+<li>执行到系统最后一个ChannelHandler，将编码后的消息Push到发送队列中，业务线程返回；</li>
+<li>Netty的I/O线程从发送消息队列中取出消息，调用SocketChannel的write方法进行消息发送。</li>
+</ul>
+<h3 id="netty-4x-">Netty 4.X 版本线程模型</h3>
+<p>相比于Netty 3.X系列版本，Netty 4.X的I/O操作线程模型比较简答，它的原理图如下所示：</p>
+<p><img src="/images/20161031/netty4_inoutbound.png" alt="netty4_inoutbound.png"></p>
+<p>从上图可以看出，Outbound操作的主要处理流程如下：</p>
+<ul>
+<li>I/O线程NioEventLoop从SocketChannel中读取数据报，将ByteBuf投递到ChannelPipeline，触发ChannelRead事件；</li>
+<li>I/O线程NioEventLoop调用ChannelHandler链，直到将消息投递到业务线程，然后I/O线程返回，继续后续的读写操作；</li>
+<li>业务线程调用ChannelHandlerContext.write(Object msg)方法进行消息发送；</li>
+<li>如果是由业务线程发起的写操作，ChannelHandlerInvoker将发送消息封装成Task，放入到I/O线程NioEventLoop的任务队列中，由NioEventLoop在循环中统一调度和执行。放入任务队列之后，业务线程返回；</li>
+<li>I/O线程NioEventLoop调用ChannelHandler链，进行消息发送，处理Outbound事件，直到将消息放入发送队列，然后唤醒Selector，进而执行写操作。</li>
+</ul>
+<p>通过流程分析，我们发现Netty 4修改了线程模型，无论是Inbound还是Outbound操作，统一由I/O线程NioEventLoop调度执行。</p>
+<h3 id="heading-1">自己的进一步理解</h3>
+<p>上述这段对比分析摘自<a href="http://www.infoq.com/cn/articles/netty-version-upgrade-history-thread-part">这里</a>。说的已经比较清楚了，但我还是加上一些说明：</p>
+<ul>
+<li>netty4里第2步，<em>I/O线程NioEventLoop调用ChannelHandler链，直到将消息投递到业务线程</em>，这里netty并不直接将消息投递到业务线程，主要依赖于程序自行投递，一般方法无非是自行构造Task，将Task投递给自己的业务线程池。当然也可以在添加业务ChannelHandler时指定业务Handler运行所在的业务线程池，如下面的代码。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventExecutorGroup businessGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DefaultEventExecutorGroup<span style="color:#f92672">(</span>4<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup bossGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup workerGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+    ServerBootstrap b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerBootstrap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    b<span style="color:#f92672">.</span><span style="color:#a6e22e">group</span><span style="color:#f92672">(</span>bossGroup<span style="color:#f92672">,</span> workerGroup<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span>NioServerSocketChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">option</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">SO_REUSEADDR</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">TCP_NODELAY</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">ALLOCATOR</span><span style="color:#f92672">,</span> PooledByteBufAllocator<span style="color:#f92672">.</span><span style="color:#a6e22e">DEFAULT</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">handler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CheckAcceptHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childHandler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ChannelInitializer<span style="color:#f92672">&lt;</span>SocketChannel<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initChannel</span><span style="color:#f92672">(</span>SocketChannel ch<span style="color:#f92672">)</span>
+                        <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;decoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineBasedFrameDecoder<span style="color:#f92672">(</span>4096<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;stringDecoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> StringDecoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;lineEncoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineEncoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#75715e">//指定了业务handler运行所在的业务线程池
+</span><span style="color:#75715e"></span>                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>businessGroup<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;logicHandler&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ServerLogicalHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> listenPort <span style="color:#f92672">=</span> 8888<span style="color:#f92672">;</span>
+    b<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>listenPort<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li>如果原来的程序逻辑并没有使用单独的业务线程池的话，netty3与netty4在线程模型上就看不到变更了。当然非常不建议这么干，直接使用IO线程处理业务逻辑会极大地影响网络程序的处理性能。</li>
+<li>netty3与netty4在线程模型上的变更，看着影响并不大，但其实会造成很多其它的问题，参见<a href="http://www.infoq.com/cn/articles/netty-version-upgrade-history-thread-part">这里</a>提到的4个问题，这些问题产生的根本原因均是由于线程模型发生变化造成的。</li>
+</ul>
+<h2 id="channelhandler">事件对象从ChannelHandler中消失了</h2>
+<p>在3.x时代，所有的I/O操作都会创建一个新的ChannelEvent对象，如下面的API</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleUpstream</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelEvent e<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleDownstream</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelEvent e<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception<span style="color:#f92672">;</span>
+</code></pre></div><p>而netty4.x里，为了避免频繁创建与回收ChannelEvent对象所造成的GC压力，上述两个处理所有类型事件的接口被改成了多个接口。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelRegistered</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelUnregistered</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelActive</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelInactive</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelRead</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> Object message<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> SocketAddress localAddress<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span>
+        ChannelHandlerContext ctx<span style="color:#f92672">,</span> SocketAddress remoteAddress<span style="color:#f92672">,</span>
+        SocketAddress localAddress<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">disconnect</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">close</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">deregister</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> Object message<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">flush</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>ChannelHandlerContext类也被修改来反映上述提到的变化:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Before:
+</span><span style="color:#75715e"></span>ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">sendUpstream</span><span style="color:#f92672">(</span>evt<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// After:
+</span><span style="color:#75715e"></span>ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">fireChannelRead</span><span style="color:#f92672">(</span>receivedMessage<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>如果开发者有特殊需求，确实需要监听自己的事件类型，ChannelHandler也提供了一个处理器方法叫做userEventTriggered()。发送自定义事件类型可参考<code>io.netty.handler.timeout.IdleStateHandler</code>中发送<code>IdleStateEvent</code>的代码。处理自定义事件的代码如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">userEventTriggered</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> Object evt<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>evt <span style="color:#66d9ef">instanceof</span> IdleStateEvent<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        IdleStateEvent event <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>IdleStateEvent<span style="color:#f92672">)</span> evt<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">state</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>IdleState<span style="color:#f92672">.</span><span style="color:#a6e22e">READER_IDLE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;READER_IDLE&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">// 超时关闭channel
+</span><span style="color:#75715e"></span>            ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">state</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>IdleState<span style="color:#f92672">.</span><span style="color:#a6e22e">WRITER_IDLE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;WRITER_IDLE&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">state</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>IdleState<span style="color:#f92672">.</span><span style="color:#a6e22e">ALL_IDLE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ALL_IDLE&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">// 发送心跳
+</span><span style="color:#75715e"></span>            ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ping\n&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">userEventTriggered</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">,</span> evt<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="4xnettychannelwriteflush">4.x的netty里Channel的write方法不再自动flush</h2>
+<p>3.x的netty里Channel的write方法会自动flush, 而netty4.x里不会了，这样程序员可以按照业务逻辑write响应，最后一次flush。但千万要记住最后必须flush了。当然也可以直接用writeAndFlush方法。</p>
+<h2 id="heading-2">入站流量挂起</h2>
+<p>3.x有一个由Channel.setReadable(boolean)提供的不是很明显的入站流量挂起机制。它引入了在ChannelHandler之间的复杂交互操作，同时处理器由于不正确实现而很容易互相干扰。
+4.x里，新的名为read()的出站操作增加了。如果你使用Channel.config().setAutoRead(false)来关闭默认的auto-read标志，Netty不会读入任何东西，直到你显式地调用read()操作。一旦你发布的read()操作完成，同时通道再次停止读，一个名为channelReadComplete()的入站事件会触发一遍你能够重新发布另外的read()操作。你同样也可以拦截read()操作来执行更多高级的流量控制。</p>
+<p>如下面的代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelActive</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//连接建立后，设置为不自动读入站流量
+</span><span style="color:#75715e"></span>    ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">config</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setAutoRead</span><span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channelActive</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelReadComplete</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//这里可根据条件，决定是否再读一次
+</span><span style="color:#75715e"></span>    ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channelReadComplete</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="io">调度任意的任务到一个I/O线程里运行</h2>
+<p>当一个Channel被注册到EventLoopGroup时，Channel实际上是注册到由EventLoopGroup管理EventLoop中的一个。在4.x里，EventLoop实现了java.utilconcurrent.ScheduledExecutorService接口。这意味着用户可以在一个用户通道归属的I/O线程里执行或调度一个任意的Runnable或Callable。随着新的娘好定义的线程模型的到来（稍后会介绍），它变得极其容易地编写一个线程安全的处理器。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyHandler</span> <span style="color:#66d9ef">extends</span> ChannelOutboundHandlerAdapter <span style="color:#f92672">{</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">flush</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> ChannelFuture f<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">flush</span><span style="color:#f92672">(</span>f<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// Schedule a write timeout.
+</span><span style="color:#75715e"></span>        ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">executor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">schedule</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> MyWriteTimeoutTask<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> 30<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="attributemap">AttributeMap</h2>
+<p>在4.x里，一个名为AttributeMap的新接口被加入了，它被Channel和ChannelHandlerContext继承。作为替代，ChannelLocal和Channel.attachment被移除。这些属性会在他们关联的Channel被垃圾回收的同时回收。这个确实比原来方便不少。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyHandler</span> <span style="color:#66d9ef">extends</span> ChannelInboundHandlerAdapter<span style="color:#f92672">&lt;</span>MyMessage<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> AttributeKey<span style="color:#f92672">&lt;</span>MyState<span style="color:#f92672">&gt;</span> STATE <span style="color:#f92672">=</span>
+            <span style="color:#66d9ef">new</span> AttributeKey<span style="color:#f92672">&lt;</span>MyState<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;MyHandler.state&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">channelRegistered</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">attr</span><span style="color:#f92672">(</span>STATE<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> MyState<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">fireChannelRegistered</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">messageReceived</span><span style="color:#f92672">(</span>ChannelHandlerContext ctx<span style="color:#f92672">,</span> MyMessage msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        MyState state <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">attr</span><span style="color:#f92672">(</span>STATE<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="channelfuturechannelfuturechannelpromise">ChannelFuture拆分为ChannelFuture和ChannelPromise</h2>
+<p>在4.x里，ChannelFuture已经被拆分为ChannelFuture和ChannelPromise了。这不仅仅是让异步操作里的生产者和消费者间的约定更明显，同样也是得在使用从链中返回的ChannelFuture更加安全，因为ChannelFuture的状态是不能改变的。
+由于这个编号，一些方法现在都采用ChannelPromise而不是ChannelFuture来改变它的状态。两者的核心区别是ChannelFuture的状态是不可改变的，而ChannelPromise可以。</p>
+<p>如下面的代码</p>
+<pre><code>@Override
+public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+    if (timeoutNanos &gt; 0) {
+        promise = promise.unvoid();
+        scheduleTimeout(ctx, promise);
+    }
+    //下面的方法会改变promise的状态
+    ctx.write(msg, promise);
+}
+</code></pre><h2 id="executionhandler">不再有ExecutionHandler</h2>
+<p>在4.x里，不再有ExecutionHandler，而是提供DefaultEventExecutorGroup，可以在添加业务ChannelHandler时指定业务Handler运行所在的业务线程池，如下面的代码。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventExecutorGroup businessGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DefaultEventExecutorGroup<span style="color:#f92672">(</span>4<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup bossGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup workerGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+    ServerBootstrap b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerBootstrap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    b<span style="color:#f92672">.</span><span style="color:#a6e22e">group</span><span style="color:#f92672">(</span>bossGroup<span style="color:#f92672">,</span> workerGroup<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span>NioServerSocketChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">option</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">SO_REUSEADDR</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">TCP_NODELAY</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">ALLOCATOR</span><span style="color:#f92672">,</span> PooledByteBufAllocator<span style="color:#f92672">.</span><span style="color:#a6e22e">DEFAULT</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">handler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CheckAcceptHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">childHandler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ChannelInitializer<span style="color:#f92672">&lt;</span>SocketChannel<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initChannel</span><span style="color:#f92672">(</span>SocketChannel ch<span style="color:#f92672">)</span>
+                        <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;decoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineBasedFrameDecoder<span style="color:#f92672">(</span>4096<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;stringDecoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> StringDecoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;lineEncoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineEncoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#75715e">//指定了业务handler运行所在的业务线程池
+</span><span style="color:#75715e"></span>                    ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>businessGroup<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;logicHandler&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ServerLogicalHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> listenPort <span style="color:#f92672">=</span> 8888<span style="color:#f92672">;</span>
+    b<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>listenPort<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="io-1">灵活的I/O线程分配</h2>
+<ul>
+<li>在4.x里，能够从一个已存在的jdk套接字上创建一个Channel</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channels</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketChannel</span> mySocket <span style="color:#f92672">=</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channels</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketChannel</span><span style="color:#f92672">.</span><span style="color:#a6e22e">open</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// Perform some blocking operation here.
+</span><span style="color:#75715e"></span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e">// Netty takes over.
+</span><span style="color:#75715e"></span>SocketChannel ch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioSocketChannel<span style="color:#f92672">(</span>mySocket<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+EventLoopGroup group <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+group<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>ch<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>在4.x里，能够取消注册和重新注册一个Channel从/到一个I/O线程。例如，你能够利用Netty提供的高层次无阻塞I/O的优势来解决复杂的协议，然后取消注册Channel并且切换到阻塞模式来在可能的最大吞吐量下传输一个文件。当然，它能够再次注册已经取消了注册的Channel。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channels</span><span style="color:#f92672">.</span><span style="color:#a6e22e">FileChannel</span> myFile <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channels</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketChannel</span> mySocket <span style="color:#f92672">=</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channels</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketChannel</span><span style="color:#f92672">.</span><span style="color:#a6e22e">open</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// Perform some blocking operation here.
+</span><span style="color:#75715e"></span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e">// Netty takes over.
+</span><span style="color:#75715e"></span>SocketChannel ch <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioSocketChannel<span style="color:#f92672">(</span>mySocket<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+EventLoopGroup group <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+group<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>ch<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e">// Deregister from Netty.
+</span><span style="color:#75715e"></span>ch<span style="color:#f92672">.</span><span style="color:#a6e22e">deregister</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// Perform some blocking operation here.
+</span><span style="color:#75715e"></span>mySocket<span style="color:#f92672">.</span><span style="color:#a6e22e">configureBlocking</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+myFile<span style="color:#f92672">.</span><span style="color:#a6e22e">transferFrom</span><span style="color:#f92672">(</span>mySocket<span style="color:#f92672">,</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// Register back again to another event loop group.
+</span><span style="color:#75715e"></span>EventLoopGroup anotherGroup <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+anotherGroup<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>ch<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h2 id="heading-3">简化的关闭</h2>
+<p>在4.x里，releaseExternalResources()不必再用了。你可以通过调用EventLoopGroup.shutdown()直接地关闭所有打开的连接同时使所有I/O线程停止，就像你使用java.util.concurrent.ExecutorService.shutdown()关闭你的线程池一样。</p>
+<h2 id="heading-4">参考</h2>
+<p><code>http://www.infoq.com/cn/articles/netty-version-upgrade-history-thread-part</code>
+<code>https://www.oschina.net/translate/netty-4-0-new-and-noteworthy</code>
+<code>https://www.oschina.net/question/139577_146101</code>
+<code>http://netty.io/wiki/new-and-noteworthy-in-4.0.html</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-10-31</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+          <a href="/tags/netty/">netty</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/10/maven%E9%98%BF%E9%87%8C%E4%BA%91%E4%BB%93%E5%BA%93%E9%95%9C%E5%83%8F/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">maven阿里云仓库镜像</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/10/innodb%E4%B8%8Emyisam%E7%9A%84%E5%8C%BA%E5%88%AB/">
+            <span class="next-text nav-default">InnoDB与MyISAM的区别</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

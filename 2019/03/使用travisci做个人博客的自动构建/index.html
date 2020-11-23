@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用TravisCI做个人博客的自动构建 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用TravisCI做个人博客的自动构建" />
+<meta property="og:description" content="今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/" />
+<meta property="article:published_time" content="2019-03-10T10:30:00+08:00" />
+<meta property="article:modified_time" content="2019-03-10T10:30:00+08:00" />
+<meta itemprop="name" content="使用TravisCI做个人博客的自动构建">
+<meta itemprop="description" content="今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化">
+<meta itemprop="datePublished" content="2019-03-10T10:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-10T10:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="1347">
+
+
+
+<meta itemprop="keywords" content="linux,TravisCI," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用TravisCI做个人博客的自动构建"/>
+<meta name="twitter:description" content="今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用TravisCI做个人博客的自动构建</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1347 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">现状</a></li>
+    <li><a href="#heading-1">改进</a></li>
+    <li><a href="#heading-2">成果</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化一下。</p>
+<h2 id="heading">现状</h2>
+<p>博客是基于hugo构建的，构建过程可参考<a href="https://jeremyxu2010.github.io/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/">参考</a>，我基本每隔一段时间会写一篇markdown格式的博文。本来编译部署还是比较简单的，不过有段时间github在国内访问比较慢，于是想到做一个镜像站，因而编译部署过程稍微复杂一点了，我写了个脚本专门搞定这个事。</p>
+<p><code>deploy.sh</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>echo -e <span style="color:#e6db74">&#34;\033[0;32mDeploying updates to Server...\033[0m&#34;</span>
+
+mkdir -p public_gitee
+hugo --baseURL https://jeremy-xu.oschina.io/ -d public_gitee
+cd public_gitee
+git init
+git add .
+msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+git remote add origin git@gitee.com:jeremy-xu/jeremy-xu.git
+git push --force origin master:master
+cd ..
+
+mkdir -p public_github
+hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
+cd public_github
+git init
+git add .
+msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+git remote add origin git@github.com:jeremyxu2010/jeremyxu2010.github.io.git
+git push --force origin master:master
+cd ..
+</code></pre></div><p>整个还是比较简单的，就是分别编译两个站点的静态页面文件，分别推送到不同的git仓库里去。</p>
+<p>但在用的过程发现一些问题：</p>
+<ol>
+<li>换一台新电脑时，就是写个markdown文档，最好要部署，还得在本机安装hugo这类工具</li>
+<li>换一台新电脑时，需要在重新配置该电脑到github.com、gitee.com的SSH Keys</li>
+</ol>
+<h2 id="heading-1">改进</h2>
+<p>有了以上缺陷，于是就想着是不是可以在云上自动构建部署，现在这类专门作CI的解决方案还挺多的。看到github上有不少现在都是用TravisCI作自动构建的，于是我也选择了这个。</p>
+<p>在网上很轻松找到一个<a href="https://axdlog.com/zh/2018/using-hugo-and-travis-ci-to-deploy-blog-to-github-pages-automatically/">范例</a>，我参考它就快速写了一个。</p>
+<p><code>.travis.yaml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># https://docs.travis-ci.com/user/deployment/pages/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/reference/xenial/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/languages/go/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/customizing-the-build/</span>
+
+dist: xenial
+language: go
+go:
+  - <span style="color:#ae81ff">1.11</span>.x
+env:
+  - GO111MODULE=on
+cache:
+  directories:
+  - <span style="color:#e6db74">&#34;$HOME/.cache/go-build&#34;</span>
+  - <span style="color:#e6db74">&#34;$HOME/gopath/pkg/mod&#34;</span>
+<span style="color:#75715e"># before_install</span>
+<span style="color:#75715e"># install - install any dependencies required</span>
+install:
+- go get github.com/gohugoio/hugo
+before_script:
+- mkdir -p public_github <span style="color:#ae81ff">2</span>&gt; /dev/<span style="color:#66d9ef">null</span>
+<span style="color:#75715e"># script - run the build script</span>
+script:
+- hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
+deploy:
+- provider: pages
+  skip-cleanup: <span style="color:#66d9ef">true</span>
+  github-token: <span style="color:#e6db74">&#34;$GITHUB_TOKEN&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  email: <span style="color:#e6db74">&#34;$GITHUB_EMAIL&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  name: <span style="color:#e6db74">&#34;$GITHUB_USERNAME&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  github-url: github.com
+  repo: <span style="color:#e6db74">&#34;$GITHUB_USERNAME/$GITHUB_USERNAME.github.io&#34;</span>
+  target_branch: master
+  verbose: <span style="color:#66d9ef">true</span>
+  keep-history: <span style="color:#66d9ef">false</span>
+  local-dir: public_github
+  on:
+    branch: master
+</code></pre></div><p>这部署单个git站点确实没什么问题了，可我还想顺便把gitee也部署了。</p>
+<p>于是很自然的是像下面这样改一下。</p>
+<p><code>.travis.yaml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># https://docs.travis-ci.com/user/deployment/pages/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/reference/xenial/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/languages/go/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/customizing-the-build/</span>
+
+dist: xenial
+language: go
+go:
+  - <span style="color:#ae81ff">1.11</span>.x
+env:
+  - GO111MODULE=on
+cache:
+  directories:
+  - <span style="color:#e6db74">&#34;$HOME/.cache/go-build&#34;</span>
+  - <span style="color:#e6db74">&#34;$HOME/gopath/pkg/mod&#34;</span>
+<span style="color:#75715e"># before_install</span>
+<span style="color:#75715e"># install - install any dependencies required</span>
+install:
+- go get github.com/gohugoio/hugo
+before_script:
+- mkdir -p public_github <span style="color:#ae81ff">2</span>&gt; /dev/<span style="color:#66d9ef">null</span>
+- mkdir -p public_gitee <span style="color:#ae81ff">2</span>&gt; /dev/<span style="color:#66d9ef">null</span>
+<span style="color:#75715e"># script - run the build script</span>
+script:
+- hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
+- hugo --baseURL https://jeremy-xu.github.io/ -d public_gitee
+deploy:
+- provider: pages
+  skip-cleanup: <span style="color:#66d9ef">true</span>
+  github-token: <span style="color:#e6db74">&#34;$GITHUB_TOKEN&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  email: <span style="color:#e6db74">&#34;$GITHUB_EMAIL&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  name: <span style="color:#e6db74">&#34;$GITHUB_USERNAME&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  github-url: github.com
+  repo: <span style="color:#e6db74">&#34;$GITHUB_USERNAME/$GITHUB_USERNAME.github.io&#34;</span>
+  target_branch: master
+  verbose: <span style="color:#66d9ef">true</span>
+  keep-history: <span style="color:#66d9ef">false</span>
+  local-dir: public_github
+  on:
+    branch: master
+- provider: pages
+  skip-cleanup: <span style="color:#66d9ef">true</span>
+  github-token: <span style="color:#e6db74">&#34;$GITEE_TOKEN&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  email: <span style="color:#e6db74">&#34;$GITEE_EMAIL&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  name: <span style="color:#e6db74">&#34;$GITEE_USERNAME&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  github-url: gitee.com
+  repo: <span style="color:#e6db74">&#34;$GITEE_USERNAME/$GITEE_USERNAME&#34;</span>
+  target_branch: master
+  verbose: <span style="color:#66d9ef">true</span>
+  keep-history: <span style="color:#66d9ef">false</span>
+  local-dir: public_gitee
+  on:
+    branch: master
+</code></pre></div><p>可惜这样花报错，好像是<a href="https://docs.travis-ci.com/user/deployment/pages/">github-pages的deploy provider</a>与gitee的<a href="https://gitee.com/profile/personal_access_tokens">私人令牌</a>兼容性不太好，只能作罢。</p>
+<p>想了下，还是决定gitee就用脚本部署吧，刚好travis有<a href="https://docs.travis-ci.com/user/deployment/script">script的deploy provider</a>。</p>
+<p>最终修改成下面的样子。</p>
+<p><code>.travis.yaml</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># https://docs.travis-ci.com/user/deployment/pages/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/reference/xenial/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/languages/go/</span>
+<span style="color:#75715e"># https://docs.travis-ci.com/user/customizing-the-build/</span>
+
+dist: xenial
+language: go
+go:
+  - <span style="color:#ae81ff">1.11</span>.x
+env:
+  - GO111MODULE=on
+cache:
+  directories:
+  - <span style="color:#e6db74">&#34;$HOME/.cache/go-build&#34;</span>
+  - <span style="color:#e6db74">&#34;$HOME/gopath/pkg/mod&#34;</span>
+before_install:
+- openssl aes<span style="color:#ae81ff">-256</span>-cbc -K $encrypted_e5acc89010f1_key -iv $encrypted_e5acc89010f1_iv -in .travis/travis.key.enc -out ~/.ssh/id_rsa -d
+- chmod <span style="color:#ae81ff">600</span> ~/.ssh/id_rsa
+<span style="color:#75715e"># install - install any dependencies required</span>
+install:
+- go get github.com/gohugoio/hugo
+before_script:
+- mkdir -p public_github <span style="color:#ae81ff">2</span>&gt; /dev/<span style="color:#66d9ef">null</span>
+- mkdir -p public_gitee <span style="color:#ae81ff">2</span>&gt; /dev/<span style="color:#66d9ef">null</span>
+<span style="color:#75715e"># script - run the build script</span>
+script:
+- hugo --baseURL https://jeremyxu2010.github.io/ -d public_github
+- hugo --baseURL https://jeremy-xu.github.io/ -d public_gitee
+deploy:
+- provider: pages
+  skip-cleanup: <span style="color:#66d9ef">true</span>
+  github-token: <span style="color:#e6db74">&#34;$GITHUB_TOKEN&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  email: <span style="color:#e6db74">&#34;$GITHUB_EMAIL&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  name: <span style="color:#e6db74">&#34;$GITHUB_USERNAME&#34;</span> <span style="color:#75715e"># Set in travis-ci.org dashboard, marked secure</span>
+  repo: <span style="color:#e6db74">&#34;$GITHUB_USERNAME/$GITHUB_USERNAME.github.io&#34;</span>
+  target_branch: master
+  verbose: <span style="color:#66d9ef">true</span>
+  keep-history: <span style="color:#66d9ef">false</span>
+  local-dir: public_github
+  on:
+    branch: master
+- provider: script
+  skip-cleanup: <span style="color:#66d9ef">true</span>
+  script: bash .travis/deploy_to_gitee.sh
+  on:
+    branch: master
+addons:
+  ssh_known_hosts:
+  - github.com
+  - gitee.com
+</code></pre></div><p><code>deploy_to_gitee.sh</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>cd public_gitee
+git config user.name <span style="color:#e6db74">&#34;Jeremy Xu&#34;</span>
+git config user.email <span style="color:#e6db74">&#34;xxxx@gmail.com&#34;</span>
+git init
+git add .
+msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+git remote add origin git@gitee.com:jeremy-xu/jeremy-xu.git
+git push --force origin master:master
+cd ..
+</code></pre></div><p>注意，这里为了保护gitee的SSH Keys，参考<a href="https://zzde.me/2018/auto-deploy-hexo-blog-with-traivs-ci/">这里</a>采用了Travis加密了SSH Key文件。</p>
+<h2 id="heading-2">成果</h2>
+<p>以后可以不再受工具、环境的限制的限制，随时写篇markdown文推到github上的<a href="https://github.com/jeremyxu2010/blog_source">blog_source</a>项目就可以了。github本身提供了直接新建文件、编辑文件的功能，甚至都可以直接在github站点上编辑就可以了，太酷了。</p>
+<h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://axdlog.com/zh/2018/using-hugo-and-travis-ci-to-deploy-blog-to-github-pages-automatically/">https://axdlog.com/zh/2018/using-hugo-and-travis-ci-to-deploy-blog-to-github-pages-automatically/</a></li>
+<li><a href="https://docs.travis-ci.com/user/deployment">https://docs.travis-ci.com/user/deployment</a></li>
+<li><a href="https://docs.travis-ci.com/user/deployment/script">https://docs.travis-ci.com/user/deployment/script</a></li>
+<li><a href="https://docs.travis-ci.com/user/deployment/pages/">https://docs.travis-ci.com/user/deployment/pages/</a></li>
+<li><a href="https://restic.net/blog/2018-09-02/travis-build-cache">https://restic.net/blog/2018-09-02/travis-build-cache</a></li>
+<li><a href="https://zzde.me/2018/auto-deploy-hexo-blog-with-traivs-ci/">https://zzde.me/2018/auto-deploy-hexo-blog-with-traivs-ci/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-03-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/travisci/">TravisCI</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/03/%E5%9C%A8%E7%BA%BF%E6%96%87%E6%A1%A3%E7%94%B5%E5%AD%90%E4%B9%A6%E5%8C%96/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">在线文档电子书化</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/">
+            <span class="next-text nav-default">使用docker in docker</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

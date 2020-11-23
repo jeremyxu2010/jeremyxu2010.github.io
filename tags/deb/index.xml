@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>deb on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/deb/</link>
+    <description>Recent content in deb on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 20 Sep 2019 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/deb/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>编译arm64平台的软件包</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</guid>
+      <description>本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片</description>
+    </item>
+    
+  </channel>
+</rss>

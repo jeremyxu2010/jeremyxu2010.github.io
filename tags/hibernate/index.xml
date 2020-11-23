@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hibernate on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/hibernate/</link>
+    <description>Recent content in hibernate on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 13 Feb 2017 20:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/hibernate/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>hibernate查询的一些优化写法</title>
+      <link>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</link>
+      <pubDate>Mon, 13 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/</guid>
+      <description>项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出</description>
+    </item>
+    
+    <item>
+      <title>两种获取hibernate会话的区别</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Thu, 09 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>今天在工作中，发现用Hibernate实现的DAO类中存在两种获取hibernate会话的方式，如下： @Repository(&amp;#34;demoDao&amp;#34;) public class DemoDaoImpl extends HibernateDaoSupport implements DemoDao{ //通过getSess</description>
+    </item>
+    
+    <item>
+      <title>Hibernate里使用SQLQuery</title>
+      <link>https://jeremyxu2010.github.io/2017/01/hibernate%E9%87%8C%E4%BD%BF%E7%94%A8sqlquery/</link>
+      <pubDate>Fri, 20 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/hibernate%E9%87%8C%E4%BD%BF%E7%94%A8sqlquery/</guid>
+      <description>最近在做一个老旧项目，项目后台使用了hibernate。以前虽说也用过hibernate，但用得不够深入，一般最多两个表关联查询一下，比较简</description>
+    </item>
+    
+  </channel>
+</rss>

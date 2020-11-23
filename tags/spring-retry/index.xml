@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>spring-retry on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/spring-retry/</link>
+    <description>Recent content in spring-retry on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 03 Sep 2017 23:38:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/spring-retry/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java开发小技巧</title>
+      <link>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/</guid>
+      <description>Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提</description>
+    </item>
+    
+  </channel>
+</rss>

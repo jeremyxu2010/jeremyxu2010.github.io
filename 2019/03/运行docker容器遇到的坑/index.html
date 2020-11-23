@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>运行docker容器遇到的坑 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="运行docker容器遇到的坑" />
+<meta property="og:description" content="今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/" />
+<meta property="article:published_time" content="2019-03-11T00:14:00+08:00" />
+<meta property="article:modified_time" content="2019-03-11T00:14:00+08:00" />
+<meta itemprop="name" content="运行docker容器遇到的坑">
+<meta itemprop="description" content="今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p">
+<meta itemprop="datePublished" content="2019-03-11T00:14:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-11T00:14:00&#43;08:00" />
+<meta itemprop="wordCount" content="460">
+
+
+
+<meta itemprop="keywords" content="docker,consul,zipkin," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="运行docker容器遇到的坑"/>
+<meta name="twitter:description" content="今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">运行docker容器遇到的坑</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-11 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 460 字 </span>
+        <span class="more-meta"> 预计阅读 1 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天工作中，需要在本机启动consul、zipkin两个容器，参考<a href="https://hub.docker.com/_/consul?tab=description">docker</a>和<a href="https://hub.docker.com/r/openzipkin/zipkin">zipkin</a>两个镜像的说明，很自然地敲出了以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d -p 8500:8500 --name<span style="color:#f92672">=</span>dev-consul -e CONSUL_BIND_INTERFACE<span style="color:#f92672">=</span>eth0 consul agent -dev -ui
+docker run -d -p 9411:9411 openzipkin/zipkin
+</code></pre></div><p>然后用浏览器去访问<a href="http://127.0.0.1:8500">http://127.0.0.1:8500</a>和<a href="http://127.0.0.1:9411">http://127.0.0.1:9411</a>，结果发现竟然不能访问。</p>
+<p>研究了好半天终于找到原因了。</p>
+<p>consul在docker容器里运行的正确姿势：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d -p 8500:8500 --name<span style="color:#f92672">=</span>dev-consul -e CONSUL_BIND_INTERFACE<span style="color:#f92672">=</span>eth0 consul agent -dev -ui -client 0.0.0.0
+</code></pre></div><p>关键是要加一个<code>-client</code>参数，<a href="https://www.consul.io/docs/agent/options.html#_client">这个</a>在官方文档上有说明的：</p>
+<blockquote>
+<p><a href="https://www.consul.io/docs/agent/options.html#_client"><code>-client</code></a> - The address to which Consul will bind client interfaces, including the HTTP and DNS servers. By default, this is &ldquo;127.0.0.1&rdquo;, allowing only loopback connections. In Consul 1.0 and later this can be set to a space-separated list of addresses to bind to, or a <a href="https://godoc.org/github.com/hashicorp/go-sockaddr/template">go-sockaddr</a> template that can potentially resolve to multiple addresses.</p>
+</blockquote>
+<p>因为容器运行时是使用<code>-p</code>参数把容器命名空间里的端口映射出来的，因此在容器里运行的程序监听地址必须绑定到0.0.0.0，如果只绑定到127.0.0.1，这样的端口没法映射出来。</p>
+<p>zipkin在docker容器里运行的正确姿势：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d -p 9411:9411 openzipkin/zipkin:2.12.3
+</code></pre></div><p>关键是要指定镜像的版本为2.12.3，<a href="https://hub.docker.com/r/openzipkin/zipkin/tags">最新的版本2.12.5或latest</a>是前4天发布的，存在严重的bug，汗！！！</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-03-11</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/consul/">consul</a>
+          
+          <a href="/tags/zipkin/">zipkin</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用哨兵模式部署redis高可用集群</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/03/%E5%9C%A8%E7%BA%BF%E6%96%87%E6%A1%A3%E7%94%B5%E5%AD%90%E4%B9%A6%E5%8C%96/">
+            <span class="next-text nav-default">在线文档电子书化</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

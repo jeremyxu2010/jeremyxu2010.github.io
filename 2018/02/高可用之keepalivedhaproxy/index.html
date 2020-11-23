@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>高可用之keepalived&amp;haproxy - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="高可用之keepalived&amp;haproxy" />
+<meta property="og:description" content="项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/" />
+<meta property="article:published_time" content="2018-02-25T21:27:00+08:00" />
+<meta property="article:modified_time" content="2018-02-25T21:27:00+08:00" />
+<meta itemprop="name" content="高可用之keepalived&amp;haproxy">
+<meta itemprop="description" content="项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功">
+<meta itemprop="datePublished" content="2018-02-25T21:27:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-02-25T21:27:00&#43;08:00" />
+<meta itemprop="wordCount" content="10390">
+
+
+
+<meta itemprop="keywords" content="高可用,keepalived,haproxy,nginx,lvs," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="高可用之keepalived&amp;haproxy"/>
+<meta name="twitter:description" content="项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">高可用之keepalived&amp;haproxy</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-02-25 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 10390 字 </span>
+        <span class="more-meta"> 预计阅读 21 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#keepalived-1">keepalived是什么</a></li>
+    <li><a href="#keepalived-2">keepalived工作原理</a></li>
+    <li><a href="#keepalived-3">keepalived的配置文件</a>
+      <ul>
+        <li><a href="#global-defs">global_defs区域</a></li>
+        <li><a href="#static-ipaddressstatic-routes">static_ipaddress和static_routes区域</a></li>
+        <li><a href="#vrrp-script">vrrp_script区域</a></li>
+        <li><a href="#vrrp-instancevrrp-sync-group">vrrp_instance和vrrp_sync_group区域</a></li>
+        <li><a href="#virtual-server-groupvirtual-server">virtual_server_group和virtual_server区域</a></li>
+        <li><a href="#keepalived-4">keepalived主从切换</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#haproxy-1">HAProxy是什么</a></li>
+    <li><a href="#haproxy-2">HAProxy的核心能力和关键特性</a>
+      <ul>
+        <li><a href="#haproxy-3">HAProxy的核心功能</a></li>
+        <li><a href="#haproxy-4">HAProxy的关键特性</a></li>
+      </ul>
+    </li>
+    <li><a href="#haproxy-5">HAProxy关键配置详解</a>
+      <ul>
+        <li><a href="#heading-2">总览</a></li>
+        <li><a href="#global">global域的关键配置</a></li>
+        <li><a href="#frontend">frontend域的关键配置</a></li>
+        <li><a href="#backend">backend域的关键配置</a></li>
+        <li><a href="#default">default域</a></li>
+        <li><a href="#listen">listen域</a></li>
+        <li><a href="#heading-3">官方配置文档</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#haproxyl7">使用HAProxy搭建L7负载均衡器</a>
+      <ul>
+        <li><a href="#heading-5">总体方案</a></li>
+        <li><a href="#haproxy-6">HAProxy配置文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#haproxyl4">使用HAProxy搭建L4负载均衡器</a>
+      <ul>
+        <li><a href="#haproxy-7">HAProxy配置文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#keepalivedhaproxy">使用Keepalived实现HAProxy高可用</a>
+      <ul>
+        <li><a href="#heading-6">原理</a></li>
+        <li><a href="#keepalived-5">keepalived配置文件</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功能，当时没有作记录，这里作一下记录以备忘。</p>
+<h1 id="keepalived">Keepalived</h1>
+<h2 id="keepalived-1">keepalived是什么</h2>
+<p>keepalived是集群管理中保证集群高可用的一个服务软件，其功能类似于<a href="https://github.com/chenzhiwei/linux/tree/master/heartbeat">heartbeat</a>，用来防止单点故障。</p>
+<h2 id="keepalived-2">keepalived工作原理</h2>
+<p>keepalived是以VRRP协议为实现基础的，VRRP全称Virtual Router Redundancy Protocol，即<a href="http://en.wikipedia.org/wiki/VRRP">虚拟路由冗余协议</a>。</p>
+<p>虚拟路由冗余协议，可以认为是实现路由器高可用的协议，即将N台提供相同功能的路由器组成一个路由器组，这个组里面有一个master和多个backup，master上面有一个对外提供服务的vip（该路由器所在局域网内其他机器的默认路由为该vip），master会发组播，当backup收不到vrrp包时就认为master宕掉了，这时就需要根据<a href="http://tools.ietf.org/html/rfc5798#section-5.1">VRRP的优先级</a>来<a href="http://en.wikipedia.org/wiki/Virtual_Router_Redundancy_Protocol#Elections_of_master_routers">选举一个backup当master</a>。这样的话就可以保证路由器的高可用了。</p>
+<p>keepalived主要有三个模块，分别是core、check和vrrp。core模块为keepalived的核心，负责主进程的启动、维护以及全局配置文件的加载和解析。check负责健康检查，包括常见的各种检查方式。vrrp模块是来实现VRRP协议的。</p>
+<h2 id="keepalived-3">keepalived的配置文件</h2>
+<p>keepalived只有一个配置文件keepalived.conf，里面主要包括以下几个配置区域，分别是global_defs、static_ipaddress、static_routes、vrrp_script、vrrp_instance和virtual_server。</p>
+<h3 id="global-defs">global_defs区域</h3>
+<p>主要是配置故障发生时的通知对象以及机器标识</p>
+<pre><code>global_defs {
+    notification_email {
+        a@abc.com
+        b@abc.com
+        ...
+    }
+    notification_email_from alert@abc.com
+    smtp_server smtp.abc.com
+    smtp_connect_timeout 30
+    enable_traps
+    router_id host163
+}
+
+</code></pre><ul>
+<li>notification_email 故障发生时给谁发邮件通知。</li>
+<li>notification_email_from 通知邮件从哪个地址发出。</li>
+<li>smpt_server 通知邮件的smtp地址。</li>
+<li>smtp_connect_timeout 连接smtp服务器的超时时间。</li>
+<li>enable_traps 开启SNMP陷阱（<a href="http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol">Simple Network Management Protocol</a>）。</li>
+<li>router_id 标识本节点的字条串，通常为hostname，但不一定非得是hostname。故障发生时，邮件通知会用到。</li>
+</ul>
+<h3 id="static-ipaddressstatic-routes">static_ipaddress和static_routes区域</h3>
+<p>static_ipaddress和static_routes区域配置的是是本节点的IP和路由信息。如果你的机器上已经配置了IP和路由，那么这两个区域可以不用配置。其实，一般情况下你的机器都会有IP地址和路由信息的，因此没必要再在这两个区域配置。</p>
+<pre><code>static_ipaddress {
+    10.210.214.163/24 brd 10.210.214.255 dev eth0
+    ...
+}
+
+static_routes {
+    10.0.0.0/8 via 10.210.214.1 dev eth0
+    ...
+}
+
+</code></pre><p>以上分别表示启动/关闭keepalived时在本机执行的如下命令：</p>
+<pre><code># /sbin/ip addr add 10.210.214.163/24 brd 10.210.214.255 dev eth0
+# /sbin/ip route add 10.0.0.0/8 via 10.210.214.1 dev eth0
+# /sbin/ip addr del 10.210.214.163/24 brd 10.210.214.255 dev eth0
+# /sbin/ip route del 10.0.0.0/8 via 10.210.214.1 dev eth0
+
+</code></pre><p>注意： 请忽略这两个区域，因为我坚信你的机器肯定已经配置了IP和路由。</p>
+<h3 id="vrrp-script">vrrp_script区域</h3>
+<p>用来做健康检查的，当时检查失败时会将<code>vrrp_instance</code>的<code>priority</code>减少相应的值。</p>
+<pre><code>vrrp_script chk_http_port {
+    script &quot;&lt;/dev/tcp/127.0.0.1/80&quot;
+    interval 1
+    weight -10
+}
+
+</code></pre><p>以上意思是如果<code>script</code>中的指令执行失败，那么相应的<code>vrrp_instance</code>的优先级会减少10个点。</p>
+<h3 id="vrrp-instancevrrp-sync-group">vrrp_instance和vrrp_sync_group区域</h3>
+<p>vrrp_instance用来定义对外提供服务的VIP区域及其相关属性。</p>
+<p>vrrp_rsync_group用来定义vrrp_intance组，使得这个组内成员动作一致。举个例子来说明一下其功能：</p>
+<p>两个vrrp_instance同属于一个vrrp_rsync_group，那么其中一个vrrp_instance发生故障切换时，另一个vrrp_instance也会跟着切换（即使这个instance没有发生故障）。</p>
+<pre><code>vrrp_sync_group VG_1 {
+    group {
+        inside_network   # name of vrrp_instance (below)
+        outside_network  # One for each moveable IP.
+        ...
+    }
+    notify_master /path/to_master.sh
+    notify_backup /path/to_backup.sh
+    notify_fault &quot;/path/fault.sh VG_1&quot;
+    notify /path/notify.sh
+    smtp_alert
+}
+
+vrrp_instance VI_1 {
+    state MASTER
+    interface eth0
+    use_vmac &lt;VMAC_INTERFACE&gt;
+    dont_track_primary
+    track_interface {
+        eth0
+        eth1
+    }
+    mcast_src_ip &lt;IPADDR&gt;
+    lvs_sync_daemon_interface eth1
+    garp_master_delay 10
+    virtual_router_id 1
+    priority 100
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass 12345678
+    }
+    virtual_ipaddress {
+        10.210.214.253/24 brd 10.210.214.255 dev eth0
+        192.168.1.11/24 brd 192.168.1.255 dev eth1
+    }
+
+    virtual_routes {
+        172.16.0.0/12 via 10.210.214.1
+        192.168.1.0/24 via 192.168.1.1 dev eth1
+        default via 202.102.152.1
+    }
+
+    track_script {
+        chk_http_port
+    }
+
+    nopreempt
+    preempt_delay 300
+    debug
+    notify_master &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    notify_backup &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    notify_fault &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    notify &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    smtp_alert
+}
+
+</code></pre><ul>
+<li>notify_master/backup/fault 分别表示切换为主/备/出错时所执行的脚本。</li>
+<li>notify 表示任何一状态切换时都会调用该脚本，并且该脚本在以上三个脚本执行完成之后进行调用，keepalived会自动传递三个参数（$1 = &ldquo;GROUP&quot;|&quot;INSTANCE&rdquo;，$2 = name of group or instance，$3 = target state of transition(MASTER/BACKUP/FAULT)）。</li>
+<li>smtp_alert 表示是否开启邮件通知（用全局区域的邮件设置来发通知）。</li>
+<li>state 可以是MASTER或BACKUP，不过当其他节点keepalived启动时会将priority比较大的节点选举为MASTER，因此该项其实没有实质用途。</li>
+<li>interface 节点固有IP（非VIP）的网卡，用来发VRRP包。</li>
+<li>use_vmac 是否使用VRRP的虚拟MAC地址。</li>
+<li>dont_track_primary 忽略VRRP网卡错误。（默认未设置）</li>
+<li>track_interface 监控以下网卡，如果任何一个不通就会切换到FALT状态。（可选项）</li>
+<li>mcast_src_ip 修改vrrp组播包的源地址，默认源地址为master的IP。（由于是组播，因此即使修改了源地址，该master还是能收到回应的）</li>
+<li>lvs_sync_daemon_interface 绑定lvs syncd的网卡。</li>
+<li>garp_master_delay 当切为主状态后多久更新ARP缓存，默认5秒。</li>
+<li>virtual_router_id 取值在0-255之间，用来区分多个instance的VRRP组播。</li>
+</ul>
+<p>注意： 同一网段中virtual_router_id的值不能重复，否则会出错，相关错误信息如下。</p>
+<pre><code>Keepalived_vrrp[27120]: ip address associated with VRID not present in received packet :
+one or more VIP associated with VRID mismatch actual MASTER advert
+bogus VRRP packet received on eth1 !!!
+receive an invalid ip number count associated with VRID!
+VRRP_Instance(xxx) ignoring received advertisment...
+</code></pre><p>可以用这条命令来查看该网络中所存在的vrid：<code>tcpdump -nn -i any net 224.0.0.0/8</code></p>
+<ul>
+<li>priority 用来选举master的，要成为master，那么这个选项的值<a href="http://tools.ietf.org/html/rfc5798#section-8.3.2">最好高于其他机器50个点</a>，该项<a href="http://tools.ietf.org/html/rfc5798#section-5.2.4">取值范围</a>是1-255（在此范围之外会被识别成默认值100）。</li>
+<li>advert_int 发VRRP包的时间间隔，即多久进行一次master选举（可以认为是健康查检时间间隔）。</li>
+<li>authentication 认证区域，认证类型有PASS和HA（IPSEC），推荐使用PASS（密码只识别前8位）。</li>
+<li>virtual_ipaddress vip，不解释了。</li>
+<li>virtual_routes 虚拟路由，当IP漂过来之后需要添加的路由信息。</li>
+<li>virtual_ipaddress_excluded 发送的VRRP包里不包含的IP地址，为减少回应VRRP包的个数。在网卡上绑定的IP地址比较多的时候用。</li>
+<li>nopreempt 允许一个priority比较低的节点作为master，即使有priority更高的节点启动。</li>
+</ul>
+<p>首先nopreemt必须在state为BACKUP的节点上才生效（因为是BACKUP节点决定是否来成为MASTER的），其次要实现类似于关闭auto failback的功能需要将所有节点的state都设置为BACKUP，或者将master节点的priority设置的比BACKUP低。我个人推荐使用将所有节点的state都设置成BACKUP并且都加上nopreempt选项，这样就完成了关于autofailback功能，当想手动将某节点切换为MASTER时只需去掉该节点的nopreempt选项并且将priority改的比其他节点大，然后重新加载配置文件即可（等MASTER切过来之后再将配置文件改回去再reload一下）。</p>
+<p>当使用<code>track_script</code>时可以不用加<code>nopreempt</code>，只需要加上<code>preempt_delay 5</code>，这里的间隔时间要大于<code>vrrp_script</code>中定义的时长。</p>
+<ul>
+<li>preempt_delay master启动多久之后进行接管资源（VIP/Route信息等），并提是没有<code>nopreempt</code>选项。</li>
+</ul>
+<p><strong>上述的文字来自于<a href="https://github.com/chenzhiwei/linux/tree/master/keepalived">这里</a>，一般我们使用keepalived就是用上述的功能来监测服务，主从切换时自动地将vip进行漂移。</strong></p>
+<p>其实keepalived也可以用来作负载均衡，如下。</p>
+<h3 id="virtual-server-groupvirtual-server">virtual_server_group和virtual_server区域</h3>
+<p>virtual_server_group一般在超大型的LVS中用到，一般LVS用不过这东西，因此不多说。</p>
+<pre><code>virtual_server IP Port {
+    delay_loop &lt;INT&gt;
+    lb_algo rr|wrr|lc|wlc|lblc|sh|dh
+    lb_kind NAT|DR|TUN
+    persistence_timeout &lt;INT&gt;
+    persistence_granularity &lt;NETMASK&gt;
+    protocol TCP
+    ha_suspend
+    virtualhost &lt;STRING&gt;
+    alpha
+    omega
+    quorum &lt;INT&gt;
+    hysteresis &lt;INT&gt;
+    quorum_up &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    quorum_down &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+    sorry_server &lt;IPADDR&gt; &lt;PORT&gt;
+    real_server &lt;IPADDR&gt; &lt;PORT&gt; {
+        weight &lt;INT&gt;
+        inhibit_on_failure
+        notify_up &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+        notify_down &lt;STRING&gt;|&lt;QUOTED-STRING&gt;
+        # HTTP_GET|SSL_GET|TCP_CHECK|SMTP_CHECK|MISC_CHECK
+        HTTP_GET|SSL_GET {
+            url {
+                path &lt;STRING&gt;
+                # Digest computed with genhash
+                digest &lt;STRING&gt;
+                status_code &lt;INT&gt;
+            }
+            connect_port &lt;PORT&gt;
+            connect_timeout &lt;INT&gt;
+            nb_get_retry &lt;INT&gt;
+            delay_before_retry &lt;INT&gt;
+        }
+    }
+}
+
+</code></pre><ul>
+<li>delay_loop 延迟轮询时间（单位秒）。</li>
+<li>lb_algo 后端调试算法（load balancing algorithm）。</li>
+<li>lb_kind LVS调度类型<a href="http://kb.linuxvirtualserver.org/wiki/LVS/NAT">NAT</a>/<a href="http://kb.linuxvirtualserver.org/wiki/LVS/DR">DR</a>/<a href="http://kb.linuxvirtualserver.org/wiki/LVS/TUN">TUN</a>。</li>
+<li>virtualhost 用来给HTTP_GET和SSL_GET配置请求header的。</li>
+<li>sorry_server 当所有real server宕掉时，sorry server顶替。</li>
+<li>real_server 真正提供服务的服务器。</li>
+<li>weight 权重。</li>
+<li>notify_up/down 当real server宕掉或启动时执行的脚本。</li>
+<li>健康检查的方式，N多种方式。</li>
+<li>path 请求real serserver上的路径。</li>
+<li>digest/status_code 分别表示用genhash算出的结果和http状态码。</li>
+<li>connect_port 健康检查，如果端口通则认为服务器正常。</li>
+<li>connect_timeout,nb_get_retry,delay_before_retry分别表示超时时长、重试次数，下次重试的时间延迟。</li>
+</ul>
+<p>其他选项暂时不作说明。</p>
+<h3 id="keepalived-4">keepalived主从切换</h3>
+<p>主从切换比较让人蛋疼，需要将backup配置文件的priority选项的值调整的比master高50个点，然后reload配置文件就可以切换了。当时你也可以将master的keepalived停止，这样也可以进行主从切换。</p>
+<h1 id="haproxy">HAProxy</h1>
+<h2 id="haproxy-1">HAProxy是什么</h2>
+<p>HAProxy是一个免费的负载均衡软件，可以运行于大部分主流的Linux操作系统上。</p>
+<p>HAProxy提供了L4(TCP)和L7(HTTP)两种负载均衡能力，具备丰富的功能。HAProxy的社区非常活跃，版本更新快速（最新稳定版1.7.2于2017/01/13推出）。最关键的是，HAProxy具备媲美商用负载均衡器的性能和稳定性。</p>
+<p>因为HAProxy的上述优点，它当前不仅仅是免费负载均衡软件的首选，更几乎成为了唯一选择。</p>
+<h2 id="haproxy-2">HAProxy的核心能力和关键特性</h2>
+<h3 id="haproxy-3">HAProxy的核心功能</h3>
+<ul>
+<li>负载均衡：L4和L7两种模式，支持RR/静态RR/LC/IP Hash/URI Hash/URL_PARAM Hash/HTTP_HEADER Hash等丰富的负载均衡算法</li>
+<li>健康检查：支持TCP和HTTP两种健康检查模式</li>
+<li>会话保持：对于未实现会话共享的应用集群，可通过Insert Cookie/Rewrite Cookie/Prefix Cookie，以及上述的多种Hash方式实现会话保持</li>
+<li>SSL：HAProxy可以解析HTTPS协议，并能够将请求解密为HTTP后向后端传输</li>
+<li>HTTP请求重写与重定向</li>
+<li>监控与统计：HAProxy提供了基于Web的统计信息页面，展现健康状态和流量数据。基于此功能，使用者可以开发监控程序来监控HAProxy的状态</li>
+</ul>
+<p><strong>从这个核心功能来看，haproxy实现的功能类似于nginx的L4、L7反向代理。</strong></p>
+<h3 id="haproxy-4">HAProxy的关键特性</h3>
+<h4 id="heading"><strong>性能</strong></h4>
+<ul>
+<li>采用单线程、事件驱动、非阻塞模型，减少上下文切换的消耗，能在1ms内处理数百个请求。并且每个会话只占用数KB的内存。</li>
+<li>大量精细的性能优化，如O(1)复杂度的事件检查器、延迟更新技术、Single-buffereing、Zero-copy forwarding等等，这些技术使得HAProxy在中等负载下只占用极低的CPU资源。</li>
+<li>HAProxy大量利用操作系统本身的功能特性，使得其在处理请求时能发挥极高的性能，通常情况下，HAProxy自身只占用15%的处理时间，剩余的85%都是在系统内核层完成的。</li>
+<li>HAProxy作者在8年前（2009）年使用1.4版本进行了一次测试，单个HAProxy进程的处理能力突破了10万请求/秒，并轻松占满了10Gbps的网络带宽。</li>
+</ul>
+<h4 id="heading-1"><strong>稳定性</strong></h4>
+<p>作为建议以单进程模式运行的程序，HAProxy对稳定性的要求是十分严苛的。按照作者的说法，HAProxy在13年间从未出现过一个会导致其崩溃的BUG，HAProxy一旦成功启动，除非操作系统或硬件故障，否则就不会崩溃（我觉得可能多少还是有夸大的成分）。</p>
+<p>在上文中提到过，HAProxy的大部分工作都是在操作系统内核完成的，所以HAProxy的稳定性主要依赖于操作系统，作者建议使用2.6或3.x的Linux内核，对sysctls参数进行精细的优化，并且确保主机有足够的内存。这样HAProxy就能够持续满负载稳定运行数年之久。</p>
+<h2 id="haproxy-5">HAProxy关键配置详解</h2>
+<h3 id="heading-2">总览</h3>
+<p>HAProxy的配置文件共有5个域</p>
+<ul>
+<li>global：用于配置全局参数</li>
+<li>default：用于配置所有frontend和backend的默认属性</li>
+<li>frontend：用于配置前端服务（即HAProxy自身提供的服务）实例</li>
+<li>backend：用于配置后端服务（即HAProxy后面接的服务）实例组</li>
+<li>listen：frontend+backend的组合配置，可以理解成更简洁的配置方法</li>
+</ul>
+<h3 id="global">global域的关键配置</h3>
+<ul>
+<li>daemon：指定HAProxy以后台模式运行，通常情况下都应该使用这一配置</li>
+<li>user [username] ：指定HAProxy进程所属的用户</li>
+<li>group [groupname] ：指定HAProxy进程所属的用户组</li>
+<li><code>log [address][device][maxlevel][minlevel]</code>：日志输出配置，如log 127.0.0.1 local0 info warning，即向本机rsyslog或syslog的local0输出info到warning级别的日志。其中[minlevel]可以省略。HAProxy的日志共有8个级别，从高到低为emerg/alert/crit/err/warning/notice/info/debug</li>
+<li>pidfile ：指定记录HAProxy进程号的文件绝对路径。主要用于HAProxy进程的停止和重启动作。</li>
+<li>maxconn ：HAProxy进程同时处理的连接数，当连接数达到这一数值时，HAProxy将停止接收连接请求</li>
+</ul>
+<h3 id="frontend">frontend域的关键配置</h3>
+<ul>
+<li><code>acl [name][criterion] [flags][operator] [value]</code>：定义一条ACL，ACL是根据数据包的指定属性以指定表达式计算出的true/false值。如&quot;acl url_ms1 path_beg -i /ms1/&ldquo;定义了名为url_ms1的ACL，该ACL在请求uri以/ms1/开头（忽略大小写）时为true</li>
+<li>bind [ip]:[port]：frontend服务监听的端口</li>
+<li>default_backend [name]：frontend对应的默认backend</li>
+<li>disabled：禁用此frontend</li>
+<li><code>http-request [operation][condition]</code>：对所有到达此frontend的HTTP请求应用的策略，例如可以拒绝、要求认证、添加header、替换header、定义ACL等等。</li>
+<li><code>http-response [operation][condition]</code>：对所有从此frontend返回的HTTP响应应用的策略，大体同上</li>
+<li>log：同global域的log配置，仅应用于此frontend。如果要沿用global域的log配置，则此处配置为log global</li>
+<li>maxconn：同global域的maxconn，仅应用于此frontend</li>
+<li>mode：此frontend的工作模式，主要有http和tcp两种，对应L7和L4两种负载均衡模式</li>
+<li>option forwardfor：在请求中添加X-Forwarded-For Header，记录客户端ip</li>
+<li>option http-keep-alive：以KeepAlive模式提供服务</li>
+<li>option httpclose：与http-keep-alive对应，关闭KeepAlive模式，如果HAProxy主要提供的是接口类型的服务，可以考虑采用httpclose模式，以节省连接数资源。但如果这样做了，接口的调用端将不能使用HTTP连接池</li>
+<li>option httplog：开启httplog，HAProxy将会以类似Apache HTTP或Nginx的格式来记录请求日志</li>
+<li>option tcplog：开启tcplog，HAProxy将会在日志中记录数据包在传输层的更多属性</li>
+<li>stats uri [uri]：在此frontend上开启监控页面，通过[uri]访问</li>
+<li>stats refresh [time]：监控数据刷新周期</li>
+<li>stats auth [user]:[password]：监控页面的认证用户名密码</li>
+<li>timeout client [time]：指连接创建后，客户端持续不发送数据的超时时间</li>
+<li>timeout http-request [time]：指连接创建后，客户端没能发送完整HTTP请求的超时时间，主要用于防止DoS类攻击，即创建连接后，以非常缓慢的速度发送请求包，导致HAProxy连接被长时间占用</li>
+<li>use_backend [backend] if|unless [acl]：与ACL搭配使用，在满足/不满足ACL时转发至指定的backend</li>
+</ul>
+<h3 id="backend">backend域的关键配置</h3>
+<ul>
+<li>acl：同frontend域</li>
+<li>balance [algorithm]：在此backend下所有server间的负载均衡算法，常用的有roundrobin和source，完整的算法说明见官方文档<a href="https://link.jianshu.com?t=http://cbonte.github.io/haproxy-dconv/1.7/configuration.html#4.2-balance">configuration.html#4.2-balance</a></li>
+<li>cookie：在backend server间启用基于cookie的会话保持策略，最常用的是insert方式，如cookie HA_STICKY_ms1 insert indirect nocache，指HAProxy将在响应中插入名为HA_STICKY_ms1的cookie，其值为对应的server定义中指定的值，并根据请求中此cookie的值决定转发至哪个server。indirect代表如果请求中已经带有合法的HA_STICK_ms1 cookie，则HAProxy不会在响应中再次插入此cookie，nocache则代表禁止链路上的所有网关和缓存服务器缓存带有Set-Cookie头的响应。</li>
+<li>default-server：用于指定此backend下所有server的默认设置。具体见下面的server配置。</li>
+<li>disabled：禁用此backend</li>
+<li>http-request/http-response：同frontend域</li>
+<li>log：同frontend域</li>
+<li>mode：同frontend域</li>
+<li>option forwardfor：同frontend域</li>
+<li>option http-keep-alive：同frontend域</li>
+<li>option httpclose：同frontend域</li>
+<li><code>option httpchk [METHOD][URL] [VERSION]</code>：定义以http方式进行的健康检查策略。如option httpchk GET /healthCheck.html HTTP/1.1</li>
+<li>option httplog：同frontend域</li>
+<li>option tcplog：同frontend域</li>
+<li><code>server [name][ip]:[port][params]</code>：定义backend中的一个后端server，[params]用于指定这个server的参数，常用的包括有：</li>
+</ul>
+<blockquote>
+<p>check：指定此参数时，HAProxy将会对此server执行健康检查，检查方法在option httpchk中配置。同时还可以在check后指定inter, rise, fall三个参数，分别代表健康检查的周期、连续几次成功认为server UP，连续几次失败认为server DOWN，默认值是inter 2000ms rise 2 fall 3
+cookie [value]：用于配合基于cookie的会话保持，如cookie ms1.srv1代表交由此server处理的请求会在响应中写入值为ms1.srv1的cookie（具体的cookie名则在backend域中的cookie设置中指定）
+maxconn：指HAProxy最多同时向此server发起的连接数，当连接数到达maxconn后，向此server发起的新连接会进入等待队列。默认为0，即无限
+maxqueue：等待队列的长度，当队列已满后，后续请求将会发至此backend下的其他server，默认为0，即无限
+weight：server的权重，0-256，权重越大，分给这个server的请求就越多。weight为0的server将不会被分配任何新的连接。所有server默认weight为1</p>
+</blockquote>
+<ul>
+<li>timeout connect [time]：指HAProxy尝试与backend server创建连接的超时时间</li>
+<li>timeout check [time]：默认情况下，健康检查的连接+响应超时时间为server命令中指定的inter值，如果配置了timeout check，HAProxy会以inter作为健康检查请求的连接超时时间，并以timeout check的值作为健康检查请求的响应超时时间</li>
+<li>timeout server [time]：指backend server响应HAProxy请求的超时时间</li>
+</ul>
+<h3 id="default">default域</h3>
+<p>上文所属的frontend和backend域关键配置中，除acl、bind、http-request、http-response、use_backend外，其余的均可以配置在default域中。default域中配置了的项目，如果在frontend或backend域中没有配置，将会使用default域中的配置。</p>
+<h3 id="listen">listen域</h3>
+<p>listen域是frontend域和backend域的组合，frontend域和backend域中所有的配置都可以配置在listen域下</p>
+<h3 id="heading-3">官方配置文档</h3>
+<p>HAProxy的配置项非常多，支持非常丰富的功能，上文只列出了作为L7负载均衡器使用HAProxy时的一些关键参数。完整的参数说明请参见官方文档 <a href="https://link.jianshu.com?t=http://cbonte.github.io/haproxy-dconv/1.7/configuration.html">configuration.html</a></p>
+<h1 id="heading-4">使用实例</h1>
+<h2 id="haproxyl7">使用HAProxy搭建L7负载均衡器</h2>
+<h3 id="heading-5">总体方案</h3>
+<p>本节中，我们将使用HAProxy搭建一个L7负载均衡器，应用如下功能</p>
+<ul>
+<li>
+<p>负载均衡</p>
+</li>
+<li>
+<p>会话保持</p>
+</li>
+<li>
+<p>健康检查</p>
+</li>
+<li>
+<p>根据URI前缀向不同的后端集群转发</p>
+</li>
+<li>
+<p>监控页面</p>
+</li>
+</ul>
+<h3 id="haproxy-6">HAProxy配置文件</h3>
+<pre><code>global
+    daemon
+    maxconn 30000   #ulimit -n至少为60018
+    user ha
+    pidfile /home/ha/haproxy/conf/haproxy.pid
+    log 127.0.0.1 local0 info
+    log 127.0.0.1 local1 warning
+
+defaults
+    mode http
+    log global
+    option http-keep-alive   #使用keepAlive连接
+    option forwardfor        #记录客户端IP在X-Forwarded-For头域中
+    option httplog           #开启httplog，HAProxy会记录更丰富的请求信息
+    timeout connect 5000ms
+    timeout client 10000ms
+    timeout server 50000ms
+    timeout http-request 20000ms    #从连接创建开始到从客户端读取完整HTTP请求的超时时间，用于避免类DoS攻击
+    option httpchk GET /healthCheck.html    #定义默认的健康检查策略
+
+frontend http-in
+    bind *:9001
+    maxconn 30000                    #定义此端口上的maxconn
+    acl url_ms1 path_beg -i /ms1/    #定义ACL，当uri以/ms1/开头时，ACL[url_ms1]为true
+    acl url_ms2 path_beg -i /ms2/    #同上，url_ms2
+    use_backend ms1 if url_ms1       #当[url_ms1]为true时，定向到后端服务群ms1中
+    use_backend ms2 if url_ms2       #当[url_ms2]为true时，定向到后端服务群ms2中
+    default_backend default_servers  #其他情况时，定向到后端服务群default_servers中
+
+backend ms1    #定义后端服务群ms1
+    balance roundrobin    #使用RR负载均衡算法
+    cookie HA_STICKY_ms1 insert indirect nocache    #会话保持策略，insert名为&quot;HA_STICKY_ms1&quot;的cookie
+    #定义后端server[ms1.srv1]，请求定向到该server时会在响应中写入cookie值[ms1.srv1]
+    #针对此server的maxconn设置为300
+    #应用默认健康检查策略，健康检查间隔和超时时间为2000ms，两次成功视为节点UP，三次失败视为节点DOWN
+    server ms1.srv1 192.168.8.111:8080 cookie ms1.srv1 maxconn 300 check inter 2000ms rise 2 fall 3
+    #同上，inter 2000ms rise 2 fall 3是默认值，可以省略
+    server ms1.srv2 192.168.8.112:8080 cookie ms1.srv2 maxconn 300 check
+
+backend ms2    #定义后端服务群ms2
+    balance roundrobin
+    cookie HA_STICKY_ms2 insert indirect nocache
+    server ms2.srv1 192.168.8.111:8081 cookie ms2.srv1 maxconn 300 check
+    server ms2.srv2 192.168.8.112:8081 cookie ms2.srv2 maxconn 300 check
+
+backend default_servers    #定义后端服务群default_servers
+    balance roundrobin
+    cookie HA_STICKY_def insert indirect nocache
+    server def.srv1 192.168.8.111:8082 cookie def.srv1 maxconn 300 check
+    server def.srv2 192.168.8.112:8082 cookie def.srv2 maxconn 300 check
+
+listen stats    #定义监控页面
+    bind *:1080                   #绑定端口1080
+    stats refresh 30s             #每30秒更新监控数据
+    stats uri /stats              #访问监控页面的uri
+    stats realm HAProxy\ Stats    #监控页面的认证提示
+    stats auth admin:admin        #监控页面的用户名和密码
+</code></pre><h2 id="haproxyl4">使用HAProxy搭建L4负载均衡器</h2>
+<p>HAProxy作为L4负载均衡器工作时，不会去解析任何与HTTP协议相关的内容，只在传输层对数据包进行处理。也就是说，以L4模式运行的HAProxy，无法实现根据URL向不同后端转发、通过cookie实现会话保持等功能。</p>
+<p>同时，在L4模式下工作的HAProxy也无法提供监控页面。</p>
+<p>但作为L4负载均衡器的HAProxy能够提供更高的性能，适合于基于套接字的服务（如数据库、消息队列、RPC、邮件服务、Redis等），或不需要逻辑规则判断，并已实现了会话共享的HTTP服务。</p>
+<h3 id="haproxy-7">HAProxy配置文件</h3>
+<pre><code>global
+    daemon
+    maxconn 30000   #ulimit -n至少为60018
+    user ha
+    pidfile /home/ha/haproxy/conf/haproxy.pid
+    log 127.0.0.1 local0 info
+    log 127.0.0.1 local1 warning
+
+defaults
+    mode tcp
+    log global
+    option tcplog            #开启tcplog
+    timeout connect 5000ms
+    timeout client 10000ms
+    timeout server 10000ms   #TCP模式下，应将timeout client和timeout server设置为一样的值，以防止出现问题
+    option httpchk GET /healthCheck.html    #定义默认的健康检查策略
+
+frontend http-in
+    bind *:9002
+    maxconn 30000                    #定义此端口上的maxconn
+    default_backend default_servers  #请求定向至后端服务群default_servers
+
+backend default_servers    #定义后端服务群default_servers
+    balance source  #基于客户端IP的会话保持
+    server def.srv1 192.168.8.111:8082 maxconn 300 check
+    server def.srv2 192.168.8.112:8082 maxconn 300 check
+</code></pre><h2 id="keepalivedhaproxy">使用Keepalived实现HAProxy高可用</h2>
+<p>尽管HAProxy非常稳定，但仍然无法规避操作系统故障、主机硬件故障、网络故障甚至断电带来的风险。所以必须对HAProxy实施高可用方案。</p>
+<p>下文将介绍利用Keepalived实现的HAProxy热备方案。即两台主机上的两个HAProxy实例同时在线，其中权重较高的实例为MASTER，MASTER出现问题时，另一台实例自动接管所有流量。</p>
+<h3 id="heading-6">原理</h3>
+<p>在两台HAProxy的主机上分别运行着一个Keepalived实例，这两个Keepalived争抢同一个虚IP地址，两个HAProxy也尝试去绑定这同一个虚IP地址上的端口。
+显然，同时只能有一个Keepalived抢到这个虚IP，抢到了这个虚IP的Keepalived主机上的HAProxy便是当前的MASTER。
+Keepalived内部维护一个权重值，权重值最高的Keepalived实例能够抢到虚IP。同时Keepalived会定期check本主机上的HAProxy状态，状态OK时权重值增加。</p>
+<h3 id="keepalived-5">keepalived配置文件</h3>
+<pre><code>global_defs {
+    router_id LVS_DEVEL  #虚拟路由名称
+}
+#HAProxy健康检查配置
+vrrp_script chk_haproxy {
+    script &quot;killall -0 haproxy&quot;  #使用killall -0检查haproxy实例是否存在，性能高于ps命令
+    interval 2   #脚本运行周期
+    weight 2   #每次检查的加权权重值
+}
+#虚拟路由配置
+vrrp_instance VI_1 {
+    state MASTER           #本机实例状态，MASTER/BACKUP，备机配置文件中请写BACKUP
+    interface enp0s25      #本机网卡名称，使用ifconfig命令查看
+    virtual_router_id 51   #虚拟路由编号，主备机保持一致
+    priority 101           #本机初始权重，备机请填写小于主机的值（例如100）
+    advert_int 1           #争抢虚地址的周期，秒
+    virtual_ipaddress {
+        192.168.8.201      #虚地址IP，主备机保持一致
+    }
+    track_script {
+        chk_haproxy        #对应的健康检查配置
+    }
+}
+</code></pre><h1 id="heading-7">参考</h1>
+<ol>
+<li><a href="https://github.com/chenzhiwei/linux/tree/master/keepalived">https://github.com/chenzhiwei/linux/tree/master/keepalived</a></li>
+<li><a href="https://www.jianshu.com/p/c9f6d55288c0">https://www.jianshu.com/p/c9f6d55288c0</a></li>
+<li><a href="http://seanlook.com/2015/05/18/nginx-keepalived-ha/">http://seanlook.com/2015/05/18/nginx-keepalived-ha/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-02-25</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/">高可用</a>
+          
+          <a href="/tags/keepalived/">keepalived</a>
+          
+          <a href="/tags/haproxy/">haproxy</a>
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+          <a href="/tags/lvs/">lvs</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/02/%E8%8B%B1%E6%96%87%E6%AF%8F%E5%A4%A9%E9%87%91%E5%8F%A5/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">英文每天金句</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">
+            <span class="next-text nav-default">MariaDB Galera Cluster部署实战</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

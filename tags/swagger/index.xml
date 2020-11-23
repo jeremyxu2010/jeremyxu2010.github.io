@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>swagger on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/swagger/</link>
+    <description>Recent content in swagger on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 16 Aug 2020 18:07:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/swagger/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>nodejs项目技术小结</title>
+      <link>https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/</guid>
+      <description>最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较</description>
+    </item>
+    
+    <item>
+      <title>工作任务项杂记_201904</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</guid>
+      <description>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo</description>
+    </item>
+    
+  </channel>
+</rss>

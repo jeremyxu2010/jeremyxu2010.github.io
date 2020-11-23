@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>etcd on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/etcd/</link>
+    <description>Recent content in etcd on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 02 Nov 2019 18:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/etcd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes集群部署运营实践总结</title>
+      <link>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</guid>
+      <description>最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku</description>
+    </item>
+    
+    <item>
+      <title>重搭docker集群</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 24 Aug 2016 23:39:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</guid>
+      <description>以前尝试使用consul搭建了docker集群，当时对底层为什么要执行那些命令不是太理解，直到昨天研究了etcd集群之后，终于对docker</description>
+    </item>
+    
+    <item>
+      <title>学习etcd</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/</link>
+      <pubDate>Wed, 24 Aug 2016 01:24:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/</guid>
+      <description>很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时</description>
+    </item>
+    
+  </channel>
+</rss>

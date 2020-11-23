@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>gulp替换webpack - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpac" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/12/gulp%E6%9B%BF%E6%8D%A2webpack/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="gulp替换webpack" />
+<meta property="og:description" content="之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpac" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/12/gulp%E6%9B%BF%E6%8D%A2webpack/" />
+<meta property="article:published_time" content="2016-12-16T17:08:00+08:00" />
+<meta property="article:modified_time" content="2016-12-16T17:08:00+08:00" />
+<meta itemprop="name" content="gulp替换webpack">
+<meta itemprop="description" content="之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpac">
+<meta itemprop="datePublished" content="2016-12-16T17:08:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-12-16T17:08:00&#43;08:00" />
+<meta itemprop="wordCount" content="2072">
+
+
+
+<meta itemprop="keywords" content="gulp,react,redux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="gulp替换webpack"/>
+<meta name="twitter:description" content="之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpac"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">gulp替换webpack</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-12-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2072 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#packagejson">前端依赖package.json</a></li>
+    <li><a href="#gulp">gulp编译脚本</a></li>
+    <li><a href="#heading">其它</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpack的规则进行各种配置，必须完全遵守它的条条框框，明明是自己写nodejs代码进行编译，但完全可控感。之前就听说过gulp+browserify的组合，这次就尝试使用这个东东重写编译脚本。话不多说，直接上最后的成果。</p>
+<h2 id="packagejson">前端依赖package.json</h2>
+<p><code>package.json</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">{
+  <span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;ssm-scaffold-frontend&#34;</span>,
+  <span style="color:#e6db74">&#34;version&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;1.0.0&#34;</span>,
+  <span style="color:#e6db74">&#34;description&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;SSM scaffold frontend, powered by React and Redux&#34;</span>,
+  <span style="color:#e6db74">&#34;scripts&#34;</span><span style="color:#f92672">:</span> {
+    <span style="color:#e6db74">&#34;gulp&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;./node_modules/.bin/gulp&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-production&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;./node_modules/.bin/gulp production&#34;</span>
+  },
+  <span style="color:#e6db74">&#34;author&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Jeremy Xu&#34;</span>,
+  <span style="color:#e6db74">&#34;license&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;ISC&#34;</span>,
+  <span style="color:#e6db74">&#34;dependencies&#34;</span><span style="color:#f92672">:</span> {
+    <span style="color:#e6db74">&#34;antd&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.6.1&#34;</span>,
+    <span style="color:#e6db74">&#34;axios&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^0.15.3&#34;</span>,
+    <span style="color:#e6db74">&#34;bootstrap&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.3.7&#34;</span>,
+    <span style="color:#e6db74">&#34;intl&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.2.5&#34;</span>,
+    <span style="color:#e6db74">&#34;lodash&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^4.17.2&#34;</span>,
+    <span style="color:#e6db74">&#34;react&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^15.4.2&#34;</span>,
+    <span style="color:#e6db74">&#34;react-dom&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^15.4.2&#34;</span>,
+    <span style="color:#e6db74">&#34;react-intl&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.2.2&#34;</span>,
+    <span style="color:#e6db74">&#34;react-redux&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^5.0.1&#34;</span>,
+    <span style="color:#e6db74">&#34;react-router&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.0.0&#34;</span>,
+    <span style="color:#e6db74">&#34;redux&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.6.0&#34;</span>,
+    <span style="color:#e6db74">&#34;redux-thunk&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.1.0&#34;</span>
+  },
+  <span style="color:#e6db74">&#34;devDependencies&#34;</span><span style="color:#f92672">:</span> {
+    <span style="color:#e6db74">&#34;babel-cli&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^6.18.0&#34;</span>,
+    <span style="color:#e6db74">&#34;babel-plugin-transform-decorators-legacy&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.3.4&#34;</span>,
+    <span style="color:#e6db74">&#34;babel-plugin-transform-object-rest-spread&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^6.20.2&#34;</span>,
+    <span style="color:#e6db74">&#34;babel-preset-es2015&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^6.18.0&#34;</span>,
+    <span style="color:#e6db74">&#34;babel-preset-react&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^6.16.0&#34;</span>,
+    <span style="color:#e6db74">&#34;babelify&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^7.3.0&#34;</span>,
+    <span style="color:#e6db74">&#34;browserify&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^13.1.1&#34;</span>,
+    <span style="color:#e6db74">&#34;del&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.2.2&#34;</span>,
+    <span style="color:#e6db74">&#34;errorify&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^0.3.1&#34;</span>,
+    <span style="color:#e6db74">&#34;glob&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^7.1.1&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.9.1&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-clean-css&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.3.2&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-concat&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.6.1&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-connect&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^5.0.0&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-connect-reproxy&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^0.0.98&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-css-image-rev&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.0.4&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-htmlmin&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.0.0&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-if-else&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.0.3&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-less&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;3.3.0&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-run-sequence&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^0.3.2&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-sourcemaps&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.9.1&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-uglify&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.0.0&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-util&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.0.7&#34;</span>,
+    <span style="color:#e6db74">&#34;gulp-version-number&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^0.1.5&#34;</span>,
+    <span style="color:#e6db74">&#34;less&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^2.7.1&#34;</span>,
+    <span style="color:#e6db74">&#34;merge-stream&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.0.1&#34;</span>,
+    <span style="color:#e6db74">&#34;vinyl-buffer&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.0.0&#34;</span>,
+    <span style="color:#e6db74">&#34;vinyl-source-stream&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^1.1.0&#34;</span>,
+    <span style="color:#e6db74">&#34;watchify&#34;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;^3.8.0&#34;</span>
+  }
+}
+</code></pre></div><p>可以看到该项目前端主要依赖react、redux、react-router、antd、 bootstrap、axios、lodash、react-intl，这算一个比较常见的选择。前端编译js时使用了gulp、babel、browserify、babelify，编译css时使用了less，使用gulp-connect作为开发服务器。</p>
+<h2 id="gulp">gulp编译脚本</h2>
+<p><code>gulpfile.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">gulp</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browserify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;browserify&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">errorify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;errorify&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">babelify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;babelify&#34;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">source</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;vinyl-source-stream&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">connect</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-connect&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Reproxy</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;gulp-connect-reproxy&#34;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fs</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;fs&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;path&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">del</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;del&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">concat</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-concat&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">merge</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;merge-stream&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">less</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-less&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">gutil</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-util&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ifElse</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-if-else&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">_</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;lodash&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">watchify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;watchify&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">runSequence</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-run-sequence&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">imageRev</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-css-image-rev&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">version</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-version-number&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">buffer</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;vinyl-buffer&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">uglify</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-uglify&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cleanCSS</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-clean-css&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sourcemaps</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-sourcemaps&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">htmlmin</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;gulp-htmlmin&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">srcPath</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;./src&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">buildPath</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;../webapp&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">buildJsPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">buildPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/js&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">buildImgPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">buildPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/img&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">buildCssPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">buildPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/css&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">jsEntryPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">srcPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/js/pages&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cssEntryPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">srcPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/css/pages&#39;</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">htmlEntryPath</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">srcPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/html&#39;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">versionConfig</span> <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#39;value&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;%MDS%&#39;</span>,
+    <span style="color:#e6db74">&#39;append&#39;</span><span style="color:#f92672">:</span> {
+        <span style="color:#e6db74">&#39;key&#39;</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;v&#39;</span>,
+        <span style="color:#e6db74">&#39;to&#39;</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;css&#39;</span>, <span style="color:#e6db74">&#39;js&#39;</span>,<span style="color:#e6db74">&#39;image&#39;</span>],
+    },
+};
+
+<span style="color:#75715e">// Environment setup.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">env</span> <span style="color:#f92672">=</span> {
+    <span style="color:#a6e22e">production</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>
+};
+
+<span style="color:#75715e">// Environment task.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#34;set-production&#34;</span>, <span style="color:#66d9ef">function</span>(){
+    <span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#34;clean&#34;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">cb</span>){
+    <span style="color:#a6e22e">del</span>([
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildPath</span>, <span style="color:#e6db74">&#39;*.html&#39;</span>),
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildPath</span>, <span style="color:#e6db74">&#39;js&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>),
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildPath</span>, <span style="color:#e6db74">&#39;css&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>),
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildPath</span>, <span style="color:#e6db74">&#39;img&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>)
+    ], {<span style="color:#a6e22e">force</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>}).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">cb</span>();
+    });
+});
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getPageNames</span>() {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">readdirSync</span>(<span style="color:#a6e22e">jsEntryPath</span>)
+        .<span style="color:#a6e22e">filter</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">file</span>) {
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">statSync</span>(<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">jsEntryPath</span>, <span style="color:#a6e22e">file</span>)).<span style="color:#a6e22e">isDirectory</span>();
+        });
+}
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">pageNames</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">getPageNames</span>();
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">buildjs_tasks</span> <span style="color:#f92672">=</span> [];
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">buildjs_funcs</span> <span style="color:#f92672">=</span> [];
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">buildcss_tasks</span> <span style="color:#f92672">=</span> [];
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#34;prepare&#34;</span>, [<span style="color:#e6db74">&#34;clean&#34;</span>], <span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">uglifyFunc</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">uglify</span>({<span style="color:#a6e22e">mangle</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">except</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;require&#39;</span> ,<span style="color:#e6db74">&#39;import&#39;</span>, <span style="color:#e6db74">&#39;export&#39;</span>, <span style="color:#e6db74">&#39;exports&#39;</span> ,<span style="color:#e6db74">&#39;module&#39;</span>]}});
+    };
+    <span style="color:#a6e22e">pageNames</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">pageName</span>) {
+        <span style="color:#75715e">// 在这里添加自定义 browserify 选项
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">customOpts</span> <span style="color:#f92672">=</span> {
+            <span style="color:#a6e22e">entries</span><span style="color:#f92672">:</span> [<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">jsEntryPath</span>, <span style="color:#a6e22e">pageName</span>, <span style="color:#e6db74">&#39;index.js&#39;</span>)],
+            <span style="color:#a6e22e">debug</span><span style="color:#f92672">:</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>,
+            <span style="color:#a6e22e">plugin</span><span style="color:#f92672">:</span> [<span style="color:#a6e22e">watchify</span>, <span style="color:#a6e22e">errorify</span>]
+        };
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">opts</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">_</span>.<span style="color:#a6e22e">assign</span>({}, <span style="color:#a6e22e">watchify</span>.<span style="color:#a6e22e">args</span>, <span style="color:#a6e22e">customOpts</span>);
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">browserify</span>(<span style="color:#a6e22e">opts</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;lodash&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-dom&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;intl&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-intl&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-intl-zh&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-intl-en&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-router&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;redux&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;redux-thunk&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;react-redux&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;antd&#39;</span>);
+        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">exclude</span>(<span style="color:#e6db74">&#39;axios&#39;</span>);
+        <span style="color:#75715e">// 在这里加入变换操作
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">transform</span>(<span style="color:#a6e22e">babelify</span>.<span style="color:#a6e22e">configure</span>({
+            <span style="color:#a6e22e">presets</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;es2015&#34;</span>, <span style="color:#e6db74">&#34;react&#34;</span>],
+            <span style="color:#a6e22e">plugins</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;transform-decorators-legacy&#34;</span>, <span style="color:#e6db74">&#34;transform-object-rest-spread&#34;</span>]
+        }));
+
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">buildjs</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(){
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">bundle</span>()
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">source</span>(<span style="color:#a6e22e">pageName</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;_bundle.js&#39;</span>))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">buffer</span>())
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#a6e22e">uglifyFunc</span>))
+                <span style="color:#75715e">// write to output
+</span><span style="color:#75715e"></span>                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildJsPath</span>));
+        };
+
+        <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;buildjs_&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span>, <span style="color:#a6e22e">buildjs</span>); <span style="color:#75715e">// 这样你就可以运行 `gulp js` 来编译文件了
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">buildjs_tasks</span>.<span style="color:#a6e22e">push</span>(<span style="color:#e6db74">&#39;buildjs_&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span>);
+        <span style="color:#a6e22e">buildjs_funcs</span>.<span style="color:#a6e22e">push</span>({<span style="color:#a6e22e">b</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">func</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">buildjs</span>});
+
+        <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;buildcss_&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span>, <span style="color:#66d9ef">function</span>(){
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>(<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">cssEntryPath</span>, <span style="color:#a6e22e">pageName</span>, <span style="color:#e6db74">&#39;index.less&#39;</span>))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">imageRev</span>())
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#66d9ef">function</span>(){
+                    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sourcemaps</span>.<span style="color:#a6e22e">init</span>();
+                }))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">less</span>({
+                    <span style="color:#a6e22e">paths</span><span style="color:#f92672">:</span> [ <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;css&#39;</span>) ]
+                }))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#66d9ef">function</span>(){
+                    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sourcemaps</span>.<span style="color:#a6e22e">write</span>();
+                }))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">concat</span>(<span style="color:#a6e22e">pageName</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;_bundle.css&#39;</span>))
+                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#66d9ef">function</span>(){
+                    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cleanCSS</span>({<span style="color:#a6e22e">keepSpecialComments</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>})
+                }))
+                <span style="color:#75715e">// write to output
+</span><span style="color:#75715e"></span>                .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildCssPath</span>));
+        });
+        <span style="color:#a6e22e">buildcss_tasks</span>.<span style="color:#a6e22e">push</span>(<span style="color:#e6db74">&#39;buildcss_&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span>);
+    });
+
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">browserify</span>({
+        <span style="color:#a6e22e">plugin</span><span style="color:#f92672">:</span> [<span style="color:#a6e22e">errorify</span>]
+    });
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/lodash/lodash&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;lodash&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react/dist/react&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-dom/dist/react-dom&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-dom&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/intl/dist/intl&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;intl&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-intl/dist/react-intl&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-intl&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-intl/locale-data/zh.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-intl-zh&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-intl/locale-data/en.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-intl-en&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-router/umd/ReactRouter&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-router&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/redux/dist/redux&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;redux&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/redux-thunk/dist/redux-thunk&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;redux-thunk&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/react-redux/dist/react-redux&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;react-redux&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/antd/dist/antd&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;antd&#39;</span>});
+    <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./node_modules/axios/dist/axios&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.js&#39;</span>, {<span style="color:#a6e22e">expose</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;axios&#39;</span>});
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">jsVendorBundleTask</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">bundle</span>()
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">source</span>(<span style="color:#e6db74">&#39;vendor_bundle.js&#39;</span>))
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">buffer</span>())
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#a6e22e">uglifyFunc</span>))
+        <span style="color:#75715e">// write to output
+</span><span style="color:#75715e"></span>        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildJsPath</span>));
+
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">cssVendorBundleTask</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>([
+        <span style="color:#e6db74">&#39;./node_modules/bootstrap/dist/css/bootstrap&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.css&#39;</span>,
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;css&#39;</span>, <span style="color:#e6db74">&#39;common&#39;</span>, <span style="color:#e6db74">&#39;sb-admin-2&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.css&#39;</span>),
+        <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;vendors&#39;</span>, <span style="color:#e6db74">&#39;antd&#39;</span>, <span style="color:#e6db74">&#39;antd&#39;</span><span style="color:#f92672">+</span> (<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;.min&#39;</span><span style="color:#f92672">:</span><span style="color:#e6db74">&#39;&#39;</span>) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.css&#39;</span>)])
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">concat</span>(<span style="color:#e6db74">&#39;vendor_bundle.css&#39;</span>))
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#66d9ef">function</span>(){
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cleanCSS</span>({<span style="color:#a6e22e">keepSpecialComments</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>})
+        }))
+        <span style="color:#75715e">// write to output
+</span><span style="color:#75715e"></span>        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildCssPath</span>));
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">cssFontTask</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>([<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;vendors&#39;</span>, <span style="color:#e6db74">&#39;antd&#39;</span>, <span style="color:#e6db74">&#39;font_*&#39;</span>)])
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildCssPath</span>));
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">merge</span>([]).<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">jsVendorBundleTask</span>).<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">cssVendorBundleTask</span>).<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">cssFontTask</span>);
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;buildAllJs&#39;</span>, <span style="color:#a6e22e">buildjs_tasks</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">cb</span>){
+    <span style="color:#a6e22e">cb</span>();
+    <span style="color:#a6e22e">gutil</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;All Javascript is built.&#34;</span>)
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;buildAllCss&#39;</span>, <span style="color:#a6e22e">buildcss_tasks</span>, <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">cb</span>) {
+    <span style="color:#a6e22e">cb</span>();
+    <span style="color:#a6e22e">gutil</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;All Stylesheet is built.&#34;</span>);
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#34;image&#34;</span>, <span style="color:#66d9ef">function</span>(){
+    <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>([<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;img&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>)])
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildPath</span>, <span style="color:#e6db74">&#39;img&#39;</span>)));
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;html&#39;</span>, <span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">pageNames</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">getPageNames</span>();
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">tasks</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pageNames</span>.<span style="color:#a6e22e">map</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">pageName</span>) {
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>(<span style="color:#a6e22e">htmlEntryPath</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;.html&#39;</span>)
+            .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">version</span>(<span style="color:#a6e22e">versionConfig</span>))
+            .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">ifElse</span>(<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">production</span>, <span style="color:#66d9ef">function</span>(){
+                <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">htmlmin</span>({<span style="color:#a6e22e">collapseWhitespace</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>});
+            }))
+            .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">dest</span>(<span style="color:#a6e22e">buildPath</span>));
+    });
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">merge</span>([]).<span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">tasks</span>);
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;livereload&#39;</span>, [<span style="color:#e6db74">&#39;html&#39;</span>], <span style="color:#66d9ef">function</span> () {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">src</span>([])
+        .<span style="color:#a6e22e">pipe</span>(<span style="color:#a6e22e">connect</span>.<span style="color:#a6e22e">reload</span>());
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;webserver&#39;</span>, <span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">connect</span>.<span style="color:#a6e22e">server</span>({
+        <span style="color:#a6e22e">livereload</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+        <span style="color:#a6e22e">port</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;7777&#34;</span>,
+        <span style="color:#a6e22e">root</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">buildPath</span>,
+        <span style="color:#75715e">//action请求直接反向代理至后端应用服务器
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">middleware</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">connect</span>, <span style="color:#a6e22e">options</span>) {
+            <span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">rule</span> <span style="color:#f92672">=</span> [<span style="color:#e6db74">/\/api\//</span>];
+            <span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">server</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1:8080&#34;</span>;
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">proxy</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Reproxy</span>(<span style="color:#a6e22e">options</span>);
+            <span style="color:#66d9ef">return</span> [<span style="color:#a6e22e">proxy</span>];
+        }
+    });
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;watch&#39;</span>, <span style="color:#66d9ef">function</span>() {
+
+    <span style="color:#a6e22e">buildjs_funcs</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">o</span>){
+        <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;update&#39;</span>, <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">func</span>); <span style="color:#75715e">// 当任何依赖发生改变的时候，运行打包工具
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;log&#39;</span>, <span style="color:#a6e22e">gutil</span>.<span style="color:#a6e22e">log</span>); <span style="color:#75715e">// 输出编译日志到终端
+</span><span style="color:#75715e"></span>    });
+
+    <span style="color:#a6e22e">pageNames</span>.<span style="color:#a6e22e">forEach</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">pageName</span>) {
+        <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">watch</span>(<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">cssEntryPath</span>, <span style="color:#a6e22e">pageName</span>, <span style="color:#e6db74">&#39;**/*.less&#39;</span>), [<span style="color:#e6db74">&#39;buildcss_&#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">pageName</span>]);
+    });
+    <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">watch</span>([<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;img&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>)], [<span style="color:#e6db74">&#39;image&#39;</span>]);
+
+    <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">watch</span>([<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">srcPath</span>, <span style="color:#e6db74">&#39;html&#39;</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>)], [<span style="color:#e6db74">&#39;html&#39;</span>]);
+
+    <span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">watch</span>([<span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildJsPath</span>, <span style="color:#e6db74">&#39;**/*_bundle.js&#39;</span>), <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildCssPath</span>, <span style="color:#e6db74">&#39;**/*_bundle.css&#39;</span>), <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">join</span>(<span style="color:#a6e22e">buildImgPath</span>, <span style="color:#e6db74">&#39;**/*&#39;</span>)], [<span style="color:#e6db74">&#39;livereload&#39;</span>]);
+});
+
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;default&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">cb</span>){
+    <span style="color:#a6e22e">runSequence</span>(<span style="color:#e6db74">&#39;prepare&#39;</span>, [<span style="color:#e6db74">&#39;buildAllJs&#39;</span>, <span style="color:#e6db74">&#39;buildAllCss&#39;</span>, <span style="color:#e6db74">&#39;image&#39;</span>], <span style="color:#e6db74">&#39;html&#39;</span>, <span style="color:#e6db74">&#39;webserver&#39;</span>, <span style="color:#e6db74">&#39;watch&#39;</span>, <span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">cb</span>();
+        <span style="color:#a6e22e">gutil</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Default task is done.&#34;</span>);
+    });
+});
+
+<span style="color:#a6e22e">gulp</span>.<span style="color:#a6e22e">task</span>(<span style="color:#e6db74">&#39;production&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">cb</span>){
+    <span style="color:#a6e22e">runSequence</span>(<span style="color:#e6db74">&#39;set-production&#39;</span>, <span style="color:#e6db74">&#39;prepare&#39;</span>, [<span style="color:#e6db74">&#39;buildAllJs&#39;</span>, <span style="color:#e6db74">&#39;buildAllCss&#39;</span>, <span style="color:#e6db74">&#39;image&#39;</span>], <span style="color:#e6db74">&#39;html&#39;</span>,  <span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">cb</span>();
+        <span style="color:#a6e22e">gutil</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Production task is done.&#34;</span>);
+        <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">exit</span>(<span style="color:#ae81ff">0</span>);
+    });
+});
+</code></pre></div><p>这个gulpfile.js看着很长，但其实分成几个task任务，每个task任务的责任还是比较清楚。</p>
+<p><code>set-production</code>：这个task负责设置当前编译的环境级别，是开发级别的编译，还是生产级别的编译。
+<code>clean</code>：这个task负责清理工作。
+<code>prepare</code>：这个task最复杂了，主要包括两个部分，一是按页面分别定义了编译各页面的js与css任务。二是编译出引用的第三方公共的js、css、font资源。
+<code>buildAllJs</code>：这个task负责编译所有的页面的js。
+<code>buildAllCss</code>：这个task负责编译所有的页面的css。
+<code>image</code>：这个task是对图片进行处理，目前仅仅是拷贝到编译目录。
+<code>html</code>：这个task对html进行处理，这里会对引用的js, css加入version number以避免浏览器缓存。
+<code>livereload</code>：这个task用来通知浏览器刷新。
+<code>webserver</code>: 这个task启动一个开发web服务器，这里使用Reproxy将api请求代理至后端应用服务器。
+<code>watch</code>：这个task启用监听源代码中的文件变更，当发现文件变更时，进行相应的编译处理。同时监听编译目录下的文件变更，当发现变更时，通过浏览器刷新页面。
+<code>default</code>：这是default任务，还是将上述多个任务串进来。
+<code>production</code>：这个是生产级别编译，也就是说仅编译，但不启动开发web服务器，也不监听文件变更。当执行完就退出node进程。</p>
+<p>这样一分析，整个gulpfile.js就比较简单了。gulp的用法还是比较简单的，可参考<a href="http://www.gulpjs.com.cn/docs/api/">中文文档</a>。</p>
+<h2 id="heading">其它</h2>
+<p>最后分享一下我做了一个工程脚手架，前端使用react+redux, 前端编译使用gulp+browerify+babel, 后端使用springmvc+spring+MyBatis，项目地址<code>http://git.oschina.net/jeremy-xu/ssm-scaffold</code>。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-12-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/gulp/">gulp</a>
+          
+          <a href="/tags/react/">react</a>
+          
+          <a href="/tags/redux/">redux</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/01/%E5%85%8D%E7%BC%96%E8%AF%91%E5%9C%A8jsp%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%86%99react%E4%BB%A3%E7%A0%81/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">免编译在JSP中直接写react代码</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/12/%E8%A7%A3%E5%86%B3zookeeper%E5%AF%BC%E8%87%B4tomcat%E5%81%9C%E6%AD%A2%E6%97%B6%E6%8A%A5%E5%BC%82%E5%B8%B8%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">解决zookeeper导致tomcat停止时报异常的问题</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

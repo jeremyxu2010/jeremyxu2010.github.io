@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>保存mysql InnoDB的auto_increment值另类方案 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="问题描述 mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码： -- 刚创建表，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E4%BF%9D%E5%AD%98mysql-innodb%E7%9A%84auto_increment%E5%80%BC%E5%8F%A6%E7%B1%BB%E6%96%B9%E6%A1%88/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="保存mysql InnoDB的auto_increment值另类方案" />
+<meta property="og:description" content="问题描述 mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码： -- 刚创建表，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E4%BF%9D%E5%AD%98mysql-innodb%E7%9A%84auto_increment%E5%80%BC%E5%8F%A6%E7%B1%BB%E6%96%B9%E6%A1%88/" />
+<meta property="article:published_time" content="2016-08-04T23:42:00+08:00" />
+<meta property="article:modified_time" content="2016-08-04T23:42:00+08:00" />
+<meta itemprop="name" content="保存mysql InnoDB的auto_increment值另类方案">
+<meta itemprop="description" content="问题描述 mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码： -- 刚创建表，">
+<meta itemprop="datePublished" content="2016-08-04T23:42:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-04T23:42:00&#43;08:00" />
+<meta itemprop="wordCount" content="2154">
+
+
+
+<meta itemprop="keywords" content="mysql,linux,bash," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="保存mysql InnoDB的auto_increment值另类方案"/>
+<meta name="twitter:description" content="问题描述 mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码： -- 刚创建表，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">保存mysql InnoDB的auto_increment值另类方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BC%80%E5%8F%91/"> 数据库开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2154 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题描述</a></li>
+    <li><a href="#heading-1">另类解决方案</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">问题描述</h2>
+<p>mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- 刚创建表，该表没有AUTO_INCREMENT值
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test(
+  id int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> auto_increment,
+  field1 varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">default</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>
+) engine<span style="color:#f92672">=</span>InnoDB;
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+<span style="color:#75715e">-- 插入两条数据后，可以看到该表的AUTO_INCREMENT变为3了
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test(field1) <span style="color:#66d9ef">values</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test1</span><span style="color:#e6db74">&#39;</span>);
+<span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test(field1) <span style="color:#66d9ef">values</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test2</span><span style="color:#e6db74">&#39;</span>);
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+<span style="color:#75715e">-- 删除一条数据后，该表的AUTO_INCREMENT还是3
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> test <span style="color:#66d9ef">where</span> field1<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test2</span><span style="color:#e6db74">&#39;</span>;
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+<span style="color:#75715e">-- 再插入一条数据后，该表的AUTO_INCREMENT变为4
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test(field1) <span style="color:#66d9ef">values</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test2</span><span style="color:#e6db74">&#39;</span>);
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+<span style="color:#75715e">-- 删除一条数据后，该表的AUTO_INCREMENT还是4
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> test <span style="color:#66d9ef">where</span> field1<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test2</span><span style="color:#e6db74">&#39;</span>;
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+
+<span style="color:#75715e">-- /etc/init.d/mysql restart 重启后，该表又没有AUTO_INCREMENT值了
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+
+<span style="color:#75715e">-- 再插入一条数据后，这里本来预期该表的AUTO_INCREMENT应该是5的，但实际上却又变为3了
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> test(field1) <span style="color:#66d9ef">values</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">test2</span><span style="color:#e6db74">&#39;</span>);
+<span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> test<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>;
+...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>test<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>field1<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">40</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB AUTO_INCREMENT<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8mb4
+...
+</code></pre></div><p>mysql的上述行为说明在mysql运行过程中InnoDB存储引擎的表，其AUTO_INCREMENT值会随着插入操作持续增长的，但mysql重启之后，AUTO_INCREMENT值并没有持久保存下来，重启后再插入数据，mysql会以表中<code>最大的id+1</code>作为当前的AUTO_INCREMENT值，新插入的数据的ID就变为这个了。</p>
+<p>在mysql的bug跟踪系统里，上述问题已经被很多人反映了，如<a href="http://bugs.mysql.com/bug.php?id=21641">链接1</a>、<a href="https://mariadb.atlassian.net/browse/MDEV-6076">链接2</a></p>
+<p>mysql上述行为本身也没有太大的问题，但如果业务系统将这种自增ID当成业务ID就存在问题了。比如在业务系统里创建了一个工单A，该工单对应的自增ID为1002，后来由于业务操作，删除了ID为1002的工单记录，然后系统维护时重启了mysql，后面业务系统里又创建了一个工单B，该工单对应的自增ID就有可能也为1002，然后再以1002为查询条件，就会查到两个不同工单对应的日志。</p>
+<p>当然本质上应避免用mysql的这种自增ID作为业务ID，而且应该使用自定义的业务ID生成器。</p>
+<p>很不幸，我们目前做的项目，在设计之初并没有考虑到这个问题，因此大量使用这种自增ID作为业务ID。</p>
+<h2 id="heading-1">另类解决方案</h2>
+<p>要从根源上解决这个问题，当然是使用自定义的业务ID来代替mysql的这种自增ID，但项目涉及的表非常多，基于这些表的数据访问方法也相当多，为了避免大规模修改业务代码，只能想办法规避这个问题。查阅mysql的问题跟踪系统，也没找到合理的解决方案。最后在一个讲触发器的帖子影响下想到一种另类解决方案，代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+MYSQL_HOST<span style="color:#f92672">=</span>127.0.0.1
+MYSQL_USER<span style="color:#f92672">=</span>root
+MYSQL_PWD<span style="color:#f92672">=</span>mysqlpwd
+MYSQL_DBNAME<span style="color:#f92672">=</span>mysqldb
+
+AUTOINCR_INDEXES_TABLE_NAME<span style="color:#f92672">=</span>autoincr_indexes
+AUTOINCR_INDEXES_TABLE_NAME_COLUMN_NAME<span style="color:#f92672">=</span>table_name
+AUTOINCR_INDEXES_INDEX_VALUE_COLUMN_NAME<span style="color:#f92672">=</span>index_value
+
+PROCEDURE_NAME<span style="color:#f92672">=</span>restore_table_indexes
+
+<span style="color:#75715e">#需保证mysql用户对此文件可读</span>
+MYSQL_INIT_FILE<span style="color:#f92672">=</span>/var/call_procedure.sql
+
+
+
+<span style="color:#75715e"># 1. 创建记录数据库里每个表的auto_increment值的表$AUTOINCR_INDEXES_TABLE_NAME</span>
+mysql --batch -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST $MYSQL_DBNAME -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">DROP TABLE IF EXISTS </span>$AUTOINCR_INDEXES_TABLE_NAME<span style="color:#e6db74">; CREATE TABLE </span>$AUTOINCR_INDEXES_TABLE_NAME<span style="color:#e6db74"> (</span>$AUTOINCR_INDEXES_TABLE_NAME_COLUMN_NAME<span style="color:#e6db74"> varchar(40) PRIMARY KEY NOT NULL, </span>$AUTOINCR_INDEXES_INDEX_VALUE_COLUMN_NAME<span style="color:#e6db74"> int(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># 2. 列出数据库里每个表的表名</span>
+TABLES<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>mysql --batch -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST mysql -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SELECT t.table_name FROM INFORMATION_SCHEMA.TABLES t WHERE t.table_schema = &#39;</span>$MYSQL_DBNAME<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#34;</span> | sed -n <span style="color:#e6db74">&#39;1!p&#39;</span><span style="color:#e6db74">`</span>
+
+<span style="color:#75715e"># 3. 针对有自增ID的表，为每个表创建一个自动更新$AUTOINCR_INDEXES_TABLE_NAME表中对应记录的触发器</span>
+TMP_CREATE_TRIGGER_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mktemp /tmp/$$_create_trigger_XXXX.sql<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+trap <span style="color:#e6db74">&#34;[ -f &#34;</span>$TMP_CREATE_TRIGGER_FILE<span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> ] &amp;&amp; rm -f </span>$TMP_CREATE_TRIGGER_FILE<span style="color:#e6db74">&#34;</span> HUP INT QUIT TERM EXIT
+<span style="color:#66d9ef">for</span> T in <span style="color:#e6db74">${</span>TABLES[@]<span style="color:#e6db74">}</span> ; <span style="color:#66d9ef">do</span>
+    autoIncrIndexValue<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>mysql --batch -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST mysql -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SELECT AUTO_INCREMENT FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = &#39;</span>$MYSQL_DBNAME<span style="color:#e6db74">&#39; AND   TABLE_NAME   = &#39;</span>$T<span style="color:#e6db74">&#39;;</span><span style="color:#e6db74">&#34;</span> | sed -n <span style="color:#e6db74">&#39;1!p&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#e6db74">`</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> $autoIncrIndexValue !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;NULL&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        <span style="color:#75715e">#创建插入之后的触发器</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">DELIMITER \$\$
+</span><span style="color:#e6db74">drop trigger /*! IF EXISTS */ </span><span style="color:#e6db74">${</span>T<span style="color:#e6db74">}</span><span style="color:#e6db74">_autoincr_saver \$\$
+</span><span style="color:#e6db74">create trigger </span><span style="color:#e6db74">${</span>T<span style="color:#e6db74">}</span><span style="color:#e6db74">_autoincr_saver
+</span><span style="color:#e6db74">after insert on </span>$T<span style="color:#e6db74">
+</span><span style="color:#e6db74">for each row begin
+</span><span style="color:#e6db74">    DECLARE x integer;
+</span><span style="color:#e6db74">    SET @x = (SELECT AUTO_INCREMENT FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = &#39;</span>$MYSQL_DBNAME<span style="color:#e6db74">&#39; AND   TABLE_NAME   = &#39;</span>$T<span style="color:#e6db74">&#39;);
+</span><span style="color:#e6db74">    INSERT INTO </span>$AUTOINCR_INDEXES_TABLE_NAME<span style="color:#e6db74"> VALUES (&#39;</span>$T<span style="color:#e6db74">&#39;, @x) ON DUPLICATE KEY UPDATE </span>$AUTOINCR_INDEXES_INDEX_VALUE_COLUMN_NAME<span style="color:#e6db74">=@x;
+</span><span style="color:#e6db74">end
+</span><span style="color:#e6db74">\$\$
+</span><span style="color:#e6db74">DELIMITER ;
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt;&gt; $TMP_CREATE_TRIGGER_FILE
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+mysql -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST $MYSQL_DBNAME &lt; $TMP_CREATE_TRIGGER_FILE
+rm -f $TMP_CREATE_TRIGGER_FILE
+
+<span style="color:#75715e"># 4. 针对有自增ID的表，为每个表在$AUTOINCR_INDEXES_TABLE_NAME表中创建对应记录以保存该表的auto_increment值</span>
+<span style="color:#66d9ef">for</span> T in <span style="color:#e6db74">${</span>TABLES[@]<span style="color:#e6db74">}</span> ; <span style="color:#66d9ef">do</span>
+    autoIncrIndexValue<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>mysql --batch -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST mysql -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SELECT AUTO_INCREMENT FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = &#39;</span>$MYSQL_DBNAME<span style="color:#e6db74">&#39; AND   TABLE_NAME   = &#39;</span>$T<span style="color:#e6db74">&#39;;</span><span style="color:#e6db74">&#34;</span> | sed -n <span style="color:#e6db74">&#39;1!p&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#e6db74">`</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> $autoIncrIndexValue !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;NULL&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        mysql --batch -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST $MYSQL_DBNAME -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">INSERT INTO </span>$AUTOINCR_INDEXES_TABLE_NAME<span style="color:#e6db74"> VALUES (&#39;</span>$T<span style="color:#e6db74">&#39;, </span>$autoIncrIndexValue<span style="color:#e6db74">) ON DUPLICATE KEY UPDATE </span>$AUTOINCR_INDEXES_INDEX_VALUE_COLUMN_NAME<span style="color:#e6db74">=</span>$autoIncrIndexValue<span style="color:#e6db74">;</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">done</span>
+
+<span style="color:#75715e"># 5. 创建一个存储过程，其功能是以$AUTOINCR_INDEXES_TABLE_NAME表的记录为准，恢复每个表的auto_increment值</span>
+TMP_CREATE_PROCEDURE_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>mktemp /tmp/$$_create_trigger_XXXX.sql<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+trap <span style="color:#e6db74">&#34;[ -f &#34;</span>$TMP_CREATE_PROCEDURE_FILE<span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> ] &amp;&amp; rm -f </span>$TMP_CREATE_PROCEDURE_FILE<span style="color:#e6db74">&#34;</span> HUP INT QUIT TERM EXIT
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">use </span>$MYSQL_DBNAME<span style="color:#e6db74">;
+</span><span style="color:#e6db74">drop procedure IF EXISTS </span>$PROCEDURE_NAME<span style="color:#e6db74">;
+</span><span style="color:#e6db74">delimiter \$\$
+</span><span style="color:#e6db74">create procedure </span>$PROCEDURE_NAME<span style="color:#e6db74">()
+</span><span style="color:#e6db74">begin
+</span><span style="color:#e6db74">    DECLARE done INT DEFAULT 0;
+</span><span style="color:#e6db74">    DECLARE tableName CHAR(40);
+</span><span style="color:#e6db74">    DECLARE indexValue INT;
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    -- 声明游标对应的 SQL 语句
+</span><span style="color:#e6db74">    DECLARE cur CURSOR FOR select table_name, index_value from </span>$MYSQL_DBNAME<span style="color:#e6db74">.</span>$AUTOINCR_INDEXES_TABLE_NAME<span style="color:#e6db74">;
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    -- 在游标循环到最后会将 done 设置为 1
+</span><span style="color:#e6db74">    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    -- 执行查询
+</span><span style="color:#e6db74">    open cur;
+</span><span style="color:#e6db74">    -- 遍历游标每一行
+</span><span style="color:#e6db74">    REPEAT
+</span><span style="color:#e6db74">        -- 把一行的信息存放在对应的变量中
+</span><span style="color:#e6db74">        FETCH cur INTO tableName, indexValue;
+</span><span style="color:#e6db74">        if not done then
+</span><span style="color:#e6db74">            -- 拼装修改auto_increment值的sql语句，并执行语句
+</span><span style="color:#e6db74">            SET @STMT := CONCAT(\&#34;ALTER TABLE </span>$MYSQL_DBNAME<span style="color:#e6db74">.\&#34;, tableName, \&#34; AUTO_INCREMENT=\&#34;, indexValue, \&#34;;\&#34;);
+</span><span style="color:#e6db74">            PREPARE STMT FROM @STMT;
+</span><span style="color:#e6db74">            EXECUTE STMT;
+</span><span style="color:#e6db74">        end if;
+</span><span style="color:#e6db74">    UNTIL done END REPEAT;
+</span><span style="color:#e6db74">    CLOSE cur;
+</span><span style="color:#e6db74">end
+</span><span style="color:#e6db74">\$\$
+</span><span style="color:#e6db74">DELIMITER ;
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; $TMP_CREATE_PROCEDURE_FILE
+mysql -u$MYSQL_USER -p$MYSQL_PWD -h$MYSQL_HOST $MYSQL_DBNAME &lt; $TMP_CREATE_PROCEDURE_FILE
+rm -f $TMP_CREATE_PROCEDURE_FILE
+
+<span style="color:#75715e"># 6. 修改my.cnf文件，以使mysql在启动时调用存储过程</span>
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">use </span>$MYSQL_DBNAME<span style="color:#e6db74">;
+</span><span style="color:#e6db74">call </span>$PROCEDURE_NAME<span style="color:#e6db74">();
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; $MYSQL_INIT_FILE
+sed -i -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">s|^\[mysqld\]</span>$<span style="color:#e6db74">|[mysqld]\ninit-file=</span>$MYSQL_INIT_FILE<span style="color:#e6db74">|</span><span style="color:#e6db74">&#34;</span> /etc/my.cnf
+</code></pre></div><p>上述代码说起来大概可以归结为以下三点：</p>
+<ul>
+<li>将所有表的auto_increment值保存下来</li>
+<li>利用插入后的触发器，在每次插入数据后更新保存的auto_increment值</li>
+<li>利用init-file参数，在mysql服务启动时调用一个存储过程，该存储过程负责以保存的auto_increment值为基准，恢复每个表的auto_increment值</li>
+</ul>
+<h2 id="heading-2">参考</h2>
+<p><code>https://mariadb.atlassian.net/browse/MDEV-6076</code>
+<code>http://bugs.mysql.com/bug.php?id=199</code>
+<code>http://dev.mysql.com/doc/refman/5.7/en/trigger-syntax.html</code>
+<code>http://dev.mysql.com/doc/refman/5.7/en/server-options.html#option_mysqld_init-file</code>
+<code>http://dev.mysql.com/doc/refman/5.7/en/create-procedure.html</code>
+<code>http://dev.mysql.com/doc/refman/5.7/en/cursors.html</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-04</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mysql/">mysql</a>
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/bash/">bash</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E8%AF%95%E7%94%A8webvirtmgr/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">试用WebVirtMgr</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E8%AF%95%E7%94%A8openstack/">
+            <span class="next-text nav-default">试用openstack</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

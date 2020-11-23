@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tensorflow on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/tensorflow/</link>
+    <description>Recent content in tensorflow on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 07 May 2017 18:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/tensorflow/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用keras破解验证码</title>
+      <link>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+      <pubDate>Sun, 07 May 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+      <description>今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_03</title>
+      <link>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/</link>
+      <pubDate>Sun, 19 Mar 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/</guid>
+      <description>上一篇使用tensorflow完成一个卷积神经网络，但当时写的代码虽然可以工作，还比较零乱，并且并没有经过参数调优，最终得到的模型准确率也并</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_02</title>
+      <link>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_02/</link>
+      <pubDate>Thu, 02 Mar 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_02/</guid>
+      <description>上一篇笔记采用一个线性关系的神经层处理了MNIST的训练数据，最后得到一个准确率一般的神经网络。但其实对于这种图像识别的场景，tensorf</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_01</title>
+      <link>https://jeremyxu2010.github.io/2017/02/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_01/</link>
+      <pubDate>Tue, 28 Feb 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_01/</guid>
+      <description>最近看到一个有趣的项目pix2pix-tensorflow。大概功能是用户在网页上画一只猫的轮廓，然后它就可以输出与这个轮廓很相似的猫的清晰</description>
+    </item>
+    
+  </channel>
+</rss>

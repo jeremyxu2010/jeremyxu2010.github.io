@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ansible on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/ansible/</link>
+    <description>Recent content in ansible on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 26 May 2019 20:14:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MySQL InnoDB Cluster实战</title>
+      <link>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sun, 26 May 2019 20:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</guid>
+      <description>对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门之playbook</title>
+      <link>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</link>
+      <pubDate>Tue, 20 Mar 2018 22:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</guid>
+      <description>Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门</title>
+      <link>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Mon, 26 Feb 2018 02:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</guid>
+      <description>工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的</description>
+    </item>
+    
+  </channel>
+</rss>

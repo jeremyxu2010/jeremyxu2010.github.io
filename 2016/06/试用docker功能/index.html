@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>试用docker功能 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="试用docker功能" />
+<meta property="og:description" content="花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/" />
+<meta property="article:published_time" content="2016-06-19T23:19:00+08:00" />
+<meta property="article:modified_time" content="2016-06-19T23:19:00+08:00" />
+<meta itemprop="name" content="试用docker功能">
+<meta itemprop="description" content="花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma">
+<meta itemprop="datePublished" content="2016-06-19T23:19:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-06-19T23:19:00&#43;08:00" />
+<meta itemprop="wordCount" content="2435">
+
+
+
+<meta itemprop="keywords" content="linux,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="试用docker功能"/>
+<meta name="twitter:description" content="花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">试用docker功能</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-06-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2435 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker">安装Docker</a></li>
+    <li><a href="#docker-1">加速docker抓取镜像</a></li>
+    <li><a href="#docker-2">docker常用命令</a></li>
+    <li><a href="#heading">构建自己的镜像</a></li>
+    <li><a href="#heading-1">接下来的计划</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。</p>
+<h2 id="docker">安装Docker</h2>
+<p>因为我使用的MacOS系统，查阅文档找到在MacOS系统中最简易安装办法如下。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#使用Homebrew Cask安装virtualbox</span>
+brew cask install virtualbox
+<span style="color:#75715e">#使用Homebrew安装docker-machine</span>
+brew install docker-machine
+<span style="color:#75715e">#使用docker-machine创建名叫mydockerhost的docker主机</span>
+docker-machine create --driver<span style="color:#f92672">=</span>virtualbox mydockerhost
+</code></pre></div><p>这里创建docker主机时要从github下载一个boot2docker.iso的镜像，下得很慢，我使用axel加速了一下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget https://github.com/boot2docker/boot2docker/releases/download/v1.11.2/boot2docker.iso
+<span style="color:#75715e"># 这里会进行几次重定向，最后重定向到amazon上s3的一个地址，拷贝这个地址，然后中止下载，然后用axel来多线程下载</span>
+axel -o boot2docker.iso -n <span style="color:#ae81ff">20</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>amazon_s3_url<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#75715e">#最后将下载的iso移至docker的缓存目录</span>
+mv boot2docker.iso ~/.docker/machine/cache/boot2docker.iso
+<span style="color:#75715e">#重新创始docker主机</span>
+docker-machine create --driver<span style="color:#f92672">=</span>virtualbox mydockerhost
+<span style="color:#75715e">#登入docker主机</span>
+docker-machine ssh mydockerhost
+</code></pre></div><h2 id="docker-1">加速docker抓取镜像</h2>
+<p>默认安装的docker主机抓取官方镜像是从国外官方registry上下载的，天朝的网速怎么受得了。因此花了些时间找加速的registry。</p>
+<p>首先就是试用daocloud的加速服务。要使用daocloud的加速服务需要在daocloud上安装它的监控程序。安装过程倒是很简单，就是在docker主机上执行命令。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -sSL https://get.daocloud.io/daomonit/install.sh | sh -s <span style="color:#e6db74">${</span>你daocloud用户所对应的一长串字符<span style="color:#e6db74">}</span>
+</code></pre></div><p>但我实际测试发现daocloud的加速服务拉取像ubuntu这样的热门镜像比较快，但提取像jetty:9.2.11-jre7这样的冷门镜像就相当慢，弃之。</p>
+<p>然后试用灵雀云alauda.cn的加速服务，注册它的帐户后，点“免费加速器”，会看到你的加速地址，形如<code>http://${你的帐户名}.m.alauda.cn</code>，然后就修改docker主机里的<code>/var/lib/boot2docker/profile</code>文件，在它的<code>EXTRA_ARGS</code>参数里加入<code>--registry-mirror=http://${你的帐户名}.m.alauda.cn</code>，然后重启docker主机，再次登入docker主机。根据我实际测试，同样拉取像ubuntu这样的热门镜像比较快，但提取像jetty:9.2.11-jre7这样的冷门镜像就相当慢，弃之。</p>
+<p>最后试用阿里云的加速服务，同样注册阿里云帐户登入<code>https://cr.console.aliyun.com</code>之后，点击<code>加速器</code>，它同样给出了加速地址，形如<code>https://xxxxx.mirror.aliyuncs.com</code>，它也是修改<code>EXTRA_ARGS</code>参数法，就不赘述了。经测试无论拉取的是ubuntu之类热门镜像，还是jetty:9.2.11-jre7这样的冷门镜像，速度都相当快，点赞。</p>
+<p>但看过三者的功能后，觉得从三个厂商提供的功能来看是daocloud&gt;alauda&gt;aliyun，aliyun仅仅提供了一个镜像构建管理，而alauda还提供了服务的编排及存储卷管理，daocloud更甚之还提供了管理集群的docker主机功能。阿里云在docker这方面是落后了，好在阿里云有钱基础设施如带宽是好的。</p>
+<h2 id="docker-2">docker常用命令</h2>
+<p>接下来就试用一下docker常用的一些命令</p>
+<ul>
+<li>docker pull centos:6 拉取版本为6的centos镜像</li>
+<li>docker pull nginx 拉取版本为latest的nginx镜像</li>
+<li>docker pull -a centos 拉取所有版本的centos镜像</li>
+<li>docker pull registry.aliyuncs.com/alicloudhpc/toolkit 从其它registry上拉取某个镜像的latest版本</li>
+<li>docker push ${你自己的registry地址}/my-centos:6 推送一个镜像至registry私服</li>
+<li>docker run -t -i &ndash;rm centos:6 /bin/bash  以交互式方式启动一个centos容器，可在bash里尝试各种命令操作，容器退出时会删除容器</li>
+<li>docker run -d &ndash;name=nginx nginx 以后台方式启动一个名称为nginx的nginx容器</li>
+<li>docker logs ${containerId} 在外部查看一个容器控制台输出</li>
+<li>docker attach ${containerId} 进入容器查看容器控制台输出，注意此时要返回外部千万不能按<code>Ctrl+C</code>，而应该按<code>Ctrl-P Ctrl-Q</code>，按<code>Ctrl+C</code>容器就停止了</li>
+<li>docker run -d -p 8000:80 nginx 将容器的80映射至docker主机的8000端口</li>
+<li>docker run -d -p 8000:80 -v /tmp/htmlfiles:/usr/share/nginx/html:ro nginx 将docker主机的/tmp/htmlfiles目录只读挂载至容器的/usr/share/nginx/html目录</li>
+<li>docker run &ndash;link db -d &ndash;name=nginx nginx 启动一个名称为nginx的nginx容器，它链接一个名叫db的容器（即需要使用其它容器提供的服务）</li>
+<li>docker commit ${containerId} my-centos:6 将某个容器提交为镜像，镜像的版本为6</li>
+<li>docker build -t my-centos:6 . 在当前目录下的Dockerfile构建镜像，镜像的名字为my-centos，版本为6</li>
+</ul>
+<p>如果不涉及服务编排及docker主机集群基本就上面这些命令了</p>
+<h2 id="heading">构建自己的镜像</h2>
+<p>为了易于版本管理，一般构建自己的镜像还是推荐编写Dockerfile的办法。编写Dockerfile比较简单，熟悉linux命令就好办了，我试着也写了一个，地址在<a href="https://github.com/jeremyxu2010/my-centos6">这里</a>，写的过程中要注意控制最终镜像的大小，比如Dockerfile的行数要少一些，因为每一条命令后都会在存储上产生一个layer，安装软件包之后要注意及时清理cache等。</p>
+<p>然后本地环境试着构建一下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd my-centos6
+docker build -t my-centos6 .
+</code></pre></div><p>很好，一次就成功了。接下来到阿里云的镜像管理里试一下在线构建镜像。</p>
+<p>点&quot;创建镜像仓库&rdquo;，在出现的表单里填写该镜像的信息，其中“代码源”的地址我选的github，构建设置我选择“master”分支的代码构建镜像版本为“latest”，“6”tag的代码构建镜像版本为“6”。镜像仓库创建好了之后，点“立即构建”，两个镜像就会快速构建，速度很快。构建完毕之后，该镜像就可以在<code>dev.aliyun.com</code>容器Hub里搜索到。也即别人可以通过<code>docker pull registry.aliyuncs.com/jeremyxu2010/my-centos6</code>抓取到我制作的镜像。</p>
+<h2 id="heading-1">接下来的计划</h2>
+<p>今天只是简单地试用了docker的功能，接下来抽时间实践一下docker里服务编排及docker主机集群功能。</p>
+<h2 id="heading-2">参考</h2>
+<ul>
+<li><code>https://docs.docker.com/machine/get-started/</code></li>
+<li><code>https://segmentfault.com/a/1190000000751601</code></li>
+</ul>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-06-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">搭建简易的docker集群</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/">
+            <span class="next-text nav-default">Netty框架研究</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

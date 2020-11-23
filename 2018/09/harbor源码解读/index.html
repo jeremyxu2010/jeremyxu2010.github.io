@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>harbor源码解读 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="harbor源码解读" />
+<meta property="og:description" content="harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" />
+<meta property="article:published_time" content="2018-09-10T17:50:00+08:00" />
+<meta property="article:modified_time" content="2018-09-10T17:50:00+08:00" />
+<meta itemprop="name" content="harbor源码解读">
+<meta itemprop="description" content="harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来">
+<meta itemprop="datePublished" content="2018-09-10T17:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-09-10T17:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="5678">
+
+
+
+<meta itemprop="keywords" content="docker,go," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="harbor源码解读"/>
+<meta name="twitter:description" content="harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">harbor源码解读</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-09-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5678 字 </span>
+        <span class="more-meta"> 预计阅读 12 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#harbor">harbor的架构</a></li>
+    <li><a href="#harbor-1">编译harbor</a>
+      <ul>
+        <li><a href="#heading">准备环境</a></li>
+        <li><a href="#heading-1">编译代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">快速部署</a></li>
+    <li><a href="#heading-3">分析部署结构</a></li>
+    <li><a href="#heading-4">解读源码</a>
+      <ul>
+        <li><a href="#ui">ui</a></li>
+        <li><a href="#adminserver">adminserver</a></li>
+        <li><a href="#chartserver">chartserver</a></li>
+        <li><a href="#common">common</a></li>
+        <li><a href="#jobservice">jobservice</a></li>
+        <li><a href="#registryctl">registryctl</a></li>
+        <li><a href="#replication">replication</a></li>
+        <li><a href="#portal">portal</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><a href="https://goharbor.io/">harbor</a>基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来用，并没有深入了解其实现原理。最近认领了一个任务，会涉及harbor代码级开发，这里提前阅读一下其源代码，提前了解其实现原理及细节。</p>
+<h2 id="harbor">harbor的架构</h2>
+<p>官方有一个<a href="https://github.com/goharbor/harbor/wiki/Architecture-Overview-of-Harbor">框架图</a>，如下：</p>
+<p><img src="/images/20180910/image-20180910192701065.png" alt="image-20180910192701065"></p>
+<p>也简单说了下各组件完成的功能，如下：</p>
+<blockquote>
+<p>As depicted in the above diagram, Harbor comprises 6 components:</p>
+<p><strong>Proxy:</strong> Components of Harbor, such as registry, UI and token services, are all behind a reversed proxy. The proxy forwards requests from browsers and Docker clients to various backend services.</p>
+<p><strong>Registry:</strong> Responsible for storing Docker images and processing Docker push/pull commands. As Harbor needs to enforce access control to images, the Registry will direct clients to a token service to obtain a valid token for each pull or push request.</p>
+<p><strong>Core services:</strong> Harbor’s core functions, which mainly provides the following services:</p>
+<p><strong>UI:</strong> a graphical user interface to help users manage images on the Registry Webhook: Webhook is a mechanism configured in the Registry so that image status changes in the Registry can be populated to the Webhook endpoint of Harbor. Harbor uses webhook to update logs, initiate replications, and some other functions. Token service: Responsible for issuing a token for every docker push/pull command according to a user’s role of a project. If there is no token in a request sent from a Docker client, the Registry will redirect the request to the token service. Database: Database stores the meta data of projects, users, roles, replication policies and images.</p>
+<p><strong>Job services:</strong> used for image replication, local images can be replicated(synchronized) to other Harbor instances.</p>
+<p><strong>Log collector:</strong> Responsible for collecting logs of other modules in a single place.</p>
+</blockquote>
+<p>大致浏览了下代码，上述说明基本也是对的，不过为了方便开发人员理解，下面我用更直接的说法描述一下：</p>
+<p><code>Proxy</code>：底层实际上就是跑了一个nginx的容器，向docker client及浏览器暴露端口，将这些客户端发来的请求反向代理到后端<code>Core Services</code>、<code>Registry</code>。</p>
+<p><code>Registry</code>：这个其实是就是官方的docker registry，其配置了webhook到<code>Core Services</code>，这样当镜像的状态发生变化时，可通知到<code>Core Services</code>了。</p>
+<p><code>Core Services</code>：这个里面内容就比较多了，主要由多个http服务组成，完成的功能主要有以下几点：</p>
+<ol>
+<li>监听<code>Registry</code>上镜像的变化，做相应处理，比如记录日志、发起复制等</li>
+<li>充当<a href="https://docs.docker.com/registry/spec/auth/token/">Docker Authorization Service</a>的角色，对镜像资源进行基于角色的鉴权</li>
+<li>连接<code>Database</code>，提供存取projects、users、roles、replication policies和images元数据的API接口</li>
+<li>提供UI界面</li>
+</ol>
+<p>从目前的代码来看主要有这4个部分<code>ui</code>（这个感觉改名为controller好一点）、<code>adminserver</code>、<code>registryctl</code>、<code>portal</code>。</p>
+<p><code>Job Service</code>：定时执行一些任务，提供API供外部提交任务及查询执行结果。</p>
+<p><code>Log collector</code>：说白了就是一个<code>rsyslog</code>日志服务，其它组件可以将日志发送到这里，它负责集中存储。</p>
+<p><code>Database</code>：就是<code>mysql</code>数据库服务，用于存储projects、users、roles、replication policies和images的元数据。</p>
+<h2 id="harbor-1">编译harbor</h2>
+<p>直接参照官方给出的编译指南即可编译harbor。</p>
+<h3 id="heading">准备环境</h3>
+<p>由于我使用的是macOS系统，比较简单，就是安装<code>docker</code>、 <code>docker-compose</code>、 <code>git</code>、 <code>golang</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install docker docker-compose git golang
+</code></pre></div><h3 id="heading-1">编译代码</h3>
+<p>首先克隆代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir $GOPATH/src/github.com/goharbor/
+git clone https://github.com/goharbor/harbor $GOPATH/src/github.com/goharbor/harbor
+</code></pre></div><p>根据实际情况修改配置文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd $GOPATH/src/github.com/goharbor/harbor
+vi make/harbor.cfg
+</code></pre></div><p>编译代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make install -e NOTARYFLAG<span style="color:#f92672">=</span>true CLAIRFLAG<span style="color:#f92672">=</span>true
+</code></pre></div><p>因为我用的是macOS系统，官方的脚本在macOS系统执行会报一些，幸好找到有人给出了<a href="https://github.com/cd1989/harbor/commit/02a50b5735306aad0b5419869531c42d219b176c">补丁</a>，不过该补丁还没合到主干上，需要手工合并自己的工作区。</p>
+<p>第一次成功编译后，后面给<code>make</code>命令传入不同的环境变量及预定义target名称，即可完成各种CI任务了。<strong>为啥不接入标准的CI系统？</strong> Makefile的使用说明参见<a href="https://github.com/goharbor/harbor/blob/master/docs/compile_guide.md#appendix">这里</a>。</p>
+<h2 id="heading-2">快速部署</h2>
+<p>这里使用官方提供的helm chart快速在k8s里进行部署。</p>
+<p>下载helm chart源代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/goharbor/harbor-helm
+cd harbor-helm
+</code></pre></div><p>编辑values.yaml文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp values.yaml values_local.yaml
+vi values_local.yaml
+...
+externalURL: https://harbor.k8s.local
+...
+ingress:
+  enabled: true
+  hosts:
+    core: harbor.k8s.local
+    notary: notary.k8s.local
+  ...
+  tls:
+    enabled: true
+    <span style="color:#75715e"># Fill the secretName if you want to use the certificate of</span> 
+    <span style="color:#75715e"># yourself when Harbor serves with HTTPS. A certificate will</span> 
+    <span style="color:#75715e"># be generated automatically by the chart if leave it empty</span>
+    secretName: <span style="color:#e6db74">&#34;default-tls-secret&#34;</span>
+</code></pre></div><p>仅修改了几处域名相关的配置项，同时HTTPS证书使用已经创建好了的<code>default-tls-secret</code>，创建<code>default-tls-secret</code>的办法可参考之前的<a href="/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/">文章</a>。</p>
+<p>使用helm命令安装：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">helm install . --namespace kube-system --name local-harbor -f values_local.yaml
+</code></pre></div><p>然后就可以用浏览器访问<code>https://harbor.k8s.local</code>了。</p>
+<h2 id="heading-3">分析部署结构</h2>
+<p>看一下部署的结构：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n kube-system get deployment|grep local-harbor
+local-harbor-harbor-adminserver            <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-chartmuseum            <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-clair                  <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-jobservice             <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-notary-server          <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-notary-signer          <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-portal                 <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-registry               <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+local-harbor-harbor-ui                     <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>            <span style="color:#ae81ff">1</span>           9h
+$ kubectl -n kube-system get statefulset|grep local-harbor
+local-harbor-harbor-database   <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         9h
+local-harbor-redis-master      <span style="color:#ae81ff">1</span>         <span style="color:#ae81ff">1</span>         9h
+</code></pre></div><p>可以看到总共有9个deployments和2个statefulsets，结构架构图及官方文档，总结这11个组件的作用如下：</p>
+<ol>
+<li><code>local-harbor-harbor-notary-server</code>、<code>local-harbor-harbor-notary-signer</code>这两个deployments主要用于实现<code>Docker Content Trust</code>，界面上显示为给镜像签名。</li>
+<li><code>local-harbor-harbor-database</code>、<code>local-harbor-redis-master</code>这两个是存储组件，是数据库及redis缓存，helm chart也提供方案使用外部数据库及redis缓存，在<code>values.yaml</code>里简单配置一下就好。</li>
+<li><code>local-harbor-harbor-jobservice</code>就是架构图里的<code>Job services</code>了。</li>
+<li><code>local-harbor-harbor-clair</code>主要用于对镜像进行安全扫描。</li>
+<li><code>local-harbor-harbor-registry</code>就是架构图里的<code>Registry</code>了。</li>
+<li><code>local-harbor-harbor-adminserver</code>、<code>local-harbor-harbor-chartmuseum</code>、<code>local-harbor-harbor-ui</code>、<code>local-harbor-harbor-portal</code>在架构图里都属于<code>Core Services</code>，分别是用于系统配置管理、chart存储抽象层、harbor核心逻辑控制层、harbor web界面前端。</li>
+</ol>
+<p>这11个组件的镜像封装脚本在<code>$GOPATH/src/github.com/goharbor/harbor/make/photon</code>目录里，以后要将业务应用封装成docker镜像，可以参考这些<code>Dockerfile</code>文件。</p>
+<p>这11个组件的k8s部署描述文件在<code>$GOPATH/src/github.com/goharbor/harbor/make/kubernetes</code>目录里，同样以后如果要将业务应用部署在k8s里，可以参考这里的描述文件。</p>
+<h2 id="heading-4">解读源码</h2>
+<p>主要代码位于<code>$GOPATH/src/github.com/goharbor/harbor/src</code>这个目录，这里将这几个目录逐个分析一下。</p>
+<h3 id="ui">ui</h3>
+<p>这是个API聚合层，个人感觉改名为controller好一点。它是一个标准的API服务，主要完成以下功能：</p>
+<ol>
+<li>监听<code>Registry</code>上镜像的变化，做相应处理，比如记录日志、发起复制等</li>
+<li>充当<a href="https://docs.docker.com/registry/spec/auth/token/">Docker Authorization Service</a>的角色，对镜像资源进行基于角色的鉴权</li>
+<li>连接<code>Database</code>，提供存取projects、users、roles、replication policies和images元数据的API接口</li>
+<li>提供UI界面、</li>
+</ol>
+<p>首先从其入口方法<code>$GOPATH/src/github.com/goharbor/harbor/src/ui/main.go</code>看起，主要完成以下几步：</p>
+<ol>
+<li>
+<p>初始化beego框架的session、模板。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BConfig</span>.<span style="color:#a6e22e">WebConfig</span>.<span style="color:#a6e22e">Session</span>.<span style="color:#a6e22e">SessionOn</span> = <span style="color:#66d9ef">true</span>
+  <span style="color:#75715e">// TODO
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">redisURL</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;_REDIS_URL&#34;</span>)
+  <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">redisURL</span>) &gt; <span style="color:#ae81ff">0</span> {
+  <span style="color:#a6e22e">gob</span>.<span style="color:#a6e22e">Register</span>(<span style="color:#a6e22e">models</span>.<span style="color:#a6e22e">User</span>{})
+  <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BConfig</span>.<span style="color:#a6e22e">WebConfig</span>.<span style="color:#a6e22e">Session</span>.<span style="color:#a6e22e">SessionProvider</span> = <span style="color:#e6db74">&#34;redis&#34;</span>
+  <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BConfig</span>.<span style="color:#a6e22e">WebConfig</span>.<span style="color:#a6e22e">Session</span>.<span style="color:#a6e22e">SessionProviderConfig</span> = <span style="color:#a6e22e">redisURL</span>
+  }
+  <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">AddTemplateExt</span>(<span style="color:#e6db74">&#34;htm&#34;</span>)
+</code></pre></div></li>
+<li>
+<p>初始化配置，注意配置是从adminserver得来，配置的管理由adminserver负责。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;initializing configurations...&#34;</span>)
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Init</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to initialize configurations: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+  }
+  <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;configurations initialization completed&#34;</span>)
+</code></pre></div></li>
+<li>
+<p>为多个服务初始化accessFilter，主要就是<code>Notary</code>和<code>Registry</code>。<code>accessFilter</code>就是对<code>Registry</code>和<code>Notary</code>的一些操作进行过滤处理，主要是根据角色进行一些权限约束，架构上参考<a href="https://docs.docker.com/registry/spec/auth/token/">Docker Authorization Service</a>。详见这个<code>$GOPATH/src/github.com/goharbor/harbor/src/ui/service/token/creator.go</code>文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#a6e22e">token</span>.<span style="color:#a6e22e">InitCreators</span>()
+</code></pre></div></li>
+<li>
+<p>初始化数据库连接。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#a6e22e">database</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Database</span>()
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to get database configuration: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+  }
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dao</span>.<span style="color:#a6e22e">InitDatabase</span>(<span style="color:#a6e22e">database</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to initialize database: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+  }
+</code></pre></div></li>
+<li>
+<p>从adminserver得到配置的管理员密码，更新到数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#a6e22e">password</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">InitialAdminPassword</span>()
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to get admin&#39;s initia password: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+  }
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">updateInitPassword</span>(<span style="color:#a6e22e">adminUserID</span>, <span style="color:#a6e22e">password</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>)
+  }
+</code></pre></div></li>
+<li>
+<p>初始化一些controller对象，这里主要是<code>chartcontroller</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#75715e">// Init API handler
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Init</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;Failed to initialize API handlers with error: %s&#34;</span>, <span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">Error</span>())
+  }
+</code></pre></div></li>
+<li>
+<p>启动定时任务队列处理器。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#75715e">// Enable the policy scheduler here.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">scheduler</span>.<span style="color:#a6e22e">DefaultScheduler</span>.<span style="color:#a6e22e">Start</span>()
+</code></pre></div></li>
+<li>
+<p>订阅一些Policy通知的topic，当决策发生变化时，作出相应处理。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#75715e">// Subscribe the policy change topic.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">Subscribe</span>(<span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">ScanAllPolicyTopic</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">ScanPolicyNotificationHandler</span>{}); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+   <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to subscribe scan all policy change topic: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+  }
+</code></pre></div></li>
+<li>
+<p>如果启用了<code>Clair</code>，则初始化相关的数据库及触发定时扫描所有镜像的事件。<code>Clair</code>是用于扫描镜像风险扫描的解决方案，见<a href="https://github.com/coreos/clair">这里</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">WithClair</span>() {
+   <span style="color:#a6e22e">clairDB</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">ClairDB</span>()
+   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+       <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to load clair database information: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+   }
+   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">dao</span>.<span style="color:#a6e22e">InitClairDB</span>(<span style="color:#a6e22e">clairDB</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+       <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;failed to initialize clair database: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+   }
+   <span style="color:#75715e">// Get policy configuration.
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">scanAllPolicy</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">ScanAllPolicy</span>()
+   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">scanAllPolicy</span>.<span style="color:#a6e22e">Type</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">PolicyTypeDaily</span> {
+       <span style="color:#a6e22e">dailyTime</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+       <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">scanAllPolicy</span>.<span style="color:#a6e22e">Parm</span>[<span style="color:#e6db74">&#34;daily_time&#34;</span>]; <span style="color:#a6e22e">ok</span> {
+           <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">t</span>).<span style="color:#a6e22e">Kind</span>() <span style="color:#f92672">==</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Int</span> {
+               <span style="color:#a6e22e">dailyTime</span> = <span style="color:#a6e22e">t</span>.(<span style="color:#66d9ef">int</span>)
+           }
+       }
+     
+       <span style="color:#75715e">// Send notification to handle first policy change.
+</span><span style="color:#75715e"></span>       <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">Publish</span>(<span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">ScanAllPolicyTopic</span>,
+                                 <span style="color:#a6e22e">notifier</span>.<span style="color:#a6e22e">ScanPolicyNotification</span>{<span style="color:#a6e22e">Type</span>: <span style="color:#a6e22e">scanAllPolicy</span>.<span style="color:#a6e22e">Type</span>, <span style="color:#a6e22e">DailyTime</span>: (<span style="color:#66d9ef">int64</span>)(<span style="color:#a6e22e">dailyTime</span>)}); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+           <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to publish scan all policy topic: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+       }
+   }
+  }
+</code></pre></div></li>
+<li>
+<p>初始化<code>replication controller</code>，通过<code>replication controller</code>可以操控<code>Job Service</code>完成镜像复制的功能。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">core</span>.<span style="color:#a6e22e">Init</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;failed to initialize the replication controller: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+}
+</code></pre></div></li>
+<li>
+<p>初始化一些过滤器，主要是一些安全相关的Filter。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">filter</span>.<span style="color:#a6e22e">Init</span>()
+<span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">InsertFilter</span>(<span style="color:#e6db74">&#34;/*&#34;</span>, <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BeforeRouter</span>, <span style="color:#a6e22e">filter</span>.<span style="color:#a6e22e">SecurityFilter</span>)
+<span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">InsertFilter</span>(<span style="color:#e6db74">&#34;/*&#34;</span>, <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BeforeRouter</span>, <span style="color:#a6e22e">filter</span>.<span style="color:#a6e22e">ReadonlyFilter</span>)
+<span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">InsertFilter</span>(<span style="color:#e6db74">&#34;/api/*&#34;</span>, <span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">BeforeRouter</span>, <span style="color:#a6e22e">filter</span>.<span style="color:#a6e22e">MediaTypeFilter</span>(<span style="color:#e6db74">&#34;application/json&#34;</span>, <span style="color:#e6db74">&#34;multipart/form-data&#34;</span>, <span style="color:#e6db74">&#34;application/octet-stream&#34;</span>))
+</code></pre></div></li>
+<li>
+<p>初始化请求路由，请求路由见<code>$GOPATH/src/github.com/goharbor/harbor/src/ui/router.go</code>这个文件，其实大概扫一眼每个接口的名字，就知道其主要完成的功能。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">initRouters</span>()
+</code></pre></div></li>
+<li>
+<p>将当前<code>Registry</code>里的镜像相关信息同步至数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">syncRegistry</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Getenv</span>(<span style="color:#e6db74">&#34;SYNC_REGISTRY&#34;</span>)
+<span style="color:#a6e22e">sync</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">ParseBool</span>(<span style="color:#a6e22e">syncRegistry</span>)
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;Failed to parse SYNC_REGISTRY: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
+    <span style="color:#75715e">// if err set it default to false
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">sync</span> = <span style="color:#66d9ef">false</span>
+}
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">sync</span> {
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">SyncRegistry</span>(<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">GlobalProjectMgr</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">err</span>)
+    }
+} <span style="color:#66d9ef">else</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Because SYNC_REGISTRY set false , no need to sync registry \n&#34;</span>)
+}
+</code></pre></div></li>
+<li>
+<p>初始化到<code>Registry</code>的反向代理，有官方<code>Registry</code>的基础上主要添加了安装相关的Handler，见<code>$GOPATH/src/github.com/goharbor/harbor/src/ui/proxy/interceptors.go</code>这个文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Info</span>(<span style="color:#e6db74">&#34;Init proxy&#34;</span>)
+<span style="color:#a6e22e">proxy</span>.<span style="color:#a6e22e">Init</span>()
+</code></pre></div></li>
+<li>
+<p>启动beego http服务。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">beego</span>.<span style="color:#a6e22e">Run</span>()
+</code></pre></div></li>
+</ol>
+<p>这么一分析<code>ui</code>的逻辑还是比较清晰的，想了解哪一方面的功能，直接相关入口方法跟进去就可以了，大部分模块的代码就在2-3个go文件里实现了。</p>
+<h3 id="adminserver">adminserver</h3>
+<p>adminserver模块比较简单，主要实现一些配置管理的API接口，从<code>$GOPATH/src/github.com/goharbor/harbor/src/adminserver/handlers/router.go</code>这个文件为入口跟踪一下代码就很清楚了。</p>
+<h3 id="chartserver">chartserver</h3>
+<p>chartserver模块主要实现一些操作chart资源相关的API接口，由<code>ui</code>模块里的<code>$GOPATH/src/github.com/goharbor/harbor/src/ui/api/base.go#Init</code>调过来。</p>
+<h3 id="common">common</h3>
+<p>common模块里放了一些其它模块共用的代码，比如一些工具函数、一些通用的base结构体、一些DTO对象等。</p>
+<h3 id="jobservice">jobservice</h3>
+<p>jobservice主要提供一些执行任务的API接口，其它模块会调用它的接口调度定时任务。核心的入口代码里这里<code>$GOPATH/src/github.com/goharbor/harbor/src/jobservice/runtime/bootstrap.go#LoadAndRun</code>，这里大致解读一下这个方法的代码。</p>
+<ol>
+<li>
+<p>初始化job执行上下文。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">   <span style="color:#75715e">// Create the root context
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">WithCancel</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+   <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">cancel</span>()
+
+   <span style="color:#a6e22e">rootContext</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">Context</span>{
+       <span style="color:#a6e22e">SystemContext</span>: <span style="color:#a6e22e">ctx</span>,
+       <span style="color:#a6e22e">WG</span>:            <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>{},
+       <span style="color:#a6e22e">ErrorChan</span>:     make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#ae81ff">1</span>), <span style="color:#75715e">// with 1 buffer
+</span><span style="color:#75715e"></span>   }
+
+   <span style="color:#75715e">// Build specified job context
+</span><span style="color:#75715e"></span>   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">bs</span>.<span style="color:#a6e22e">jobConextInitializer</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+       <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">jobCtx</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bs</span>.<span style="color:#a6e22e">jobConextInitializer</span>(<span style="color:#a6e22e">rootContext</span>); <span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+           <span style="color:#a6e22e">rootContext</span>.<span style="color:#a6e22e">JobContext</span> = <span style="color:#a6e22e">jobCtx</span>
+       } <span style="color:#66d9ef">else</span> {
+           <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;Failed to initialize job context: %s\n&#34;</span>, <span style="color:#a6e22e">err</span>)
+       }
+   }
+</code></pre></div></li>
+<li>
+<p>加载并运行任务工作池。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#75715e">// Start the pool
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">var</span> (
+   <span style="color:#a6e22e">backendPool</span> <span style="color:#a6e22e">pool</span>.<span style="color:#a6e22e">Interface</span>
+   <span style="color:#a6e22e">wpErr</span>       <span style="color:#66d9ef">error</span>
+  )
+  <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>.<span style="color:#a6e22e">PoolConfig</span>.<span style="color:#a6e22e">Backend</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">JobServicePoolBackendRedis</span> {
+   <span style="color:#a6e22e">backendPool</span>, <span style="color:#a6e22e">wpErr</span> = <span style="color:#a6e22e">bs</span>.<span style="color:#a6e22e">loadAndRunRedisWorkerPool</span>(<span style="color:#a6e22e">rootContext</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>)
+   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">wpErr</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+       <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;Failed to load and run worker pool: %s\n&#34;</span>, <span style="color:#a6e22e">wpErr</span>.<span style="color:#a6e22e">Error</span>())
+   }
+  } <span style="color:#66d9ef">else</span> {
+   <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;Worker pool backend &#39;%s&#39; is not supported&#34;</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>.<span style="color:#a6e22e">PoolConfig</span>.<span style="color:#a6e22e">Backend</span>)
+  }
+</code></pre></div><pre><code>可以看到其是将任务工作池的信息保存在redis里。
+</code></pre>
+</li>
+<li>
+<p>启动API接口HTTP服务。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">   <span style="color:#75715e">// Initialize controller
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">ctl</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">core</span>.<span style="color:#a6e22e">NewController</span>(<span style="color:#a6e22e">backendPool</span>)
+   <span style="color:#75715e">// Start the API server
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">apiServer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bs</span>.<span style="color:#a6e22e">loadAndRunAPIServer</span>(<span style="color:#a6e22e">rootContext</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>, <span style="color:#a6e22e">ctl</span>)
+   <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Server is started at %s:%d with %s&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>.<span style="color:#a6e22e">Port</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">DefaultConfig</span>.<span style="color:#a6e22e">Protocol</span>)
+</code></pre></div><p>处理的API接口见<code>$GOPATH/src/github.com/goharbor/harbor/src/jobservice/api/router.go#registerRoutes</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"> <span style="color:#75715e">// registerRoutes adds routes to the server mux.
+</span><span style="color:#75715e"></span> <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">br</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">BaseRouter</span>) <span style="color:#a6e22e">registerRoutes</span>() {
+  <span style="color:#a6e22e">subRouter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">router</span>.<span style="color:#a6e22e">PathPrefix</span>(<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;%s/%s&#34;</span>, <span style="color:#a6e22e">baseRoute</span>, <span style="color:#a6e22e">apiVersion</span>)).<span style="color:#a6e22e">Subrouter</span>()
+ 
+  <span style="color:#a6e22e">subRouter</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/jobs&#34;</span>, <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleLaunchJobReq</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodPost</span>)
+  <span style="color:#a6e22e">subRouter</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/jobs/{job_id}&#34;</span>, <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleGetJobReq</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>)
+  <span style="color:#a6e22e">subRouter</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/jobs/{job_id}&#34;</span>, <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleJobActionReq</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodPost</span>)
+  <span style="color:#a6e22e">subRouter</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/jobs/{job_id}/log&#34;</span>, <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleJobLogReq</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>)
+  <span style="color:#a6e22e">subRouter</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/stats&#34;</span>, <span style="color:#a6e22e">br</span>.<span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">HandleCheckStatusReq</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">MethodGet</span>)
+ }
+ 
+</code></pre></div><pre><code>可以看到，就是一些操纵job任务的API接口。
+</code></pre>
+</li>
+<li>
+<p>将一些老旧的日志文件删除。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">  <span style="color:#75715e">// Start outdated log files sweeper
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">logSweeper</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">NewSweeper</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">GetLogBasePath</span>(), <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">GetLogArchivePeriod</span>())
+  <span style="color:#a6e22e">logSweeper</span>.<span style="color:#a6e22e">Start</span>()
+</code></pre></div></li>
+<li>
+<p>进程优雅退出处理。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">   <span style="color:#75715e">// To indicate if any errors occurred
+</span><span style="color:#75715e"></span>   <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+   <span style="color:#75715e">// Block here
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">sig</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Signal</span>, <span style="color:#ae81ff">1</span>)
+   <span style="color:#a6e22e">signal</span>.<span style="color:#a6e22e">Notify</span>(<span style="color:#a6e22e">sig</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Interrupt</span>, <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SIGTERM</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Kill</span>)
+   <span style="color:#66d9ef">select</span> {
+   <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">sig</span>:
+   <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">err</span> = <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">rootContext</span>.<span style="color:#a6e22e">ErrorChan</span>:
+   }
+   
+   <span style="color:#75715e">// Call cancel to send termination signal to other interested parts.
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">cancel</span>()
+   
+   <span style="color:#75715e">// Gracefully shutdown
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">apiServer</span>.<span style="color:#a6e22e">Stop</span>()
+   
+   <span style="color:#75715e">// In case stop is called before the server is ready
+</span><span style="color:#75715e"></span>   <span style="color:#a6e22e">close</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">bool</span>, <span style="color:#ae81ff">1</span>)
+   <span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+       <span style="color:#a6e22e">timer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">NewTimer</span>(<span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+       <span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">timer</span>.<span style="color:#a6e22e">Stop</span>()
+   
+       <span style="color:#66d9ef">select</span> {
+           <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">timer</span>.<span style="color:#a6e22e">C</span>:
+           <span style="color:#75715e">// Try again
+</span><span style="color:#75715e"></span>           <span style="color:#a6e22e">apiServer</span>.<span style="color:#a6e22e">Stop</span>()
+           <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">close</span>:
+           <span style="color:#66d9ef">return</span>
+       }
+   
+   }()
+   
+   <span style="color:#a6e22e">rootContext</span>.<span style="color:#a6e22e">WG</span>.<span style="color:#a6e22e">Wait</span>()
+   <span style="color:#a6e22e">close</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">true</span>
+   
+   <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+       <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;Server exit with error: %s\n&#34;</span>, <span style="color:#a6e22e">err</span>)
+   }
+   
+   <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">Infof</span>(<span style="color:#e6db74">&#34;Server gracefully exit&#34;</span>)
+</code></pre></div></li>
+</ol>
+<h3 id="registryctl">registryctl</h3>
+<p>registryctl主要提供一些操纵<code>Registry</code>的API接口，比较简单，从<code>$GOPATH/src/github.com/goharbor/harbor/src/registryctl/handlers/router.go</code>看起就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newRouter</span>() <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handler</span> {
+    <span style="color:#a6e22e">r</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mux</span>.<span style="color:#a6e22e">NewRouter</span>()
+    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/api/registry/gc&#34;</span>, <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">StartGC</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#e6db74">&#34;POST&#34;</span>)
+    <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/api/health&#34;</span>, <span style="color:#a6e22e">api</span>.<span style="color:#a6e22e">Health</span>).<span style="color:#a6e22e">Methods</span>(<span style="color:#e6db74">&#34;GET&#34;</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">r</span>
+}
+</code></pre></div><p>可以看到现在就实现了两个接口。</p>
+<h3 id="replication">replication</h3>
+<p>replication实现镜像复制的业务逻辑。从<code>$GOPATH/src/github.com/goharbor/harbor/src/replication/core/controller.go</code>这个文件查看代码，注意<code>DefaultController</code>这个结构体的方法，每个方法完成一个具体的任务，比如<code>CreatePolicy</code>方法会根据<code>ReplicationPolicy</code>决策，根据要进行的<code>ReplicationTask</code>写入数据库，并调用<code>jobservice</code>创建一个job任务。</p>
+<h3 id="portal">portal</h3>
+<p>portal是用AngularJS写的前端界面，我这里比较关注后端，前端代码就不具体分析了。</p>
+<p>源码目录大概就这些内容了，还是比较清晰的。</p>
+<h2 id="heading-5">总结</h2>
+<p>整体来看harbor的代码还是比较清晰的，并没有像k8s一样采用各种设计模式封装代码，这个项目的代码涵盖了go语言Web应用开发、docker镜像制作、k8s部署、封装helm chart、Makefile编译脚本等一系列内容，作为一个开源项目，还是可以从中学到不少好东西的。</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://github.com/vmware/harbor/wiki/Architecture-Overview-of-Harbor">https://github.com/vmware/harbor/wiki/Architecture-Overview-of-Harbor</a></li>
+<li><a href="https://github.com/goharbor/harbor/blob/master/docs/compile_guide.md">https://github.com/goharbor/harbor/blob/master/docs/compile_guide.md</a></li>
+<li><a href="https://github.com/goharbor/harbor">https://github.com/goharbor/harbor</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-09-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/go/">go</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">mongodb高可用集群部署</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/">
+            <span class="next-text nav-default">k8s中使用cert-manager玩转证书</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

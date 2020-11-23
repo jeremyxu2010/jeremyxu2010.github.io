@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>django on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/django/</link>
+    <description>Recent content in django on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 29 Dec 2019 14:48:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/django/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>学习django</title>
+      <link>https://jeremyxu2010.github.io/2019/12/%E5%AD%A6%E4%B9%A0django/</link>
+      <pubDate>Sun, 29 Dec 2019 14:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/12/%E5%AD%A6%E4%B9%A0django/</guid>
+      <description>项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。 快速上手</description>
+    </item>
+    
+  </channel>
+</rss>

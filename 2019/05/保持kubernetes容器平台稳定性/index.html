@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>保持Kubernetes容器平台稳定性 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="保持Kubernetes容器平台稳定性" />
+<meta property="og:description" content="这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/" />
+<meta property="article:published_time" content="2019-05-21T20:26:00+08:00" />
+<meta property="article:modified_time" content="2019-05-21T20:26:00+08:00" />
+<meta itemprop="name" content="保持Kubernetes容器平台稳定性">
+<meta itemprop="description" content="这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录">
+<meta itemprop="datePublished" content="2019-05-21T20:26:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-21T20:26:00&#43;08:00" />
+<meta itemprop="wordCount" content="1239">
+
+
+
+<meta itemprop="keywords" content="kubernetes,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="保持Kubernetes容器平台稳定性"/>
+<meta name="twitter:description" content="这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">保持Kubernetes容器平台稳定性</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1239 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">环境</a></li>
+    <li><a href="#heading-1">各类问题</a>
+      <ul>
+        <li><a href="#docker">docker的问题</a></li>
+        <li><a href="#kubelet">kubelet的问题</a></li>
+        <li><a href="#etcd">etcd的问题</a></li>
+        <li><a href="#flannel">flannel的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">总结</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录一下以备忘。</p>
+<h2 id="heading">环境</h2>
+<p>我们这套环境的操作系统是<code>4.4.131-20181130.kylin.server aarm64 GNU/Linux</code>，64核128G内存。</p>
+<h2 id="heading-1">各类问题</h2>
+<h3 id="docker">docker的问题</h3>
+<p>最开始用的docker版本为<code>18.03.1-ce</code>，但在运行四五十个容器后，出现了<code>docker info</code>不响应的问题。因为情况紧急，没有查明原因，临时将docker版本降回<code>ubuntu-ports xenial</code>源里的<code>docker.io</code>了，版本为<code>17.03.2</code>，降级后，<code>docker info</code>终于一直有响应了。</p>
+<p>过了一晚上，第二天再来看，发现有部分pod的健康检查失败，同时exec进pod再exit会卡住，现象如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod some-pod
+...
+Liveness probe failed. <span style="color:#75715e"># 健康检查失败</span>
+Readiness probe failed. <span style="color:#75715e"># 健康检查失败</span>
+...
+
+$ kubectl exec -ti some-pod -- sh
+&gt; exit  <span style="color:#75715e"># 这里会卡住</span>
+</code></pre></div><p>这次查了下原因，发现是低版本docker的bug，见<a href="https://github.com/moby/moby/issues/35091">bug记录</a>。</p>
+<blockquote>
+<p>After some time a container becomes unhealthy (because of &ldquo;containerd: container not found&rdquo;). The container is running and accessible but it's not possible to &ldquo;exec&rdquo; into it. The container is also marked &ldquo;unhealthy&rdquo; because the healhcheck cannot be executed inside the container (same message).</p>
+<p><strong>Steps to reproduce the issue:</strong></p>
+<ol>
+<li>Run a container (success)</li>
+<li>Stop and remove container (success)</li>
+<li>Build new image (success)</li>
+<li>Start the image (success)</li>
+<li>The container is accessible but is unhealty and it's not possible to &ldquo;exec&rdquo; into it</li>
+</ol>
+</blockquote>
+<p>官方建议将docker升级至<code>17.12</code>之后，于是将docker升级至<code>17.12.1-ce</code>，问题终于解决。</p>
+<h3 id="kubelet">kubelet的问题</h3>
+<p>今天下午又发现kubelet调度pod异常缓慢，kubelet的日志里疯狂打印以下的报错：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">E0521 16:45:28.353927   <span style="color:#ae81ff">58235</span> kubelet_volumes.go:140<span style="color:#f92672">]</span> Orphaned pod <span style="color:#e6db74">&#34;xxxxxx&#34;</span> found, but volume paths are still present on disk : There were a total of <span style="color:#ae81ff">1</span> errors similar to this. Turn up verbosity to see them.
+</code></pre></div><p>查了下发现是kubernetes的bug，见<a href="https://github.com/kubernetes/kubernetes/issues/60987">bug记录</a>，官方还没有将这个bug的PR合进主干代码，不过还好找到阿里容器服务提供的一个<a href="https://raw.githubusercontent.com/AliyunContainerService/kubernetes-issues-solution/master/kubelet/kubelet.sh">Workaround方法</a>，简单改了下这个脚本，将其加入cron定时任务即可。</p>
+<h3 id="etcd">etcd的问题</h3>
+<p>之前发现创建了一个deployment，但一直没有pod产生出来，查到etcd服务日志中有大量下面的报错：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">2018-10-22 11:22:16.364641 W | etcdserver: read-only range request <span style="color:#e6db74">&#34;key:\&#34;xxx\&#34; range_end:\&#34;xxx\&#34; &#34;</span> with result <span style="color:#e6db74">&#34;range_response_c
+</span><span style="color:#e6db74">ount:xx size:xxx&#34;</span> took too long <span style="color:#f92672">(</span>117.026891ms<span style="color:#f92672">)</span> to execute
+</code></pre></div><p>查到了相关的<a href="https://github.com/kubernetes/kubernetes/issues/70082">bug记录</a>，说是可能是磁盘性能太差导致的。又查了etcd的文档，其中有<a href="https://coreos.com/etcd/docs/latest/faq.html#performance">如下说明</a> ：</p>
+<blockquote>
+<p>Usually this issue is caused by a slow disk. The disk could be experiencing contention among etcd and other applications, or the disk is too simply slow (e.g., a shared virtualized disk). To rule out a slow disk from causing this warning, monitor backend_commit_duration_seconds (p99 duration should be less than 25ms)</p>
+<p>The second most common cause is CPU starvation. If monitoring of the machine’s CPU usage shows heavy utilization, there may not be enough compute capacity for etcd. Moving etcd to dedicated machine, increasing process resource isolation cgroups, or renicing the etcd server process into a higher priority can usually solve the problem.</p>
+</blockquote>
+<p>再查了下系统的iowait，果然很高，最后挂了一个独立的磁盘，专门用于etcd服务的数据存储，问题得到好转。</p>
+<h3 id="flannel">flannel的问题</h3>
+<p>kubernetes在运行时，偶然发现flannel的pod因为OOM被Killed掉了，在该pod重启的过程中此node节点上的服务其它节点均不可访问。</p>
+<p>查了下，发现官方的<a href="https://github.com/coreos/flannel/issues/963">bug记录</a>。解决办法就是增加pod使用的资源限制：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi <span style="color:#75715e"># 默认为50Mi，增大这个数据</span>
+          requests:
+            cpu: 100m
+            memory: 50Mi
+</code></pre></div><h2 id="heading-2">总结</h2>
+<p>虽说现在容器平台蒸蒸日上，但还是有不少坑待我们去趟的，我辈须努力啊。</p>
+<h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://github.com/moby/moby/issues/35091">https://github.com/moby/moby/issues/35091</a></li>
+<li><a href="https://xigang.github.io/2018/12/31/Orphaned-pod/">https://xigang.github.io/2018/12/31/Orphaned-pod/</a></li>
+<li><a href="https://github.com/kubernetes/kubernetes/issues/60987">https://github.com/kubernetes/kubernetes/issues/60987</a></li>
+<li><a href="https://coreos.com/etcd/docs/latest/faq.html#performance">https://coreos.com/etcd/docs/latest/faq.html#performance</a></li>
+<li><a href="https://bingohuang.com/etcd-operation-3/">https://bingohuang.com/etcd-operation-3/</a></li>
+<li><a href="https://github.com/coreos/flannel/issues/963">https://github.com/coreos/flannel/issues/963</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-05-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">性能测试工具集锦</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/">
+            <span class="next-text nav-default">批量处理docker镜像</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

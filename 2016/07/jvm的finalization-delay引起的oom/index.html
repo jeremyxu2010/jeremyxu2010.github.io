@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>JVM的Finalization Delay引起的OOM - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="JVM的Finalization Delay引起的OOM" />
+<meta property="og:description" content="今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/" />
+<meta property="article:published_time" content="2016-07-13T22:03:00+08:00" />
+<meta property="article:modified_time" content="2016-07-13T22:03:00+08:00" />
+<meta itemprop="name" content="JVM的Finalization Delay引起的OOM">
+<meta itemprop="description" content="今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊">
+<meta itemprop="datePublished" content="2016-07-13T22:03:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-07-13T22:03:00&#43;08:00" />
+<meta itemprop="wordCount" content="2899">
+
+
+
+<meta itemprop="keywords" content="java,nio,oom," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="JVM的Finalization Delay引起的OOM"/>
+<meta name="twitter:description" content="今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">JVM的Finalization Delay引起的OOM</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-07-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2899 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">检查日志文件</a></li>
+    <li><a href="#heading-1">分析代码</a></li>
+    <li><a href="#heading-2">解决方案</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊，这里记录一下。</p>
+<p>这个服务是用Java写的，主要完成的功能是根据特定的指令文件生成mp4文件，用到的java库主要有javacv，这个库底层其实是使用JNI调用操作系统里安装的ffmpeg。</p>
+<h2 id="heading">检查日志文件</h2>
+<p>首先检查日志文件，发现日志里出现了OOM的报错</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">OutOfMemoryError</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span>
+	at sun<span style="color:#f92672">.</span><span style="color:#a6e22e">misc</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Unsafe</span><span style="color:#f92672">.</span><span style="color:#a6e22e">allocateMemory</span><span style="color:#f92672">(</span>Native Method<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>na<span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">7</span><span style="color:#f92672">.</span><span style="color:#a6e22e">0_79</span><span style="color:#f92672">]</span>
+	at java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">DirectByteBuffer</span><span style="color:#f92672">.</span><span style="color:#f92672">&lt;</span>init<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>DirectByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>127<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>na<span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">7</span><span style="color:#f92672">.</span><span style="color:#a6e22e">0_79</span><span style="color:#f92672">]</span>
+	at java<span style="color:#f92672">.</span><span style="color:#a6e22e">nio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">ByteBuffer</span><span style="color:#f92672">.</span><span style="color:#a6e22e">allocateDirect</span><span style="color:#f92672">(</span>ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>306<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>na<span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">7</span><span style="color:#f92672">.</span><span style="color:#a6e22e">0_79</span><span style="color:#f92672">]</span>
+	at org<span style="color:#f92672">.</span><span style="color:#a6e22e">bytedeco</span><span style="color:#f92672">.</span><span style="color:#a6e22e">javacv</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Frame</span><span style="color:#f92672">.</span><span style="color:#f92672">&lt;</span>init<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>Frame<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>105<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>javacv<span style="color:#f92672">-</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span><span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">]</span>
+	at org<span style="color:#f92672">.</span><span style="color:#a6e22e">bytedeco</span><span style="color:#f92672">.</span><span style="color:#a6e22e">javacv</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Java2DFrameConverter</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getFrame</span><span style="color:#f92672">(</span>Java2DFrameConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>712<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>javacv<span style="color:#f92672">-</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span><span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">]</span>
+	at org<span style="color:#f92672">.</span><span style="color:#a6e22e">bytedeco</span><span style="color:#f92672">.</span><span style="color:#a6e22e">javacv</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Java2DFrameConverter</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getFrame</span><span style="color:#f92672">(</span>Java2DFrameConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>679<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>javacv<span style="color:#f92672">-</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span><span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">]</span>
+	at org<span style="color:#f92672">.</span><span style="color:#a6e22e">bytedeco</span><span style="color:#f92672">.</span><span style="color:#a6e22e">javacv</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Java2DFrameConverter</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getFrame</span><span style="color:#f92672">(</span>Java2DFrameConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>673<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>javacv<span style="color:#f92672">-</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span><span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">]</span>
+	at org<span style="color:#f92672">.</span><span style="color:#a6e22e">bytedeco</span><span style="color:#f92672">.</span><span style="color:#a6e22e">javacv</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Java2DFrameConverter</span><span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>Java2DFrameConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">java</span><span style="color:#f92672">:</span>62<span style="color:#f92672">)</span> <span style="color:#f92672">~</span><span style="color:#f92672">[</span>javacv<span style="color:#f92672">-</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jar</span><span style="color:#f92672">:</span>1<span style="color:#f92672">.</span><span style="color:#a6e22e">1</span><span style="color:#f92672">]</span>
+</code></pre></div><p>很明显这里是申请<code>DirectByteBuffer</code>出现了OOM，所以应该是<code>Direct Memory</code>申请太多了。为了确认问题，将服务跑起来，使用<code>jconsole</code>看了下JVM的堆内存使用情况，发现堆内存使用一直都是比较稳定的，但使用<code>top -p ${pid}</code>查看进程占用的内存，发现<code>RES</code>字段的值一直是在增长的，而且增长得很快，不到半个小时值就从原来的500M增长到1.6G。</p>
+<h2 id="heading-1">分析代码</h2>
+<p>接下来看一下关键代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">encodeFrame</span><span style="color:#f92672">(</span>BufferedImage image<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> frameTime<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">long</span> t <span style="color:#f92672">=</span> frameTime <span style="color:#f92672">*</span> 1000L<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>t<span style="color:#f92672">&gt;</span>recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">getTimestamp</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            Frame frame <span style="color:#f92672">=</span> java2dConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>image<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">record</span><span style="color:#f92672">(</span>frame<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder encode frame error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>业务层是不停地调用<code>encodeFrame</code>将每一张图片编码到mp4文件里。</p>
+<p>而<code>java2dConverter.convert(image);</code>这句代码的实现里会申请一个<code>DirectByteBuffer</code>。如下面的代码。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Frame</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> width<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> height<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> depth<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> channels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">int</span> pixelSize <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">abs</span><span style="color:#f92672">(</span>depth<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> 8<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">imageWidth</span> <span style="color:#f92672">=</span> width<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">imageHeight</span> <span style="color:#f92672">=</span> height<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">imageDepth</span> <span style="color:#f92672">=</span> depth<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">imageChannels</span> <span style="color:#f92672">=</span> channels<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">imageStride</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>imageWidth <span style="color:#f92672">*</span> imageChannels <span style="color:#f92672">*</span> pixelSize <span style="color:#f92672">+</span> 7<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>7<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> pixelSize<span style="color:#f92672">;</span> <span style="color:#75715e">// 8-byte aligned
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">image</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Buffer<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+
+        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocateDirect</span><span style="color:#f92672">(</span>imageHeight <span style="color:#f92672">*</span> imageStride <span style="color:#f92672">*</span> pixelSize<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">nativeOrder</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>imageDepth<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">case</span> DEPTH_BYTE<span style="color:#f92672">:</span>
+            <span style="color:#66d9ef">case</span> DEPTH_UBYTE<span style="color:#f92672">:</span>  image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">;</span>                  <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> DEPTH_SHORT<span style="color:#f92672">:</span>
+            <span style="color:#66d9ef">case</span> DEPTH_USHORT<span style="color:#f92672">:</span> image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">asShortBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>  <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> DEPTH_INT<span style="color:#f92672">:</span>    image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">asIntBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> DEPTH_LONG<span style="color:#f92672">:</span>   image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">asLongBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>   <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> DEPTH_FLOAT<span style="color:#f92672">:</span>  image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">asFloatBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>  <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> DEPTH_DOUBLE<span style="color:#f92672">:</span> image<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">asDoubleBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UnsupportedOperationException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Unsupported depth value: &#34;</span> <span style="color:#f92672">+</span> imageDepth<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>这里<code>ByteBuffer.allocateDirect</code>方法申请的<code>DirectByteBuffer</code>并不是Java堆内存，而是直接在C堆上申请的。而<code>DirectByteBuffer</code>申请的C堆内存释放很特殊，并不是简单地由JVM GC完成的。</p>
+<p>先看一下<code>DirectByteBuffer</code>的定义</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DirectByteBuffer</span> <span style="color:#66d9ef">extends</span> MappedByteBuffer <span style="color:#66d9ef">implements</span> DirectBuffer <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Unsafe unsafe <span style="color:#f92672">=</span> Bits<span style="color:#f92672">.</span><span style="color:#a6e22e">unsafe</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Deallocator</span>
+        <span style="color:#66d9ef">implements</span> Runnable
+    <span style="color:#f92672">{</span>
+
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Unsafe unsafe <span style="color:#f92672">=</span> Unsafe<span style="color:#f92672">.</span><span style="color:#a6e22e">getUnsafe</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">long</span> address<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">long</span> size<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> capacity<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Deallocator</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> address<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> size<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> capacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">assert</span> <span style="color:#f92672">(</span>address <span style="color:#f92672">!</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">address</span> <span style="color:#f92672">=</span> address<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">size</span> <span style="color:#f92672">=</span> size<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">capacity</span> <span style="color:#f92672">=</span> capacity<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>address <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">// Paranoia
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            unsafe<span style="color:#f92672">.</span><span style="color:#a6e22e">freeMemory</span><span style="color:#f92672">(</span>address<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            address <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+            Bits<span style="color:#f92672">.</span><span style="color:#a6e22e">unreserveMemory</span><span style="color:#f92672">(</span>size<span style="color:#f92672">,</span> capacity<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Cleaner cleaner<span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+    DirectByteBuffer<span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> cap<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>                   <span style="color:#75715e">// package-private
+</span><span style="color:#75715e"></span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span><span style="color:#f92672">-</span>1<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> cap<span style="color:#f92672">,</span> cap<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">boolean</span> pa <span style="color:#f92672">=</span> VM<span style="color:#f92672">.</span><span style="color:#a6e22e">isDirectMemoryPageAligned</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">int</span> ps <span style="color:#f92672">=</span> Bits<span style="color:#f92672">.</span><span style="color:#a6e22e">pageSize</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">long</span> size <span style="color:#f92672">=</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">max</span><span style="color:#f92672">(</span>1L<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">long</span><span style="color:#f92672">)</span>cap <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>pa <span style="color:#f92672">?</span> ps <span style="color:#f92672">:</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Bits<span style="color:#f92672">.</span><span style="color:#a6e22e">reserveMemory</span><span style="color:#f92672">(</span>size<span style="color:#f92672">,</span> cap<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">long</span> base <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            base <span style="color:#f92672">=</span> unsafe<span style="color:#f92672">.</span><span style="color:#a6e22e">allocateMemory</span><span style="color:#f92672">(</span>size<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>OutOfMemoryError x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Bits<span style="color:#f92672">.</span><span style="color:#a6e22e">unreserveMemory</span><span style="color:#f92672">(</span>size<span style="color:#f92672">,</span> cap<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">throw</span> x<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        unsafe<span style="color:#f92672">.</span><span style="color:#a6e22e">setMemory</span><span style="color:#f92672">(</span>base<span style="color:#f92672">,</span> size<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pa <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#f92672">(</span>base <span style="color:#f92672">%</span> ps <span style="color:#f92672">!</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Round up to page boundary
+</span><span style="color:#75715e"></span>            address <span style="color:#f92672">=</span> base <span style="color:#f92672">+</span> ps <span style="color:#f92672">-</span> <span style="color:#f92672">(</span>base <span style="color:#f92672">&amp;</span> <span style="color:#f92672">(</span>ps <span style="color:#f92672">-</span> 1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            address <span style="color:#f92672">=</span> base<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        cleaner <span style="color:#f92672">=</span> Cleaner<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Deallocator<span style="color:#f92672">(</span>base<span style="color:#f92672">,</span> size<span style="color:#f92672">,</span> cap<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        att <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+
+
+
+    <span style="color:#f92672">}</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>可以看到创建<code>DirectByteBuffer</code>对象时实际上使用<code>unsafe.allocateMemory</code>申请一块C堆内存的。<code>DirectByteBuffer</code>对象内部有一个<code>Cleaner cleaner</code>，看样子应该是这个东东负责对申请申请的C堆内存进行释放的。看一下<code>Cleaner</code>的定义：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Cleaner</span> <span style="color:#66d9ef">extends</span> PhantomReference<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> ReferenceQueue<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> dummyQueue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReferenceQueue<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Cleaner</span><span style="color:#f92672">(</span>Object var1<span style="color:#f92672">,</span> Runnable var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>var1<span style="color:#f92672">,</span> dummyQueue<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">thunk</span> <span style="color:#f92672">=</span> var2<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Cleaner <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>Object var0<span style="color:#f92672">,</span> Runnable var1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> var1 <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">?</span><span style="color:#66d9ef">null</span><span style="color:#f92672">:</span>add<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Cleaner<span style="color:#f92672">(</span>var0<span style="color:#f92672">,</span> var1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">clean</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>remove<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">thunk</span><span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Throwable var2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                AccessController<span style="color:#f92672">.</span><span style="color:#a6e22e">doPrivileged</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> PrivilegedAction<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                            <span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Error<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Cleaner terminated abnormally&#34;</span><span style="color:#f92672">,</span> var2<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        <span style="color:#f92672">}</span>
+
+                        System<span style="color:#f92672">.</span><span style="color:#a6e22e">exit</span><span style="color:#f92672">(</span>1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>原来<code>Cleaner</code>实际上是一个<code>PhantomReference</code></p>
+<blockquote>
+<p><code>PhantomReference</code>虚引用主要用来跟踪对象被垃圾回收器回收的活动。虚引用与软引用和弱引用的一个区别在于：虚引用必须和引用队列 （ReferenceQueue）联合使用。当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会在回收对象的内存之前，把这个虚引用加入到与之关联的引用队列中。</p>
+</blockquote>
+<p>在这个场景里也就是说当JVM垃圾回收器准备回收某个<code>DirectByteBuffer</code>对象时，发现这个<code>DirectByteBuffer</code>对象有虚引用，就会将虚引用加入到与之关联的引用队列中。将虚引用加入到与之关联的引用队列中有什么作用？看一下<code>Reference</code>的实现代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Reference</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> T referent<span style="color:#f92672">;</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span> <span style="color:#f92672">{</span> <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Lock lock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Lock<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+
+    <span style="color:#75715e">/* List of References waiting to be enqueued.  The collector adds
+</span><span style="color:#75715e">     * References to this list, while the Reference-handler thread removes
+</span><span style="color:#75715e">     * them.  This list is protected by the above lock object. The
+</span><span style="color:#75715e">     * list uses the discovered field to link its elements.
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Reference<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> pending <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+
+    <span style="color:#75715e">/* High-priority thread to enqueue pending References
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ReferenceHandler</span> <span style="color:#66d9ef">extends</span> Thread <span style="color:#f92672">{</span>
+
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ensureClassInitialized</span><span style="color:#f92672">(</span>Class<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span><span style="color:#f92672">&gt;</span> clazz<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span>clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">,</span> clazz<span style="color:#f92672">.</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ClassNotFoundException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">throw</span> <span style="color:#f92672">(</span>Error<span style="color:#f92672">)</span> <span style="color:#66d9ef">new</span> NoClassDefFoundError<span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">initCause</span><span style="color:#f92672">(</span>e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// pre-load and initialize InterruptedException and Cleaner classes
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// so that we don&#39;t get into trouble later in the run loop if there&#39;s
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// memory shortage while loading/initializing them lazily.
+</span><span style="color:#75715e"></span>            ensureClassInitialized<span style="color:#f92672">(</span>InterruptedException<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            ensureClassInitialized<span style="color:#f92672">(</span>Cleaner<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        ReferenceHandler<span style="color:#f92672">(</span>ThreadGroup g<span style="color:#f92672">,</span> String name<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>g<span style="color:#f92672">,</span> name<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                tryHandlePending<span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Try handle pending {@link Reference} if there is one.&lt;p&gt;
+</span><span style="color:#75715e">     * Return {@code true} as a hint that there might be another
+</span><span style="color:#75715e">     * {@link Reference} pending or {@code false} when there are no more pending
+</span><span style="color:#75715e">     * {@link Reference}s at the moment and the program can do some other
+</span><span style="color:#75715e">     * useful work instead of looping.
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * @param waitForNotify if {@code true} and there was no pending
+</span><span style="color:#75715e">     *                      {@link Reference}, wait until notified from VM
+</span><span style="color:#75715e">     *                      or interrupted; if {@code false}, return immediately
+</span><span style="color:#75715e">     *                      when there is no pending {@link Reference}.
+</span><span style="color:#75715e">     * @return {@code true} if there was a {@link Reference} pending and it
+</span><span style="color:#75715e">     *         was processed, or we waited for notification and either got it
+</span><span style="color:#75715e">     *         or thread was interrupted before being notified;
+</span><span style="color:#75715e">     *         {@code false} otherwise.
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">tryHandlePending</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> waitForNotify<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Reference<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> r<span style="color:#f92672">;</span>
+        Cleaner c<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>lock<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pending <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    r <span style="color:#f92672">=</span> pending<span style="color:#f92672">;</span>
+                    <span style="color:#75715e">// &#39;instanceof&#39; might throw OutOfMemoryError sometimes
+</span><span style="color:#75715e"></span>                    <span style="color:#75715e">// so do this before un-linking &#39;r&#39; from the &#39;pending&#39; chain...
+</span><span style="color:#75715e"></span>                    c <span style="color:#f92672">=</span> r <span style="color:#66d9ef">instanceof</span> Cleaner <span style="color:#f92672">?</span> <span style="color:#f92672">(</span>Cleaner<span style="color:#f92672">)</span> r <span style="color:#f92672">:</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+                    <span style="color:#75715e">// unlink &#39;r&#39; from &#39;pending&#39; chain
+</span><span style="color:#75715e"></span>                    pending <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span><span style="color:#a6e22e">discovered</span><span style="color:#f92672">;</span>
+                    r<span style="color:#f92672">.</span><span style="color:#a6e22e">discovered</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                    <span style="color:#75715e">// The waiting on the lock may cause an OutOfMemoryError
+</span><span style="color:#75715e"></span>                    <span style="color:#75715e">// because it may try to allocate exception objects.
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>waitForNotify<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        lock<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                    <span style="color:#75715e">// retry if waited
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">return</span> waitForNotify<span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>OutOfMemoryError x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Give other threads CPU time so they hopefully drop some live references
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// and GC reclaims some space.
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// Also prevent CPU intensive spinning in case &#39;r instanceof Cleaner&#39; above
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// persistently throws OOME for some time...
+</span><span style="color:#75715e"></span>            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">yield</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">// retry
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// retry
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#75715e">// Fast path for cleaners
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>c <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            c<span style="color:#f92672">.</span><span style="color:#a6e22e">clean</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        ReferenceQueue<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span> <span style="color:#66d9ef">super</span> Object<span style="color:#f92672">&gt;</span> q <span style="color:#f92672">=</span> r<span style="color:#f92672">.</span><span style="color:#a6e22e">queue</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>q <span style="color:#f92672">!</span><span style="color:#f92672">=</span> ReferenceQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">NULL</span><span style="color:#f92672">)</span> q<span style="color:#f92672">.</span><span style="color:#a6e22e">enqueue</span><span style="color:#f92672">(</span>r<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+        ThreadGroup tg <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getThreadGroup</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ThreadGroup tgn <span style="color:#f92672">=</span> tg<span style="color:#f92672">;</span>
+             tgn <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+             tg <span style="color:#f92672">=</span> tgn<span style="color:#f92672">,</span> tgn <span style="color:#f92672">=</span> tg<span style="color:#f92672">.</span><span style="color:#a6e22e">getParent</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Thread handler <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReferenceHandler<span style="color:#f92672">(</span>tg<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Reference Handler&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/* If there were a special system-only priority greater than
+</span><span style="color:#75715e">         * MAX_PRIORITY, it would be used here
+</span><span style="color:#75715e">         */</span>
+        handler<span style="color:#f92672">.</span><span style="color:#a6e22e">setPriority</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_PRIORITY</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        handler<span style="color:#f92672">.</span><span style="color:#a6e22e">setDaemon</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        handler<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// provide access in SharedSecrets
+</span><span style="color:#75715e"></span>        SharedSecrets<span style="color:#f92672">.</span><span style="color:#a6e22e">setJavaLangRefAccess</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> JavaLangRefAccess<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">tryHandlePendingReference</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span> tryHandlePending<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    Reference<span style="color:#f92672">(</span>T referent<span style="color:#f92672">,</span> ReferenceQueue<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span> <span style="color:#66d9ef">super</span> T<span style="color:#f92672">&gt;</span> queue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">referent</span> <span style="color:#f92672">=</span> referent<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">queue</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>queue <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">?</span> ReferenceQueue<span style="color:#f92672">.</span><span style="color:#a6e22e">NULL</span> <span style="color:#f92672">:</span> queue<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里代码看着有些糊涂，并没有代码给<code>pending</code>这个类变量赋值，为啥<code>ReferenceHandler</code>这个线程执行体里又在读取它的值，但看了看<code>private static Reference&lt;Object&gt; pending = null;</code>这一行上面的注释，想了想终于明白了，原来JVM垃圾回收器将将虚引用加入到与之关联的引用队列后，JVM垃圾回收器又负责逐个将引用队列中的引用拿出来赋于<code>pending</code>，然后通知<code>ReferenceHandler</code>线程，<code>ReferenceHandler</code>线程拿到引用后，发现如果是Cleaner，则调用其<code>clean</code>方法。然后终于与<code>DirectByteBuffer</code>里的<code>Deallocator</code>接上了，最终<code>DirectByteBuffer</code>申请的C堆内存被释放。</p>
+<p>既然<code>DirectByteBuffer</code>申请的C堆内存释放是自动的，为啥在这个场景里会出现OOM呢？查阅java的bug记录，终于找到原因。<code>http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4857305</code>，<code>http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4469299</code>。</p>
+<p>意思是如果<code>DirectByteBuffer</code>创建得过于频繁，服务器的CPU太繁忙，C堆内存还是会OOM的，原因是JVM来不及进行GC及Finalization，大量对象的销毁工作被推后，最终C堆内存无法得到释放。</p>
+<h2 id="heading-2">解决方案</h2>
+<p>bug记录提到了3个解决方案：</p>
+<blockquote>
+<p>Insert occasional explicit System.gc() invocations to ensure that  direct buffers are reclaimed.</p>
+</blockquote>
+<blockquote>
+<p>Reduce the size of the young generation to force more frequent GCs.</p>
+</blockquote>
+<blockquote>
+<p>Explicitly pool direct buffers at the application level.</p>
+</blockquote>
+<p>我这里采用了第一个解决方案，代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">encodeFrame</span><span style="color:#f92672">(</span>BufferedImage image<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> frameTime<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">long</span> t <span style="color:#f92672">=</span> frameTime <span style="color:#f92672">*</span> 1000L<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>t<span style="color:#f92672">&gt;</span>recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">getTimestamp</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            Frame frame <span style="color:#f92672">=</span> java2dConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>image<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">record</span><span style="color:#f92672">(</span>frame<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">-</span> lastGCTime <span style="color:#f92672">&gt;</span> 60000<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">gc</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">runFinalization</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                lastGCTime <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">yield</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>3<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder encode frame error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>意思是说每隔1分钟显式地调用<code>System.gc();</code>与<code>System.runFinalization();</code>，并让出CPU休息3秒钟。经过长达10几个小时的测试，目前一切都正常了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-07-13</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+          <a href="/tags/oom/">oom</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/07/%E5%88%9D%E8%AF%86glusterfs/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">初识glusterfs</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/">
+            <span class="next-text nav-default">Systemd 入门教程（转载）</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

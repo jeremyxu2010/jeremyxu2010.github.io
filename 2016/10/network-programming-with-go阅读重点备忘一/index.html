@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>《Network Programming with Go》阅读重点备忘（一） - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="《Network Programming with Go》阅读重点备忘（一）" />
+<meta property="og:description" content="最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/" />
+<meta property="article:published_time" content="2016-10-24T00:42:00+08:00" />
+<meta property="article:modified_time" content="2016-10-24T00:42:00+08:00" />
+<meta itemprop="name" content="《Network Programming with Go》阅读重点备忘（一）">
+<meta itemprop="description" content="最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主">
+<meta itemprop="datePublished" content="2016-10-24T00:42:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-10-24T00:42:00&#43;08:00" />
+<meta itemprop="wordCount" content="3600">
+
+
+
+<meta itemprop="keywords" content="golang,network," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="《Network Programming with Go》阅读重点备忘（一）"/>
+<meta name="twitter:description" content="最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">《Network Programming with Go》阅读重点备忘（一）</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-10-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3600 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">架构</a></li>
+    <li><a href="#tcpudpraw-socket">TCP、UDP与Raw Socket</a>
+      <ul>
+        <li><a href="#ip">首先是IP地址与端口服务相关概念及关键类型。</a></li>
+        <li><a href="#tcpapi">然后TCP相关API</a></li>
+        <li><a href="#udpapi">UDP相关API</a></li>
+        <li><a href="#raw-socketapi">Raw Socket相关API</a></li>
+        <li><a href="#heading-1">选择接口的原则</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">数据序列化</a>
+      <ul>
+        <li><a href="#asn1">asn1序列化</a></li>
+        <li><a href="#json">json序列化</a></li>
+        <li><a href="#gob">gob序列化</a></li>
+        <li><a href="#string">字节数组序列化为string</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">应用层协议设计</a></li>
+    <li><a href="#heading-4">字符集与文字编码</a></li>
+    <li><a href="#heading-5">安全</a>
+      <ul>
+        <li><a href="#hash">用于检验数据完整性的hash算法</a></li>
+        <li><a href="#heading-6">对称加密</a></li>
+        <li><a href="#heading-7">非对称加密</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近读了一本老外写的电子书《<a href="https://jannewmarch.gitbooks.io/network-programming-with-go-golang-/content/index.html">Network Programming with Go</a>》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。</p>
+<h2 id="heading">架构</h2>
+<p>跟其它书不同，这本书的第一章主要讲了分布式系统与传统单机系统在架构层面的区别。其中有4节我觉得还挺重要的，设计分布式系统时可以多参考这些方面。</p>
+<blockquote>
+<p>###Points of Failure###</p>
+</blockquote>
+<blockquote>
+<p>Distributed applications run in a complex environment. This makes them much more prone to failure than standalone applications on a single computer. The points of failure include</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<ul>
+<li>The client side of the application could crash</li>
+<li>The client system may have h/w problems</li>
+<li>The client's network card could fail</li>
+<li>Network contention could cause timeouts</li>
+<li>There may be network address conflicts</li>
+<li>Network elements such as routers could fail</li>
+<li>Transmission errors may lose messages</li>
+<li>The client and server versions may be incompatible</li>
+<li>The server's network card could fail</li>
+<li>The server system may have h/w problems</li>
+<li>The server s/w may crash</li>
+<li>The server's database may become corrupted</li>
+</ul>
+<blockquote>
+<p>Applications have to be designed with these possible failures in mind. Any action performed by one component must be recoverable if failure occurs in some other part of the system. Techniques such as transactions and continuous error checking need to be employed to avoid errors.</p>
+</blockquote>
+<blockquote>
+<p>###Acceptance Factors###</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<ul>
+<li>Reliability</li>
+<li>Performance</li>
+<li>Responsiveness</li>
+<li>Scalability</li>
+<li>Capacity</li>
+<li>Security</li>
+</ul>
+<blockquote>
+<p>###Transparency###</p>
+</blockquote>
+<blockquote>
+<p>The &ldquo;holy grails&rdquo; of distributed systems are to provide the following:</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<ul>
+<li>access transparency</li>
+<li>location transparency</li>
+<li>migration transparency</li>
+<li>replication transparency</li>
+<li>concurrency transparency</li>
+<li>scalability transparency</li>
+<li>performance transparency</li>
+<li>failure transparency</li>
+</ul>
+<blockquote>
+<p>###Eight fallacies of distributed computing###</p>
+</blockquote>
+<blockquote>
+<p>Sun Microsystems was a company that performed much of the early work in distributed systems, and even had a mantra &ldquo;The network is the computer.&rdquo; Based on their experience over many years a number of the scientists at Sun came up with the following list of fallacies commonly assumed:</p>
+</blockquote>
+<blockquote>
+</blockquote>
+<ul>
+<li>The network is reliable.</li>
+<li>Latency is zero.</li>
+<li>Bandwidth is infinite.</li>
+<li>The network is secure.</li>
+<li>Topology doesn't change.</li>
+<li>There is one administrator.</li>
+<li>Transport cost is zero.</li>
+<li>The network is homogeneous.</li>
+</ul>
+<blockquote>
+<p>Many of these directly impact on network programming. For example, the design of most remote procedure call systems is based on the premise that the network is reliable so that a remote procedure call will behave in the same way as a local call. The fallacies of zero latency and infinite bandwidth also lead to assumptions about the time duration of an RPC call being the same as a local call, whereas they are magnitudes of order slower.</p>
+</blockquote>
+<blockquote>
+<p>The recognition of these fallacies led Java's RMI (remote method invocation) model to require every RPC call to potentially throw a RemoteException. This forced programmers to at least recognise the possibility of network error and to remind them that they could not expect the same speeds as local calls.</p>
+</blockquote>
+<h2 id="tcpudpraw-socket">TCP、UDP与Raw Socket</h2>
+<p>第三章就讲到golang里面的socket编程了。</p>
+<h3 id="ip">首先是IP地址与端口服务相关概念及关键类型。</h3>
+<pre><code>type IP []byte # IP类型
+ip := net.ParseIP(ipStr) # 由string解析出IP类型
+type IPMask []byte # IPMask类型
+func IPv4Mask(a, b, c, d byte) IPMask # 得到一个IPMask
+func (ip IP) DefaultMask() IPMask # 得到一个IP地址默认的IPMask
+func (ip IP) Mask(mask IPMask) IP # 得到一个IP地址所对应的网络地址
+type IPAddr {
+    IP IP
+} # IPAddr类型
+func ResolveIPAddr(net, addr string) (*IPAddr, os.Error) # 由string解析出一个IPAddr， 如net.ResolveIPAddr(&quot;ip4&quot;, &quot;192.168.1.1&quot;)
+func LookupHost(name string) (cname string, addrs []string, err os.Error) # 根据主机名查找其对应的CName与IP地址
+func LookupPort(network, service string) (port int, err os.Error) # 查询一个服务的默认端口， 如port, err := net.LookupPort(&quot;tcp&quot;, &quot;telnet&quot;)
+type TCPAddr struct {
+    IP   IP
+    Port int
+} # TCPAddr类型
+func ResolveTCPAddr(net, addr string) (*TCPAddr, os.Error) # 解析出一个TCPAddr类型， 如addr, err := net.ResolveTCPAddr(&quot;tcp&quot;, &quot;192.168.1.1:23&quot;)
+</code></pre><h3 id="tcpapi">然后TCP相关API</h3>
+<pre><code># TCPConn实现了Writer与Reader接口
+func (c *TCPConn) Write(b []byte) (n int, err os.Error)
+func (c *TCPConn) Read(b []byte) (n int, err os.Error)
+# 客户端连接TCP，如conn, err := net.DialTCP(&quot;tcp&quot;, nil, addr)
+func DialTCP(net string, laddr, raddr *TCPAddr) (c *TCPConn, err os.Error)
+# 服务端监听TCP，如listener, err := net.ListenTCP(&quot;tcp&quot;, addr)
+func ListenTCP(net string, laddr *TCPAddr) (l *TCPListener, err os.Error)
+# 服务端接受了一个连接，如conn, err := listener.Accept()
+func (l *TCPListener) Accept() (c Conn, err os.Error)
+</code></pre><p>TCP服务端的一般范式为</p>
+<pre><code>service := &quot;:1201&quot;
+tcpAddr, err := net.ResolveTCPAddr(&quot;tcp&quot;, service)
+checkError(err)
+listener, err := net.ListenTCP(&quot;tcp&quot;, tcpAddr)
+checkError(err)
+for {
+    conn, err := listener.Accept()
+    if err != nil {
+        continue
+    }
+    // run as a goroutine
+    go handleClient(conn)
+}
+</code></pre><h3 id="udpapi">UDP相关API</h3>
+<pre><code># 解析出UDP的地址
+func ResolveUDPAddr(net, addr string) (*UDPAddr, os.Error)
+# 客户端连接UDP， 如conn, err := net.DialUDP(&quot;udp&quot;, nil, addr)
+func DialUDP(net string, laddr, raddr *UDPAddr) (c *UDPConn, err os.Error)
+# 服务端监听UDP，如conn, err := net.ListenUDP(&quot;udp&quot;, addr)
+func ListenUDP(net string, laddr *UDPAddr) (c *UDPConn, err os.Error)
+# 服务端读写UDP包数据
+func (c *UDPConn) ReadFromUDP(b []byte) (n int, addr *UDPAddr, err os.Error
+func (c *UDPConn) WriteToUDP(b []byte, addr *UDPAddr) (n int, err os.Error)
+</code></pre><p>UDP服务端的一般范式为</p>
+<pre><code>service := &quot;:1200&quot;
+udpAddr, err := net.ResolveUDPAddr(&quot;udp&quot;, service)
+checkError(err)
+conn, err := net.ListenUDP(&quot;udp&quot;, udpAddr)
+checkError(err)
+for {
+    handleClient(conn)
+}
+</code></pre><h3 id="raw-socketapi">Raw Socket相关API</h3>
+<pre><code># 客户端连接Raw Socket
+func DialIP(netProto string, laddr, raddr *IPAddr) (*IPConn, error)
+# 服务端监听Raw Socket
+func ListenIP(netProto string, laddr *IPAddr) (*IPConn, error)
+# 客户端或服务端读写Raw Socket
+func (c *IPConn) ReadFromIP(b []byte) (int, *IPAddr, error)
+func (c *IPConn) WriteToIP(b []byte, addr *IPAddr) (int, error)
+</code></pre><p>更范型化的接口</p>
+<pre><code># 客户端连接服务端，如conn, err := net.Dial(&quot;tcp&quot;, nil, addr) 或 conn, err := net.Dial(&quot;udp&quot;, nil, addr) 或 conn, err := net.Dial(&quot;ip&quot;, nil, addr)
+func Dial(net, laddr, raddr string) (c Conn, err os.Error)
+# 服务端监听TCP，如listener, err := net.Listen(&quot;tcp&quot;, addr)
+func Listen(net, laddr string) (l Listener, err os.Error)
+# 服务端接受TCP连接, 如conn, err := listener.Accept()
+func (l Listener) Accept() (c Conn, err os.Error)
+# 服务端监听UDP, 如conn, err := net.ListenPacket(&quot;udp&quot;, addr)
+func ListenPacket(net, laddr string) (c PacketConn, err os.Error)
+# 服务端读写UDP包数据
+type PacketConn interface {
+	ReadFrom(b []byte) (n int, addr Addr, err error)
+	WriteTo(b []byte, addr Addr) (n int, err error)
+}
+</code></pre><h3 id="heading-1">选择接口的原则</h3>
+<blockquote>
+<p>The Go net package recommends using these interface types rather than the concrete ones. But by using them, you lose specific methods such as SetKeepAlive or TCPConn and SetReadBuffer of UDPConn, unless you do a type cast. It is your choice.</p>
+</blockquote>
+<h2 id="heading-2">数据序列化</h2>
+<p>第四章讲的是数据序列化方案</p>
+<h3 id="asn1">asn1序列化</h3>
+<pre><code># 将对象marshal为字节数组
+func Marshal(val interface{}) ([]byte, error)
+# 从字节数组unmarshal回对象
+func Unmarshal(b []byte, val interface{}) (rest []byte, err error)
+</code></pre><p>这个主要用于读写X.509证书。</p>
+<h3 id="json">json序列化</h3>
+<pre><code># 获得一个json encoder
+encoder := json.NewEncoder(writer)
+# 将对象序列化
+err := encoder.Encode(obj)
+encoder.Close()
+
+# 获得一个json decoder
+decoder := json.NewDecoder(reader)
+# 将对象反序列化
+err := decoder.Decode(&amp;obj)
+</code></pre><p>json序列化方案功能比较完善，语言互操作性好，序列化后结果也可读便于查错。但其基于文本，性能与大小可能没有基于字节流的好。</p>
+<h3 id="gob">gob序列化</h3>
+<pre><code># 获得一个gob encoder
+encoder := gob.NewEncoder(writer)
+# 将对象序列化
+err := encoder.Encode(obj)
+encoder.Close()
+
+# 获得一个gob decoder
+decoder := gob.NewDecoder(reader)
+# 将对象反序列化
+err := decoder.Decode(&amp;obj)
+</code></pre><p>golang语言特有的序列化方案，功能完善，高效，但语言互操作性不好。</p>
+<h3 id="string">字节数组序列化为string</h3>
+<p>base64序列化方案</p>
+<pre><code># 获得一个base64 encoder
+encoder := base64.NewEncoder(base64.StdEncoding, writer)
+# 将对象序列化
+err := encoder.Encode(obj)
+encoder.Close()
+
+# 直接进行base64序列化
+str := base64.StdEncoding.EncodeToString(obj)
+
+# 获得一个base64 decoder
+decoder := base64.NewDecoder(base64.StdEncoding, reader)
+# 将对象反序列化
+err := decoder.Decode(&amp;obj)
+
+# 直接进行base64反序列化
+bb, err := base64.StdEncoding.DecodeString(str)
+</code></pre><p>可以看到golang里各种编码器的API很类似，用会一个，其它就举一反三了，这点很好。</p>
+<h2 id="heading-3">应用层协议设计</h2>
+<p>第5章主要讲应用层如何设计。其中讲到的概念其实以前做网络编程都涉及过，只不过在这章归纳总结后，更清晰了。</p>
+<p>应用层协议设计主要有以下方面需要注意：</p>
+<ul>
+<li>传输层协议选择</li>
+<li>是否有回应？如何处理回应丢失，超时。</li>
+<li>传输的数据格式，基于文本还是基于字节流。</li>
+<li>传输的数据包格式设计</li>
+<li>协议的版本控制</li>
+<li>应用的状态如何转换</li>
+<li>如何控制服务质量</li>
+<li>最终目标文件是一个独立的程序还是一个供第三方调用的库</li>
+</ul>
+<p>详细的说明可参阅<a href="https://jannewmarch.gitbooks.io/network-programming-with-go-golang-/content/applevelprotocols/index.html">Application-Level Protocols</a></p>
+<p>上述这些问题并没有一个确定性的答案，需要根据具体场景作决策。</p>
+<p>这里针对两种不同的数据格式，服务端的代码范式如下</p>
+<pre><code># 基于字节流的数据格式
+handleClient(conn) {
+    while (true) {
+        byte b = conn.readByte()
+        switch (b) {
+            case MSG_TYPE_1: ...
+            case MSG_TYPE_2: ...
+            ...
+        }
+    }
+}
+
+# 基于文本的数据格式
+handleClient(conn) {
+    while (true) {
+        line = conn.readLine()
+        if (line.startsWith(...) {
+            ...
+        } else if (line.startsWith(...) {
+            ...
+        }
+    }
+}
+</code></pre><h2 id="heading-4">字符集与文字编码</h2>
+<p>第6章主要讲了字符集与文字编码问题，这里有一个概念要理解一下。</p>
+<ul>
+<li>字符： 某种语言中一个独立的符号，可能是一个字母，一个汉字，一个标点符号等。</li>
+<li>字符集： 多个同类型的字符组成的一个集合，比如ASCII字符集、GBK字符集、BIG5字符集、Unicode字符集等。</li>
+<li>字符code: 字符在某个字符集中对应的整体值。比如在ASCII字符集中字母'A'的字符code为65。</li>
+<li>字符编码：将字符code编码为计算机真正可识别的字节数组，比如ASCII字符编码、GBK字符编码、UTF16字符编码、UTF8字符编码。</li>
+</ul>
+<p>golang内部使用UTF-8字符编码对字符串进行编码，UTF-8字符编码是一种针对Unicode的可变长度字符编码。因此在编程中会用到以下方法。</p>
+<pre><code>str := &quot;百度一下，你就知道&quot;
+# 得到字符串进行UTF-8编码后最后字节数组的长度
+println(&quot;Byte length&quot;, len(str))
+# 得到字符串中字符的个数
+println(&quot;String length&quot;, len([]rune(str)))
+</code></pre><p>字符集与字符编码的问题很重要，但事实上平时在编程中遇到比较多的可能仅仅是读写中文字符文件，这个记录一下，其它编码的处理也类似。</p>
+<pre><code>fileName := &quot;test.txt&quot;
+if _, err := os.Stat(fileName); os.IsNotExist(err) {
+	_, err := os.Create(fileName)
+	checkErr(err)
+}
+
+f, err := os.Open(fileName)
+checkErr(err)
+
+writer := transform.NewWriter(f, simplifiedchinese.GB18030.NewEncoder())
+io.WriteString(writer, &quot;百度一下，你就知道&quot;)
+writer.Close()
+
+reader := transform.NewReader(f, simplifiedchinese.GB18030.NewDecoder())
+bb, err := ioutil.ReadAll(reader)
+checkErr(err)
+fmt.Println(string(bb))
+
+f.Close()
+</code></pre><h2 id="heading-5">安全</h2>
+<p>第7章主要讲安全，在编程中主要用到的有以下几种技术。</p>
+<h3 id="hash">用于检验数据完整性的hash算法</h3>
+<pre><code># 下面的md5的使用，其它sha1, sha256等hash算法的使用方法类似
+hash := md5.New() // hash := md5.NewMD5([]byte{27, 23, 13, 55})
+bytes := []byte(&quot;hello\n&quot;)
+hash.Write(bytes)
+hashValue := hash.Sum(nil)
+</code></pre><h3 id="heading-6">对称加密</h3>
+<pre><code># 这里演示了blowfish对称加密算法，其它AES，DES使用方法类似
+key := []byte(&quot;my key&quot;)
+cipher, err := blowfish.NewCipher(key)
+if err != nil {
+	fmt.Println(err.Error())
+}
+
+# 加密
+enc := make([]byte, 255)
+cipher.Encrypt(enc, []byte(&quot;hello world&quot;))
+
+# 解密
+decrypt := make([]byte, 8)
+cipher.Decrypt(decrypt, enc)
+fmt.Println(string(decrypt))
+</code></pre><h3 id="heading-7">非对称加密</h3>
+<p>这里仅说明了下如何生成一对RSA公私钥及如何加载RSA公私钥，如何生成证书及如何加载证书，因为在编程中很少自己进行非对称加密，一般用在TLS连接会话里。而使用方法多数仅仅只是在建立连接时配置一下证书。</p>
+<pre><code># 生成一对公私钥，并保存到文件
+func main() {
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	checkErr(err)
+	publicKey := &amp;(privateKey.PublicKey)
+	savePEMKey(&quot;pri.key&quot;, privateKey)
+	savePEMPublicKey(&quot;pub.key&quot;, publicKey)
+}
+func savePEMPublicKey(path string, key *rsa.PublicKey) {
+	file, err := os.Create(path)
+	checkErr(err)
+	defer file.Close()
+	publicKey, err := ssh.NewPublicKey(key)
+	checkErr(err)
+	file.Write(ssh.MarshalAuthorizedKey(publicKey))
+}
+func savePEMKey(path string, key *rsa.PrivateKey) {
+	file, err := os.Create(path)
+	checkErr(err)
+	defer file.Close()
+	block := &amp;pem.Block{
+		Type : &quot;RSA PRIVATE KEY&quot;,
+		Bytes : x509.MarshalPKCS1PrivateKey(key),
+	}
+	pem.Encode(file, block)
+
+}
+func checkErr(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, &quot;error: %v&quot;, err)
+		os.Exit(-1)
+	}
+}
+
+# 从文件中加载公私钥
+func main() {
+	privateKey := loadPEMKey(&quot;pri.key&quot;)
+	fmt.Printf(&quot;%v\n&quot;, *privateKey)
+	publicKey := loadPEMPublicKey(&quot;pub.key&quot;)
+	fmt.Printf(&quot;%v\n&quot;, *publicKey)
+}
+func loadPEMKey(path string) *rsa.PrivateKey {
+	file, err := os.Open(path)
+	checkErr(err)
+	defer file.Close()
+	bb, err := ioutil.ReadAll(file)
+	block, _ := pem.Decode(bb)
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	checkErr(err)
+	return privateKey
+}
+func loadPEMPublicKey(path string) *rsa.PublicKey{
+	file, err := os.Open(path)
+	checkErr(err)
+	defer file.Close()
+	bb, err := ioutil.ReadAll(file)
+	checkErr(err)
+	pkey, _, _, _, err:= ssh.ParseAuthorizedKey(bb)
+	checkErr(err)
+	if pkey, ok := pkey.(ssh.CryptoPublicKey); ok {
+		publicKey := pkey.CryptoPublicKey().(*rsa.PublicKey)
+		return publicKey
+	}
+	return nil
+}
+func checkErr(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, &quot;error: %v&quot;, err)
+		os.Exit(-1)
+	}
+}
+
+# 生成证书，并保存证书到文件
+func main() {
+	generateCert(&quot;test.cer.pem&quot;)
+}
+func generateCert(path string) {
+	random := rand.Reader
+	privateKey := loadPEMKey(&quot;pri.key&quot;)
+	now := time.Now()
+	then := now.Add(60 * 60 * 24 * 365 * 1000 * 1000 * 1000) // one year
+	template := x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject: pkix.Name{
+			CommonName:   &quot;jan.newmarch.name&quot;,
+			Organization: []string{&quot;Jan Newmarch&quot;},
+		},
+		NotBefore: now,
+		NotAfter:  then,
+
+		SubjectKeyId: []byte{1, 2, 3, 4},
+		KeyUsage:     x509.KeyUsageCertSign | x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+
+		BasicConstraintsValid: true,
+		IsCA:                  true,
+		DNSNames:              []string{&quot;jan.newmarch.name&quot;, &quot;localhost&quot;},
+	}
+  derBytes, err := x509.CreateCertificate(random, &amp;template,
+		&amp;template, &amp;(privateKey.PublicKey), privateKey)
+	checkErr(err)
+
+	block := &amp;pem.Block{
+		Type: &quot;CERTIFICATE&quot;,
+		Bytes: derBytes,
+	}
+
+	certCerFile, err := os.Create(path)
+	checkErr(err)
+	pem.Encode(certCerFile, block)
+	certCerFile.Close()
+}
+
+func loadPEMKey(path string) *rsa.PrivateKey {
+	file, err := os.Open(path)
+	checkErr(err)
+	defer file.Close()
+	bb, err := ioutil.ReadAll(file)
+	block, _ := pem.Decode(bb)
+	privateKey, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
+	return privateKey
+}
+func checkErr(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, &quot;error: %v&quot;, err)
+		os.Exit(-1)
+	}
+}
+
+# 从文件中加载证书
+func main() {
+	cert := loadCert(&quot;test.cer.pem&quot;)
+	fmt.Printf(&quot;%v\n&quot;, *cert)
+}
+func loadCert(path string) *x509.Certificate {
+	certCerFile, err := os.Open(path)
+	checkErr(err)
+	bb, err := ioutil.ReadAll(certCerFile)
+	checkErr(err)
+	certCerFile.Close()
+
+	block, _ := pem.Decode(bb)
+
+	// trim the bytes to actual length in call
+	cert, err := x509.ParseCertificate(block.Bytes)
+	checkErr(err)
+	return cert;
+}
+func checkErr(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, &quot;error: %v&quot;, err)
+		os.Exit(-1)
+	}
+}
+
+# TCP服务端启用TLS
+func main() {
+	startTCPServerWithTLS()
+}
+func startTCPServerWithTLS() {
+	cert, err := tls.LoadX509KeyPair(&quot;test.cer.pem&quot;, &quot;pri.key&quot;)
+	checkErr(err)
+	config := tls.Config{Certificates: []tls.Certificate{cert}}
+	now := time.Now()
+	config.Time = func() time.Time { return now }
+	config.Rand = rand.Reader
+	_, err = tls.Listen(&quot;tcp&quot;, &quot;:1200&quot;, &amp;config)
+	checkErr(err)
+	...
+}
+
+# TCP客户端启用TLS
+func main() {
+	startTCPClientWithTLS()
+}
+func startTCPClientWithTLS() {
+	conn, err := tls.Dial(&quot;tcp&quot;, &quot;127.0.0.1:1200&quot;, nil)
+	checkErr(err)
+	handleClient(conn)
+}
+</code></pre>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-10-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/network/">network</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%BA%8C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">《Network Programming with Go》阅读重点备忘（二）</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">
+            <span class="next-text nav-default">React0.13在Chrome54上抽风问题总结</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

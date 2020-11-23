@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>buildx on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/buildx/</link>
+    <description>Recent content in buildx on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 30 Sep 2019 20:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/buildx/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>生成多平台docker镜像</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Mon, 30 Sep 2019 20:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</guid>
+      <description>工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这</description>
+    </item>
+    
+  </channel>
+</rss>

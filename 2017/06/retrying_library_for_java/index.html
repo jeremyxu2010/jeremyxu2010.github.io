@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Retrying_Library_For_Java - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Retrying_Library_For_Java" />
+<meta property="og:description" content="最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/" />
+<meta property="article:published_time" content="2017-06-15T00:20:00+08:00" />
+<meta property="article:modified_time" content="2017-06-15T00:20:00+08:00" />
+<meta itemprop="name" content="Retrying_Library_For_Java">
+<meta itemprop="description" content="最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人">
+<meta itemprop="datePublished" content="2017-06-15T00:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-15T00:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="3395">
+
+
+
+<meta itemprop="keywords" content="java,spring,retry," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Retrying_Library_For_Java"/>
+<meta name="twitter:description" content="最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Retrying_Library_For_Java</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-15 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3395 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">重试策略</a>
+      <ul>
+        <li><a href="#n">连续重试N次</a></li>
+        <li><a href="#heading-1">规定时间内连续重试</a></li>
+        <li><a href="#heading-2">组合重试</a></li>
+        <li><a href="#heading-3">异常分类重试</a></li>
+      </ul>
+    </li>
+    <li><a href="#backoff">等待策略（BackOff）</a>
+      <ul>
+        <li><a href="#heading-4">指定时间等待</a></li>
+        <li><a href="#heading-5">指数级等待</a></li>
+        <li><a href="#heading-6">指数级随机等待</a></li>
+        <li><a href="#heading-7">指定范围内的随机等待</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">基于注解的重试</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近在github上看到一个得了不少星的项目<a href="https://github.com/jd/tenacity">Retrying library for Python</a>，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人使用的。想到平时自己在写Java代码时，经常还手工写些代码实现重试逻辑，真的挺low的。那么Java里是否有类似的函数库呢？简单搜索了下，发现了两个选择：<a href="https://github.com/rholder/guava-retrying">guava-retrying</a>、 <a href="https://github.com/spring-projects/spring-retry">spring-retry</a>。简单比较了下，功能都差不多，但很明显spring-retry更强大一些，支持三种用法：API形式、Annotation形式、XML形式。个人还是比较喜欢Annotation形式的用法，看起来很简单，下面写一个简单的示例。</p>
+<p><code>NotStableService.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.springframework.retry.annotation.Backoff<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.retry.annotation.EnableRetry<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.retry.annotation.Recover<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.retry.annotation.Retryable<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.stereotype.Service<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.security.SecureRandom<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Random<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 2017/6/14.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@EnableRetry</span>
+<span style="color:#a6e22e">@Service</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NotStableService</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> Random random <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SecureRandom<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Retryable</span><span style="color:#f92672">(</span>
+            value <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>RuntimeException<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">}</span><span style="color:#f92672">,</span>
+            maxAttempts <span style="color:#f92672">=</span> 8<span style="color:#f92672">,</span>
+            backoff<span style="color:#f92672">=</span> <span style="color:#a6e22e">@Backoff</span><span style="color:#f92672">(</span>delay <span style="color:#f92672">=</span> 1000<span style="color:#f92672">,</span> maxDelay <span style="color:#f92672">=</span> 32000<span style="color:#f92672">,</span> multiplier <span style="color:#f92672">=</span> 2<span style="color:#f92672">)</span>
+    <span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> Integer <span style="color:#a6e22e">executeNotStableMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#75715e">// 下面模拟该方法的执行不太稳定的状态，比如调用第三方不太稳定的服务接口等场景
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> result <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span>10<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Got &#34;</span> <span style="color:#f92672">+</span> result<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>result <span style="color:#f92672">&lt;</span> 7<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> RuntimeException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;服务执行失败&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Recover</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">recover</span><span style="color:#f92672">(</span>RuntimeException e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;尝试多次，仍然失败&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>简单写个测试案例：</p>
+<p><code>NotStableServiceTests.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.junit.Assert<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.Test<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.junit.runner.RunWith<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.boot.test.context.SpringBootTest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.springframework.test.context.junit4.SpringRunner<span style="color:#f92672">;</span>
+
+<span style="color:#a6e22e">@RunWith</span><span style="color:#f92672">(</span>SpringRunner<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@SpringBootTest</span><span style="color:#f92672">(</span>webEnvironment<span style="color:#f92672">=</span>SpringBootTest<span style="color:#f92672">.</span><span style="color:#a6e22e">WebEnvironment</span><span style="color:#f92672">.</span><span style="color:#a6e22e">RANDOM_PORT</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NotStableServiceTests</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Autowired</span>
+    <span style="color:#66d9ef">private</span> NotStableService notStableService<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Test</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">executeNotStableMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertNotNull</span><span style="color:#f92672">(</span>notStableService<span style="color:#f92672">.</span><span style="color:#a6e22e">executeNotStableMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>测试执行结果：</p>
+<pre><code>2017-06-15 00:06:44.451  INFO 24549 --- [           main] p.j.service.NotStableServiceTests        : Started NotStableServiceTests in 15.068 seconds (JVM running for 16.511)
+Got 3
+Got 3
+Got 2
+Got 2
+Got 6
+Got 9
+</code></pre><p>可以看到确实重试了好几次，最终得到了合适的结果。</p>
+<p>本想好好讲一下<a href="https://github.com/spring-projects/spring-retry">spring-retry</a>的详细用法的，不过在网上找资料时，发现已有一位兄弟写了很详细的文档，我这里就不赘述了。</p>
+<p>以下内容转载自转载自<a href="http://iyiguo.net/blog/2016/01/19/spring-retry-common-case/">http://iyiguo.net/blog/2016/01/19/spring-retry-common-case/</a>，<a href="http://iyiguo.net/blog/2016/01/19/spring-retry-common-case/">《Spring Retry 常用示例》</a>的一切权利归作者<a href="mailto:seadlead@gmail.com">@Leeyee</a>所有。</p>
+<h2 id="heading">重试策略</h2>
+<h3 id="n">连续重试N次</h3>
+<p><code>SimpleRetryPolicy</code>可以实现指定次数的重试。只需要设置 <em>maxAttempts</em> 参数即可。其默认重试次数是3次。该策略为创建<code>RetryTemplate</code>对象时默认的重试策略。具体使用如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">SimpleRetryPolicy simpleRetryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SimpleRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+simpleRetryPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxAttempts</span><span style="color:#f92672">(</span>4<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h3 id="heading-1">规定时间内连续重试</h3>
+<p><code>TimeoutRetryPolicy</code>可以实现指定时间内的重试。超时时间通过参数 <em>timeout</em> 进行设置。默认超时时间1s。使用方式如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// all spend 1s
+</span><span style="color:#75715e"></span>TimeoutRetryPolicy timeoutRetryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TimeoutRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+timeoutRetryPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimeout</span><span style="color:#f92672">(</span>2000L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h3 id="heading-2">组合重试</h3>
+<p><code>CompositeRetryPolicy</code>实现了重试策略的组合。通过其 <em>policies</em> 字段，可以为其添加多个重试策略。组合策略执行的过程中，所有策略只要有一个达成终止条件，那么该重试结束。我们可以用组合重试策略实现一些相对比较复杂的重试。比如我们要实现在指定时间1s内重试3次，每次重试间隔0.2秒，就可以使用以下方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">CompositeRetryPolicy compositeRetryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CompositeRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+SimpleRetryPolicy simpleRetryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SimpleRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+TimeoutRetryPolicy timeoutRetryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TimeoutRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+FixedBackOffPolicy fixedBackOffPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FixedBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+fixedBackOffPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setBackOffPeriod</span><span style="color:#f92672">(</span>200<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">// 每次重试间隔200ms
+</span><span style="color:#75715e"></span>
+compositeRetryPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setPolicies</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RetryPolicy<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">{</span>simpleRetryPolicy<span style="color:#f92672">,</span>		timeoutRetryPolicy<span style="color:#f92672">,</span><span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>通过该方法，如果重试总耗时超过1s，重试次数不超过3次，那么重试终止；如果未超过1s，但重试次数已达到3次，那么重试终止！（重试等待的设置可以看下文）</p>
+<h3 id="heading-3">异常分类重试</h3>
+<p>有可能存在这样一种场景，比如在进行HTTP请求时，有可能因为网络原因导致请求超时，也有可能在拿到HTTP响应结果后的业务处理中发生异常，针对这两种异常我们可能需要不同的异常重试机制。这时就可以通过<code>ExceptionClassifierRetryPolicy</code>对异常分类进行分类：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ExceptionClassifierRetryPolicy retryPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExceptionClassifierRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+Map<span style="color:#f92672">&lt;</span>Class<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span> <span style="color:#66d9ef">extends</span> Throwable<span style="color:#f92672">&gt;</span><span style="color:#f92672">,</span> RetryPolicy<span style="color:#f92672">&gt;</span> policyMap <span style="color:#f92672">=</span> Maps<span style="color:#f92672">.</span><span style="color:#a6e22e">newHashMap</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+policyMap<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>NullPointerException<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> SimpleRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+policyMap<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>ArithmeticException<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> TimeoutRetryPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+retryPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setPolicyMap</span><span style="color:#f92672">(</span>policyMap<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>上述示例中，我们针对重试业务抛出的空指针异常使用<code>SimpleRetryPolicy</code>策略，而对于算术异常采用<code>TimeoutRetryPolicy</code>策略。实际的重试过程中，这两中情况有可能交替出现，但不管如何，只要有一个重试策略达到终止状态，则整个重试调用终止。</p>
+<h2 id="backoff">等待策略（BackOff）</h2>
+<p>重试策略<code>RetryPolicy</code>只是实现了基本的重试功能，也就是核心的循环逻辑，形如以下的代码：</p>
+<pre><code>do ... while
+</code></pre><p>那么每次重试之间的相关场景该如何处理呢？为此，Spring Retry 将重试间可能有的重试等待策略抽像成了<code>BackoffPolicy</code>接口，并提供了一些简单的实现。</p>
+<p>在使用<code>RetryTemplate</code>时，可以通过<em>setBackOffPolicy</em>方法进行设置。</p>
+<h3 id="heading-4">指定时间等待</h3>
+<p>首先<code>FixedBackOffPolicy</code>应该是最常用的重试间隔<a href="http://iyiguo.net/blog/2016/01/19/spring-retry-common-case/#fn:comment1">1</a>策略！通过该类，可以指定重试之间需要等待的时间。FixedBackOffPolicy 有两个基本属性：<em>backOffPeriod</em> 和 <em>sleeper</em>。可以通过<em>backOffPeriod</em> 直接设定间隔实现，当然也可以通过<em>sleeper</em>属性，实现自己的重试间隔方法。同时，<em>backOffPeriod</em>实质上还是调用了Sleeper实现（<code>sleeper.sleep(backOffPeriod);</code>）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">FixedBackOffPolicy fixedBackOffPolicy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FixedBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+fixedBackOffPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">setBackOffPeriod</span><span style="color:#f92672">(</span>1500<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+</code></pre></div><h3 id="heading-5">指数级等待</h3>
+<p><code>ExponentialBackOffPolicy</code>类提供了指数级重试间隔的实现。通过该类，可以使重试之间的等待按指数级增长。其中</p>
+<ul>
+<li><em>initialInterval</em>属性为初始默认间隔，默认值是100毫秒；</li>
+<li><em>maxInterval</em>属性为最大默认间隔。当实际计算出的间隔超过该值时，使用该值。默认为30秒；</li>
+<li><em>multiplier</em>为乘数。默认2，当其等于1时，其行为同<code>FixedBackOffPolicy</code>为固定时间间隔。建议不要使用1，会造成重试过快！</li>
+</ul>
+<p><code>FixedBackOffPolicy</code>的时间间隔计算公式是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Math<span style="color:#f92672">.</span><span style="color:#a6e22e">min</span><span style="color:#f92672">(</span>maxInterval<span style="color:#f92672">,</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">pow</span><span style="color:#f92672">(</span>initialInterval<span style="color:#f92672">,</span> multiplier<span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+</code></pre></div><p>源码为：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getSleepAndIncrement</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>	
+	<span style="color:#66d9ef">long</span> sleep <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">interval</span><span style="color:#f92672">;</span>	
+	<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sleep <span style="color:#f92672">&gt;</span> maxInterval<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+		sleep <span style="color:#f92672">=</span> maxInterval<span style="color:#f92672">;</span>	
+	<span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>		
+		<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">interval</span> <span style="color:#f92672">=</span> getNextInterval<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+	<span style="color:#f92672">}</span>	
+	<span style="color:#66d9ef">return</span> sleep<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getNextInterval</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>	
+  <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">long</span><span style="color:#f92672">)</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">interval</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">multiplier</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading-6">指数级随机等待</h3>
+<p><code>ExponentialRandomBackOffPolicy</code>继承自<code>ExponentialBackOffPolicy</code>，只是重写了获取重试时间间隔的方法。在获取重试间隔后，在加上一些随机的时间。具体实现可参看源码：</p>
+<pre><code>@Overridepublic synchronized long getSleepAndIncrement() {	long next = super.getSleepAndIncrement();	next = (long)(next*(1 + r.nextFloat()*(getMultiplier()-1)));	return next;}
+</code></pre><h3 id="heading-7">指定范围内的随机等待</h3>
+<p><code>UniformRandomBackOffPolicy</code>允许给定最大，最小等待时间，然后让每次的重试在其之间进行随机等待。参数<em>minBackOffPeriod</em>和<em>maxBackOffPeriod</em>的默认值分别为500ms和1500ms，具体的计算方式是：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doBackOff</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> BackOffInterruptedException <span style="color:#f92672">{</span>	
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>		
+    <span style="color:#66d9ef">long</span> delta <span style="color:#f92672">=</span> maxBackOffPeriod<span style="color:#f92672">=</span><span style="color:#f92672">=</span>minBackOffPeriod <span style="color:#f92672">?</span> 0 <span style="color:#f92672">:</span> random<span style="color:#f92672">.</span><span style="color:#a6e22e">nextInt</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>maxBackOffPeriod <span style="color:#f92672">-</span> minBackOffPeriod<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    sleeper<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>minBackOffPeriod <span style="color:#f92672">+</span> delta <span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>	<span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+    <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> BackOffInterruptedException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Thread interrupted while sleeping&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-8">基于注解的重试</h2>
+<p>最后我们了解下如何使用注解实现重试机制。最基本的，我们需要以下这几个注解：</p>
+<ul>
+<li><code>@EnableRetry</code>：能否重试。注解类的，其<em>proxyTargetClass</em>属性为<em>true</em>时，使用CGLIB代理。默认使用标准JAVA注解。当类中有<code>@Retryable</code>注释的方法时，对该方法生成代理。</li>
+<li><code>@Retryable</code>：注解需要被重试的方法。<em>include</em> 指定处理的异常类。默认所有异常<em>maxAttempts</em> 最大重试次数。默认3次<em>backoff</em> 重试等待策略。默认使用<code>@Backoff</code>注解</li>
+<li><code>@Backoff</code>：重试等待策略。不设置参数时，默认使用<code>FixedBackOffPolicy</code>，重试等待1000ms只设置<em>delay()<em>属性时，使用<code>FixedBackOffPolicy</code>，重试等待指定的毫秒数当设置</em>delay()<em>和</em>maxDealy()<em>属性时，重试等待在这两个值之间均态分布使用</em>delay()</em>，*maxDealy()<em>和</em>multiplier()<em>属性时，使用<code>ExponentialBackOffPolicy</code>当设置</em>multiplier()<em>属性不等于0时，同时也设置了</em>random()*属性时，使用<code>ExponentialRandomBackOffPolicy</code></li>
+<li><code>@Recover</code>: 用于方法。用于@Retryable失败时的“兜底”处理方法。<code>@Recover</code>注释的方法参数为<code>@Retryable</code>异常类，返回值应与重试方法返回相同，否则无法识别！因此可以针对可能异常设置多个<code>@Recover</code>方法进行“兜底”处理。</li>
+</ul>
+<p>对于<code>@Backoff</code>可以具体查看下参数不同时源码是如何处理的<a href="http://iyiguo.net/blog/2016/01/19/spring-retry-common-case/#fn:codefrom1">2</a>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> BackOffPolicy <span style="color:#a6e22e">getBackoffPolicy</span><span style="color:#f92672">(</span>Backoff backoff<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>	
+  <span style="color:#66d9ef">long</span> min <span style="color:#f92672">=</span> backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">delay</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0 <span style="color:#f92672">?</span> backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">:</span> backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">delay</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#66d9ef">long</span> max <span style="color:#f92672">=</span> backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">maxDelay</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">multiplier</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+    ExponentialBackOffPolicy policy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExponentialBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>			
+      policy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExponentialRandomBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>		
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setInitialInterval</span><span style="color:#f92672">(</span>min<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setMultiplier</span><span style="color:#f92672">(</span>backoff<span style="color:#f92672">.</span><span style="color:#a6e22e">multiplier</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxInterval</span><span style="color:#f92672">(</span>max <span style="color:#f92672">&gt;</span> min <span style="color:#f92672">?</span> max <span style="color:#f92672">:</span> ExponentialBackOffPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">DEFAULT_MAX_INTERVAL</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sleeper <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>			
+      policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setSleeper</span><span style="color:#f92672">(</span>sleeper<span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#f92672">}</span>		
+    <span style="color:#66d9ef">return</span> policy<span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>	
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>max <span style="color:#f92672">&gt;</span> min<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+    UniformRandomBackOffPolicy policy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> UniformRandomBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setMinBackOffPeriod</span><span style="color:#f92672">(</span>min<span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxBackOffPeriod</span><span style="color:#f92672">(</span>max<span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sleeper <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>			
+      policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setSleeper</span><span style="color:#f92672">(</span>sleeper<span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#f92672">}</span>		
+    <span style="color:#66d9ef">return</span> policy<span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>	
+  FixedBackOffPolicy policy <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FixedBackOffPolicy<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setBackOffPeriod</span><span style="color:#f92672">(</span>min<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sleeper <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+    policy<span style="color:#f92672">.</span><span style="color:#a6e22e">setSleeper</span><span style="color:#f92672">(</span>sleeper<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>	
+  <span style="color:#66d9ef">return</span> policy<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>最后给出一个使用示例，供大家参考下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Service</span><span style="color:#a6e22e">@EnableRetry</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AnnoService</span> <span style="color:#f92672">{</span>	
+  
+  <span style="color:#66d9ef">public</span> Logger logger <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>AnnoService<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  
+  <span style="color:#a6e22e">@Retryable</span><span style="color:#f92672">(</span>maxAttempts <span style="color:#f92672">=</span> 5<span style="color:#f92672">,</span> backoff <span style="color:#f92672">=</span> <span style="color:#a6e22e">@Backoff</span><span style="color:#f92672">(</span>random <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+  <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">someService</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>		
+    <span style="color:#66d9ef">int</span> random <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">random</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">*</span> 10<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>random <span style="color:#f92672">&lt;</span> 4<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>			
+      logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;random={} Null Pointer Excep&#34;</span><span style="color:#f92672">,</span> random<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> NullPointerException<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>random <span style="color:#f92672">&lt;</span> 9<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>			
+      logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;random={} Arithmetic Excep&#34;</span><span style="color:#f92672">,</span> random<span style="color:#f92672">)</span><span style="color:#f92672">;</span>			
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ArithmeticException<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#f92672">}</span>		
+    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;random={} ok !!!!&#34;</span><span style="color:#f92672">,</span> random<span style="color:#f92672">)</span><span style="color:#f92672">;</span>		
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;ok&#34;</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>	
+  
+  <span style="color:#a6e22e">@Recover</span>	
+  <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">recover</span><span style="color:#f92672">(</span>NullPointerException ne<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{}&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;NullPointerException&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;null pointer recover&#34;</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>	
+  
+  <span style="color:#a6e22e">@Recover</span>	<span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">recover</span><span style="color:#f92672">(</span>ArithmeticException ne<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    logger<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{}&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;ArithmeticException&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;ArithmeticException recover&#34;</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Main</span> <span style="color:#f92672">{</span>	
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+    ApplicationContext context <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AnnotationConfigApplicationContext<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com.leeyee.spring.retry.*&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    AnnoService annoService <span style="color:#f92672">=</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">getBean</span><span style="color:#f92672">(</span>AnnoService<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    String result <span style="color:#f92672">=</span> annoService<span style="color:#f92672">.</span><span style="color:#a6e22e">someService</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>result<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-15</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/spring/">spring</a>
+          
+          <a href="/tags/retry/">retry</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记06</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/">
+            <span class="next-text nav-default">机器学习课程_笔记05</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

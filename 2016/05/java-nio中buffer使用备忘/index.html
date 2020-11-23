@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Java NIO中Buffer使用备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Java NIO中Buffer使用备忘" />
+<meta property="og:description" content="很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2016-05-03T22:51:00+08:00" />
+<meta property="article:modified_time" content="2016-05-03T22:51:00+08:00" />
+<meta itemprop="name" content="Java NIO中Buffer使用备忘">
+<meta itemprop="description" content="很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经">
+<meta itemprop="datePublished" content="2016-05-03T22:51:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-03T22:51:00&#43;08:00" />
+<meta itemprop="wordCount" content="2425">
+
+
+
+<meta itemprop="keywords" content="java,nio," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java NIO中Buffer使用备忘"/>
+<meta name="twitter:description" content="很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Java NIO中Buffer使用备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2425 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#buffer">Buffer的基本用法</a></li>
+    <li><a href="#buffercapacitypositionlimit">Buffer的capacity,position和limit</a></li>
+    <li><a href="#buffer-1">Buffer的类型</a></li>
+    <li><a href="#buffer-2">Buffer的分配</a></li>
+    <li><a href="#buffer-3">向Buffer中写数据</a>
+      <ul>
+        <li><a href="#flip">flip方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#buffer-4">从Buffer中读取数据</a>
+      <ul>
+        <li><a href="#clearcompact">clear与compact方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading">其它重要方法</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很长时间都是在用Netty进行网络编程，Java原生NIO的很多概念都忘得差不多了，今天在工作中遇到要使用ByteBuffer，发现竟然已经不会用了，这里将NIO中Buffer的概念再梳理一遍以备忘。</p>
+<h2 id="buffer">Buffer的基本用法</h2>
+<p>Java NIO中的Buffer用于和NIO通道进行交互。如你所知，数据是从通道读入缓冲区，从缓冲区写入到通道中的。</p>
+<p>缓冲区本质上是一块可以写入数据，然后可以从中读取数据的内存。这块内存被包装成NIO Buffer对象，并提供了一组方法，用来方便的访问该块内存。</p>
+<p>使用Buffer读写数据一般遵循以下四个步骤：</p>
+<ol>
+<li>写入数据到Buffer</li>
+<li>调用flip()方法</li>
+<li>从Buffer中读取数据</li>
+<li>调用clear()方法或者compact()方法</li>
+</ol>
+<p>当向buffer写入数据时，buffer会记录下写了多少数据。一旦要读取数据，需要通过flip()方法将Buffer从写模式切换到读模式。在读模式下，可以读取之前写入到buffer的所有数据。</p>
+<p>一旦读完了所有的数据，就需要清空缓冲区，让它可以再次被写入。有两种方式能清空缓冲区：调用clear()或compact()方法。clear()方法会清空整个缓冲区。compact()方法只会清除已经读过的数据。任何未读的数据都被移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。</p>
+<p>示例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">FileInputStream aFileIn <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileInputStream<span style="color:#f92672">(</span>aFile<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+FileChannel inChannel <span style="color:#f92672">=</span> aFileIn<span style="color:#f92672">.</span><span style="color:#a6e22e">getChannel</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">//create buffer with capacity of 4096 bytes
+</span><span style="color:#75715e"></span>ByteBuffer buf <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>4096<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>bytesRead <span style="color:#f92672">=</span> inChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>buf<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  buf<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>  <span style="color:#75715e">//make buffer ready for read
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">while</span><span style="color:#f92672">(</span>buf<span style="color:#f92672">.</span><span style="color:#a6e22e">hasRemaining</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+      System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">char</span><span style="color:#f92672">)</span> buf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">// read 1 byte at a time
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">}</span>
+  buf<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//make buffer ready for writing
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+aFileIn<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h2 id="buffercapacitypositionlimit">Buffer的capacity,position和limit</h2>
+<p>NIO的Buffer与Netty的不一样，它是单指针的，Buffer在不同模式下，指针的含义不同。</p>
+<p>为了理解Buffer的工作原理，需要熟悉它的三个属性：</p>
+<ol>
+<li>capacity</li>
+<li>position</li>
+<li>limit</li>
+</ol>
+<p>position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。</p>
+<p><img src="/images/20160503/buffers-modes.png" alt="NIO Buffer模式说明"></p>
+<ul>
+<li>capacity</li>
+</ul>
+<p>作为一个内存块，Buffer有一个固定的大小值，也叫“capacity”.你只能往里写capacity个byte、long，char等类型。一旦Buffer满了，需要将其清空（通过读数据或者清除数据）才能继续写数据往里写数据。</p>
+<ul>
+<li>position</li>
+</ul>
+<p>当你写数据到Buffer中时，position表示当前的位置。初始的position值为0.当一个byte、long等数据写到Buffer后， position会向前移动到下一个可插入数据的Buffer单元。position最大可为capacity – 1.</p>
+<p>当读取数据时，也是从某个特定位置读。当将Buffer从写模式切换到读模式，position会被重置为0. 当从Buffer的position处读取数据时，position向前移动到下一个可读的位置。</p>
+<ul>
+<li>limit</li>
+</ul>
+<p>在写模式下，Buffer的limit表示你最多能往Buffer里写多少数据。 写模式下，limit等于Buffer的capacity。</p>
+<p>当切换Buffer到读模式时， limit表示你最多能读到多少数据。因此，当切换Buffer到读模式时，limit会被设置成写模式下的position值。换句话说，你能读到之前写入的所有数据（limit被设置成已写数据的数量，这个值在写模式下就是position）</p>
+<h2 id="buffer-1">Buffer的类型</h2>
+<p>Java NIO 有以下Buffer类型</p>
+<ul>
+<li>ByteBuffer</li>
+<li>CharBuffer</li>
+<li>DoubleBuffer</li>
+<li>FloatBuffer</li>
+<li>IntBuffer</li>
+<li>LongBuffer</li>
+<li>ShortBuffer</li>
+</ul>
+<p>这些Buffer类型代表了不同的数据类型, 可以通过char，short，int，long，float 或 double类型来操作缓冲区中的字节。</p>
+<h2 id="buffer-2">Buffer的分配</h2>
+<p>要想获得一个Buffer对象首先要进行分配。 每一个Buffer类都有一个allocate方法。下面是一个分配48字节capacity的ByteBuffer的例子。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">ByteBuffer buf <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>48<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h2 id="buffer-3">向Buffer中写数据</h2>
+<p>写数据到Buffer有两种方式：</p>
+<ul>
+<li>从Channel写到Buffer。</li>
+<li>通过Buffer的put()方法写到Buffer里。</li>
+</ul>
+<p>从Channel写到Buffer的例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> inChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>buf<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//read into buffer.
+</span></code></pre></div><p>通过put方法写Buffer的例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">buf<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>127<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>还有很多重载的put方法。</p>
+<h3 id="flip">flip方法</h3>
+<p>flip方法可以将Buffer从写模式切换到读模式。调用flip()方法会将position设回0，并将limit设置成之前position的值。</p>
+<h2 id="buffer-4">从Buffer中读取数据</h2>
+<p>从Buffer中读取数据有两种方式：</p>
+<ul>
+<li>从Buffer读取数据到Channel。</li>
+<li>使用get()方法从Buffer中读取数据。</li>
+</ul>
+<p>从Buffer读取数据到Channel的例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">//read from buffer into channel.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> bytesWritten <span style="color:#f92672">=</span> inChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>buf<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>使用get()方法从Buffer中读取数据的例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">byte</span> aByte <span style="color:#f92672">=</span> buf<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>还有很多重载的get方法。</p>
+<h3 id="clearcompact">clear与compact方法</h3>
+<p>一旦读完Buffer中的数据，需要让Buffer准备好再次被写入。可以通过clear()或compact()方法来完成。</p>
+<p>如果调用的是clear()方法，position将被设回0，limit被设置成 capacity的值。换句话说，Buffer 被清空了。Buffer中的数据并未清除，只是这些标记告诉我们可以从哪里开始往Buffer里写数据。</p>
+<p>如果Buffer中有一些未读的数据，调用clear()方法，数据将“被遗忘”，意味着不再有任何标记会告诉你哪些数据被读过，哪些还没有。</p>
+<p>如果Buffer中仍有未读的数据，且后续还需要这些数据，但是此时想要先先写些数据，那么使用compact()方法。</p>
+<p>compact()方法将所有未读的数据拷贝到Buffer起始处。然后将position设到最后一个未读元素正后面。limit属性依然像clear()方法一样，设置成capacity。现在Buffer准备好写数据了，但是不会覆盖未读的数据。</p>
+<h2 id="heading">其它重要方法</h2>
+<ul>
+<li>mark()与reset()方法</li>
+</ul>
+<p>通过调用Buffer.mark()方法，可以标记Buffer中的一个特定position。之后可以通过调用Buffer.reset()方法恢复到这个position。例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">mark</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">//call buffer.get() a couple of times, e.g. during parsing.
+</span><span style="color:#75715e"></span>buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">reset</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>  <span style="color:#75715e">//set position back to mark.
+</span></code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">koa框架源码解读</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/">
+            <span class="next-text nav-default">锁定NodeJS项目的依赖库</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

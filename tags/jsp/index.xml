@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>JSP on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/jsp/</link>
+    <description>Recent content in JSP on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 07 Jan 2017 20:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/jsp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>免编译在JSP中直接写react代码</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E5%85%8D%E7%BC%96%E8%AF%91%E5%9C%A8jsp%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%86%99react%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Sat, 07 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E5%85%8D%E7%BC%96%E8%AF%91%E5%9C%A8jsp%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%86%99react%E4%BB%A3%E7%A0%81/</guid>
+      <description>最近参与了一个历时4-5年的项目，项目是一个后台管理系统，访问量并不高，但经常根据业务方的一些特殊需求，在原有代码添加功能。项目所采用的技术</description>
+    </item>
+    
+  </channel>
+</rss>

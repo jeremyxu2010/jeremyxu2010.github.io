@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>mongodb的两阶段提交实战 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="mongodb的两阶段提交实战" />
+<meta property="og:description" content="项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/" />
+<meta property="article:published_time" content="2018-07-03T20:20:00+08:00" />
+<meta property="article:modified_time" content="2018-07-03T20:20:00+08:00" />
+<meta itemprop="name" content="mongodb的两阶段提交实战">
+<meta itemprop="description" content="项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数">
+<meta itemprop="datePublished" content="2018-07-03T20:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-07-03T20:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="3628">
+
+
+
+<meta itemprop="keywords" content="mongodb,java,transactions," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="mongodb的两阶段提交实战"/>
+<meta name="twitter:description" content="项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">mongodb的两阶段提交实战</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-07-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3628 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mongodb">MongoDB两阶段提交原理</a>
+      <ul>
+        <li><a href="#heading">事务过程</a></li>
+        <li><a href="#heading-1">将事务应用到两个账户</a></li>
+        <li><a href="#committed">设置事务状态为committed</a></li>
+        <li><a href="#pending-1">移除pending事务</a></li>
+        <li><a href="#done">设置事务状态为done</a></li>
+        <li><a href="#heading-2">从失败场景中恢复</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">回滚</a>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">原理理解</a></li>
+    <li><a href="#heading-6">一个更完整的例子</a></li>
+    <li><a href="#heading-7">总结</a></li>
+    <li><a href="#heading-8">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数据的一致性，这个实际上要求在mongodb上实现事务功能，在网上查了下资料，发现了两阶段提交的方案，不过网上基本上都是翻译，很少有人具体分析原理的，今天花了些时间仔细思考了下这个方案，记录在这里以备忘。</p>
+<h2 id="mongodb">MongoDB两阶段提交原理</h2>
+<p>下面的内容摘自<a href="https://acupple.github.io/2016/08/09/MongoDB%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1/">官方说明的翻译</a>，完整的<a href="https://docs.mongodb.com/tutorials/perform-two-phase-commits">英文版说明</a>。</p>
+<p>MongoDB数据库中操作单个文档总是原子性的，然而，涉及多个文档的操作，通常被作为一个“事务”，而不是原子性的。因为文档可以是相当复杂并且包含多个嵌套文档，单文档的原子性对许多实际用例提供了支持。尽管单文档操作是原子性的，在某些情况下，需要多文档事务。在这些情况下，使用两阶段提交，提供这些类型的多文档更新支持。因为文档可以表示为Pending数据和状态，可以使用一个两阶段提交确保数据是一致的，在一个错误的情况下，事务前的状态是可恢复的。</p>
+<p>事务最常见的例子是以可靠的方式从A账户转账到B账户，在关系型数据库中，此操作将从A账户减掉金额和给B账户增加金额的操作封装在单个原子事务中。在MongoDB中，可以使用两阶段提交达到相同的效果。本文中的所有示例使用mongo shell与数据库进行交互,并假设有两个集合：首先，一个名为accounts的集合存储每个账户的文档数据，另一个名为transactions的集合存储事务本身。</p>
+<p>首先创建两个名为A和B的账户，使用下面的命令：</p>
+<pre><code>db.accounts.save({name:&quot;A&quot;, balance:1000, pendingTransactions: []})
+db.accounts.save({name:&quot;B&quot;, balance:1000, pendingTransactions: []})
+</code></pre><p>使用find()方法验证这两个操作已经成功：</p>
+<pre><code>db.accounts.find()
+</code></pre><p>mongo会返回两个类似下面的文档：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc66cb8a04f512696151f&quot;), &quot;name&quot; :&quot;A&quot;, 
+    &quot;balance&quot; :1000, &quot;pendingTransactions&quot; :[ ]}
+{ &quot;_id&quot; :ObjectId(&quot;4d7bc67bb8a04f5126961520&quot;), &quot;name&quot; :&quot;B&quot;,
+     &quot;balance&quot; :1000, &quot;pendingTransactions&quot; :[ ]}
+</code></pre><h3 id="heading">事务过程</h3>
+<h4 id="initial">设置事务初始状态initial</h4>
+<p>通过插入下面的文档创建transaction集合，transaction文档持有源(source)和目标(destination)，它们引用自accounts集合文档的字段名，以及value字段表示改变balance字段数量的数据。最后，state字段反映事务的当前状态。</p>
+<pre><code>db.transactions.save({source:&quot;A&quot;, destination:&quot;B&quot;, value:100, 
+    state:&quot;initial&quot;})
+</code></pre><p>验证这个操作已经成功，使用find()：</p>
+<pre><code>db.transactions.find()
+</code></pre><p>这个操作会返回一个类似下面的文档：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;), &quot;source&quot; :&quot;A&quot;, 
+    &quot;destination&quot; :&quot;B&quot;, &quot;value&quot; :100, &quot;state&quot; :&quot;initial&quot;}
+</code></pre><h4 id="pending">切换事务到Pending状态</h4>
+<p>在修改accounts集合记录之前，将事务状态从initial设置为pending。使用findOne()方法将transaction文档赋值给shell会话中的局部变量t：</p>
+<pre><code>t =db.transactions.findOne({state:&quot;initial&quot;})
+</code></pre><p>变量t创建后，shell将返回它的值，将会看到如下的输出：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;), &quot;source&quot; :&quot;A&quot;,
+     &quot;destination&quot; :&quot;B&quot;, &quot;value&quot; :100, &quot;state&quot; :&quot;initial&quot;}
+</code></pre><h4 id="updatestatepending">使用update()改变state的值为pending</h4>
+<pre><code>db.transactions.update({_id:t._id},{$set:{state:&quot;pending&quot;}})
+db.transactions.find()
+</code></pre><p>find()操作将返回transaction集合的内容，类似下面：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;), &quot;source&quot; :&quot;A&quot;, 
+    &quot;destination&quot; :&quot;B&quot;, &quot;value&quot; :100, &quot;state&quot; :&quot;pending&quot;}
+</code></pre><h3 id="heading-1">将事务应用到两个账户</h3>
+<p>使用update()方法应用事务到两个账户。在update()查询中，条件pendingTransactions:{$ne:t._id}阻止事务更新账户，如果账户的pendingTransaction字段包含事务t的_id：</p>
+<pre><code>db.accounts.update({name:t.source, 
+    pendingTransactions: { $ne: t._id }},
+    {$inc:{ balance: -t.value }, 
+    $push:{pendingTransactions:t._id }})
+db.accounts.update({name:t.destination, 
+    pendingTransactions: { $ne: t._id }},
+    {$inc:{ balance: t.value }, 
+    $push:{pendingTransactions:t._id }})
+db.accounts.find()
+</code></pre><p>find()操作将返回accounts集合的内容，现在应该类似于下面的内容：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc97fb8a04f5126961523&quot;), &quot;balance&quot; :900, &quot;name&quot; :&quot;A&quot;, 
+    &quot;pendingTransactions&quot; :[ ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;) ] }
+{ &quot;_id&quot; :ObjectId(&quot;4d7bc984b8a04f5126961524&quot;), &quot;balance&quot; :1100, &quot;name&quot; :&quot;B&quot;, 
+    &quot;pendingTransactions&quot; :[ ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;) ] }
+</code></pre><h3 id="committed">设置事务状态为committed</h3>
+<p>使用下面的update()操作设置事务的状态为committed：</p>
+<pre><code>db.transactions.update({_id:t._id},{$set:{state:&quot;committed&quot;}})db.transactions.find()
+</code></pre><p>find()操作发回transactions集合的内容，现在应该类似下面的内容：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;), &quot;destination&quot; :&quot;B&quot;, 
+    &quot;source&quot; :&quot;A&quot;, &quot;state&quot; :&quot;committed&quot;, &quot;value&quot; :100}
+</code></pre><h3 id="pending-1">移除pending事务</h3>
+<p>使用下面的update()操作从accounts集合中移除pending事务：</p>
+<pre><code>db.accounts.update({name:t.source},{$pull:{pendingTransactions: t._id}})
+db.accounts.update({name:t.destination},{$pull:{pendingTransactions: t._id}})
+db.accounts.find()
+</code></pre><p>find()操作返回accounts集合内容，现在应该类似下面内容：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc97fb8a04f5126961523&quot;), &quot;balance&quot; :900, &quot;name&quot; :&quot;A&quot;, 
+    &quot;pendingTransactions&quot; :[ ] }
+{ &quot;_id&quot; :ObjectId(&quot;4d7bc984b8a04f5126961524&quot;), &quot;balance&quot; :1100, &quot;name&quot; :&quot;B&quot;, 
+    &quot;pendingTransactions&quot; :[ ] }
+</code></pre><h3 id="done">设置事务状态为done</h3>
+<p>通过设置transaction文档的state为done完成事务：</p>
+<pre><code>db.transactions.update({_id:t._id},{$set:{state:&quot;done&quot;}})
+db.transactions.find()
+</code></pre><p>find()操作返回transaction集合的内容，此时应该类似下面：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc7a8b8a04f5126961522&quot;), &quot;destination&quot; :&quot;B&quot;, 
+    &quot;source&quot; :&quot;A&quot;, &quot;state&quot; :&quot;done&quot;, &quot;value&quot; :100}
+</code></pre><h3 id="heading-2">从失败场景中恢复</h3>
+<p>最重要的部分不是上面的典型例子，而是从各种失败场景中恢复未完成的事务的可能性。这部分将概述可能的失败，并提供方法从这些事件中恢复事务。这里有两种类型的失败：</p>
+<ol>
+<li>所有发生在第一步（即设置事务的初始状态initial）之后，但在第三步（即应用事务到两个账户）之前的失败。为了还原事务，应用应该获取一个pending状态的transaction列表并且从第二步（即切换事务到pending状态）中恢复。</li>
+<li>所有发生在第三步之后（即应用事务到两个账户）但在第五步(即设置事务状态为done)之前的失败。为了还原事务，应用需要获取一个committed状态的事务列表，并且从第四步（即移除pending事务）恢复。</li>
+</ol>
+<p>因此应用程序总是能够恢复事务，最终达到一个一致的状态。应用程序开始捕获到每个未完成的事务时运行下面的恢复操作。你可能还希望定期运行恢复操作，以确保数据处于一致状态。达成一致状态所需要的时间取决于应用程序需要多长时间恢复每个事务。</p>
+<h2 id="heading-3">回滚</h2>
+<p>在某些情况下可能需要“回滚”或“撤消”事务，当应用程序需要“取消”该事务时，或者是因为它永远需要恢复当其中一个帐户不存在的情况下，或停止现有的事务。这里有两种可能的回滚操作：</p>
+<ol>
+<li>应用事务（即第三步）之后，你已经完全提交事务，你不应该回滚事务。相反，创建一个新的事务，切换源(源)和目标(destination)的值。</li>
+<li>创建事务（即第一步）之后，在应用事务（即第三步）之前，使用下面的处理过程：</li>
+</ol>
+<h4 id="canceling">设置事务状态为canceling</h4>
+<p>首先设置事务状态为canceling，使用下面的update()操作：</p>
+<pre><code>db.transactions.update({_id:t._id},{$set:{state:&quot;canceling&quot;}})
+</code></pre><h4 id="heading-4">撤销事务</h4>
+<p>使用下面的操作顺序从两个账户中撤销事务：</p>
+<pre><code>db.accounts.update({name:t.source, 
+    pendingTransactions: t._id},
+    {$inc:{balance: t.value}, 
+    $pull:{pendingTransactions:t._id}})
+db.accounts.update({name:t.destination, 
+    pendingTransactions: t._id},
+    {$inc:{balance: -t.value}, 
+    $pull:{pendingTransactions:t._id}})
+db.accounts.find()
+</code></pre><p>find()操作返回acounts集合的内容，应该类似下面：</p>
+<pre><code>{ &quot;_id&quot; :ObjectId(&quot;4d7bc97fb8a04f5126961523&quot;), &quot;balance&quot; :1000, 
+    &quot;name&quot; :&quot;A&quot;, &quot;pendingTransactions&quot; :[ ] }
+{ &quot;_id&quot; :ObjectId(&quot;4d7bc984b8a04f5126961524&quot;), &quot;balance&quot; :1000, 
+    &quot;name&quot; :&quot;B&quot;, &quot;pendingTransactions&quot; :[ ] }
+</code></pre><h4 id="canceled">设置事务状态为canceled</h4>
+<p>最后，使用下面的update()状态将事务状态设置为canceled：</p>
+<pre><code>db.transactions.update({_id:t._id},{$set:{state:&quot;canceled&quot;}})
+</code></pre><h2 id="heading-5">原理理解</h2>
+<p>这种通过代码模拟两阶段提交可以大概如下理解：</p>
+<ol>
+<li>首先给要修改的collections添加<code>pendingTransactions</code>字段，用来标记该条记录与哪个事务相关</li>
+<li>创建事务记录，初始状态为<code>initial</code>，将变更操作涉及到的属性保存在这条记录里</li>
+<li>然后把事务记录修改为<code>pending</code>状态</li>
+<li>然后修改目标的collection记录，且将经过修改的记录打上<code>pendingTransactions</code>标记（注意这里用了CAS的方法进行记录的更改）</li>
+<li>再将事务记录修改为<code>applied</code>状态</li>
+<li>再将目标collection记录中的<code>pendingTransactions</code>标记删除</li>
+<li>最后将事务记录修改为<code>done</code>状态</li>
+</ol>
+<p>上述基本所有修改操作都是使用了CAS的方法进行记录的更改，这样保证只在前置条件满足的情况下才更新记录。</p>
+<p>接下来考虑一下故障恢复：</p>
+<ol>
+<li>如果在上述第3步之后第5步之前出现故障了，服务进程重启后，只需要找到<code>pending</code>状态的事务记录（超过某个修改时间阀值），这时可以根据具体情况可以有两种方案继续进行：1）重新从第4步往下继续执行就可以了 2）根据事务里保存的变更相关属性，执行取消流程，目标记录进行进行反向补偿</li>
+<li>如果在第5步之后第7步之前出现故障了，服务进程重启后，只需要找到<code>applied</code>状态的事务记录（超过某个修改时间阀值），重新从第6步往下继续执行就可以了</li>
+</ol>
+<h2 id="heading-6">一个更完整的例子</h2>
+<p>这里找到一个用<a href="https://github.com/jeremyxu2010/mongodb-two-phase-commits">java语言写的较完整的例子</a>，并增加了一个较完整的测试用例方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#a6e22e">@Test</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testNormalDemo</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// insert test data
+</span><span style="color:#75715e"></span>        accounts<span style="color:#f92672">.</span><span style="color:#a6e22e">insert</span><span style="color:#f92672">(</span>
+                <span style="color:#e6db74">&#34;[&#34;</span> <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;     { _id: \&#34;A\&#34;, balance: 1000, pendingTransactions: [] },\n&#34;</span> <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;     { _id: \&#34;B\&#34;, balance: 1000, pendingTransactions: [] }\n&#34;</span> <span style="color:#f92672">+</span>
+                        <span style="color:#e6db74">&#34;]&#34;</span>
+        <span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        String txId <span style="color:#f92672">=</span> ObjectId<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            transactions<span style="color:#f92672">.</span><span style="color:#a6e22e">insert</span><span style="color:#f92672">(</span>
+                    <span style="color:#e6db74">&#34;{ _id:#, source: \&#34;A\&#34;, destination: \&#34;B\&#34;, value: 100, state: #, lastModified: #}&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">,</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">INITIAL</span><span style="color:#f92672">,</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            Transaction transaction <span style="color:#f92672">=</span> transactions<span style="color:#f92672">.</span><span style="color:#a6e22e">findOne</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{_id:#}&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">{</span>txId<span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">as</span><span style="color:#f92672">(</span>Transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            transferService<span style="color:#f92672">.</span><span style="color:#a6e22e">transfer</span><span style="color:#f92672">(</span>transaction<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            Account accountA <span style="color:#f92672">=</span> accounts<span style="color:#f92672">.</span><span style="color:#a6e22e">findOne</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{_id: \&#34;A\&#34;}&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">as</span><span style="color:#f92672">(</span>Account<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            assertThat<span style="color:#f92672">(</span>accountA<span style="color:#f92672">.</span><span style="color:#a6e22e">getBalance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> is<span style="color:#f92672">(</span>900<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            assertThat<span style="color:#f92672">(</span>accountA<span style="color:#f92672">.</span><span style="color:#a6e22e">getPendingTransactions</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> is<span style="color:#f92672">(</span>emptyArray<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            Account accountB <span style="color:#f92672">=</span> accounts<span style="color:#f92672">.</span><span style="color:#a6e22e">findOne</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{_id: \&#34;B\&#34;}&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">as</span><span style="color:#f92672">(</span>Account<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            assertThat<span style="color:#f92672">(</span>accountB<span style="color:#f92672">.</span><span style="color:#a6e22e">getBalance</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> is<span style="color:#f92672">(</span>1100<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            assertThat<span style="color:#f92672">(</span>accountB<span style="color:#f92672">.</span><span style="color:#a6e22e">getPendingTransactions</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> is<span style="color:#f92672">(</span>emptyArray<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            Transaction finalTransaction <span style="color:#f92672">=</span> transactions<span style="color:#f92672">.</span><span style="color:#a6e22e">findOne</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">as</span><span style="color:#f92672">(</span>Transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            assertThat<span style="color:#f92672">(</span>finalTransaction<span style="color:#f92672">.</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> is<span style="color:#f92672">(</span>TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">DONE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            Transaction transaction <span style="color:#f92672">=</span> transactions<span style="color:#f92672">.</span><span style="color:#a6e22e">findOne</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;{_id:#}&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">as</span><span style="color:#f92672">(</span>Transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>transaction <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;insert transaction failed, txId=%s\n&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">INITIAL</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execute transaction failed, txId=%s, current transaction state is: %s, try to recover the transaction\n&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">,</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">INITIAL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                transferService<span style="color:#f92672">.</span><span style="color:#a6e22e">transfer</span><span style="color:#f92672">(</span>transaction<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">PENDING</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">// 这里可以选择是取消事务或者恢复事务
+</span><span style="color:#75715e"></span>                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execute transaction failed, txId=%s, current transaction state is: %s, try to cancel the transaction\n&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">,</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">PENDING</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                transferService<span style="color:#f92672">.</span><span style="color:#a6e22e">cancelPending</span><span style="color:#f92672">(</span>transaction<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">// System.err.printf(&#34;execute transaction failed, txId=%s, current transaction state is: %s, try to recover the transaction\n&#34;, txId, TransactionState.PENDING.toString());
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// transferService.recoverPending(transaction);
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">APPLIED</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                <span style="color:#75715e">// 这里事务已经是APPLIED状态了，只差最后设置为DONE状态了，这里可以恢复事务
+</span><span style="color:#75715e"></span>                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execute transaction failed, txId=%s, current transaction state is: %s, try to recover the transaction\n&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">,</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">APPLIED</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                transferService<span style="color:#f92672">.</span><span style="color:#a6e22e">recoverApplied</span><span style="color:#f92672">(</span>transaction<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>transaction<span style="color:#f92672">.</span><span style="color:#a6e22e">getState</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">CANCELING</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execute transaction failed, txId=%s, current transaction state is: %s, try to cancel the transaction\n&#34;</span><span style="color:#f92672">,</span> txId<span style="color:#f92672">,</span> TransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">CANCELING</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                transferService<span style="color:#f92672">.</span><span style="color:#a6e22e">cancelPending</span><span style="color:#f92672">(</span>transaction<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#75715e">// 另外可以在后台运行一个定时任务，将超期的上述四种状态事务按上述逻辑处理
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>注释里对故障恢复说得比较清楚，就不赘述了。</p>
+<p>这个例子里仅是一个简单转帐的示例，如果业务操作中还涉及插入新记录、删除记录、复杂的记录修改，则在事务记录中还需要将要操作的记录新旧状态都记录下来，便于出现故障时能提供足够的信息进行回滚，这样想一想，要构造一个通用的事务记录模式还是挺复杂的。</p>
+<h2 id="heading-7">总结</h2>
+<p>实现mongodb的两阶段提交过程还是比较复杂的，上述的例子只是一个简单的转账，代码就已经很复杂了，因此在<a href="https://www.mongodb.com/transactions">mongodb4.0支持事务</a>的情况下，还真不推荐搞mongodb的两阶段提交。</p>
+<h2 id="heading-8">参考</h2>
+<ol>
+<li><a href="https://acupple.github.io/2016/08/09/MongoDB%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1/">https://acupple.github.io/2016/08/09/MongoDB%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E7%8E%B0%E4%BA%8B%E5%8A%A1/</a></li>
+<li><a href="https://docs.mongodb.com/tutorials/perform-two-phase-commits">https://docs.mongodb.com/tutorials/perform-two-phase-commits</a></li>
+<li><a href="https://jackywu.github.io/articles/MongoDB%E7%9A%84%E4%BA%8B%E5%8A%A1/">https://jackywu.github.io/articles/MongoDB%E7%9A%84%E4%BA%8B%E5%8A%A1/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-07-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mongodb/">mongodb</a>
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/transactions/">transactions</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">研究consul的service mesh功能</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">
+            <span class="next-text nav-default">servicecomb-saga开发实战</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

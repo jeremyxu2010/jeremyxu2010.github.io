@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kibana on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/kibana/</link>
+    <description>Recent content in kibana on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 13 Oct 2018 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/kibana/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>搭建ELFK日志采集系统</title>
+      <link>https://jeremyxu2010.github.io/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/</guid>
+      <description>最近的工作涉及搭建一套日志采集系统，采用了业界成熟的ELFK方案，这里将搭建过程记录一下。 环境准备 操作系统信息 系统系统：centos7.2 三</description>
+    </item>
+    
+  </channel>
+</rss>

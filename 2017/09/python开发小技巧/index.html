@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>python开发小技巧 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="python开发小技巧 今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。 判断字符串仅包含英文 直接通过" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/09/python%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="python开发小技巧" />
+<meta property="og:description" content="python开发小技巧 今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。 判断字符串仅包含英文 直接通过" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/09/python%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" />
+<meta property="article:published_time" content="2017-09-30T22:12:00+08:00" />
+<meta property="article:modified_time" content="2017-09-30T22:12:00+08:00" />
+<meta itemprop="name" content="python开发小技巧">
+<meta itemprop="description" content="python开发小技巧 今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。 判断字符串仅包含英文 直接通过">
+<meta itemprop="datePublished" content="2017-09-30T22:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-09-30T22:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="2328">
+
+
+
+<meta itemprop="keywords" content="python,unicode,pymysql,openpyxl," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="python开发小技巧"/>
+<meta name="twitter:description" content="python开发小技巧 今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。 判断字符串仅包含英文 直接通过"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">python开发小技巧</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-09-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2328 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">判断字符串仅包含英文</a></li>
+    <li><a href="#heading-1">判断字符串中包含某些语言的字符</a></li>
+    <li><a href="#sql">执行SQL语句</a></li>
+    <li><a href="#python-1">将python依赖库打包一起分发</a></li>
+    <li><a href="#excel">写入excel文件</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="python">python开发小技巧</h1>
+<p>今天在工作中写了一个python脚本从数据库中导数据，其中用到了一些技巧，在这里记录一下。</p>
+<h2 id="heading">判断字符串仅包含英文</h2>
+<p>直接通过字符的ord来判断</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_pure_english</span>(check_str):
+  <span style="color:#66d9ef">return</span> all(ord(c) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">128</span> <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> check_str)
+</code></pre></div><h2 id="heading-1">判断字符串中包含某些语言的字符</h2>
+<p>根据字符的unicode范围判断是否包含某些语言的字符</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">contains_invalid_lang_chs</span>(check_str):
+  check_str<span style="color:#f92672">=</span>check_str<span style="color:#f92672">.</span>strip()
+  <span style="color:#75715e"># 判断包含任何阿拉伯文、朝鲜文、日文平假名、日文片假名、日文片假名语音扩展、朝鲜文音节、俄文（西里尔字母、西里尔字母补充）</span>
+  <span style="color:#66d9ef">return</span> any((<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u0600</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u06FF</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u1100</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u11FF</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u3040</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u309F</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u30A0</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u30FF</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u31F0</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u31FF</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\uAC00</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\uD7AF</span><span style="color:#e6db74">&#39;</span>) <span style="color:#f92672">or</span> (<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u0400</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> c <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\u052F</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> check_str)
+</code></pre></div><p>完整的UNICODE编码表如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>十进制 Unicode 编码</strong></th>
+<th><strong>十六进制 Unicode 编码</strong></th>
+<th><strong>字符数</strong></th>
+<th><strong>编码分类（中文）</strong></th>
+<th><strong>编码分类（英文）</strong></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>起始</strong></td>
+<td><strong>终止</strong></td>
+<td><strong>起始</strong></td>
+<td><strong>终止</strong></td>
+<td><strong>(个)</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>0</strong></td>
+<td><strong>127</strong></td>
+<td><strong>0</strong></td>
+<td><strong>007F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>C0控制符及基本拉丁文</strong></td>
+<td><strong>C0 Control and Basic Latin</strong></td>
+</tr>
+<tr>
+<td><strong>128</strong></td>
+<td><strong>255</strong></td>
+<td><strong>80</strong></td>
+<td><strong>00FF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>C1控制符及拉丁文补充-1</strong></td>
+<td><strong>C1 Control and Latin 1 Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>256</strong></td>
+<td><strong>383</strong></td>
+<td><strong>100</strong></td>
+<td><strong>017F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>拉丁文扩展-A</strong></td>
+<td><strong>Latin Extended-A</strong></td>
+</tr>
+<tr>
+<td><strong>384</strong></td>
+<td><strong>591</strong></td>
+<td><strong>180</strong></td>
+<td><strong>024F</strong></td>
+<td><strong>208</strong></td>
+<td><strong>拉丁文扩展-B</strong></td>
+<td><strong>Latin Extended-B</strong></td>
+</tr>
+<tr>
+<td><strong>592</strong></td>
+<td><strong>687</strong></td>
+<td><strong>250</strong></td>
+<td><strong>02AF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>国际音标扩展</strong></td>
+<td><strong>IPA Extensions</strong></td>
+</tr>
+<tr>
+<td><strong>688</strong></td>
+<td><strong>767</strong></td>
+<td><strong>02B0</strong></td>
+<td><strong>02FF</strong></td>
+<td><strong>80</strong></td>
+<td><strong>空白修饰字母</strong></td>
+<td><strong>Spacing Modifiers</strong></td>
+</tr>
+<tr>
+<td><strong>768</strong></td>
+<td><strong>879</strong></td>
+<td><strong>300</strong></td>
+<td><strong>036F</strong></td>
+<td><strong>112</strong></td>
+<td><strong>结合用读音符号</strong></td>
+<td><strong>Combining Diacritics Marks</strong></td>
+</tr>
+<tr>
+<td><strong>880</strong></td>
+<td><strong>1023</strong></td>
+<td><strong>370</strong></td>
+<td><strong>03FF</strong></td>
+<td><strong>144</strong></td>
+<td><strong>希腊文及科普特文</strong></td>
+<td><strong>Greek and Coptic</strong></td>
+</tr>
+<tr>
+<td><strong>1024</strong></td>
+<td><strong>1279</strong></td>
+<td><strong>400</strong></td>
+<td><strong>04FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>西里尔字母</strong></td>
+<td><strong>Cyrillic</strong></td>
+</tr>
+<tr>
+<td><strong>1280</strong></td>
+<td><strong>1327</strong></td>
+<td><strong>500</strong></td>
+<td><strong>052F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>西里尔字母补充</strong></td>
+<td><strong>Cyrillic Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>1328</strong></td>
+<td><strong>1423</strong></td>
+<td><strong>530</strong></td>
+<td><strong>058F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>亚美尼亚语</strong></td>
+<td><strong>Armenian</strong></td>
+</tr>
+<tr>
+<td><strong>1424</strong></td>
+<td><strong>1535</strong></td>
+<td><strong>590</strong></td>
+<td><strong>05FF</strong></td>
+<td><strong>112</strong></td>
+<td><strong>希伯来文</strong></td>
+<td><strong>Hebrew</strong></td>
+</tr>
+<tr>
+<td><strong>1536</strong></td>
+<td><strong>1791</strong></td>
+<td><strong>600</strong></td>
+<td><strong>06FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>阿拉伯文</strong></td>
+<td><strong>Arabic</strong></td>
+</tr>
+<tr>
+<td><strong>1792</strong></td>
+<td><strong>1871</strong></td>
+<td><strong>700</strong></td>
+<td><strong>074F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>叙利亚文</strong></td>
+<td><strong>Syriac</strong></td>
+</tr>
+<tr>
+<td><strong>1872</strong></td>
+<td><strong>1919</strong></td>
+<td><strong>750</strong></td>
+<td><strong>077F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>阿拉伯文补充</strong></td>
+<td><strong>Arabic Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>1920</strong></td>
+<td><strong>1983</strong></td>
+<td><strong>780</strong></td>
+<td><strong>07BF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>马尔代夫语</strong></td>
+<td><strong>Thaana</strong></td>
+</tr>
+<tr>
+<td><strong>1984</strong></td>
+<td><strong>2047</strong></td>
+<td><strong>07C0</strong></td>
+<td><strong>07FF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>西非書面語言</strong></td>
+<td><strong>N'Ko</strong></td>
+</tr>
+<tr>
+<td><strong>2048</strong></td>
+<td><strong>2143</strong></td>
+<td><strong>800</strong></td>
+<td><strong>085F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>阿维斯塔语及巴列维语</strong></td>
+<td><strong>Avestan and Pahlavi</strong></td>
+</tr>
+<tr>
+<td><strong>2144</strong></td>
+<td><strong>2175</strong></td>
+<td><strong>860</strong></td>
+<td><strong>087F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>Mandaic</strong></td>
+<td><strong>Mandaic</strong></td>
+</tr>
+<tr>
+<td><strong>2176</strong></td>
+<td><strong>2223</strong></td>
+<td><strong>880</strong></td>
+<td><strong>08AF</strong></td>
+<td><strong>48</strong></td>
+<td><strong>撒马利亚语</strong></td>
+<td><strong>Samaritan</strong></td>
+</tr>
+<tr>
+<td><strong>2304</strong></td>
+<td><strong>2431</strong></td>
+<td><strong>900</strong></td>
+<td><strong>097F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>天城文书</strong></td>
+<td><strong>Devanagari</strong></td>
+</tr>
+<tr>
+<td><strong>2432</strong></td>
+<td><strong>2559</strong></td>
+<td><strong>980</strong></td>
+<td><strong>09FF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>孟加拉语</strong></td>
+<td><strong>Bengali</strong></td>
+</tr>
+<tr>
+<td><strong>2560</strong></td>
+<td><strong>2687</strong></td>
+<td><strong>0A00</strong></td>
+<td><strong>0A7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>锡克教文</strong></td>
+<td><strong>Gurmukhi</strong></td>
+</tr>
+<tr>
+<td><strong>2688</strong></td>
+<td><strong>2815</strong></td>
+<td><strong>0A80</strong></td>
+<td><strong>0AFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>古吉拉特文</strong></td>
+<td><strong>Gujarati</strong></td>
+</tr>
+<tr>
+<td><strong>2816</strong></td>
+<td><strong>2943</strong></td>
+<td><strong>0B00</strong></td>
+<td><strong>0B7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>奥里亚文</strong></td>
+<td><strong>Oriya</strong></td>
+</tr>
+<tr>
+<td><strong>2944</strong></td>
+<td><strong>3071</strong></td>
+<td><strong>0B80</strong></td>
+<td><strong>0BFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>泰米尔文</strong></td>
+<td><strong>Tamil</strong></td>
+</tr>
+<tr>
+<td><strong>3072</strong></td>
+<td><strong>3199</strong></td>
+<td><strong>0C00</strong></td>
+<td><strong>0C7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>泰卢固文</strong></td>
+<td><strong>Telugu</strong></td>
+</tr>
+<tr>
+<td><strong>3200</strong></td>
+<td><strong>3327</strong></td>
+<td><strong>0C80</strong></td>
+<td><strong>0CFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>卡纳达文</strong></td>
+<td><strong>Kannada</strong></td>
+</tr>
+<tr>
+<td><strong>3328</strong></td>
+<td><strong>3455</strong></td>
+<td><strong>0D00</strong></td>
+<td><strong>0D7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>德拉维族语</strong></td>
+<td><strong>Malayalam</strong></td>
+</tr>
+<tr>
+<td><strong>3456</strong></td>
+<td><strong>3583</strong></td>
+<td><strong>0D80</strong></td>
+<td><strong>0DFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>僧伽罗语</strong></td>
+<td><strong>Sinhala</strong></td>
+</tr>
+<tr>
+<td><strong>3584</strong></td>
+<td><strong>3711</strong></td>
+<td><strong>0E+00</strong></td>
+<td><strong>0E7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>泰文</strong></td>
+<td><strong>Thai</strong></td>
+</tr>
+<tr>
+<td><strong>3712</strong></td>
+<td><strong>3839</strong></td>
+<td><strong>0E+00</strong></td>
+<td><strong>0EFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>老挝文</strong></td>
+<td><strong>Lao</strong></td>
+</tr>
+<tr>
+<td><strong>3840</strong></td>
+<td><strong>4095</strong></td>
+<td><strong>0F00</strong></td>
+<td><strong>0FFF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>藏文</strong></td>
+<td><strong>Tibetan</strong></td>
+</tr>
+<tr>
+<td><strong>4096</strong></td>
+<td><strong>4255</strong></td>
+<td><strong>1000</strong></td>
+<td><strong>109F</strong></td>
+<td><strong>160</strong></td>
+<td><strong>缅甸语</strong></td>
+<td><strong>Myanmar</strong></td>
+</tr>
+<tr>
+<td><strong>4256</strong></td>
+<td><strong>4351</strong></td>
+<td><strong>10A0</strong></td>
+<td><strong>10FF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>格鲁吉亚语</strong></td>
+<td><strong>Georgian</strong></td>
+</tr>
+<tr>
+<td><strong>4352</strong></td>
+<td><strong>4607</strong></td>
+<td><strong>1100</strong></td>
+<td><strong>11FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>朝鲜文</strong></td>
+<td><strong>Hangul Jamo</strong></td>
+</tr>
+<tr>
+<td><strong>4608</strong></td>
+<td><strong>4991</strong></td>
+<td><strong>1200</strong></td>
+<td><strong>137F</strong></td>
+<td><strong>384</strong></td>
+<td><strong>埃塞俄比亚语</strong></td>
+<td><strong>Ethiopic</strong></td>
+</tr>
+<tr>
+<td><strong>4992</strong></td>
+<td><strong>5023</strong></td>
+<td><strong>1380</strong></td>
+<td><strong>139F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>埃塞俄比亚语补充</strong></td>
+<td><strong>Ethiopic Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>5024</strong></td>
+<td><strong>5119</strong></td>
+<td><strong>13A0</strong></td>
+<td><strong>13FF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>切罗基语</strong></td>
+<td><strong>Cherokee</strong></td>
+</tr>
+<tr>
+<td><strong>5120</strong></td>
+<td><strong>5759</strong></td>
+<td><strong>1400</strong></td>
+<td><strong>167F</strong></td>
+<td><strong>640</strong></td>
+<td><strong>统一加拿大土著语音节</strong></td>
+<td><strong>Unified Canadian Aboriginal Syllabics</strong></td>
+</tr>
+<tr>
+<td><strong>5760</strong></td>
+<td><strong>5791</strong></td>
+<td><strong>1680</strong></td>
+<td><strong>169F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>欧甘字母</strong></td>
+<td><strong>Ogham</strong></td>
+</tr>
+<tr>
+<td><strong>5792</strong></td>
+<td><strong>5887</strong></td>
+<td><strong>16A0</strong></td>
+<td><strong>16FF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>如尼文</strong></td>
+<td><strong>Runic</strong></td>
+</tr>
+<tr>
+<td><strong>5888</strong></td>
+<td><strong>5919</strong></td>
+<td><strong>1700</strong></td>
+<td><strong>171F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>塔加拉语</strong></td>
+<td><strong>Tagalog</strong></td>
+</tr>
+<tr>
+<td><strong>5920</strong></td>
+<td><strong>5951</strong></td>
+<td><strong>1720</strong></td>
+<td><strong>173F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>Hanunóo</strong></td>
+<td><strong>Hanunóo</strong></td>
+</tr>
+<tr>
+<td><strong>5952</strong></td>
+<td><strong>5983</strong></td>
+<td><strong>1740</strong></td>
+<td><strong>175F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>Buhid</strong></td>
+<td><strong>Buhid</strong></td>
+</tr>
+<tr>
+<td><strong>5984</strong></td>
+<td><strong>6015</strong></td>
+<td><strong>1760</strong></td>
+<td><strong>177F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>Tagbanwa</strong></td>
+<td><strong>Tagbanwa</strong></td>
+</tr>
+<tr>
+<td><strong>6016</strong></td>
+<td><strong>6143</strong></td>
+<td><strong>1780</strong></td>
+<td><strong>17FF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>高棉语</strong></td>
+<td><strong>Khmer</strong></td>
+</tr>
+<tr>
+<td><strong>6144</strong></td>
+<td><strong>6319</strong></td>
+<td><strong>1800</strong></td>
+<td><strong>18AF</strong></td>
+<td><strong>176</strong></td>
+<td><strong>蒙古文</strong></td>
+<td><strong>Mongolian</strong></td>
+</tr>
+<tr>
+<td><strong>6320</strong></td>
+<td><strong>6399</strong></td>
+<td><strong>18B0</strong></td>
+<td><strong>18FF</strong></td>
+<td><strong>80</strong></td>
+<td><strong>Cham</strong></td>
+<td><strong>Cham</strong></td>
+</tr>
+<tr>
+<td><strong>6400</strong></td>
+<td><strong>6479</strong></td>
+<td><strong>1900</strong></td>
+<td><strong>194F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>Limbu</strong></td>
+<td><strong>Limbu</strong></td>
+</tr>
+<tr>
+<td><strong>6480</strong></td>
+<td><strong>6527</strong></td>
+<td><strong>1950</strong></td>
+<td><strong>197F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>德宏泰语</strong></td>
+<td><strong>Tai Le</strong></td>
+</tr>
+<tr>
+<td><strong>6528</strong></td>
+<td><strong>6623</strong></td>
+<td><strong>1980</strong></td>
+<td><strong>19DF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>新傣仂语</strong></td>
+<td><strong>New Tai Lue</strong></td>
+</tr>
+<tr>
+<td><strong>6624</strong></td>
+<td><strong>6655</strong></td>
+<td><strong>1.9E+01</strong></td>
+<td><strong>19FF</strong></td>
+<td><strong>32</strong></td>
+<td><strong>高棉语记号</strong></td>
+<td><strong>Kmer Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>6656</strong></td>
+<td><strong>6687</strong></td>
+<td><strong>1A00</strong></td>
+<td><strong>1A1F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>Buginese</strong></td>
+<td><strong>Buginese</strong></td>
+</tr>
+<tr>
+<td><strong>6688</strong></td>
+<td><strong>6751</strong></td>
+<td><strong>1A20</strong></td>
+<td><strong>1A5F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>Batak</strong></td>
+<td><strong>Batak</strong></td>
+</tr>
+<tr>
+<td><strong>6784</strong></td>
+<td><strong>6895</strong></td>
+<td><strong>1A80</strong></td>
+<td><strong>1AEF</strong></td>
+<td><strong>112</strong></td>
+<td><strong>Lanna</strong></td>
+<td><strong>Lanna</strong></td>
+</tr>
+<tr>
+<td><strong>6912</strong></td>
+<td><strong>7039</strong></td>
+<td><strong>1B00</strong></td>
+<td><strong>1B7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>巴厘语</strong></td>
+<td><strong>Balinese</strong></td>
+</tr>
+<tr>
+<td><strong>7040</strong></td>
+<td><strong>7088</strong></td>
+<td><strong>1B80</strong></td>
+<td><strong>1BB0</strong></td>
+<td><strong>49</strong></td>
+<td><strong>巽他语</strong></td>
+<td><strong>Sundanese</strong></td>
+</tr>
+<tr>
+<td><strong>7104</strong></td>
+<td><strong>7167</strong></td>
+<td><strong>1BC0</strong></td>
+<td><strong>1BFF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>Pahawh Hmong</strong></td>
+<td><strong>Pahawh Hmong</strong></td>
+</tr>
+<tr>
+<td><strong>7168</strong></td>
+<td><strong>7247</strong></td>
+<td><strong>1C00</strong></td>
+<td><strong>1C4F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>雷布查语</strong></td>
+<td><strong>Lepcha</strong></td>
+</tr>
+<tr>
+<td><strong>7248</strong></td>
+<td><strong>7295</strong></td>
+<td><strong>1C50</strong></td>
+<td><strong>1C7F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>Ol Chiki</strong></td>
+<td><strong>Ol Chiki</strong></td>
+</tr>
+<tr>
+<td><strong>7296</strong></td>
+<td><strong>7391</strong></td>
+<td><strong>1C80</strong></td>
+<td><strong>1CDF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>曼尼普尔语</strong></td>
+<td><strong>Meithei/Manipuri</strong></td>
+</tr>
+<tr>
+<td><strong>7424</strong></td>
+<td><strong>7551</strong></td>
+<td><strong>1D00</strong></td>
+<td><strong>1D7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>语音学扩展</strong></td>
+<td><strong>Phonetic Extensions</strong></td>
+</tr>
+<tr>
+<td><strong>7552</strong></td>
+<td><strong>7615</strong></td>
+<td><strong>1D80</strong></td>
+<td><strong>1DBF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>语音学扩展补充</strong></td>
+<td><strong>Phonetic Extensions Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>7616</strong></td>
+<td><strong>7679</strong></td>
+<td><strong>1DC0</strong></td>
+<td><strong>1DFF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>结合用读音符号补充</strong></td>
+<td><strong>Combining Diacritics Marks Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>7680</strong></td>
+<td><strong>7935</strong></td>
+<td><strong>1E+00</strong></td>
+<td><strong>1EFF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>拉丁文扩充附加</strong></td>
+<td><strong>Latin Extended Additional</strong></td>
+</tr>
+<tr>
+<td><strong>7936</strong></td>
+<td><strong>8191</strong></td>
+<td><strong>1F00</strong></td>
+<td><strong>1FFF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>希腊语扩充</strong></td>
+<td><strong>Greek Extended</strong></td>
+</tr>
+<tr>
+<td><strong>8192</strong></td>
+<td><strong>8303</strong></td>
+<td><strong>2000</strong></td>
+<td><strong>206F</strong></td>
+<td><strong>112</strong></td>
+<td><strong>常用标点</strong></td>
+<td><strong>General Punctuation</strong></td>
+</tr>
+<tr>
+<td><strong>8304</strong></td>
+<td><strong>8351</strong></td>
+<td><strong>2070</strong></td>
+<td><strong>209F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>上标及下标</strong></td>
+<td><strong>Superscripts and Subscripts</strong></td>
+</tr>
+<tr>
+<td><strong>8352</strong></td>
+<td><strong>8399</strong></td>
+<td><strong>20A0</strong></td>
+<td><strong>20CF</strong></td>
+<td><strong>48</strong></td>
+<td><strong>货币符号</strong></td>
+<td><strong>Currency Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>8400</strong></td>
+<td><strong>8447</strong></td>
+<td><strong>20D0</strong></td>
+<td><strong>20FF</strong></td>
+<td><strong>48</strong></td>
+<td><strong>组合用记号</strong></td>
+<td><strong>Combining Diacritics Marks for Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>8448</strong></td>
+<td><strong>8527</strong></td>
+<td><strong>2100</strong></td>
+<td><strong>214F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>字母式符号</strong></td>
+<td><strong>Letterlike Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>8528</strong></td>
+<td><strong>8591</strong></td>
+<td><strong>2150</strong></td>
+<td><strong>218F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>数字形式</strong></td>
+<td><strong>Number Form</strong></td>
+</tr>
+<tr>
+<td><strong>8592</strong></td>
+<td><strong>8703</strong></td>
+<td><strong>2190</strong></td>
+<td><strong>21FF</strong></td>
+<td><strong>112</strong></td>
+<td><strong>箭头</strong></td>
+<td><strong>Arrows</strong></td>
+</tr>
+<tr>
+<td><strong>8704</strong></td>
+<td><strong>8959</strong></td>
+<td><strong>2200</strong></td>
+<td><strong>22FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>数学运算符</strong></td>
+<td><strong>Mathematical Operator</strong></td>
+</tr>
+<tr>
+<td><strong>8960</strong></td>
+<td><strong>9215</strong></td>
+<td><strong>2300</strong></td>
+<td><strong>23FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>杂项工业符号</strong></td>
+<td><strong>Miscellaneous Technical</strong></td>
+</tr>
+<tr>
+<td><strong>9216</strong></td>
+<td><strong>9279</strong></td>
+<td><strong>2400</strong></td>
+<td><strong>243F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>控制图片</strong></td>
+<td><strong>Control Pictures</strong></td>
+</tr>
+<tr>
+<td><strong>9280</strong></td>
+<td><strong>9311</strong></td>
+<td><strong>2440</strong></td>
+<td><strong>245F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>光学识别符</strong></td>
+<td><strong>Optical Character Recognition</strong></td>
+</tr>
+<tr>
+<td><strong>9312</strong></td>
+<td><strong>9471</strong></td>
+<td><strong>2460</strong></td>
+<td><strong>24FF</strong></td>
+<td><strong>160</strong></td>
+<td><strong>封闭式字母数字</strong></td>
+<td><strong>Enclosed Alphanumerics</strong></td>
+</tr>
+<tr>
+<td><strong>9472</strong></td>
+<td><strong>9599</strong></td>
+<td><strong>2500</strong></td>
+<td><strong>257F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>制表符</strong></td>
+<td><strong>Box Drawing</strong></td>
+</tr>
+<tr>
+<td><strong>9600</strong></td>
+<td><strong>9631</strong></td>
+<td><strong>2580</strong></td>
+<td><strong>259F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>方块元素</strong></td>
+<td><strong>Block Element</strong></td>
+</tr>
+<tr>
+<td><strong>9632</strong></td>
+<td><strong>9727</strong></td>
+<td><strong>25A0</strong></td>
+<td><strong>25FF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>几何图形</strong></td>
+<td><strong>Geometric Shapes</strong></td>
+</tr>
+<tr>
+<td><strong>9728</strong></td>
+<td><strong>9983</strong></td>
+<td><strong>2600</strong></td>
+<td><strong>26FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>杂项符号</strong></td>
+<td><strong>Miscellaneous Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>9984</strong></td>
+<td><strong>10175</strong></td>
+<td><strong>2700</strong></td>
+<td><strong>27BF</strong></td>
+<td><strong>192</strong></td>
+<td><strong>印刷符号</strong></td>
+<td><strong>Dingbats</strong></td>
+</tr>
+<tr>
+<td><strong>10176</strong></td>
+<td><strong>10223</strong></td>
+<td><strong>27C0</strong></td>
+<td><strong>27EF</strong></td>
+<td><strong>48</strong></td>
+<td><strong>杂项数学符号-A</strong></td>
+<td><strong>Miscellaneous Mathematical Symbols-A</strong></td>
+</tr>
+<tr>
+<td><strong>10224</strong></td>
+<td><strong>10239</strong></td>
+<td><strong>27F0</strong></td>
+<td><strong>27FF</strong></td>
+<td><strong>16</strong></td>
+<td><strong>追加箭头-A</strong></td>
+<td><strong>Supplemental Arrows-A</strong></td>
+</tr>
+<tr>
+<td><strong>10240</strong></td>
+<td><strong>10495</strong></td>
+<td><strong>2800</strong></td>
+<td><strong>28FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>盲文点字模型</strong></td>
+<td><strong>Braille Patterns</strong></td>
+</tr>
+<tr>
+<td><strong>10496</strong></td>
+<td><strong>10623</strong></td>
+<td><strong>2900</strong></td>
+<td><strong>297F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>追加箭头-B</strong></td>
+<td><strong>Supplemental Arrows-B</strong></td>
+</tr>
+<tr>
+<td><strong>10624</strong></td>
+<td><strong>10751</strong></td>
+<td><strong>2980</strong></td>
+<td><strong>29FF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>杂项数学符号-B</strong></td>
+<td><strong>Miscellaneous Mathematical Symbols-B</strong></td>
+</tr>
+<tr>
+<td><strong>10752</strong></td>
+<td><strong>11007</strong></td>
+<td><strong>2A00</strong></td>
+<td><strong>2AFF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>追加数学运算符</strong></td>
+<td><strong>Supplemental Mathematical Operator</strong></td>
+</tr>
+<tr>
+<td><strong>11008</strong></td>
+<td><strong>11263</strong></td>
+<td><strong>2B00</strong></td>
+<td><strong>2BFF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>杂项符号和箭头</strong></td>
+<td><strong>Miscellaneous Symbols and Arrows</strong></td>
+</tr>
+<tr>
+<td><strong>11264</strong></td>
+<td><strong>11359</strong></td>
+<td><strong>2C00</strong></td>
+<td><strong>2C5F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>格拉哥里字母</strong></td>
+<td><strong>Glagolitic</strong></td>
+</tr>
+<tr>
+<td><strong>11360</strong></td>
+<td><strong>11391</strong></td>
+<td><strong>2C60</strong></td>
+<td><strong>2C7F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>拉丁文扩展-C</strong></td>
+<td><strong>Latin Extended-C</strong></td>
+</tr>
+<tr>
+<td><strong>11392</strong></td>
+<td><strong>11519</strong></td>
+<td><strong>2C80</strong></td>
+<td><strong>2CFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>古埃及语</strong></td>
+<td><strong>Coptic</strong></td>
+</tr>
+<tr>
+<td><strong>11520</strong></td>
+<td><strong>11567</strong></td>
+<td><strong>2D00</strong></td>
+<td><strong>2D2F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>格鲁吉亚语补充</strong></td>
+<td><strong>Georgian Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>11568</strong></td>
+<td><strong>11647</strong></td>
+<td><strong>2D30</strong></td>
+<td><strong>2D7F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>提非纳文</strong></td>
+<td><strong>Tifinagh</strong></td>
+</tr>
+<tr>
+<td><strong>11648</strong></td>
+<td><strong>11743</strong></td>
+<td><strong>2D80</strong></td>
+<td><strong>2DDF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>埃塞俄比亚语扩展</strong></td>
+<td><strong>Ethiopic Extended</strong></td>
+</tr>
+<tr>
+<td><strong>11776</strong></td>
+<td><strong>11903</strong></td>
+<td><strong>2E+00</strong></td>
+<td><strong>2E7F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>追加标点</strong></td>
+<td><strong>Supplemental Punctuation</strong></td>
+</tr>
+<tr>
+<td><strong>11904</strong></td>
+<td><strong>12031</strong></td>
+<td><strong>2E+80</strong></td>
+<td><strong>2EFF</strong></td>
+<td><strong>128</strong></td>
+<td><strong>CJK 部首补充</strong></td>
+<td><strong>CJK Radicals Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>12032</strong></td>
+<td><strong>12255</strong></td>
+<td><strong>2F00</strong></td>
+<td><strong>2FDF</strong></td>
+<td><strong>224</strong></td>
+<td><strong>康熙字典部首</strong></td>
+<td><strong>Kangxi Radicals</strong></td>
+</tr>
+<tr>
+<td><strong>12272</strong></td>
+<td><strong>12287</strong></td>
+<td><strong>2FF0</strong></td>
+<td><strong>2FFF</strong></td>
+<td><strong>16</strong></td>
+<td><strong>表意文字描述符</strong></td>
+<td><strong>Ideographic Description Characters</strong></td>
+</tr>
+<tr>
+<td><strong>12288</strong></td>
+<td><strong>12351</strong></td>
+<td><strong>3000</strong></td>
+<td><strong>303F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>CJK 符号和标点</strong></td>
+<td><strong>CJK Symbols and Punctuation</strong></td>
+</tr>
+<tr>
+<td><strong>12352</strong></td>
+<td><strong>12447</strong></td>
+<td><strong>3040</strong></td>
+<td><strong>309F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>日文平假名</strong></td>
+<td><strong>Hiragana</strong></td>
+</tr>
+<tr>
+<td><strong>12448</strong></td>
+<td><strong>12543</strong></td>
+<td><strong>30A0</strong></td>
+<td><strong>30FF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>日文片假名</strong></td>
+<td><strong>Katakana</strong></td>
+</tr>
+<tr>
+<td><strong>12544</strong></td>
+<td><strong>12591</strong></td>
+<td><strong>3100</strong></td>
+<td><strong>312F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>注音字母</strong></td>
+<td><strong>Bopomofo</strong></td>
+</tr>
+<tr>
+<td><strong>12592</strong></td>
+<td><strong>12687</strong></td>
+<td><strong>3130</strong></td>
+<td><strong>318F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>朝鲜文兼容字母</strong></td>
+<td><strong>Hangul Compatibility Jamo</strong></td>
+</tr>
+<tr>
+<td><strong>12688</strong></td>
+<td><strong>12703</strong></td>
+<td><strong>3190</strong></td>
+<td><strong>319F</strong></td>
+<td><strong>16</strong></td>
+<td><strong>象形字注释标志</strong></td>
+<td><strong>Kanbun</strong></td>
+</tr>
+<tr>
+<td><strong>12704</strong></td>
+<td><strong>12735</strong></td>
+<td><strong>31A0</strong></td>
+<td><strong>31BF</strong></td>
+<td><strong>32</strong></td>
+<td><strong>注音字母扩展</strong></td>
+<td><strong>Bopomofo Extended</strong></td>
+</tr>
+<tr>
+<td><strong>12736</strong></td>
+<td><strong>12783</strong></td>
+<td><strong>31C0</strong></td>
+<td><strong>31EF</strong></td>
+<td><strong>48</strong></td>
+<td><strong>CJK 笔画</strong></td>
+<td><strong>CJK Strokes</strong></td>
+</tr>
+<tr>
+<td><strong>12784</strong></td>
+<td><strong>12799</strong></td>
+<td><strong>31F0</strong></td>
+<td><strong>31FF</strong></td>
+<td><strong>16</strong></td>
+<td><strong>日文片假名语音扩展</strong></td>
+<td><strong>Katakana Phonetic Extensions</strong></td>
+</tr>
+<tr>
+<td><strong>12800</strong></td>
+<td><strong>13055</strong></td>
+<td><strong>3200</strong></td>
+<td><strong>32FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>封闭式 CJK 文字和月份</strong></td>
+<td><strong>Enclosed CJK Letters and Months</strong></td>
+</tr>
+<tr>
+<td><strong>13056</strong></td>
+<td><strong>13311</strong></td>
+<td><strong>3300</strong></td>
+<td><strong>33FF</strong></td>
+<td><strong>256</strong></td>
+<td><strong>CJK 兼容</strong></td>
+<td><strong>CJK Compatibility</strong></td>
+</tr>
+<tr>
+<td><strong>13312</strong></td>
+<td><strong>19903</strong></td>
+<td><strong>3400</strong></td>
+<td><strong>4DBF</strong></td>
+<td><strong>6592</strong></td>
+<td><strong>CJK 统一表意符号扩展 A</strong></td>
+<td><strong>CJK Unified Ideographs Extension A</strong></td>
+</tr>
+<tr>
+<td><strong>19904</strong></td>
+<td><strong>19967</strong></td>
+<td><strong>4DC0</strong></td>
+<td><strong>4DFF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>易经六十四卦符号</strong></td>
+<td><strong>Yijing Hexagrams Symbols</strong></td>
+</tr>
+<tr>
+<td><strong>19968</strong></td>
+<td><strong>40895</strong></td>
+<td><strong>4E+00</strong></td>
+<td><strong>9FBF</strong></td>
+<td><strong>20928</strong></td>
+<td><strong>CJK 统一表意符号</strong></td>
+<td><strong>CJK Unified Ideographs</strong></td>
+</tr>
+<tr>
+<td><strong>40960</strong></td>
+<td><strong>42127</strong></td>
+<td><strong>A000</strong></td>
+<td><strong>A48F</strong></td>
+<td><strong>1168</strong></td>
+<td><strong>彝文音节</strong></td>
+<td><strong>Yi Syllables</strong></td>
+</tr>
+<tr>
+<td><strong>42128</strong></td>
+<td><strong>42191</strong></td>
+<td><strong>A490</strong></td>
+<td><strong>A4CF</strong></td>
+<td><strong>64</strong></td>
+<td><strong>彝文字根</strong></td>
+<td><strong>Yi Radicals</strong></td>
+</tr>
+<tr>
+<td><strong>42240</strong></td>
+<td><strong>42527</strong></td>
+<td><strong>A500</strong></td>
+<td><strong>A61F</strong></td>
+<td><strong>288</strong></td>
+<td><strong>Vai</strong></td>
+<td><strong>Vai</strong></td>
+</tr>
+<tr>
+<td><strong>42592</strong></td>
+<td><strong>42751</strong></td>
+<td><strong>A660</strong></td>
+<td><strong>A6FF</strong></td>
+<td><strong>160</strong></td>
+<td><strong>统一加拿大土著语音节补充</strong></td>
+<td><strong>Unified Canadian Aboriginal Syllabics Supplement</strong></td>
+</tr>
+<tr>
+<td><strong>42752</strong></td>
+<td><strong>42783</strong></td>
+<td><strong>A700</strong></td>
+<td><strong>A71F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>声调修饰字母</strong></td>
+<td><strong>Modifier Tone Letters</strong></td>
+</tr>
+<tr>
+<td><strong>42784</strong></td>
+<td><strong>43007</strong></td>
+<td><strong>A720</strong></td>
+<td><strong>A7FF</strong></td>
+<td><strong>224</strong></td>
+<td><strong>拉丁文扩展-D</strong></td>
+<td><strong>Latin Extended-D</strong></td>
+</tr>
+<tr>
+<td><strong>43008</strong></td>
+<td><strong>43055</strong></td>
+<td><strong>A800</strong></td>
+<td><strong>A82F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>Syloti Nagri</strong></td>
+<td><strong>Syloti Nagri</strong></td>
+</tr>
+<tr>
+<td><strong>43072</strong></td>
+<td><strong>43135</strong></td>
+<td><strong>A840</strong></td>
+<td><strong>A87F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>八思巴字</strong></td>
+<td><strong>Phags-pa</strong></td>
+</tr>
+<tr>
+<td><strong>43136</strong></td>
+<td><strong>43231</strong></td>
+<td><strong>A880</strong></td>
+<td><strong>A8DF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>Saurashtra</strong></td>
+<td><strong>Saurashtra</strong></td>
+</tr>
+<tr>
+<td><strong>43264</strong></td>
+<td><strong>43391</strong></td>
+<td><strong>A900</strong></td>
+<td><strong>A97F</strong></td>
+<td><strong>128</strong></td>
+<td><strong>爪哇语</strong></td>
+<td><strong>Javanese</strong></td>
+</tr>
+<tr>
+<td><strong>43392</strong></td>
+<td><strong>43487</strong></td>
+<td><strong>A980</strong></td>
+<td><strong>A9DF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>Chakma</strong></td>
+<td><strong>Chakma</strong></td>
+</tr>
+<tr>
+<td><strong>43520</strong></td>
+<td><strong>43583</strong></td>
+<td><strong>AA00</strong></td>
+<td><strong>AA3F</strong></td>
+<td><strong>64</strong></td>
+<td><strong>Varang Kshiti</strong></td>
+<td><strong>Varang Kshiti</strong></td>
+</tr>
+<tr>
+<td><strong>43584</strong></td>
+<td><strong>43631</strong></td>
+<td><strong>AA40</strong></td>
+<td><strong>AA6F</strong></td>
+<td><strong>48</strong></td>
+<td><strong>Sorang Sompeng</strong></td>
+<td><strong>Sorang Sompeng</strong></td>
+</tr>
+<tr>
+<td><strong>43648</strong></td>
+<td><strong>43743</strong></td>
+<td><strong>AA80</strong></td>
+<td><strong>AADF</strong></td>
+<td><strong>96</strong></td>
+<td><strong>Newari</strong></td>
+<td><strong>Newari</strong></td>
+</tr>
+<tr>
+<td><strong>43776</strong></td>
+<td><strong>43871</strong></td>
+<td><strong>AB00</strong></td>
+<td><strong>AB5F</strong></td>
+<td><strong>96</strong></td>
+<td><strong>越南傣语</strong></td>
+<td><strong>Vi?t Thái</strong></td>
+</tr>
+<tr>
+<td><strong>43904</strong></td>
+<td><strong>43936</strong></td>
+<td><strong>AB80</strong></td>
+<td><strong>ABA0</strong></td>
+<td><strong>33</strong></td>
+<td><strong>Kayah Li</strong></td>
+<td><strong>Kayah Li</strong></td>
+</tr>
+<tr>
+<td><strong>44032</strong></td>
+<td><strong>55215</strong></td>
+<td><strong>AC00</strong></td>
+<td><strong>D7AF</strong></td>
+<td><strong>11184</strong></td>
+<td><strong>朝鲜文音节</strong></td>
+<td><strong>Hangul Syllables</strong></td>
+</tr>
+<tr>
+<td><strong>55296</strong></td>
+<td><strong>56319</strong></td>
+<td><strong>D800</strong></td>
+<td><strong>DBFF</strong></td>
+<td><strong>1024</strong></td>
+<td><strong>High-half zone of UTF-16</strong></td>
+<td><strong>High-half zone of UTF-16</strong></td>
+</tr>
+<tr>
+<td><strong>56320</strong></td>
+<td><strong>57343</strong></td>
+<td><strong>DC00</strong></td>
+<td><strong>DFFF</strong></td>
+<td><strong>1024</strong></td>
+<td><strong>Low-half zone of UTF-16</strong></td>
+<td><strong>Low-half zone of UTF-16</strong></td>
+</tr>
+<tr>
+<td><strong>57344</strong></td>
+<td><strong>63743</strong></td>
+<td><strong>E000</strong></td>
+<td><strong>F8FF</strong></td>
+<td><strong>6400</strong></td>
+<td><strong>自行使用區域</strong></td>
+<td><strong>Private Use Zone</strong></td>
+</tr>
+<tr>
+<td><strong>63744</strong></td>
+<td><strong>64255</strong></td>
+<td><strong>F900</strong></td>
+<td><strong>FAFF</strong></td>
+<td><strong>512</strong></td>
+<td><strong>CJK 兼容象形文字</strong></td>
+<td><strong>CJK Compatibility Ideographs</strong></td>
+</tr>
+<tr>
+<td><strong>64256</strong></td>
+<td><strong>64335</strong></td>
+<td><strong>FB00</strong></td>
+<td><strong>FB4F</strong></td>
+<td><strong>80</strong></td>
+<td><strong>字母表達形式</strong></td>
+<td><strong>Alphabetic Presentation Form</strong></td>
+</tr>
+<tr>
+<td><strong>64336</strong></td>
+<td><strong>65023</strong></td>
+<td><strong>FB50</strong></td>
+<td><strong>FDFF</strong></td>
+<td><strong>688</strong></td>
+<td><strong>阿拉伯表達形式A</strong></td>
+<td><strong>Arabic Presentation Form-A</strong></td>
+</tr>
+<tr>
+<td><strong>65024</strong></td>
+<td><strong>65039</strong></td>
+<td><strong>FE00</strong></td>
+<td><strong>FE0F</strong></td>
+<td><strong>16</strong></td>
+<td><strong>变量选择符</strong></td>
+<td><strong>Variation Selector</strong></td>
+</tr>
+<tr>
+<td><strong>65040</strong></td>
+<td><strong>65055</strong></td>
+<td><strong>FE10</strong></td>
+<td><strong>FE1F</strong></td>
+<td><strong>16</strong></td>
+<td><strong>竖排形式</strong></td>
+<td><strong>Vertical Forms</strong></td>
+</tr>
+<tr>
+<td><strong>65056</strong></td>
+<td><strong>65071</strong></td>
+<td><strong>FE20</strong></td>
+<td><strong>FE2F</strong></td>
+<td><strong>16</strong></td>
+<td><strong>组合用半符号</strong></td>
+<td><strong>Combining Half Marks</strong></td>
+</tr>
+<tr>
+<td><strong>65072</strong></td>
+<td><strong>65103</strong></td>
+<td><strong>FE30</strong></td>
+<td><strong>FE4F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>CJK 兼容形式</strong></td>
+<td><strong>CJK Compatibility Forms</strong></td>
+</tr>
+<tr>
+<td><strong>65104</strong></td>
+<td><strong>65135</strong></td>
+<td><strong>FE50</strong></td>
+<td><strong>FE6F</strong></td>
+<td><strong>32</strong></td>
+<td><strong>小型变体形式</strong></td>
+<td><strong>Small Form Variants</strong></td>
+</tr>
+<tr>
+<td><strong>65136</strong></td>
+<td><strong>65279</strong></td>
+<td><strong>FE70</strong></td>
+<td><strong>FEFF</strong></td>
+<td><strong>144</strong></td>
+<td><strong>阿拉伯表達形式B</strong></td>
+<td><strong>Arabic Presentation Form-B</strong></td>
+</tr>
+<tr>
+<td><strong>65280</strong></td>
+<td><strong>65519</strong></td>
+<td><strong>FF00</strong></td>
+<td><strong>FFEF</strong></td>
+<td><strong>240</strong></td>
+<td><strong>半型及全型形式</strong></td>
+<td><strong>Halfwidth and Fullwidth Form</strong></td>
+</tr>
+<tr>
+<td><strong>65520</strong></td>
+<td><strong>65535</strong></td>
+<td><strong>FFF0</strong></td>
+<td><strong>FFFF</strong></td>
+<td><strong>16</strong></td>
+<td><strong>特殊</strong></td>
+<td><strong>Specials</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="sql">执行SQL语句</h2>
+<p>创建一个生成器方法用于执行SQL语句</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sql_query</span>(sql):
+  <span style="color:#66d9ef">try</span>:
+    conn <span style="color:#f92672">=</span> pymysql<span style="color:#f92672">.</span>connect(host<span style="color:#f92672">=</span>DB_IP, port<span style="color:#f92672">=</span>DB_PORT, user<span style="color:#f92672">=</span>DB_USER, password<span style="color:#f92672">=</span>DB_PASSWD, \
+                          db<span style="color:#f92672">=</span>DB_NAME, charset<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>, cursorclass<span style="color:#f92672">=</span>pymysql<span style="color:#f92672">.</span>cursors<span style="color:#f92672">.</span>DictCursor)
+    <span style="color:#66d9ef">with</span> conn<span style="color:#f92672">.</span>cursor() <span style="color:#66d9ef">as</span> cursor:
+      cursor<span style="color:#f92672">.</span>execute(sql)
+      <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> cursor:
+        <span style="color:#66d9ef">yield</span> row
+  <span style="color:#66d9ef">finally</span>:
+    conn<span style="color:#f92672">.</span>close()
+ 
+results<span style="color:#f92672">=</span>sql_query(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">select * from users</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> results:
+  <span style="color:#66d9ef">print</span>(row[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">id</span><span style="color:#e6db74">&#39;</span>])
+</code></pre></div><h2 id="python-1">将python依赖库打包一起分发</h2>
+<p>有时执行脚本的服务器，没有足够的权限，无法通过pip安装python依赖库，这时可以将依赖库打包起来随同脚本一起分发。</p>
+<p>比如现在有个脚本依赖于<a href="https://pymysql.readthedocs.io/en/latest/">pymysql</a>, <a href="https://openpyxl.readthedocs.io/en/default/">openpyxl</a>, 这时可以通过下面的命令下载好依赖库：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pip install --install-option<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--prefix=./tmp_libs&#34;</span> pymysql
+pip install --install-option<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--prefix=./tmp_libs&#34;</span> openpyxl
+mkdir libs
+cp -r ./tmp_libs/.../site-packages/* libs/
+</code></pre></div><p>最后修改脚本，在脚本开始执行前修改python的库路径：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sys
+<span style="color:#f92672">import</span> os
+sys<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>append(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>dirname(os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>realpath(__file__)), <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">libs</span><span style="color:#e6db74">&#39;</span>))
+</code></pre></div><h2 id="excel">写入excel文件</h2>
+<p>可以通过<a href="">openpyxl</a>写excel文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">workbook<span style="color:#f92672">=</span>openpyxl<span style="color:#f92672">.</span>Workbook()
+sheet<span style="color:#f92672">=</span>workbook<span style="color:#f92672">.</span>active
+
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+cell<span style="color:#f92672">=</span>sheet<span style="color:#f92672">.</span>cell(row<span style="color:#f92672">=</span>i, column<span style="color:#f92672">=</span>j, value<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">xxxx</span><span style="color:#e6db74">&#39;</span>)
+cell<span style="color:#f92672">.</span>font<span style="color:#f92672">=</span>openpyxl<span style="color:#f92672">.</span>styles<span style="color:#f92672">.</span>Font(bold<span style="color:#f92672">=</span>True)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+workbook<span style="color:#f92672">.</span>save(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">result.xlsx</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>更多<a href="https://openpyxl.readthedocs.io/en/default/">openpyxl</a>的用法参见其<a href="https://openpyxl.readthedocs.io/en/default/">文档</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-09-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/unicode/">unicode</a>
+          
+          <a href="/tags/pymysql/">pymysql</a>
+          
+          <a href="/tags/openpyxl/">openpyxl</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Java VisualVM使用备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/09/%E7%96%91%E9%9A%BE%E9%97%AE%E9%A2%98%E4%B9%8Bbsdiff/">
+            <span class="next-text nav-default">疑难问题之bsdiff</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>生成多平台docker镜像 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="生成多平台docker镜像" />
+<meta property="og:description" content="工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/" />
+<meta property="article:published_time" content="2019-09-30T20:35:00+08:00" />
+<meta property="article:modified_time" content="2019-09-30T20:35:00+08:00" />
+<meta itemprop="name" content="生成多平台docker镜像">
+<meta itemprop="description" content="工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这">
+<meta itemprop="datePublished" content="2019-09-30T20:35:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-30T20:35:00&#43;08:00" />
+<meta itemprop="wordCount" content="953">
+
+
+
+<meta itemprop="keywords" content="docker,buildx,arm64," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="生成多平台docker镜像"/>
+<meta name="twitter:description" content="工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">生成多平台docker镜像</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 953 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker">安装docker</a></li>
+    <li><a href="#qemu-user-static">安装qemu-user-static</a></li>
+    <li><a href="#docker-1">创建构建多平台docker镜像的构建器</a></li>
+    <li><a href="#docker-2">编写脚本生成多平台docker镜像</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要在一台x86服务器从写好的golang程序源码生成<code>linux/amd64</code>、<code>linux/arm64</code> docker镜像，查阅了下资料，这里记录一下操作过程。</p>
+<h2 id="docker">安装docker</h2>
+<p>查阅<a href="https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images">docker官方文档</a>，需要使用<a href="https://github.com/docker/buildx">buildx</a>，而Docker 19.03版本已经捆绑了buildx，方便起见，这里就直接使用19.03版本的docker了，过程如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo yum remove docker <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-client <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-client-latest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-common <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-latest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-latest-logrotate <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-logrotate <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-engine
+                  
+$ sudo yum install -y yum-utils <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  device-mapper-persistent-data <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  lvm2
+  
+$ sudo yum-config-manager <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --add-repo <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    https://download.docker.com/linux/centos/docker-ce.repo
+
+<span style="color:#75715e"># 列一下可安装的docker版本</span>
+$ yum list docker-ce --showduplicates | sort -r
+
+<span style="color:#75715e"># 安装19.03.2版本的docker</span>
+$ sudo yum install docker-ce-19.03.2 docker-ce-cli-19.03.2 containerd.io
+
+<span style="color:#75715e"># 启动docker服务</span>
+$ systemctl start docker
+</code></pre></div><h2 id="qemu-user-static">安装qemu-user-static</h2>
+<p>为了让在x86上可以运行arm64的docker镜像，这里需要安装<a href="https://github.com/multiarch/qemu-user-static">qemu-user-static</a>，过程如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+</code></pre></div><h2 id="docker-1">创建构建多平台docker镜像的构建器</h2>
+<p>首先打开docker-cli的<code>experimental</code>开关：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir ~/.docker
+$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt; ~/.docker/config.json
+</span><span style="color:#e6db74">{
+</span><span style="color:#e6db74">  &#34;experimental&#34;: &#34;enabled&#34;
+</span><span style="color:#e6db74">}
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>创建并启动构建器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 创建构建器</span>
+$ docker buildx create --name builder --node default --use
+<span style="color:#75715e"># 启动构建器</span>
+$ docker buildx inspect builder --bootstrap
+<span style="color:#75715e"># 观察下当前使用的构建器及构建器支持的cpu架构，可以看到支持很多cpu架构</span>
+$ docker buildx ls
+</code></pre></div><h2 id="docker-2">编写脚本生成多平台docker镜像</h2>
+<p>假设有一个普通的golang程序源码，我们已经写好了Dockerfile生成其docker镜像，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#75715e"># Start from the latest golang base image</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> golang:latest as go-builder</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Add Maintainer Info</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">LABEL</span> maintainer<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Jeremy Xu &lt;jeremyxu2010@gmail.com&gt;&#34;</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Set the Current Working Directory inside the container</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Copy go mod and sum files</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> go.mod go.sum ./<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go mod download<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Copy the source from the current directory to the Working Directory inside the container</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> ./cmd ./cmd<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Build the Go app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> go build -o output/demo ./cmd<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Start from the latest alpine base image</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> alpine:latest</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Set the Current Working Directory inside the container</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">WORKDIR</span><span style="color:#e6db74"> /app</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Copy execute file from go-builder</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> --from<span style="color:#f92672">=</span>go-builder /app/output/demo /app/demo<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#75715e"># Set docker image command</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">CMD</span> [ <span style="color:#e6db74">&#34;/app/demo&#34;</span> ]<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>那么现在只需要使用两条命令，即可生成<code>linux/amd64</code>、<code>linux/arm64</code> docker镜像，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 生成linux/amd64 docker镜像</span>
+$ docker buildx build --rm -t go-mul-arch-build:latest-amd64 --platform<span style="color:#f92672">=</span>linux/amd64 --output<span style="color:#f92672">=</span>type<span style="color:#f92672">=</span>docker .
+<span style="color:#75715e"># 生成linux/arm64 docker镜像</span>
+$ docker buildx build --rm -t go-mul-arch-build:latest-arm64 --platform<span style="color:#f92672">=</span>linux/arm64 --output<span style="color:#f92672">=</span>type<span style="color:#f92672">=</span>docker .
+</code></pre></div><p>最后检查下生成的docker镜像：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 运行下linux/amd64的docker镜像，检查镜像的cpu架构</span>
+$ docker run --rm -ti go-mul-arch-build:latest-amd64 sh
+/app <span style="color:#75715e"># ./demo</span>
+Hello world!
+oh dear
+/app <span style="color:#75715e"># uname -m</span>
+x86_64
+/app <span style="color:#75715e"># exit</span>
+
+<span style="color:#75715e"># 运行下linux/arm64的docker镜像，检查镜像的cpu架构</span>
+$ docker run --rm -ti go-mul-arch-build:latest-arm64 sh
+/app <span style="color:#75715e"># ./demo</span>
+Hello world!
+oh dear
+/app <span style="color:#75715e"># uname -m</span>
+aarch64
+/app <span style="color:#75715e"># exit</span>
+</code></pre></div><p>本操作指引中涉及的示例代码、脚本见<a href="https://github.com/jeremyxu2010/go-mul-arch-build">github项目</a>。</p>
+<p>Done.</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://docs.docker.com/install/linux/docker-ce/centos/">https://docs.docker.com/install/linux/docker-ce/centos/</a></li>
+<li><a href="https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images">https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images</a></li>
+<li><a href="https://github.com/docker/buildx">https://github.com/docker/buildx</a></li>
+<li><a href="https://github.com/multiarch/qemu-user-static">https://github.com/multiarch/qemu-user-static</a></li>
+<li><a href="https://www.callicoder.com/docker-golang-image-container-example/">https://www.callicoder.com/docker-golang-image-container-example/</a></li>
+<li><a href="https://github.com/docker/buildx/issues/138">https://github.com/docker/buildx/issues/138</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-09-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/buildx/">buildx</a>
+          
+          <a href="/tags/arm64/">arm64</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">避免容器中运行的Java应用被杀掉</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/">
+            <span class="next-text nav-default">kubernetes CSI存储插件探究</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

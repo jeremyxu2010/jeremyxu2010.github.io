@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>MyISAM on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/myisam/</link>
+    <description>Recent content in MyISAM on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 28 Oct 2016 23:41:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/myisam/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>InnoDB与MyISAM的区别</title>
+      <link>https://jeremyxu2010.github.io/2016/10/innodb%E4%B8%8Emyisam%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Fri, 28 Oct 2016 23:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/innodb%E4%B8%8Emyisam%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>今天被人问到InnoDB与MyISAM的区别，突然发现虽然平时做项目时经常时经常用到这两种存储引擎，但却只知道两者在事务支持方面的区别，其它</description>
+    </item>
+    
+  </channel>
+</rss>

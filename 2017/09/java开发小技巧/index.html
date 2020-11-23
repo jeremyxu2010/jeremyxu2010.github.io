@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Java开发小技巧 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Java开发小技巧" />
+<meta property="og:description" content="Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/" />
+<meta property="article:published_time" content="2017-09-03T23:38:00+08:00" />
+<meta property="article:modified_time" content="2017-09-03T23:38:00+08:00" />
+<meta itemprop="name" content="Java开发小技巧">
+<meta itemprop="description" content="Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提">
+<meta itemprop="datePublished" content="2017-09-03T23:38:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-09-03T23:38:00&#43;08:00" />
+<meta itemprop="wordCount" content="2440">
+
+
+
+<meta itemprop="keywords" content="java,nio,validate,log,guava,spring-retry," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java开发小技巧"/>
+<meta name="twitter:description" content="Java开发小技巧 平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。 参数验证 提"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Java开发小技巧</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-09-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2440 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">参数验证</a>
+      <ul>
+        <li><a href="#commons-langvalidate">Commons-lang的Validate</a></li>
+        <li><a href="#beanvalidation">BeanValidation</a></li>
+      </ul>
+    </li>
+    <li><a href="#deprecated">重视Deprecated</a></li>
+    <li><a href="#java-1">Java文件操作</a></li>
+    <li><a href="#heading-1">打印日志</a>
+      <ul>
+        <li><a href="#heading-2">拼接字符串</a></li>
+        <li><a href="#heading-3">打印异常堆栈至标准错误输出</a></li>
+        <li><a href="#heading-4">打印过长字符串</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">资源清理</a></li>
+    <li><a href="#httpclient">HttpClient连接池</a></li>
+    <li><a href="#spring">善用Spring的工具类</a></li>
+    <li><a href="#guavaapi">Guava中一些有用的API</a>
+      <ul>
+        <li><a href="#throwables">Throwables抛出异常</a></li>
+        <li><a href="#listenablefuture">ListenableFuture示例</a></li>
+        <li><a href="#heading-6">事件总线</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-7">重试逻辑</a></li>
+    <li><a href="#heading-8">工具技巧</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="java">Java开发小技巧</h1>
+<p>平时开发中有一些小技巧，都不算很有技术含量，但在工作中运用这些技巧确实可以提高工作效率，这里把这些小技分享出来。</p>
+<h2 id="heading">参数验证</h2>
+<p>提供的API接口类方法如有参数，都要做参数校验，参数校验不通过明确抛出异常或对应的响应码。到处写if表达式判断代码，正常的业务逻辑会被这些校验代码干扰，这里介绍两个用得比较多的方案。</p>
+<h3 id="commons-langvalidate">Commons-lang的Validate</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String val1 <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;  &#34;</span><span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">notBlank</span><span style="color:#f92672">(</span>val1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;输入的参数val1=%s为空&#34;</span><span style="color:#f92672">,</span> val1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+String val2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">notNull</span><span style="color:#f92672">(</span>val2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;输入的参数val2为null&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> arr1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">notEmpty</span><span style="color:#f92672">(</span>arr1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;数组为空&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> lst1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">notEmpty</span><span style="color:#f92672">(</span>lst1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;数组为空&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> arr2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">int</span> idx <span style="color:#f92672">=</span> 3<span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">validIndex</span><span style="color:#f92672">(</span>arr2<span style="color:#f92672">,</span> idx<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;索引超过数组范围&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">short</span> state1 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">short</span><span style="color:#f92672">)</span>1<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">short</span> validState <span style="color:#f92672">=</span> 3<span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">validState</span><span style="color:#f92672">(</span>state1<span style="color:#f92672">=</span><span style="color:#f92672">=</span>validState<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;当前的状态不正确, state=%d&#34;</span><span style="color:#f92672">,</span> state1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">boolean</span> valid <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>3 <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 4<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+Validate<span style="color:#f92672">.</span><span style="color:#a6e22e">isTrue</span><span style="color:#f92672">(</span>valid<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;表达式不合法&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h3 id="beanvalidation">BeanValidation</h3>
+<p>如果输入参数是pojo对象，采用BeanValidation方案更优雅一些。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ValidatorFactory factory <span style="color:#f92672">=</span> Validation<span style="color:#f92672">.</span><span style="color:#a6e22e">buildDefaultValidatorFactory</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  Validator validator <span style="color:#f92672">=</span> factory<span style="color:#f92672">.</span><span style="color:#a6e22e">getValidator</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  Pojo pojo <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Pojo<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  pojo<span style="color:#f92672">.</span><span style="color:#a6e22e">setKey1</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;abcdef&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  pojo<span style="color:#f92672">.</span><span style="color:#a6e22e">setKey2</span><span style="color:#f92672">(</span>3<span style="color:#f92672">.</span><span style="color:#a6e22e">3</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  pojo<span style="color:#f92672">.</span><span style="color:#a6e22e">setTime1</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GregorianCalendar<span style="color:#f92672">(</span>2010<span style="color:#f92672">,</span> 3<span style="color:#f92672">,</span> 4<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  Set<span style="color:#f92672">&lt;</span>ConstraintViolation<span style="color:#f92672">&lt;</span>Pojo<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> violationSet <span style="color:#f92672">=</span> validator<span style="color:#f92672">.</span><span style="color:#a6e22e">validate</span><span style="color:#f92672">(</span>pojo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>violationSet<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ConstraintViolation<span style="color:#f92672">&lt;</span>Pojo<span style="color:#f92672">&gt;</span> violation <span style="color:#f92672">:</span> violationSet<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>violation<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;校验成功&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pojo</span><span style="color:#f92672">{</span>
+  <span style="color:#a6e22e">@NotNull</span><span style="color:#f92672">(</span>message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;key1为空&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@Size</span><span style="color:#f92672">(</span>min <span style="color:#f92672">=</span> 6<span style="color:#f92672">,</span> max <span style="color:#f92672">=</span> 20<span style="color:#f92672">,</span> message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;key1的长度不正确&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#66d9ef">private</span> String key1<span style="color:#f92672">;</span>
+
+  <span style="color:#a6e22e">@NotNull</span><span style="color:#f92672">(</span>message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;key2为空&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@DecimalMin</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span><span style="color:#f92672">,</span> message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;值不能小于0&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@DecimalMax</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;100&#34;</span><span style="color:#f92672">,</span> message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;值不能大于100&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#66d9ef">private</span> Double key2<span style="color:#f92672">;</span>
+
+  <span style="color:#a6e22e">@NotNull</span><span style="color:#f92672">(</span>message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;time1为空&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@Past</span><span style="color:#f92672">(</span>message <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;时间不能大于现在&#34;</span><span style="color:#f92672">)</span>
+  <span style="color:#66d9ef">private</span> Date time1<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">getKey1</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> key1<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setKey1</span><span style="color:#f92672">(</span>String key1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">key1</span> <span style="color:#f92672">=</span> key1<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> Double <span style="color:#a6e22e">getKey2</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> key2<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setKey2</span><span style="color:#f92672">(</span>Double key2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">key2</span> <span style="color:#f92672">=</span> key2<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> Date <span style="color:#a6e22e">getTime1</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> time1<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setTime1</span><span style="color:#f92672">(</span>Date time1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">time1</span> <span style="color:#f92672">=</span> time1<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="deprecated">重视Deprecated</h2>
+<p>调用标准库或第三方API时，一些接口上打上了Deprecated标记，而且一些还解释了准备废弃这个接口的原因及应该改用的写法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">net</span><span style="color:#f92672">.</span><span style="color:#a6e22e">URLEncoder</span><span style="color:#960050;background-color:#1e0010">#</span>encode<span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">net</span><span style="color:#f92672">.</span><span style="color:#a6e22e">URLEncoder</span><span style="color:#960050;background-color:#1e0010">#</span>encode<span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">net</span><span style="color:#f92672">.</span><span style="color:#a6e22e">URLDecoder</span><span style="color:#960050;background-color:#1e0010">#</span>decode<span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">net</span><span style="color:#f92672">.</span><span style="color:#a6e22e">URLDecoder</span><span style="color:#960050;background-color:#1e0010">#</span>decode<span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Date</span><span style="color:#960050;background-color:#1e0010">#</span>Date<span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">net</span><span style="color:#f92672">.</span><span style="color:#a6e22e">URLDecoder</span><span style="color:#960050;background-color:#1e0010">#</span>decode<span style="color:#f92672">(</span>java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">,</span> java<span style="color:#f92672">.</span><span style="color:#a6e22e">lang</span><span style="color:#f92672">.</span><span style="color:#a6e22e">String</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">orm</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hibernate3</span><span style="color:#f92672">.</span><span style="color:#a6e22e">support</span><span style="color:#f92672">.</span><span style="color:#a6e22e">HibernateDaoSupport</span><span style="color:#960050;background-color:#1e0010">#</span>getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLQuery</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">orm</span><span style="color:#f92672">.</span><span style="color:#a6e22e">hibernate3</span><span style="color:#f92672">.</span><span style="color:#a6e22e">support</span><span style="color:#f92672">.</span><span style="color:#a6e22e">HibernateDaoSupport</span><span style="color:#960050;background-color:#1e0010">#</span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HibernateCallback<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">doInHibernate</span><span style="color:#f92672">(</span>Session session<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> HibernateException<span style="color:#f92672">,</span> SQLException <span style="color:#f92672">{</span>
+        session<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLQuery</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h2 id="java-1">Java文件操作</h2>
+<p>Java 7中引入了新的文件操作API，具有不少优点，新代码建议采用这套API操作文件。</p>
+<p>可参考<a href="http://jeremy-xu.oschina.io/2016/05/09/Java-NIO-File%E6%93%8D%E4%BD%9C/">Java NIO File操作</a>。</p>
+<h2 id="heading-1">打印日志</h2>
+<p>平时打日志时有几个错误范例，打日志时要注意一下。</p>
+<h3 id="heading-2">拼接字符串</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;abc &#34;</span> <span style="color:#f92672">+</span> 3 <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; def &#34;</span> <span style="color:#f92672">+</span> 4 <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; xxx &#34;</span> <span style="color:#f92672">+</span> 5<span style="color:#f92672">)</span><span style="color:#f92672">;</span> 
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;abc %d def %d xxx %d&#34;</span><span style="color:#f92672">,</span> 3<span style="color:#f92672">,</span> 4<span style="color:#f92672">,</span> 5<span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+</code></pre></div><h3 id="heading-3">打印异常堆栈至标准错误输出</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行出错&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span>Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;执行出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><h3 id="heading-4">打印过长字符串</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// bad
+</span><span style="color:#75715e"></span>Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span>tooLongStr<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// good
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">isInfoEnabled</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+	Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span>tooLongStr<span style="color:#f92672">)</span><span style="color:#f92672">;</span>	
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-5">资源清理</h2>
+<p>网络连接、数据库连接、会话、HttpClient的连接等使用完后一定要进行资源清理。</p>
+<p>以下是一些错误的示例：</p>
+<ul>
+<li>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Logger Lg <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>ResourceCleanDemo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  Socket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  BufferedReader reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  PrintWriter writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Socket<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#f92672">,</span> 8080<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getInputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> OutputStreamWriter<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getOutputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// do something
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        
+    socket<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    writer<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    reader<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+<li>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Logger Lg <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>ResourceCleanDemo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  Socket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  BufferedReader reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  PrintWriter writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Socket<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#f92672">,</span> 8080<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getInputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> OutputStreamWriter<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getOutputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// do something
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      socket<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      writer<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      reader<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+</ul>
+<p>正确的范例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Logger Lg <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>ResourceCleanDemo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  Socket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  BufferedReader reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  PrintWriter writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Socket<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#f92672">,</span> 8080<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getInputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    writer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> OutputStreamWriter<span style="color:#f92672">(</span>socket<span style="color:#f92672">.</span><span style="color:#a6e22e">getOutputStream</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+    IOUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">closeQuietly</span><span style="color:#f92672">(</span>socket<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    IOUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">closeQuietly</span><span style="color:#f92672">(</span>writer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    IOUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">closeQuietly</span><span style="color:#f92672">(</span>reader<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="httpclient">HttpClient连接池</h2>
+<p>HttpClient库为了提高性能，是使用了连接池的，应尽量使用连接池特性。</p>
+<p>错误示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    CloseableHttpClient httpClient <span style="color:#f92672">=</span> HttpClients<span style="color:#f92672">.</span><span style="color:#a6e22e">createDefault</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    CloseableHttpResponse resp <span style="color:#f92672">=</span> httpClient<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HttpGet<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;www.baidu.com&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// do something
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    httpClient<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>正确示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> CloseableHttpClient httpClient <span style="color:#f92672">=</span> HttpClients<span style="color:#f92672">.</span><span style="color:#a6e22e">createDefault</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    HttpGet httpGet <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      httpGet <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HttpGet<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;www.baidu.com&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      CloseableHttpResponse resp <span style="color:#f92672">=</span> httpClient<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>httpGet<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#75715e">// do something
+</span><span style="color:#75715e"></span>      <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      Lg<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;出错&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+      httpGet<span style="color:#f92672">.</span><span style="color:#a6e22e">releaseConnection</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+  IOUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">closeQuietly</span><span style="color:#f92672">(</span>httpClient<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="spring">善用Spring的工具类</h2>
+<p>Spring中有一些已经写好的工具类，代码都比较简单，即可以学习下，本时工作中用一用也可以提高开发效率。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">dao</span><span style="color:#f92672">.</span><span style="color:#a6e22e">support</span><span style="color:#f92672">.</span><span style="color:#a6e22e">DataAccessUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">StringUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">CollectionUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Base64Utils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">DigestUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">FileCopyUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">FileSystemUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">ReflectionUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketUtils</span>
+org<span style="color:#f92672">.</span><span style="color:#a6e22e">springframework</span><span style="color:#f92672">.</span><span style="color:#a6e22e">beans</span><span style="color:#f92672">.</span><span style="color:#a6e22e">BeanUtils</span>
+</code></pre></div><h2 id="guavaapi">Guava中一些有用的API</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 把Throwable包装成RuntimeException抛出
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">base</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Throwables</span><span style="color:#960050;background-color:#1e0010">#</span>propagate<span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#75715e">// 新集合类型
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Multiset</span>
+com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">.</span><span style="color:#a6e22e">Multimap</span>
+
+<span style="color:#75715e">// Google Guava，详细用法参见http://jeremy-xu.oschina.io/2016/09/01/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">.</span><span style="color:#a6e22e">LoadingCache</span>
+
+<span style="color:#75715e">// 异步任务执行完毕后自动执行指定的回调方法
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">util</span><span style="color:#f92672">.</span><span style="color:#a6e22e">concurrent</span><span style="color:#f92672">.</span><span style="color:#a6e22e">ListenableFuture</span>
+
+<span style="color:#75715e">// 同步事件总线
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">eventbus</span><span style="color:#f92672">.</span><span style="color:#a6e22e">EventBus</span>
+
+<span style="color:#75715e">// 异步事件总线
+</span><span style="color:#75715e"></span>com<span style="color:#f92672">.</span><span style="color:#a6e22e">google</span><span style="color:#f92672">.</span><span style="color:#a6e22e">common</span><span style="color:#f92672">.</span><span style="color:#a6e22e">eventbus</span><span style="color:#f92672">.</span><span style="color:#a6e22e">AsyncEventBus</span>
+</code></pre></div><p>可参考<a href="http://ifeve.com/google-guava/">Google Guava官方教程（中文版）</a></p>
+<p>这里举几个例子：</p>
+<h3 id="throwables">Throwables抛出异常</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">someBusinessMethod</span><span style="color:#f92672">(</span>String param1<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>Integer<span style="color:#f92672">.</span><span style="color:#a6e22e">parseInt</span><span style="color:#f92672">(</span>param1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>NumberFormatException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Throwables<span style="color:#f92672">.</span><span style="color:#a6e22e">propagate</span><span style="color:#f92672">(</span>e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="listenablefuture">ListenableFuture示例</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> ListeningExecutorService service <span style="color:#f92672">=</span> MoreExecutors<span style="color:#f92672">.</span><span style="color:#a6e22e">listeningDecorator</span><span style="color:#f92672">(</span>Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newFixedThreadPool</span><span style="color:#f92672">(</span>10<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ListenableFuture<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> service<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Callable<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Integer <span style="color:#a6e22e">call</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+      Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>10000L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Integer<span style="color:#f92672">(</span>0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  Futures<span style="color:#f92672">.</span><span style="color:#a6e22e">addCallback</span><span style="color:#f92672">(</span>future<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> FutureCallback<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onSuccess</span><span style="color:#f92672">(</span>Integer result<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;success, result: %d&#34;</span><span style="color:#f92672">,</span> result<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onFailure</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      t<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading-6">事件总线</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> EventBus eventBus <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> EventBus<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;globalEventBus&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  eventBus<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CustomEventHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  eventBus<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> DeadEventHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  eventBus<span style="color:#f92672">.</span><span style="color:#a6e22e">post</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CustomEvent<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CustomEventHandler</span><span style="color:#f92672">{</span>
+  <span style="color:#a6e22e">@Subscribe</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleCustomEvent</span><span style="color:#f92672">(</span>CustomEvent event<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>event<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DeadEventHandler</span><span style="color:#f92672">{</span>
+  <span style="color:#a6e22e">@Subscribe</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleDeadEvent</span><span style="color:#f92672">(</span>DeadEvent deadEvent<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>deadEvent<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CustomEvent</span><span style="color:#f92672">{</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-7">重试逻辑</h2>
+<p>经常写代码实现业务的重试逻辑，可考虑<a href="https://github.com/spring-projects/spring-retry">spring-retry</a>，用法可参考<a href="http://jeremy-xu.oschina.io/2017/06/15/Retrying_Library_For_Java/">Retrying_Library_For_Java</a></p>
+<h2 id="heading-8">工具技巧</h2>
+<ol>
+<li>
+<p><code>java -XX:+PrintFlagsFinal </code>：打印出几乎所有的JVM支持的参数以及他们的默认值</p>
+</li>
+<li>
+<p><code>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address={port}</code>：jvm开启jdwp，可运程调试</p>
+</li>
+<li>
+<p><code>-Dcom.sun.management.jmxremote=true -Djava.rmi.server.hostname=ip−Dcom.sun.management.jmxremote.port={port} -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false</code> ：jvm开启jmx，可使用jconsole连接</p>
+</li>
+<li>
+<p>mybatis-generator的配置文件中加入<code>&lt;property name=&quot;addRemarkComments&quot; value=&quot;true&quot; /&gt;</code>，可数据库表的备注可自动作为实体属性的注释</p>
+</li>
+<li>
+<p><code>IntelliJ IDEA</code>的几个重要的重构功能：Rename、Change Signature…、Move…、Copy…、Extract Constant…、Extract Method…、Extract Interface…、Pull Member Up…。</p>
+<p>​</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-09-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+          <a href="/tags/validate/">validate</a>
+          
+          <a href="/tags/log/">log</a>
+          
+          <a href="/tags/guava/">guava</a>
+          
+          <a href="/tags/spring-retry/">spring-retry</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Gearman使用范例</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/">
+            <span class="next-text nav-default">机器学习课程_笔记08</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

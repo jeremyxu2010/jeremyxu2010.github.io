@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记01 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记01" />
+<meta property="og:description" content="最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/" />
+<meta property="article:published_time" content="2017-06-03T19:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-03T19:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记01">
+<meta itemprop="description" content="最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中">
+<meta itemprop="datePublished" content="2017-06-03T19:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-03T19:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1001">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记01"/>
+<meta name="twitter:description" content="最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记01</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1001 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">机器学习的定义</a></li>
+    <li><a href="#4">课程的4个部分</a>
+      <ul>
+        <li><a href="#unsuperized-learning">监督学习（Unsuperized Learning）</a></li>
+        <li><a href="#learning-theory">学习理论（Learning Theory）</a></li>
+        <li><a href="#unsuperized-learning-1">无监督学习（Unsuperized Learning）</a></li>
+        <li><a href="#reinforcement-learning">强化学习(Reinforcement Learning)</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看<code>andrew ng</code>大牛的<a href="http://open.163.com/movie/2008/1/M/C/M6SGF6VB4_M6SGHFBMC.html">斯坦福大学公开课-机器学习课程</a>视频，当然在看的过程中为了加深理解，会记下笔记，此篇为第一篇笔记。</p>
+<h2 id="heading">机器学习的定义</h2>
+<p>非正式定义：</p>
+<pre><code>Arthur Samuel (1959). Machine Learning:
+Field of study that gives computers the ability to learn without being explicitly programmed.
+在不直接针对问题进行编程的情况下赋予计算机学习能力的一个研究领域。
+</code></pre><p>更现代的定义：</p>
+<pre><code>Tom Mitchell (1998). Well-posed Learning Problem:
+A computer program is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
+对于一个计算机程序来说，给它一个任务T和一个性能测量方法P，如果在经验E的影响下，P对T的测量结果得到了改进，那么就说该程序从E中学习。
+</code></pre><h2 id="4">课程的4个部分</h2>
+<h3 id="unsuperized-learning">监督学习（Unsuperized Learning）</h3>
+<p>我们在&quot;监督&quot;问题的算法，这里给算法提供了一组&quot;标准答案&rdquo;，之后我们希望算法去学习标准输入和标准答案之间的联系，以尝试对于我们的其他输入给我们提供更为标准的答案。</p>
+<ul>
+<li>预测Portland  Oregon地区房屋价格，需要预测的变量是连续的 。（回归问题）</li>
+<li>预测一个肿瘤是否为恶性，这里算法处理的是一些离散值（分类问题）</li>
+<li>把数据映射到无限维空间（支持向量机）</li>
+</ul>
+<h3 id="learning-theory">学习理论（Learning Theory）</h3>
+<p>学习理论分析为什么学习型算法是有效的，这样我们才可以让算法尽可能高效地工作。</p>
+<ul>
+<li>通过定理证明来找出什么时候你能达到高的精度</li>
+<li>了解什么样的算法能很好地近似不同的函数</li>
+<li>试图了解一些诸如需要多少训练数据这样的问题</li>
+</ul>
+<p>学习理论可以使人能够真正地将机器学习的理念应用到解决实际问题当中。</p>
+<h3 id="unsuperized-learning-1">无监督学习（Unsuperized Learning）</h3>
+<p>给一组数据，不告诉关于数据的任何正确答案，然后算法在这组数据中寻找一些有趣的结构。</p>
+<ul>
+<li>聚类问题将数据聚成几类</li>
+<li>按照基因在试验中体现出的形状对这些单独的基因进行分组</li>
+<li>聚类算法来进行图像处理，对像素进行聚类</li>
+<li>用图像聚类的结果创建这个世界的3D模型</li>
+<li>计算机集群组织、社会网络分析、市场划分、航天数据的分析、鸡尾酒会问题</li>
+<li>文本处理、理解功能分级和机械数据（ICA算法）</li>
+</ul>
+<h3 id="reinforcement-learning">强化学习(Reinforcement Learning)</h3>
+<p>用在你不需要进行一次决策的情形中，你通常会在一段时间内做出一系列的决策。在强化学习背后的基本概念是一个称为回报函数的概念。强化学习的关键是需要找到一种方式来定义一个好的行为和一个坏的行为，之后就是需要一个学习型算法来尽可能地获得更多的回报和更少的惩罚。</p>
+<ul>
+<li>机器人领域</li>
+<li>网页爬取</li>
+</ul>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记02</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E4%BD%BF%E7%94%A8mathjax/">
+            <span class="next-text nav-default">使用mathjax</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

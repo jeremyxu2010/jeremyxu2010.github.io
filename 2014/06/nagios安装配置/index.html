@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>nagios安装配置 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="nagios安装配置" />
+<meta property="og:description" content="上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" />
+<meta property="article:published_time" content="2014-06-30T01:40:00+08:00" />
+<meta property="article:modified_time" content="2014-06-30T01:40:00+08:00" />
+<meta itemprop="name" content="nagios安装配置">
+<meta itemprop="description" content="上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd">
+<meta itemprop="datePublished" content="2014-06-30T01:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2014-06-30T01:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="1089">
+
+
+
+<meta itemprop="keywords" content="nagios,监控," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="nagios安装配置"/>
+<meta name="twitter:description" content="上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">nagios安装配置</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-06-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1089 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装必要的软件包</span>
+yum install -y gcc glibc glibc-common gd gd-devel xinetd openssl-devel
+<span style="color:#75715e">#创建nagios用户及授予目录权限</span>
+useradd -s /sbin/nologin nagios
+mkdir /usr/local/nagios
+chown -R nagios.nagios /usr/local/nagios
+<span style="color:#75715e">#安装nagios</span>
+tar xf nagios-4.0.7.tar.gz
+cd nagios-4.0.7
+./configure --prefix<span style="color:#f92672">=</span>/usr/local/nagios
+make all
+make install <span style="color:#f92672">&amp;&amp;</span> make install-init <span style="color:#f92672">&amp;&amp;</span> make install-commandmode <span style="color:#f92672">&amp;&amp;</span> make install-config
+chkconfig --add nagios <span style="color:#f92672">&amp;&amp;</span> chkconfig --level <span style="color:#ae81ff">35</span> nagios on <span style="color:#f92672">&amp;&amp;</span> chkconfig --list nagios
+<span style="color:#75715e">#安装nagios-plugins</span>
+tar xf nagios-plugins-2.0.2.tar.gz
+cd nagios-plugins-2.0.2
+./configure --prefix<span style="color:#f92672">=</span>/usr/local/nagios
+make <span style="color:#f92672">&amp;&amp;</span> make install
+<span style="color:#75715e">#安装apache</span>
+tar xf httpd-2.2.23.tar.gz
+cd httpd-2.2.23
+./configure --prefix<span style="color:#f92672">=</span>/usr/local/apache2
+make <span style="color:#f92672">&amp;&amp;</span> make install
+<span style="color:#75715e">#安装php</span>
+tar xf php-5.5.13.tar.gz
+cd php-5.5.13
+./configure --prefix<span style="color:#f92672">=</span>/usr/local/php --with-apxs2<span style="color:#f92672">=</span>/usr/local/apache2/bin/apxs
+make <span style="color:#f92672">&amp;&amp;</span> make install
+</code></pre></div><p>接下来配置apache</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#生成nagios密码文件</span>
+/usr/local/apache2/bin/htpasswd -c /usr/local/nagios/etc/htpasswd admin
+vim /usr/local/apache2/conf/httpd.conf
+...
+User nagios
+Group nagios
+...
+&lt;IfModule dir_module&gt;
+    DirectoryIndex index.html index.php
+&lt;/IfModule&gt;
+...
+AddType application/x-httpd-php .php
+...
+<span style="color:#75715e">#setting for nagios</span>
+ScriptAlias /nagios/cgi-bin <span style="color:#e6db74">&#34;/usr/local/nagios/sbin&#34;</span>
+&lt;Directory <span style="color:#e6db74">&#34;/usr/local/nagios/sbin&#34;</span>&gt;
+     AuthType Basic
+     Options ExecCGI
+     AllowOverride None
+     Order allow,deny
+     Allow from all
+     AuthName <span style="color:#e6db74">&#34;Nagios Access&#34;</span>
+     AuthUserFile /usr/local/nagios/etc/htpasswd             //用于此目录访问身份验证的文件
+     Require valid-user
+&lt;/Directory&gt; Alias /nagios <span style="color:#e6db74">&#34;/usr/local/nagios/share&#34;</span>
+&lt;Directory <span style="color:#e6db74">&#34;/usr/local/nagios/share&#34;</span>&gt;
+     AuthType Basic
+     Options None
+     AllowOverride None
+     Order allow,deny
+     Allow from all
+     AuthName <span style="color:#e6db74">&#34;nagios Access&#34;</span>
+     AuthUserFile /usr/local/nagios/etc/htpasswd
+     Require valid-user
+&lt;/Directory&gt;
+</code></pre></div><p>启动apache</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim /etc/init.d/httpd
+<span style="color:#75715e">#!/bin/sh</span>
+#
+<span style="color:#75715e"># Startup script for the Apache Web Server</span>
+#
+<span style="color:#75715e"># chkconfig: 345 85 15</span>
+<span style="color:#75715e"># description: Apache is a World Wide Web server.  It is used to serve \</span>
+<span style="color:#75715e">#           HTML files and CGI.</span>
+<span style="color:#75715e"># processname: httpd</span>
+<span style="color:#75715e"># pidfile: /usr/local/apache2/logs/httpd.pid</span>
+<span style="color:#75715e"># config: /usr/local/apache2/conf/httpd.conf</span>
+
+<span style="color:#75715e"># Source function library.</span>
+. /etc/rc.d/init.d/functions
+
+<span style="color:#75715e"># See how we were called.</span>
+<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> in
+start<span style="color:#f92672">)</span>
+echo -n <span style="color:#e6db74">&#34;Starting httpd: &#34;</span>
+daemon /usr/local/apache2/bin/httpd -DSSL
+echo
+touch /var/lock/subsys/httpd
+;;
+stop<span style="color:#f92672">)</span>
+echo -n <span style="color:#e6db74">&#34;Shutting down http: &#34;</span>
+killproc httpd
+echo
+rm -f /var/lock/subsys/httpd
+rm -f /usr/local/apache2/logs/httpd.pid
+;;
+status<span style="color:#f92672">)</span>
+status httpd
+;;
+restart<span style="color:#f92672">)</span>
+$0 stop
+$0 start
+;;
+reload<span style="color:#f92672">)</span>
+echo -n <span style="color:#e6db74">&#34;Reloading httpd: &#34;</span>
+killproc httpd -HUP
+echo
+;;
+*<span style="color:#f92672">)</span>
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Usage: </span>$0<span style="color:#e6db74"> {start|stop|restart|reload|status}</span><span style="color:#e6db74">&#34;</span>
+exit <span style="color:#ae81ff">1</span>
+<span style="color:#66d9ef">esac</span>
+
+exit <span style="color:#ae81ff">0</span>
+
+chmod +x /etc/init.d/httpd
+chkconfig httpd on
+/etc/init.d/httpd start
+</code></pre></div><p>接下来配置nagios</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#确保admin用户登录后有权限查看信息</span>
+vim /usr/local/nagios/etc/cgi.cfg
+...
+default_user_name<span style="color:#f92672">=</span>admin
+authorized_for_system_information<span style="color:#f92672">=</span>nagiosadmin,admin
+authorized_for_configuration_information<span style="color:#f92672">=</span>nagiosadmin,admin
+authorized_for_system_commands<span style="color:#f92672">=</span>admin
+authorized_for_all_services<span style="color:#f92672">=</span>nagiosadmin,admin
+authorized_for_all_hosts<span style="color:#f92672">=</span>nagiosadmin,admin
+authorized_for_all_service_commands<span style="color:#f92672">=</span>nagiosadmin,admin
+authorized_for_all_host_commands<span style="color:#f92672">=</span>nagiosadmin,admin
+...
+
+<span style="color:#75715e">#修改nagios主配置文件，将主机的定义都放在/usr/local/nagios/etc/hosts目录中</span>
+mkdir /usr/local/nagios/etc/hosts
+vim /usr/local/nagios/etc/nagios.cfg
+...
+cfg_dir<span style="color:#f92672">=</span>/usr/local/nagios/etc/hosts
+...
+
+<span style="color:#75715e">#添加一个自定义命令</span>
+vim /usr/local/nagios/etc/objects/command.cfg
+
+...
+<span style="color:#75715e"># &#39;check_custom_http&#39; command definition</span>
+define command<span style="color:#f92672">{</span>
+        command_name    check_custom_http
+        command_line    $USER1$/check_http -4 -N -H $ARG1$ -u $ARG2$
+        <span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># &#39;check_dns&#39; command definition</span>
+define command<span style="color:#f92672">{</span>
+        command_name    check_dns
+        command_line    $USER1$/check_dns -v -H $ARG1$ -a $ARG2$ -w $ARG3$ -c $ARG4$
+        <span style="color:#f92672">}</span>
+...
+
+<span style="color:#75715e">#定义主机组</span>
+vim /usr/local/nagios/etc/hosts/group.cfg
+
+define hostgroup<span style="color:#f92672">{</span>
+        hostgroup_name    groupname1
+        alias               groupname1
+        members             server1 <span style="color:#75715e">#server1必须在/etc/hosts里有对应的映射</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">#定义主机server1</span>
+vim /usr/local/nagios/etc/hosts/server1.cfg
+
+define host<span style="color:#f92672">{</span>
+        use                     linux-server
+        host_name               server1
+        alias                   server1
+        address                 xx.xx.xx.xx
+        notification_period     24x7
+<span style="color:#f92672">}</span>
+define service<span style="color:#f92672">{</span>
+        use                             local-service         ; Name of service template to use
+        host_name                       server1
+        service_description             PING
+        check_command                   check_ping!100.0,20%!500.0,60% ; 延时100ms丢包率大于20%时，则发出警告通知; 延时500ms丢包率大于60%时，则发出严重错误通知
+<span style="color:#f92672">}</span>
+;需要做好本机使用的DNS设置，在/etc/resolv.conf文件中定义
+define service<span style="color:#f92672">{</span>
+        use                             local-service         ; Name of service template to use
+        host_name                       server1
+        service_description             DNS
+        check_command                   check_dns!xxx.test.com!xx.xx.xx.xx!4!10 ;连续解析域名发生4次错误，则发出警告通知；连续解析域名发生10次错误，则发出严重错误通知；
+<span style="color:#f92672">}</span>
+define service<span style="color:#f92672">{</span>
+        use                             local-service         ; Name of service template to use
+        host_name                       server1
+        service_description             HTTP
+        check_command                   check_custom_http!xxx.abc.com!/somepath/path1  ;注意这里的参数要以!分隔
+<span style="color:#f92672">}</span>
+define service<span style="color:#f92672">{</span>
+        use                             local-service         ; Name of service template to use
+        host_name                       server1
+        service_description             SSH
+        check_command                   check_ssh
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">#配置监控出现问题时要通知的联系人</span>
+vim /usr/local/nagios/etc/objects/contacts.cfg
+
+define contact<span style="color:#f92672">{</span>
+        contact_name                    user1                ; Short name of user
+        use                             generic-contact         ; Inherit default values from generic-contact template <span style="color:#f92672">(</span>defined above<span style="color:#f92672">)</span>
+        alias                           user1                ; Full name of user
+
+        email                           user1@abc.com  ; &lt;&lt;***** CHANGE THIS TO YOUR EMAIL ADDRESS ******
+        <span style="color:#f92672">}</span>
+
+define contact<span style="color:#f92672">{</span>
+        contact_name                    user2                ; Short name of user
+        use                             generic-contact         ; Inherit default values from generic-contact template <span style="color:#f92672">(</span>defined above<span style="color:#f92672">)</span>
+        alias                           user2                ; Full name of user
+
+        email                           user2@abc.com  ; &lt;&lt;***** CHANGE THIS TO YOUR EMAIL ADDRESS ******
+        <span style="color:#f92672">}</span>
+
+ define contactgroup<span style="color:#f92672">{</span>
+        contactgroup_name       admins
+        alias                   Nagios Administrators
+        members                 user1,user2
+        <span style="color:#f92672">}</span>
+</code></pre></div><p>重启nagios</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/etc/init.d/nagios restart
+</code></pre></div><p>刚才发现nagios监控到服务器异常也没有发邮件通知，查了一下，还需要配置mail命令可发送邮件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum install mail
+vim /etc/mail.rc
+...
+set from<span style="color:#f92672">=</span>abc-noreply@abc.com
+set smtp<span style="color:#f92672">=</span>smtp.abc.com
+set smtp-auth-user<span style="color:#f92672">=</span>abc-noreply@abc.com
+set smtp-auth-password<span style="color:#f92672">=</span>somepwd
+set smtp-auth<span style="color:#f92672">=</span>login
+...
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2014-06-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nagios/">nagios</a>
+          
+          <a href="/tags/%E7%9B%91%E6%8E%A7/">监控</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2014/06/atom-shell%E5%B0%8F%E4%BE%8B%E5%AD%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">atom-shell小例子</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2014/05/%E5%88%9D%E8%AF%86grunt/">
+            <span class="next-text nav-default">初识grunt</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>工作任务项杂记_201904 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="工作任务项杂记_201904" />
+<meta property="og:description" content="最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/" />
+<meta property="article:published_time" content="2019-05-04T00:41:00+08:00" />
+<meta property="article:modified_time" content="2019-05-04T00:41:00+08:00" />
+<meta itemprop="name" content="工作任务项杂记_201904">
+<meta itemprop="description" content="最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo">
+<meta itemprop="datePublished" content="2019-05-04T00:41:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-04T00:41:00&#43;08:00" />
+<meta itemprop="wordCount" content="3185">
+
+
+
+<meta itemprop="keywords" content="spring boot,redis,rabbitmq,docker,dns,bash,swagger," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="工作任务项杂记_201904"/>
+<meta name="twitter:description" content="最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">工作任务项杂记_201904</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E4%BD%9C%E6%9D%82%E8%AE%B0/"> 工作杂记 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3185 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#spring-bootredis">spring boot应用中使用redis缓存</a></li>
+    <li><a href="#spring-bootrabbitmq">spring boot应用中使用rabbitmq</a></li>
+    <li><a href="#spring-bootdocker">spring boot应用打包成docker镜像</a></li>
+    <li><a href="#centos7dns">centos7下手动设置DNS服务器</a></li>
+    <li><a href="#bash">专业的bash脚本</a></li>
+    <li><a href="#swagger">swagger文档的妙用</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。</p>
+<h2 id="spring-bootredis">spring boot应用中使用redis缓存</h2>
+<p>如子标题，有需求要在spring boot应用中使用redis缓存，这个还是比较简单的，如下：</p>
+<p><code>添加maven依赖</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>spring-boot-starter-redis<span style="color:#f92672">&lt;/artifactId&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+</code></pre></div><p><code>添加配置</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">spring:
+  redis:
+    <span style="color:#75715e"># Redis服务器连接密码（默认为空）</span>
+    password: 
+    <span style="color:#75715e"># Redis数据库索引（默认为0）</span>
+    database: <span style="color:#ae81ff">0</span>
+    <span style="color:#75715e"># Redis服务器连接端口</span>
+    port: <span style="color:#ae81ff">6379</span>
+    pool:
+      <span style="color:#75715e"># 连接池中的最大空闲连接</span>
+      max-idle: <span style="color:#ae81ff">8</span>
+      <span style="color:#75715e"># 连接池中的最小空闲连接</span>
+      min-idle: <span style="color:#ae81ff">0</span>
+      <span style="color:#75715e"># 连接池最大连接数（使用负值表示没有限制）</span>
+      max-active: <span style="color:#ae81ff">8</span>
+      <span style="color:#75715e"># 连接池最大阻塞等待时间（使用负值表示没有限制）</span>
+      max-wait: -<span style="color:#ae81ff">1</span>
+    <span style="color:#75715e"># Redis服务器地址</span>
+    host: localhost
+    <span style="color:#75715e"># 连接超时时间（毫秒）</span>
+    timeout: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>然后就可以使用了<code>StringRedisTemplate</code>等Bean了</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#a6e22e">@Autowired</span>
+	<span style="color:#66d9ef">private</span> StringRedisTemplate stringRedisTemplate<span style="color:#f92672">;</span>
+
+	<span style="color:#a6e22e">@Test</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">test</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+		<span style="color:#75715e">// 保存字符串
+</span><span style="color:#75715e"></span>		stringRedisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;aaa&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;111&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertEquals</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;111&#34;</span><span style="color:#f92672">,</span> stringRedisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;aaa&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>上面的代码通过自动配置的<code>StringRedisTemplate</code>对象进行Redis的读写操作，该对象从命名中就可注意到支持的是String类型。<code>StringRedisTemplate</code>就相当于<code>RedisTemplate&lt;String, String&gt;</code>的实现。除了String类型，实战中我们还经常会在Redis中存储对象，这时可以自己实现<code>RedisSerializer&lt;T&gt;</code>接口来对传入对象进行序列化和反序列化，进而将该对象写入Redis缓存。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">User</span> <span style="color:#66d9ef">implements</span> Serializable <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> serialVersionUID <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1L<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> String username<span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RedisObjectSerializer</span> <span style="color:#66d9ef">implements</span> RedisSerializer<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> Converter<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">&gt;</span> serializer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SerializingConverter<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> Converter<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> deserializer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DeserializingConverter<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> EMPTY_ARRAY <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>0<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+  
+  <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">deserialize</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> bytes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isEmpty<span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> deserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> SerializationException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Cannot deserialize&#34;</span><span style="color:#f92672">,</span> ex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">serialize</span><span style="color:#f92672">(</span>Object object<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>object <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> EMPTY_ARRAY<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> serializer<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>object<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ex<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> EMPTY_ARRAY<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> data<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>data <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> data<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#a6e22e">@Configuration</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RedisConfig</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> RedisTemplate<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">userRedisTemplate</span><span style="color:#f92672">(</span>RedisConnectionFactory factory<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        RedisTemplate<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> User<span style="color:#f92672">&gt;</span> template <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> RedisTemplate<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> User<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        template<span style="color:#f92672">.</span><span style="color:#a6e22e">setConnectionFactory</span><span style="color:#f92672">(</span>factory<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        template<span style="color:#f92672">.</span><span style="color:#a6e22e">setKeySerializer</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> StringRedisSerializer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        template<span style="color:#f92672">.</span><span style="color:#a6e22e">setValueSerializer</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RedisObjectSerializer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> template<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Autowired</span>
+	<span style="color:#66d9ef">private</span> RedisTemplate<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> User<span style="color:#f92672">&gt;</span> redisTemplate<span style="color:#f92672">;</span>
+
+	<span style="color:#a6e22e">@Test</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">test</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+		<span style="color:#75715e">// 保存对象
+</span><span style="color:#75715e"></span>		User user <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;超人&#34;</span><span style="color:#f92672">,</span> 20<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>user<span style="color:#f92672">.</span><span style="color:#a6e22e">getUsername</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> user<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		user <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;蝙蝠侠&#34;</span><span style="color:#f92672">,</span> 30<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>user<span style="color:#f92672">.</span><span style="color:#a6e22e">getUsername</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> user<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		user <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;蜘蛛侠&#34;</span><span style="color:#f92672">,</span> 40<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>user<span style="color:#f92672">.</span><span style="color:#a6e22e">getUsername</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> user<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertEquals</span><span style="color:#f92672">(</span>20<span style="color:#f92672">,</span> redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;超人&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getAge</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertEquals</span><span style="color:#f92672">(</span>30<span style="color:#f92672">,</span> redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;蝙蝠侠&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getAge</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+		Assert<span style="color:#f92672">.</span><span style="color:#a6e22e">assertEquals</span><span style="color:#f92672">(</span>40<span style="color:#f92672">,</span> redisTemplate<span style="color:#f92672">.</span><span style="color:#a6e22e">opsForValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;蜘蛛侠&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getAge</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">longValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+ <span style="color:#f92672">}</span>
+</code></pre></div><p><code>RedisTemplate</code>接口的方法很多，基本上涵盖了Redis了绝大部分操作，使用时参考<a href="https://docs.spring.io/spring-data/redis/docs/current/api/org/springframework/data/redis/core/RedisTemplate.html">其API文档</a>就可以了。</p>
+<h2 id="spring-bootrabbitmq">spring boot应用中使用rabbitmq</h2>
+<p>如子标题，有需求要在spring boot应用中使用redis缓存，这个还是比较简单的，如下：</p>
+<p><code>添加maven依赖</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+        <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>spring-boot-starter-amqp<span style="color:#f92672">&lt;/artifactId&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+</code></pre></div><p><code>添加配置项</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">spring:
+  rabbitmq:
+    password: <span style="color:#ae81ff">123456</span>
+    port: <span style="color:#ae81ff">5672</span>
+    host: localhost
+    username: spring
+</code></pre></div><p>配置队列、交换器、路由等高级信息，一般会用到<code>org.springframework.amqp.core.Queue</code>、<code>org.springframework.amqp.core.QueueBuilder</code>等类、<code>org.springframework.amqp.core.Exchange</code>的实现类，使用时参考<a href="https://docs.spring.io/spring-amqp/api/index.html?org/springframework/amqp/">其API文档</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Configuration</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RabbitConfig</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Bean</span>
+    <span style="color:#66d9ef">public</span> Queue <span style="color:#a6e22e">helloQueue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Queue<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>使用<code>AmqpTemplate</code>发送MQ消息，基本使用<code>AmqpTemplate</code>就可以进行MQ消息的绝大部分操作，使用时参考<a href="https://docs.spring.io/spring-amqp/api/org/springframework/amqp/core/AmqpTemplate.html">其API文档</a>就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#a6e22e">@Autowired</span>
+    <span style="color:#66d9ef">private</span> AmqpTemplate rabbitTemplate<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        String context <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello &#34;</span> <span style="color:#f92672">+</span> <span style="color:#66d9ef">new</span> Date<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Sender : &#34;</span> <span style="color:#f92672">+</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">rabbitTemplate</span><span style="color:#f92672">.</span><span style="color:#a6e22e">convertAndSend</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello&#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>使用<code>RabbitListener</code>配合<code>RabbitHandler</code>接收MQ消息，一般会用到<code>org.springframework.amqp.rabbit.annotation.RabbitListener</code>、<code>org.springframework.amqp.rabbit.annotation.RabbitHandler</code>、<code>org.springframework.amqp.rabbit.annotation.Queue</code>、<code>org.springframework.amqp.rabbit.annotation.Exchange</code>等类，使用时参考<a href="https://docs.spring.io/spring-amqp/api/index.html?org/springframework/amqp/">其API文档</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Component</span>
+<span style="color:#a6e22e">@RabbitListener</span><span style="color:#f92672">(</span>queues <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Receiver</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@RabbitHandler</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">process</span><span style="color:#f92672">(</span>String hello<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Receiver : &#34;</span> <span style="color:#f92672">+</span> hello<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="spring-bootdocker">spring boot应用打包成docker镜像</h2>
+<p>spring boot应用的构建工具已经很完善了，要完成子标题所述的任务已经有很成熟的maven plugin - <a href="https://github.com/spotify/docker-maven-plugin#specify-build-info-in-the-pom">docker-maven-plugin</a>。</p>
+<p><code>简单使用方法</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;build</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;plugins</span><span style="color:#f92672">&gt;</span>
+    ...
+    <span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>com.spotify<span style="color:#f92672">&lt;/groupId&gt;</span>
+      <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>docker-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+      <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>VERSION GOES HERE<span style="color:#f92672">&lt;/version&gt;</span>
+      <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;imageName</span><span style="color:#f92672">&gt;</span>example<span style="color:#f92672">&lt;/imageName&gt;</span>
+        <span style="color:#f92672">&lt;baseImage</span><span style="color:#f92672">&gt;</span>java<span style="color:#f92672">&lt;/baseImage&gt;</span>
+        <span style="color:#f92672">&lt;entryPoint</span><span style="color:#f92672">&gt;</span>[&#34;java&#34;, &#34;-jar&#34;, &#34;/${project.build.finalName}.jar&#34;]<span style="color:#f92672">&lt;/entryPoint&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> copy the service&#39;s jar file from target into the root directory of the image </span><span style="color:#75715e">--&gt;</span> 
+        <span style="color:#f92672">&lt;resources</span><span style="color:#f92672">&gt;</span>
+           <span style="color:#f92672">&lt;resource</span><span style="color:#f92672">&gt;</span>
+             <span style="color:#f92672">&lt;targetPath</span><span style="color:#f92672">&gt;</span>/<span style="color:#f92672">&lt;/targetPath&gt;</span>
+             <span style="color:#f92672">&lt;directory</span><span style="color:#f92672">&gt;</span>${project.build.directory}<span style="color:#f92672">&lt;/directory&gt;</span>
+             <span style="color:#f92672">&lt;include</span><span style="color:#f92672">&gt;</span>${project.build.finalName}.jar<span style="color:#f92672">&lt;/include&gt;</span>
+           <span style="color:#f92672">&lt;/resource&gt;</span>
+        <span style="color:#f92672">&lt;/resources&gt;</span>
+      <span style="color:#f92672">&lt;/configuration&gt;</span>
+    <span style="color:#f92672">&lt;/plugin&gt;</span>
+    ...
+  <span style="color:#f92672">&lt;/plugins&gt;</span>
+<span style="color:#f92672">&lt;/build&gt;</span>
+</code></pre></div><p>如果要使用自定义的Dockerfile，则如下配置，在<code>dockerDirectory</code>指定的目录下放入Dockerfile文件就可以了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;build</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;plugins</span><span style="color:#f92672">&gt;</span>
+    ...
+    <span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>com.spotify<span style="color:#f92672">&lt;/groupId&gt;</span>
+      <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>docker-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+      <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>VERSION GOES HERE<span style="color:#f92672">&lt;/version&gt;</span>
+      <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;imageName</span><span style="color:#f92672">&gt;</span>example<span style="color:#f92672">&lt;/imageName&gt;</span>
+        <span style="color:#f92672">&lt;dockerDirectory</span><span style="color:#f92672">&gt;</span>docker<span style="color:#f92672">&lt;/dockerDirectory&gt;</span>
+        <span style="color:#f92672">&lt;resources</span><span style="color:#f92672">&gt;</span>
+           <span style="color:#f92672">&lt;resource</span><span style="color:#f92672">&gt;</span>
+             <span style="color:#f92672">&lt;targetPath</span><span style="color:#f92672">&gt;</span>/<span style="color:#f92672">&lt;/targetPath&gt;</span>
+             <span style="color:#f92672">&lt;directory</span><span style="color:#f92672">&gt;</span>${project.build.directory}<span style="color:#f92672">&lt;/directory&gt;</span>
+             <span style="color:#f92672">&lt;include</span><span style="color:#f92672">&gt;</span>${project.build.finalName}.jar<span style="color:#f92672">&lt;/include&gt;</span>
+           <span style="color:#f92672">&lt;/resource&gt;</span>
+        <span style="color:#f92672">&lt;/resources&gt;</span>
+      <span style="color:#f92672">&lt;/configuration&gt;</span>
+    <span style="color:#f92672">&lt;/plugin&gt;</span>
+    ...
+  <span style="color:#f92672">&lt;/plugins&gt;</span>
+<span style="color:#f92672">&lt;/build&gt;</span>
+</code></pre></div><p>其它还可以在package时自动打docker镜像，在deploy时自动将docker镜像推入registry，这些高级功能参考<a href="https://github.com/spotify/docker-maven-plugin">官方文档</a>。</p>
+<h2 id="centos7dns">centos7下手动设置DNS服务器</h2>
+<p>centos7下网络默认是由NetworkManager管理的，如果直接修改<code>/etc/resolv.conf</code>设置的DNS服务器很容易被冲掉，因此找到了一个办法解决这个问题。</p>
+<ul>
+<li>修改 /etc/NetworkManager/NetworkManager.conf 文件，在main部分添加 “dns=none” 选项：</li>
+</ul>
+<pre><code>[main]
+plugins=ifcfg-rh
+dns=none
+</code></pre><ul>
+<li>NetworkManager重新装载上面修改的配置</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># systemctl restart NetworkManager.service</span>
+</code></pre></div><ul>
+<li>手工修改 /etc/resolv.conf</li>
+</ul>
+<pre><code>nameserver 114.114.114.114
+nameserver 8.8.8.8
+</code></pre><h2 id="bash">专业的bash脚本</h2>
+<p>最近看了istio-sidecar相关的bash脚本，发现一个专业的bash脚本最好还是不要像写流水帐一样书写脚本逻辑，是很有必要加入必要的注释、输入参数解析、脚本使用说明、定义主函数及各分支函数。</p>
+<ul>
+<li>
+<p>在脚本开关需要用英文书写必要的注释详细说明脚本的用途，这一点参考一些专业的脚本都可以看到。</p>
+</li>
+<li>
+<p>建议使用Linux风格的输入参数风格解析，可以使用bash的内置命令<code>getopts</code>和外部命令<code>getopt</code>，这两种方法的使用方法可参考<a href="http://www.361way.com/shell-shift-getopts/4973.html">shell脚本之shift和getopts</a>、<a href="http://www.361way.com/shell-getopt/4981.html">shell中的getopt与getopts</a>。</p>
+</li>
+<li>
+<p>脚本使用说明可使用<code>usage</code>函数完成，如下:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">usage<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span> 
+  echo <span style="color:#e6db74">&#34;bla bla bla ...&#34;</span> 
+<span style="color:#f92672">}</span> 
+  
+<span style="color:#75715e"># 解析参数时，当发现-h或--help参数，立即执行usage，输出脚本使用说明</span>
+-h|--help<span style="color:#f92672">)</span>
+  usage
+  ;;
+</code></pre></div></li>
+<li>
+<p>为了避免bash脚本成为流水帐，建议整个脚本按以下函数组织</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 解析参数</span>
+parse_args<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ...
+<span style="color:#f92672">}</span>
+  
+<span style="color:#75715e"># 校验参数</span>
+validate_args<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ...
+<span style="color:#f92672">}</span>
+  
+<span style="color:#75715e"># 脚本所做工作第一步</span>
+do_work_step1<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ...
+<span style="color:#f92672">}</span>
+  
+<span style="color:#75715e"># 脚本所做工作第二步</span>
+do_work_step2<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ...
+<span style="color:#f92672">}</span>
+  
+<span style="color:#75715e"># 脚本所做工作第三步</span>
+do_work_step3<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  ...
+<span style="color:#f92672">}</span>
+  
+main<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  parse_args
+  validate_args
+  do_work_step1
+  do_work_step2
+  do_work_step3
+  ...
+<span style="color:#f92672">}</span>
+  
+<span style="color:#75715e"># 脚本入口函数</span>
+main
+</code></pre></div><h2 id="swagger">swagger文档的妙用</h2>
+<p>很多后端的项目都以swagger文档的方式向外暴露API文档，最近在工作确实体会到这种方式的好处。</p>
+<ul>
+<li>
+<p>前端拿到swagger API文档后，可使用<a href="https://editor.swagger.io/">swagger-editor</a>轻松生成nodejs-server版的server stub，在此基础上即可开发简易的mock server了，这样前端的开发即可不再依赖后端了。</p>
+</li>
+<li>
+<p>后端可使用<a href="https://editor.swagger.io/">swagger-editor</a>生成对应语言的server stub，生成的代码很有参考价值，可直接在此基础上改造或将部分代码拷贝到已有后端项目中。</p>
+</li>
+<li>
+<p>如果是微服务架构的应用，可使用<a href="https://editor.swagger.io/">swagger-editor</a>生成相应语言的客户端代码，这样服务间的调用直接用客户端代码组合形成的SDK即可，不再需要手动发送HTTP请求及解析HTTP响应了。</p>
+</li>
+<li>
+<p>微服务架构的应用，每个微服务都以swagger方式暴露API，这时可以将这些API文档聚合起来，请团队中的成员在统一的文档中心查看各微服务的文档，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run -d --name swagger-docs -p 8888:8080 -e <span style="color:#e6db74">&#39;URLS=[{ url: &#34;http://petstore.swagger.io/v2/swagger.json&#34;, name: &#34;Petstore&#34; }, { url: &#34;http://generator.swagger.io/api/swagger.json&#34;, name: &#34;Generator&#34; }]&#39;</span> swaggerapi/swagger-ui:latest
+</code></pre></div><p>这里使用了swagger-ui的一个<a href="https://github.com/swagger-api/swagger-ui/pull/3261">urls选项</a>，这个选项在2017年初就已经存在了，不知道为什么网上讲swagger API文档聚合的方案基本都是让改造swagger-ui的代码，汗！</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="http://blog.didispace.com/springbootredis/">http://blog.didispace.com/springbootredis/</a></li>
+<li><a href="http://blog.didispace.com/spring-boot-rabbitmq/">http://blog.didispace.com/spring-boot-rabbitmq/</a></li>
+<li><a href="https://github.com/spotify/docker-maven-plugin">https://github.com/spotify/docker-maven-plugin</a></li>
+<li><a href="http://www.pubyun.com/blog/announce/centos-7-%E4%B8%8B%EF%BC%8C%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEdns%E6%9C%8D%E5%8A%A1%E5%99%A8/">http://www.pubyun.com/blog/announce/centos-7-%E4%B8%8B%EF%BC%8C%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEdns%E6%9C%8D%E5%8A%A1%E5%99%A8/</a></li>
+<li><a href="http://www.361way.com/shell-shift-getopts/4973.html">http://www.361way.com/shell-shift-getopts/4973.html</a></li>
+<li><a href="http://www.361way.com/shell-getopt/4981.html">http://www.361way.com/shell-getopt/4981.html</a></li>
+<li><a href="https://github.com/swagger-api/swagger-ui/pull/3261">https://github.com/swagger-api/swagger-ui/pull/3261</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-05-04</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/spring-boot/">spring boot</a>
+          
+          <a href="/tags/redis/">redis</a>
+          
+          <a href="/tags/rabbitmq/">rabbitmq</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/dns/">dns</a>
+          
+          <a href="/tags/bash/">bash</a>
+          
+          <a href="/tags/swagger/">swagger</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">编写Kubernetes Operator</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/">
+            <span class="next-text nav-default">巧妙调试docker容器</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

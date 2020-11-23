@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>python多进程实战 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="python多进程实战" />
+<meta property="og:description" content="最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/" />
+<meta property="article:published_time" content="2020-09-27T18:12:00+08:00" />
+<meta property="article:modified_time" content="2020-09-27T18:12:00+08:00" />
+<meta itemprop="name" content="python多进程实战">
+<meta itemprop="description" content="最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用">
+<meta itemprop="datePublished" content="2020-09-27T18:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-09-27T18:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="3816">
+
+
+
+<meta itemprop="keywords" content="python,multiprocessing," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="python多进程实战"/>
+<meta name="twitter:description" content="最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">python多进程实战</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-09-27 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3816 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#multiprocessing">multiprocessing启动子进程</a></li>
+    <li><a href="#heading">多进程间交换对象</a></li>
+    <li><a href="#heading-1">多进程间的同步</a></li>
+    <li><a href="#heading-2">多进程间共享状态</a>
+      <ul>
+        <li><a href="#shared-memory">Shared memory</a></li>
+        <li><a href="#server-process">Server process</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">进程池的实现</a></li>
+    <li><a href="#heading-4">实践中遇到的问题</a></li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近花了很多精力写一个业务算法，编写这个算法涉及很多业务逻辑，这里不表。算法涉及的业务逻辑都书写完毕后，发现python程序并不能很好地利用硬件的多核性能。由于这是一个cpu密集的的程序，很自然要用上python的<a href="https://docs.python.org/3/library/multiprocessing.html">multiprocessing</a>模块，在用这个python模块的时候发现一些有意思的东东。</p>
+<h2 id="multiprocessing">multiprocessing启动子进程</h2>
+<p>python3中支持三种方式启动多进程：<code>spawn</code>、<code>fork</code>、<code>forkserver</code>。</p>
+<blockquote>
+<p><em>spawn</em></p>
+<p>The parent process starts a fresh python interpreter process. The child process will only inherit those resources necessary to run the process objects <a href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.run"><code>run()</code></a> method. In particular, unnecessary file descriptors and handles from the parent process will not be inherited. Starting a process using this method is rather slow compared to using <em>fork</em> or <em>forkserver</em>.</p>
+<p>Available on Unix and Windows. The default on Windows and macOS.</p>
+<p><em>fork</em></p>
+<p>The parent process uses <a href="https://docs.python.org/3/library/os.html#os.fork"><code>os.fork()</code></a> to fork the Python interpreter. The child process, when it begins, is effectively identical to the parent process. All resources of the parent are inherited by the child process. Note that safely forking a multithreaded process is problematic.</p>
+<p>Available on Unix only. The default on Unix.</p>
+<p><em>forkserver</em></p>
+<p>When the program starts and selects the <em>forkserver</em> start method, a server process is started. From then on, whenever a new process is needed, the parent process connects to the server and requests that it fork a new process. The fork server process is single threaded so it is safe for it to use <a href="https://docs.python.org/3/library/os.html#os.fork"><code>os.fork()</code></a>. No unnecessary resources are inherited.</p>
+<p>Available on Unix platforms which support passing file descriptors over Unix pipes.</p>
+</blockquote>
+<p>这3种方式启动子进程的方式上面说得比较清楚了。</p>
+<p>总结下来就是：</p>
+<ol>
+<li>spawn是启动一个全新的python解释器进程，这个进程不继承父进程的任何不必要的文件描述符或其它资源。</li>
+<li>fork是使用<code>os.fork()</code>系统调用启动一个python解释器进程，因为是fork调用，这个启动的进程可以继承父进程中的资源。fork出的子进程虽然与父进程是不同的内存空间，但在linux下它是的copy-on-write方式实现的，因此即使创建了很多子进程，实际上看子进程并不会消耗多少内存。看起来fork方式创建子进程很好，但实际上还是存在一些问题的。如果父进程是一个多线程程序，用fork系统调用是很危险的，很容易造成死锁，详见<a href="https://pythonspeed.com/articles/python-multiprocessing/">这里</a>。</li>
+<li>但fork系统调用又确实是启动子进程最高效的方法，于是官方又提供<code>forkserver</code>。当父进程需要启动子进程时，实际上是向一个<code>Fork Server</code>进程发指令，由它调用<code>os.fork()</code>产生子进程的。这个<code>Fork Server</code>进程是一个单线程进程，因此调用fork不会产生风险。<code>forkserver</code>的实现方式也挺有意思的，代码不长，源码在这里，<a href="https://github.com/python/cpython/blob/master/Lib/multiprocessing/forkserver.py">multiprocessing/forkserver.py</a>。</li>
+</ol>
+<p>不同的操作系统下默认的子进程启动方式是不一样的，目前有两种方式改变使用的启动子进程方式。</p>
+<ol>
+<li>
+<p>通过<code>multiprocessing.set_start_method</code>方法全局改变。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> multiprocessing <span style="color:#f92672">as</span> mp
+   
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    mp<span style="color:#f92672">.</span>set_start_method(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">spawn</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div></li>
+<li>
+<p>通过<code>multiprocessing.get_context</code>方法得到一个上下文对象，通过此上下文对象创建的多进程相关对象将使用特定的子进程启动方式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> multiprocessing <span style="color:#f92672">as</span> mp
+   
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">foo</span>(q):
+    q<span style="color:#f92672">.</span>put(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>)
+   
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    ctx <span style="color:#f92672">=</span> mp<span style="color:#f92672">.</span>get_context(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">spawn</span><span style="color:#e6db74">&#39;</span>)
+    q <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span>Queue()
+    p <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span>Process(target<span style="color:#f92672">=</span>foo, args<span style="color:#f92672">=</span>(q,))
+</code></pre></div></li>
+</ol>
+<h2 id="heading">多进程间交换对象</h2>
+<p><code>multiprocessing</code>库提供了两种方式交换对象：<code>Pipe</code>、<code>Queue</code>。</p>
+<p>这里其实都是用进程间最原始的通信方式<code>Pipe</code>。<code>Pipe</code>的使用方法如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Process, Pipe
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">f</span>(conn):
+    conn<span style="color:#f92672">.</span>send([<span style="color:#ae81ff">42</span>, None, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>])
+    conn<span style="color:#f92672">.</span>close()
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    parent_conn, child_conn <span style="color:#f92672">=</span> Pipe()
+    p <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>f, args<span style="color:#f92672">=</span>(child_conn,))
+    p<span style="color:#f92672">.</span>start()
+    <span style="color:#66d9ef">print</span>(parent_conn<span style="color:#f92672">.</span>recv())   <span style="color:#75715e"># prints &#34;[42, None, &#39;hello&#39;]&#34;</span>
+    p<span style="color:#f92672">.</span>join()
+</code></pre></div><p>调用<code>Pipe()</code>方法会返回一对connection对象，这两个connection对象一个用于读，一个用于写。</p>
+<p><code>Queue</code>的实现其实底层还是使用了<code>Pipe</code>、<code>Lock</code>和<code>Thread</code>。<code>Queue</code>的实现逻辑也挺有意思的，组合使用了<code>Pipe</code>、<code>Lock</code>和<code>Thread</code>，在首次向队列中写入一个对象时，会启动一个线程持续地将写进buffer里的对象刷进<code>Pipe</code>，当然为了实现队列的相关特性，也组合使用了基于操作系统信号量的<code>Lock</code>，<code>Queue</code>的代码也不多，源码在这里<a href="multiprocessing/queues.py">multiprocessing/queues.py</a>。</p>
+<h2 id="heading-1">多进程间的同步</h2>
+<p><code>multiprocessing</code>库提供了一系列同步原语的功能，API接口与<code>threading</code>库提供的是一致的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Process, Lock
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">f</span>(l, i):
+    l<span style="color:#f92672">.</span>acquire()
+    <span style="color:#66d9ef">try</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello world</span><span style="color:#e6db74">&#39;</span>, i)
+    <span style="color:#66d9ef">finally</span>:
+        l<span style="color:#f92672">.</span>release()
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    lock <span style="color:#f92672">=</span> Lock()
+
+    <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">10</span>):
+        Process(target<span style="color:#f92672">=</span>f, args<span style="color:#f92672">=</span>(lock, num))<span style="color:#f92672">.</span>start()
+</code></pre></div><p>当然虽然接口一致，但其实实现还是不一致的，这里主要是使用了操作系统信号量。实现这个功能的代码在这里<a href="https://github.com/python/cpython/blob/master/Lib/multiprocessing/synchronize.py">multiprocessing/synchronize.py</a>，可以看到这个py文件里依赖了<code>_multiprocessing</code>这个模块，这是一个c语言实现的模块，源码在<a href="https://github.com/python/cpython/tree/master/Modules/_multiprocessing">这里</a>。</p>
+<h2 id="heading-2">多进程间共享状态</h2>
+<p><code>multiprocessing</code>库提供了两种方式共享状态：<code>Shared memory</code>、<code>Server process</code>。</p>
+<h3 id="shared-memory">Shared memory</h3>
+<p><code>Shared memory</code>很好理解，就是向操作系统申请一块共享内存，然后多个进程可以操作这块共享内存了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Process, Value, Array
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">f</span>(n, a):
+    n<span style="color:#f92672">.</span>value <span style="color:#f92672">=</span> <span style="color:#ae81ff">3.1415927</span>
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(a)):
+        a[i] <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>a[i]
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    num <span style="color:#f92672">=</span> Value(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">d</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">0.0</span>)
+    arr <span style="color:#f92672">=</span> Array(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">i</span><span style="color:#e6db74">&#39;</span>, range(<span style="color:#ae81ff">10</span>))
+
+    p <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>f, args<span style="color:#f92672">=</span>(num, arr))
+    p<span style="color:#f92672">.</span>start()
+    p<span style="color:#f92672">.</span>join()
+
+    <span style="color:#66d9ef">print</span>(num<span style="color:#f92672">.</span>value)
+    <span style="color:#66d9ef">print</span>(arr[:])
+</code></pre></div><p>这里注意操作共享内存时，操作的是很基础的<code>Value</code>和<code>Array</code>，这里面存放的是ctype类型的基础数据，因而没法存放python里的正常对象。如果一定要使用这个共享，可以考虑用<code>pickle</code>库将python里的正常对象序列化为byte数组，再放进<code>Value</code>。使用时再读出来，进行反序列化回来。当然要承担序列化开销及两个进程存放两一份数据的内存开销。</p>
+<h3 id="server-process">Server process</h3>
+<p><code>Server process</code>有点类似于之前的<code>Fork Server</code>，调用<code>manager = multiprocessing.Manager()</code>方法会启动一个<code>Server process</code>进程，接着调用<code>manager.list()</code>或<code>manager.Queue()</code>，会在这个进程里创建实际的普通对象，并返回一个<code>Proxy</code>对象，这个<code>Proxy</code>对象里会维持着对<code>Server process</code>进程的连接（默认是Socket连接，也可以使用Pipe连接）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#75715e"># 启动Server process进程</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">Manager</span>(self):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">Returns a manager associated with a running server process</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        The managers methods such as `Lock()`, `Condition()` and `Queue()`</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        can be used to create shared objects.</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#f92672">from</span> .managers <span style="color:#f92672">import</span> SyncManager
+        m <span style="color:#f92672">=</span> SyncManager(ctx<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>get_context())
+        m<span style="color:#f92672">.</span>start()
+        <span style="color:#66d9ef">return</span> m
+    
+    <span style="color:#75715e"># 注册可通过manager获得的共享对象类型</span>
+    SyncManager<span style="color:#f92672">.</span>register(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">list</span><span style="color:#e6db74">&#39;</span>, list, ListProxy)
+    SyncManager<span style="color:#f92672">.</span>register(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Queue</span><span style="color:#e6db74">&#39;</span>, queue<span style="color:#f92672">.</span>Queue)
+
+    <span style="color:#75715e"># 注册可通过manager获得的共享对象类型的实现方法</span>
+    <span style="color:#a6e22e">@classmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">register</span>(cls, typeid, callable<span style="color:#f92672">=</span>None, proxytype<span style="color:#f92672">=</span>None, exposed<span style="color:#f92672">=</span>None,
+                 method_to_typeid<span style="color:#f92672">=</span>None, create_method<span style="color:#f92672">=</span>True):
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        Register a typeid with the manager type</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">        </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_registry</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> cls<span style="color:#f92672">.</span>__dict__:
+            cls<span style="color:#f92672">.</span>_registry <span style="color:#f92672">=</span> cls<span style="color:#f92672">.</span>_registry<span style="color:#f92672">.</span>copy()
+
+        <span style="color:#66d9ef">if</span> proxytype <span style="color:#f92672">is</span> None:
+            proxytype <span style="color:#f92672">=</span> AutoProxy
+
+        exposed <span style="color:#f92672">=</span> exposed <span style="color:#f92672">or</span> getattr(proxytype, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_exposed_</span><span style="color:#e6db74">&#39;</span>, None)
+
+        method_to_typeid <span style="color:#f92672">=</span> method_to_typeid <span style="color:#f92672">or</span> \
+                           getattr(proxytype, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_method_to_typeid_</span><span style="color:#e6db74">&#39;</span>, None)
+
+        <span style="color:#66d9ef">if</span> method_to_typeid:
+            <span style="color:#66d9ef">for</span> key, value <span style="color:#f92672">in</span> list(method_to_typeid<span style="color:#f92672">.</span>items()):
+                <span style="color:#66d9ef">assert</span> type(key) <span style="color:#f92672">is</span> str, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%r</span><span style="color:#e6db74"> is not a string</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> key
+                <span style="color:#66d9ef">assert</span> type(value) <span style="color:#f92672">is</span> str, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%r</span><span style="color:#e6db74"> is not a string</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> value
+
+        cls<span style="color:#f92672">.</span>_registry[typeid] <span style="color:#f92672">=</span> (
+            callable, exposed, method_to_typeid, proxytype
+            )
+
+        <span style="color:#66d9ef">if</span> create_method:
+            <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">temp</span>(self, <span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwds):
+                util<span style="color:#f92672">.</span>debug(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">requesting creation of a shared </span><span style="color:#e6db74">%r</span><span style="color:#e6db74"> object</span><span style="color:#e6db74">&#39;</span>, typeid)
+                token, exp <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_create(typeid, <span style="color:#f92672">*</span>args, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>kwds)
+                proxy <span style="color:#f92672">=</span> proxytype(
+                    token, self<span style="color:#f92672">.</span>_serializer, manager<span style="color:#f92672">=</span>self,
+                    authkey<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>_authkey, exposed<span style="color:#f92672">=</span>exp
+                    )
+                conn <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_Client(token<span style="color:#f92672">.</span>address, authkey<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>_authkey)
+                dispatch(conn, None, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">decref</span><span style="color:#e6db74">&#39;</span>, (token<span style="color:#f92672">.</span>id,))
+                <span style="color:#66d9ef">return</span> proxy <span style="color:#75715e"># 注意这里返回的是proxy对象</span>
+            temp<span style="color:#f92672">.</span>__name__ <span style="color:#f92672">=</span> typeid
+            setattr(cls, typeid, temp)
+</code></pre></div><p>接着在各进程中对这些proxy对象的操作即会通过上述连接操作到实际的对象。</p>
+<p>至此终于知道虽然<code>multiprocessing.Queue()</code>与<code>manager.Queue()</code>都返回<code>Queue</code>对象，但其实两者的底层实现逻辑很不一样。</p>
+<p><code>SyncManager</code>的实现代码在<a href="https://github.com/python/cpython/blob/master/Lib/multiprocessing/managers.py">这里</a>，仔细看这里有一些实现逻辑很巧妙。</p>
+<h2 id="heading-3">进程池的实现</h2>
+<p><code>multiprocessing</code>库还提供了一个进程池，具体做法很简单，就不赘述了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Pool, TimeoutError
+<span style="color:#f92672">import</span> time
+<span style="color:#f92672">import</span> os
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">f</span>(x):
+    <span style="color:#66d9ef">return</span> x<span style="color:#f92672">*</span>x
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    <span style="color:#75715e"># start 4 worker processes</span>
+    <span style="color:#66d9ef">with</span> Pool(processes<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">as</span> pool:
+
+        <span style="color:#75715e"># print &#34;[0, 1, 4,..., 81]&#34;</span>
+        <span style="color:#66d9ef">print</span>(pool<span style="color:#f92672">.</span>map(f, range(<span style="color:#ae81ff">10</span>)))
+
+        <span style="color:#75715e"># print same numbers in arbitrary order</span>
+        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> pool<span style="color:#f92672">.</span>imap_unordered(f, range(<span style="color:#ae81ff">10</span>)):
+            <span style="color:#66d9ef">print</span>(i)
+
+        <span style="color:#75715e"># evaluate &#34;f(20)&#34; asynchronously</span>
+        res <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span>apply_async(f, (<span style="color:#ae81ff">20</span>,))      <span style="color:#75715e"># runs in *only* one process</span>
+        <span style="color:#66d9ef">print</span>(res<span style="color:#f92672">.</span>get(timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))             <span style="color:#75715e"># prints &#34;400&#34;</span>
+
+        <span style="color:#75715e"># evaluate &#34;os.getpid()&#34; asynchronously</span>
+        res <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span>apply_async(os<span style="color:#f92672">.</span>getpid, ()) <span style="color:#75715e"># runs in *only* one process</span>
+        <span style="color:#66d9ef">print</span>(res<span style="color:#f92672">.</span>get(timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))             <span style="color:#75715e"># prints the PID of that process</span>
+
+        <span style="color:#75715e"># launching multiple evaluations asynchronously *may* use more processes</span>
+        multiple_results <span style="color:#f92672">=</span> [pool<span style="color:#f92672">.</span>apply_async(os<span style="color:#f92672">.</span>getpid, ()) <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">4</span>)]
+        <span style="color:#66d9ef">print</span>([res<span style="color:#f92672">.</span>get(timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">for</span> res <span style="color:#f92672">in</span> multiple_results])
+
+        <span style="color:#75715e"># make a single worker sleep for 10 secs</span>
+        res <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span>apply_async(time<span style="color:#f92672">.</span>sleep, (<span style="color:#ae81ff">10</span>,))
+        <span style="color:#66d9ef">try</span>:
+            <span style="color:#66d9ef">print</span>(res<span style="color:#f92672">.</span>get(timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))
+        <span style="color:#66d9ef">except</span> TimeoutError:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">We lacked patience and got a multiprocessing.TimeoutError</span><span style="color:#e6db74">&#34;</span>)
+
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">For the moment, the pool remains available for more work</span><span style="color:#e6db74">&#34;</span>)
+
+    <span style="color:#75715e"># exiting the &#39;with&#39;-block has stopped the pool</span>
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Now the pool is closed and no longer available</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><p>这里只说一下创建<code>multiprocessing.Pool</code>对象时，有几个参数有些作用：</p>
+<ol>
+<li>
+<p><code>initializer</code>及<code>initargs</code>，通过这两个参数可即将对在进程池中创建的进程进行部分初始化工作。</p>
+</li>
+<li>
+<p><code>maxtasksperchild</code>，可以通过这个参数设定进程池中每个进程最大处理的任务数，超过任务数后，会启动一个新的进程来代替该进程。为什么会有这个需求？</p>
+<blockquote>
+<p>Worker processes within a <code>Pool</code> typically live for the complete duration of the Pool’s work queue. A frequent pattern found in other systems (such as Apache, mod_wsgi, etc) to free resources held by workers is to allow a worker within a pool to complete only a set amount of work before being exiting, being cleaned up and a new process spawned to replace the old one. The <em>maxtasksperchild</em> argument to the <code>Pool</code> exposes this ability to the end user.</p>
+</blockquote>
+</li>
+</ol>
+<p>原来很多服务型程序都会实现这个模式，为的是能及时释放worker占用的资源，感觉还是worker进程有问题，存在资源泄漏吧，呵呵。</p>
+<h2 id="heading-4">实践中遇到的问题</h2>
+<p>最后说一个实践中遇到的问题：如果要在父子进程间交换大量的数据怎么办？下面给下探索出的实际决策路径：</p>
+<ol>
+<li>
+<p>传递过去的数据多个任务都共用，则使用Pool的<code>initializer</code>将数据传递过去，如果父进程刚好是个单线程进程，则用<code>fork</code>创建子进程方式就好了，这样即使创建了多个进程，实际占用的内存也并不多。（initializer传递数据，底层也是通过将数据pickle序列化，再通过Pipe传递到子进程的）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Pool
+   
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">init_pool</span>(the_list):
+    <span style="color:#66d9ef">global</span> some_list
+    some_list <span style="color:#f92672">=</span> the_list
+   
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">access_some_list</span>(index):
+    <span style="color:#66d9ef">return</span> some_list[index]
+   
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#34;</span>:
+    some_list <span style="color:#f92672">=</span> [<span style="color:#ae81ff">24</span>, <span style="color:#ae81ff">12</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">3</span>]
+    indexes <span style="color:#f92672">=</span> [<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>]
+    pool <span style="color:#f92672">=</span> Pool(processes<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, initializer<span style="color:#f92672">=</span>init_pool, initargs<span style="color:#f92672">=</span>(some_list,))
+    result <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span>imap_unordered(access_some_list, indexes)
+    <span style="color:#66d9ef">print</span>(list(result))
+</code></pre></div></li>
+<li>
+<p>如果对数据的操作不是很多，那么用<code>Server process</code>里的共享对象，但要注意尽量控制对数据的操作次数，能批量操作就尽量批量操作。</p>
+</li>
+<li>
+<p>如果传递过去的数据仅对该任务有效，则可以在提交任务时通过参数传递数据（底层是通过将数据pickle序列化，再通过Pipe传递到子进程的）。</p>
+</li>
+<li>
+<p>如果数据可以很方便地与普通ctype类型转换，用<code>Shared memory</code>也是个好办法。</p>
+</li>
+<li>
+<p>如果对数据是存在多生产多消费的场景，那就最好用<code>multiprocessing.Queue</code>了。</p>
+</li>
+</ol>
+<h2 id="heading-5">总结</h2>
+<p>python作为一个脚本语言，开发业务逻辑确实快，但由于存在全局解释锁，对于一些cpu密集的应用场景，使用CPU多核性能就成了一个挑战，官方提供了<code>multiprocessing</code>库算了部分解决了此类问题，但实际使用时还是有很多要注意的地方，如果用得不好很可能还产生其它问题。在这次实战过程中，基本上将<code>multiprocessing</code>库的源码都看了一遍，其中有不少精彩的点值得反复推敲和学习。</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://docs.python.org/3/library/multiprocessing.html">https://docs.python.org/3/library/multiprocessing.html</a></li>
+<li><a href="https://pythonspeed.com/articles/python-multiprocessing/">https://pythonspeed.com/articles/python-multiprocessing/</a></li>
+<li><a href="http://www.calvinneo.com/2017/04/18/multiprocessing%E6%A8%A1%E5%9D%97%E7%94%A8%E6%B3%95/">http://www.calvinneo.com/2017/04/18/multiprocessing%E6%A8%A1%E5%9D%97%E7%94%A8%E6%B3%95/</a></li>
+<li><a href="http://www.calvinneo.com/2019/11/23/multiprocessing-implement/">http://www.calvinneo.com/2019/11/23/multiprocessing-implement/</a></li>
+<li><a href="https://jeffpan.net/2017/12/13/multiprocessing-Pool-and-Queue-usage/">https://jeffpan.net/2017/12/13/multiprocessing-Pool-and-Queue-usage/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-09-27</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/multiprocessing/">multiprocessing</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/10/%E5%8A%A8%E6%89%8B%E5%86%99%E4%B8%AA%E7%8E%A9%E5%85%B7%E7%BC%96%E8%AF%91%E5%99%A8/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">动手写个玩具编译器</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/">
+            <span class="next-text nav-default">nodejs项目技术小结</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

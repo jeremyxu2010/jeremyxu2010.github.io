@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>network on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/network/</link>
+    <description>Recent content in network on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 25 Oct 2016 00:14:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/network/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>《Network Programming with Go》阅读重点备忘（二）</title>
+      <link>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%BA%8C/</link>
+      <pubDate>Tue, 25 Oct 2016 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%BA%8C/</guid>
+      <description>接上一篇博文，这里是我阅读电子书《Network Programming with Go》后，书中一些重点的第二部分。 HTTP 第8章主要讲到了golang中对HTTP的支持。 首先</description>
+    </item>
+    
+    <item>
+      <title>《Network Programming with Go》阅读重点备忘（一）</title>
+      <link>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/</link>
+      <pubDate>Mon, 24 Oct 2016 00:42:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/</guid>
+      <description>最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主</description>
+    </item>
+    
+    <item>
+      <title>TCP细节分析</title>
+      <link>https://jeremyxu2010.github.io/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/</link>
+      <pubDate>Tue, 20 Sep 2016 23:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/</guid>
+      <description>昨天阅读一篇讲tcpdump使用技巧的文章，里面简单提到了TCP握手挥手的流程，还附了一片图片。 虽然TCP握手挥手大学里学到，但很惭愧竟忘得</description>
+    </item>
+    
+    <item>
+      <title>tcpdump使用技巧（转载）</title>
+      <link>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</link>
+      <pubDate>Mon, 19 Sep 2016 23:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</guid>
+      <description>很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t</description>
+    </item>
+    
+    <item>
+      <title>linux下进行端口映射</title>
+      <link>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</link>
+      <pubDate>Wed, 30 Apr 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</guid>
+      <description>工作需要将某个具有外网IP的server的某个端口映射到某个内网IP的server的相同端口上。 首先想到使用NAT，命令如下 echo &amp;#34;1&amp;#34; &amp;gt; /proc/sys/net/ipv4/ip_forward iptables -t nat -I</description>
+    </item>
+    
+    <item>
+      <title>linux下设置电信网通双线路IP地址</title>
+      <link>https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/</guid>
+      <description>工作上遇到需要在linux下设置电信网通双线路IP地址，操作系统为Suse Linux Enterprise Linux 11 SP2，简要记录下步骤： 编辑/etc/sysconfig/</description>
+    </item>
+    
+  </channel>
+</rss>

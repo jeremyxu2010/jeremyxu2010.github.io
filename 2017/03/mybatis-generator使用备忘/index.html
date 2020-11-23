@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>mybatis-generator使用备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="mybatis-generator使用备忘" />
+<meta property="og:description" content="最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2017-03-05T23:00:00+08:00" />
+<meta property="article:modified_time" content="2017-03-05T23:00:00+08:00" />
+<meta itemprop="name" content="mybatis-generator使用备忘">
+<meta itemprop="description" content="最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D">
+<meta itemprop="datePublished" content="2017-03-05T23:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-03-05T23:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1236">
+
+
+
+<meta itemprop="keywords" content="java,mybatis,spring," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="mybatis-generator使用备忘"/>
+<meta name="twitter:description" content="最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">mybatis-generator使用备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1236 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">实体对象属性为枚举</a></li>
+    <li><a href="#mbg">定制MBG生成的代码</a></li>
+    <li><a href="#text">生成数据库中的TEXT字段</a></li>
+    <li><a href="#heading-1">参考项目</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成DAO层大部分代码。使用的过程中遇到一些问题，这里小计一下。</p>
+<h2 id="heading">实体对象属性为枚举</h2>
+<p>为了避免硬编码，希望生成的实体对象有的属性尽量使用枚举。</p>
+<p>可以先定义一个枚举。</p>
+<p><code>UserStatus.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> UserState <span style="color:#66d9ef">implements</span> CodeTypeEnum<span style="color:#f92672">&lt;</span>UserState<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    ENABLED<span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>0<span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+    DISABLED<span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Byte code<span style="color:#f92672">;</span>
+
+    UserState<span style="color:#f92672">(</span>Byte code<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">code</span> <span style="color:#f92672">=</span> code<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Byte <span style="color:#a6e22e">getCode</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">code</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>然后在MBG的配置文件中加入</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;table</span> <span style="color:#a6e22e">tableName=</span><span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#a6e22e">escapeWildcards=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;columnOverride</span> <span style="color:#a6e22e">column=</span><span style="color:#e6db74">&#34;user_status&#34;</span> <span style="color:#a6e22e">javaType=</span><span style="color:#e6db74">&#34;personal.jeremyxu.entity.enums.UserState&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/table&gt;</span>
+</code></pre></div><p>还需要给枚举定义TypeHandler，TypeHandler的代码比较简单，这里为了以后其它枚举能复用，写了一个范式化的TypeHandler</p>
+<p><code>CodeTypeHandler.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CodeTypeHandler</span> <span style="color:#f92672">&lt;</span>E <span style="color:#66d9ef">extends</span> CodeTypeEnum<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extends</span> BaseTypeHandler<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> Map<span style="color:#f92672">&lt;</span>Byte<span style="color:#f92672">,</span> E<span style="color:#f92672">&gt;</span> enumMap <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>Byte<span style="color:#f92672">,</span> E<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">CodeTypeHandler</span><span style="color:#f92672">(</span>Class<span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> type<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+        E<span style="color:#f92672">[</span><span style="color:#f92672">]</span> enums <span style="color:#f92672">=</span> type<span style="color:#f92672">.</span><span style="color:#a6e22e">getEnumConstants</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>enums <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span>type<span style="color:#f92672">.</span><span style="color:#a6e22e">getSimpleName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; does not represent an enum type.&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>E e <span style="color:#f92672">:</span> enums<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            enumMap<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">getCode</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setNonNullParameter</span><span style="color:#f92672">(</span>PreparedStatement ps<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> i<span style="color:#f92672">,</span> E parameter<span style="color:#f92672">,</span> JdbcType jdbcType<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+        ps<span style="color:#f92672">.</span><span style="color:#a6e22e">setByte</span><span style="color:#f92672">(</span>i<span style="color:#f92672">,</span> parameter<span style="color:#f92672">.</span><span style="color:#a6e22e">getCode</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> E <span style="color:#a6e22e">getNullableResult</span><span style="color:#f92672">(</span>ResultSet rs<span style="color:#f92672">,</span> String columnName<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+        Byte code <span style="color:#f92672">=</span> rs<span style="color:#f92672">.</span><span style="color:#a6e22e">getByte</span><span style="color:#f92672">(</span>columnName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> enumMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>code<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> E <span style="color:#a6e22e">getNullableResult</span><span style="color:#f92672">(</span>ResultSet rs<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> columnIndex<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+        Byte code <span style="color:#f92672">=</span> rs<span style="color:#f92672">.</span><span style="color:#a6e22e">getByte</span><span style="color:#f92672">(</span>columnIndex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> enumMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>code<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> E <span style="color:#a6e22e">getNullableResult</span><span style="color:#f92672">(</span>CallableStatement cs<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> columnIndex<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> SQLException <span style="color:#f92672">{</span>
+        Byte code <span style="color:#f92672">=</span> cs<span style="color:#f92672">.</span><span style="color:#a6e22e">getByte</span><span style="color:#f92672">(</span>columnIndex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> enumMap<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>code<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>然后其它具体某个枚举的TypeHandler就可以这么写了</p>
+<p><code>UserStateTypeHandler.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserStateTypeHandler</span> <span style="color:#66d9ef">extends</span> CodeTypeHandler<span style="color:#f92672">&lt;</span>UserState<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">UserStateTypeHandler</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>UserState<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>最后在MyBatis配置里添加TypeHandler的注册</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;sqlSessionFactory&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.mybatis.spring.SqlSessionFactoryBean&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#a6e22e">ref=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;mapperLocations&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;classpath:personal/jeremyxu/mapper/*.xml&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;typeHandlersPackage&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;personal.jeremyxu.entity.enums.handlers&#34;</span> <span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/bean&gt;</span>
+</code></pre></div><h2 id="mbg">定制MBG生成的代码</h2>
+<p>MBG提供大量的参数用来定制生成的代码，还提供插件机制，方便其它开发者开发插件来定制生成的代码。</p>
+<p>我这里的配置如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;context</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;default&#34;</span> <span style="color:#a6e22e">targetRuntime=</span><span style="color:#e6db74">&#34;MyBatis3&#34;</span><span style="color:#f92672">&gt;</span>
+    ...
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 为生成的实体类添加equals，hashCode方法 </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;org.mybatis.generator.plugins.EqualsHashCodePlugin&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 为生成的实体类添加toString方法 </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;org.mybatis.generator.plugins.ToStringPlugin&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 修改生成的Example类的类名，将其中的Example修改为Criteria </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;org.mybatis.generator.plugins.RenameExampleClassPlugin&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;searchString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;Example$&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;replaceString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;Criteria&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/plugin&gt;</span>
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 修改生成的Mapper类中的方法名或参数名，将方法中的Example修改为Criteria，参数中的example修改为criteria </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;personal.jeremyxu2010.mybatis.plugins.RenameExampleClassAndMethodsPlugin&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;classMethodSearchString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;Example&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;classMethodReplaceString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;Criteria&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;parameterSearchString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;example&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;parameterReplaceString&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;criteria&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/plugin&gt;</span>
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 使生成的Example类支持setOffset, setLimit方法，以便分页 </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;personal.jeremyxu2010.mybatis.plugins.MySQLLimitPlugin&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 将生成的Example类放到filters包下，不跟实体类混在一起 </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;plugin</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;personal.jeremyxu2010.mybatis.plugins.CreateSubPackagePlugin&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;exampleSubPackage&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;filters&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;exampleClassSuffix&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/plugin&gt;</span>
+
+    <span style="color:#f92672">&lt;commentGenerator</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 生成的注释中不带时间戳 </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;suppressDate&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 将数据库中列的注释生成到实体的属性注释里，这个很重要 </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;addRemarkComments&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/commentGenerator&gt;</span>
+
+    <span style="color:#f92672">&lt;javaModelGenerator</span> <span style="color:#a6e22e">targetPackage=</span><span style="color:#e6db74">&#34;${modelPackage}&#34;</span> <span style="color:#a6e22e">targetProject=</span><span style="color:#e6db74">&#34;${targetProject}&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 是否对model添加构造函数 </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;constructorBased&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 是否允许子包，即targetPackage.schemaName.tableName </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;enableSubPackages&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 建立的Model对象是否 不可改变  即生成的Model对象不会有 setter方法，只有构造方法 </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;immutable&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">/&gt;</span>
+        <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> 是否对类CHAR类型的列的数据进行trim操作 </span><span style="color:#75715e">--&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;trimStrings&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/javaModelGenerator&gt;</span>
+
+    <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> escapeWildcards设置为true可以帮助抵御SQL注入 </span><span style="color:#75715e">--&gt;</span>
+    <span style="color:#f92672">&lt;table</span> <span style="color:#a6e22e">tableName=</span><span style="color:#e6db74">&#34;user&#34;</span> <span style="color:#a6e22e">escapeWildcards=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;columnOverride</span> <span style="color:#a6e22e">column=</span><span style="color:#e6db74">&#34;user_status&#34;</span> <span style="color:#a6e22e">javaType=</span><span style="color:#e6db74">&#34;personal.jeremyxu.entity.enums.UserState&#34;</span> <span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/table&gt;</span>
+    ...
+<span style="color:#f92672">&lt;/context&gt;</span>
+</code></pre></div><h2 id="text">生成数据库中的TEXT字段</h2>
+<p>在表的配置中添加<code>columnOverride</code>即可，如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;columnOverride</span> <span style="color:#a6e22e">column=</span><span style="color:#e6db74">&#34;text_column&#34;</span> <span style="color:#a6e22e">jdbcType=</span><span style="color:#e6db74">&#34;VARCHAR&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><h2 id="heading-1">参考项目</h2>
+<p>这里提供了一个示例工程对上述说到的内容作了演示，地址在<a href="http://git.oschina.net/jeremy-xu/ssm-scaffold">这里</a>。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-03-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/mybatis/">mybatis</a>
+          
+          <a href="/tags/spring/">spring</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/03/%E5%89%8D%E7%AB%AFreactjs%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">前端ReactJS技术介绍</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_02/">
+            <span class="next-text nav-default">tensorflow学习笔记_02</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

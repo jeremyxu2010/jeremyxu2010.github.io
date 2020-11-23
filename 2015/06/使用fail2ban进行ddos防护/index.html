@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用fail2ban进行DDOS防护 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用fail2ban进行DDOS防护" />
+<meta property="og:description" content="朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/" />
+<meta property="article:published_time" content="2015-06-30T01:40:00+08:00" />
+<meta property="article:modified_time" content="2015-06-30T01:40:00+08:00" />
+<meta itemprop="name" content="使用fail2ban进行DDOS防护">
+<meta itemprop="description" content="朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，">
+<meta itemprop="datePublished" content="2015-06-30T01:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2015-06-30T01:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="1037">
+
+
+
+<meta itemprop="keywords" content="ddos,fail2ban,nginx," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用fail2ban进行DDOS防护"/>
+<meta name="twitter:description" content="朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用fail2ban进行DDOS防护</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2015-06-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1037 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，还是提前作一下DDOS防护吧。线上系统用的是nginx，于是我采用了比较成熟的fail2ban+nginx防护方案。</p>
+<p>首先安装配置fail2ban</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">zypper addrepo http://download.opensuse.org/repositories/home:Peuserik/SLE_11_SP2/home:Peuserik.repo
+zypper refresh
+zypper install fail2ban
+
+vim /etc/fail2ban/jail.conf
+
+<span style="color:#f92672">[</span>DEFAULT<span style="color:#f92672">]</span>
+<span style="color:#75715e">#设置忽略内网访问及某些安全网段的访问， 网段之间以空格分隔</span>
+ignoreip <span style="color:#f92672">=</span> 127.0.0.1/8 11.11.11.1/24 xx.xx.xx.xxx/28
+
+...
+
+<span style="color:#75715e">#设置ssh登录防护</span>
+<span style="color:#f92672">[</span>ssh-iptables<span style="color:#f92672">]</span>
+enabled  <span style="color:#f92672">=</span> true
+filter   <span style="color:#f92672">=</span> sshd
+action   <span style="color:#f92672">=</span> iptables<span style="color:#f92672">[</span>name<span style="color:#f92672">=</span>SSH, port<span style="color:#f92672">=</span>ssh, protocol<span style="color:#f92672">=</span>tcp<span style="color:#f92672">]</span>
+logpath  <span style="color:#f92672">=</span> /var/log/sshd.log
+maxretry <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+
+...
+
+<span style="color:#75715e">#设置nginx防护ddos攻击</span>
+<span style="color:#f92672">[</span>xxx-get-dos<span style="color:#f92672">]</span>
+enabled<span style="color:#f92672">=</span>true
+port<span style="color:#f92672">=</span>http,https
+filter<span style="color:#f92672">=</span>nginx-bansniffer
+action<span style="color:#f92672">=</span>iptables<span style="color:#f92672">[</span>name<span style="color:#f92672">=</span>xxx, port<span style="color:#f92672">=</span>http, protocol<span style="color:#f92672">=</span>tcp<span style="color:#f92672">]</span>
+logpath<span style="color:#f92672">=</span>/opt/nginx/logs/xxx_access.log
+maxretry<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>
+findtime<span style="color:#f92672">=</span><span style="color:#ae81ff">60</span>
+bantime<span style="color:#f92672">=</span><span style="color:#ae81ff">300</span>
+...
+
+vim /etc/fail2ban/filter.d/nginx-bansniffer.conf
+<span style="color:#f92672">[</span>Definition<span style="color:#f92672">]</span>
+failregex <span style="color:#f92672">=</span> &lt;HOST&gt; -.*- .*HTTP/1.* .* .*$
+ignoreregex <span style="color:#f92672">=</span>
+
+/etc/init.d/fail2ban start
+</code></pre></div><p>nginx设置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim /opt/nginx/conf/nginx.conf
+....
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>$http_user_agent ~* <span style="color:#f92672">(</span>Siege|http_load|fwptt<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> 404;
+<span style="color:#f92672">}</span>
+<span style="color:#75715e">#空agent</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>$http_user_agent ~ ^$<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> 404;
+<span style="color:#f92672">}</span>
+<span style="color:#75715e">#请求方式限制</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>$request_method !~ ^<span style="color:#f92672">(</span>GET|HEAD|POST<span style="color:#f92672">)</span>$<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> 403;
+<span style="color:#f92672">}</span>
+....
+/etc/init.d/nginx restart
+</code></pre></div><p>这样设置后发现fail2ban对正常请求也ban了，仔细检查后发现线上应用加载的静态资源过多，而nginx对这些静态资源也会记录访问日志，这样访问日志中就存在大量同一ip来的请求。于是决定对于静态资源，不记录访问日志。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim /opt/nginx/conf/nginx.conf
+...
+location ~* /xxx/.+<span style="color:#ae81ff">\.</span><span style="color:#f92672">(</span>gif|jpg|png|js|css<span style="color:#f92672">)</span>$ <span style="color:#f92672">{</span>
+            root   /opt/jetty/webapps/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            expires 10d;
+            access_log /dev/null;
+        <span style="color:#f92672">}</span>
+location ~* <span style="color:#ae81ff">\.</span><span style="color:#f92672">(</span>gif|jpg|png|js|css<span style="color:#f92672">)</span>$ <span style="color:#f92672">{</span>
+            root   /opt/jetty/webapps/root/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            expires 10d;
+            access_log /dev/null;
+<span style="color:#f92672">}</span>
+...
+</code></pre></div><p>这里特别需要注意nginx的location匹配规则，刚开始我把上面两个location的位置弄反了，一直有问题，后来发现nginx对于相同优先级的匹配符是从上往下匹配的，一旦匹配某个规则，则进行某个规则的处理。所以匹配规则一定要按先特殊后通用的顺序摆列。</p>
+<p>附上nginx的location匹配规则的简述。</p>
+<p>location匹配命令</p>
+<pre><code>~      #波浪线表示执行一个正则匹配，区分大小写
+~*    #表示执行一个正则匹配，不区分大小写
+^~    #^~表示普通字符匹配，如果该选项匹配，只匹配该选项，不匹配别的选项，一般用来匹配目录
+=      #进行普通字符精确匹配
+@     #&quot;@&quot; 定义一个命名的 location，使用在内部定向时，例如 error_page, try_files
+</code></pre><p>location 匹配的优先级(与location在配置文件中的顺序无关)</p>
+<pre><code>= 精确匹配会第一个被处理。如果发现精确匹配，nginx停止搜索其他匹配。
+普通字符匹配，正则表达式规则和长的块规则将被优先和查询匹配，也就是说如果该项匹配还需去看有没有正则表达式匹配和更长的匹配。
+^~ 则只匹配该规则，nginx停止搜索其他匹配，否则nginx会继续处理其他location指令。
+最后匹配理带有&quot;~&quot;和&quot;~*&quot;的指令，如果找到相应的匹配，则nginx停止搜索其他匹配；当没有正则表达式或者没有正则表达式被匹配的情况下，那么匹配程度最高的逐字匹配指令会被使用。
+</code></pre>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2015-06-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/ddos/">ddos</a>
+          
+          <a href="/tags/fail2ban/">fail2ban</a>
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2015/06/rsync%E9%85%8D%E5%90%88ssh%E5%9C%A8%E4%B8%8D%E7%A8%B3%E5%AE%9A%E7%BD%91%E7%BB%9C%E4%B8%8B%E4%BC%A0%E8%BE%93%E5%A4%A7%E6%96%87%E4%BB%B6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">rsync配合ssh在不稳定网络下传输大文件</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2015/04/%E4%BD%BF%E7%94%A8logrotate%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%88%86%E5%89%B2%E5%8F%8A%E6%BB%9A%E5%8A%A8%E5%A4%84%E7%90%86/">
+            <span class="next-text nav-default">使用logrotate进行日志分割及滚动处理</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hey on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/hey/</link>
+    <description>Recent content in hey on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 06 Jan 2020 11:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/hey/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>分析APP访问后台服务的网络故障</title>
+      <link>https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/</guid>
+      <description>工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致</description>
+    </item>
+    
+  </channel>
+</rss>

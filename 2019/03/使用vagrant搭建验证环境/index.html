@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用vagrant搭建验证环境 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用vagrant搭建验证环境" />
+<meta property="og:description" content="这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/" />
+<meta property="article:published_time" content="2019-03-24T10:30:00+08:00" />
+<meta property="article:modified_time" content="2019-03-24T10:30:00+08:00" />
+<meta itemprop="name" content="使用vagrant搭建验证环境">
+<meta itemprop="description" content="这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant">
+<meta itemprop="datePublished" content="2019-03-24T10:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-03-24T10:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="2252">
+
+
+
+<meta itemprop="keywords" content="linux,vagrant,kubernetes," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用vagrant搭建验证环境"/>
+<meta name="twitter:description" content="这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用vagrant搭建验证环境</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-03-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E5%85%B7/"> 工具 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2252 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#vagrant">vagrant的简介</a></li>
+    <li><a href="#vagrant-1">安装vagrant</a></li>
+    <li><a href="#vagrant-2">使用vagrant</a></li>
+    <li><a href="#vagrant-3">为什么用vagrant</a></li>
+    <li><a href="#heading">总结</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下<a href="https://www.vagrantup.com/docs/">vagrant</a>，久闻<strong>Vagrant</strong>大名，之前也经常在一些开源项目中看到它，今天花了些时间了解下这个新东西。</p>
+<h2 id="vagrant">vagrant的简介</h2>
+<p>Vagrant是<a href="https://www.hashicorp.com/">hashicorp</a>这家公司的产品，这家公司主要做云基础设施自动化的，其名下大名鼎鼎的产品有<code>Consul</code>、<code>Vault</code>、<code>Nomad</code>、<code>Terraform</code>，这前在做微服务框架时做过他们的<code>Consul</code>，还是挺靠谱的。他们的产品感觉都比较有创新，而且基本上都开源了，他们的开源地址是<a href="https://github.com/hashicorp">这里</a>。</p>
+<p>Vagrant是用来管理虚拟机的，如VirtualBox、VMware、AWS等，主要好处是可以提供一个可配置、可移植和复用的软件环境，可以使用shell、chef、puppet等工具部署。所以vagrant不能单独使用，如果你用它来管理自己的开发环境的话，必须在自己的电脑里安装了虚拟机软件，我使用的是<strong>virtualbox</strong>。</p>
+<p>Vagrant提供一个命令行工具<code>vagrant</code>，通过这个命令行工具可以直接启动一个虚拟机，当然你需要提前定义一个Vagrantfile文件，这有点类似Dockerfile之于docker了。</p>
+<p>跟docker类比这来看vagrant就比较好理解了，vagrant也是用来提供一致性环境的，vagrant本身也提供一个镜像源，使用<code>vagrant init hashicorp/precise64</code>就可以初始化一个Ubuntu 12.04的镜像。</p>
+<h2 id="vagrant-1">安装vagrant</h2>
+<p>我本机是macOS系统，安装vagrant比较简单，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ brew cask install virtualbox
+$ brew cask install vagrant
+</code></pre></div><p>其它操作下安装也挺简单的，参见<a href="https://www.vagrantup.com/docs/installation/">官方文档</a>就可以了。</p>
+<h2 id="vagrant-2">使用vagrant</h2>
+<p>首先我这里创建第一个虚拟机，第一步是要将基础镜像拉回到本地缓存着，用以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vagrant box add --provider virtualbox centos/7
+<span style="color:#75715e"># 如果box文件下载太慢，也可以通过其它工具将box文件下载到本地之后，用下面的命令添加到缓存</span>
+$ vagrant box add --name centos/7 --provider virtualbox $your_donwload_dir/centos_virtualbox.box
+</code></pre></div><p>对box的一系列操作命令文档见<a href="https://www.vagrantup.com/docs/cli/box.html">这里</a>。</p>
+<p>有了基础镜像box后，接下来在某一目录用<code>box init</code>即可创建一个初始的<a href="https://www.vagrantup.com/docs/vagrantfile/">Vagrantfile</a>文件:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cd $your_working_dir
+$ vagrant init centos/7
+</code></pre></div><p><code>vagrant init</code>命令比较简单，参见<a href="https://www.vagrantup.com/docs/cli/init.html">官方文档</a>就可以了。</p>
+<p>接下来就是修改<a href="https://www.vagrantup.com/docs/vagrantfile/">Vagrantfile</a>文件了，打开<a href="https://www.vagrantup.com/docs/vagrantfile/">Vagrantfile</a>文件，看一看里面的注释大概就知道怎么写了，主要是ruby的语法，我们用得最多的就是虚拟机配置<code>config.vm</code>和ssh配置<code>config.ssh</code>，这个<a href="https://www.vagrantup.com/docs/vagrantfile/">官方文档</a>里将每个配置项都详细描述了，按描述配置就可以了，当然对于虚拟机、ssh本身有哪些配置可以调整提前要了解。</p>
+<p>除了对虚拟机进行一些配置外，还可以通过各类<code>Provisioner</code>自动化地安装软件、调整配置。官方默认提供的<code>Provisioner</code>列表在<a href="https://www.vagrantup.com/docs/provisioning/">这里</a>。但我们平时用得比较多的主要有以下几个<code>File</code>、<code>Shell</code>、<code>Ansible</code>、<code>Docker</code>等，使用方法如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">Vagrant</span><span style="color:#f92672">.</span>configure(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">2</span><span style="color:#e6db74">&#34;</span>) <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>config<span style="color:#f92672">|</span>
+  <span style="color:#75715e"># ... other configuration</span>
+
+  <span style="color:#75715e"># Copy files from host to guest vm</span>
+  config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">file</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">source</span>: <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">~/path/to/host/folder</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">destination</span>: <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$HOME/remote/newfolder</span><span style="color:#e6db74">&#34;</span>
+  
+  <span style="color:#75715e"># Execute shell script on guest vm</span>
+  config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">shell</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">path</span>: <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">script.sh</span><span style="color:#e6db74">&#34;</span>
+  
+  <span style="color:#75715e"># Run Ansible from the Vagrant Host</span>
+  config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ansible</span><span style="color:#e6db74">&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>ansible<span style="color:#f92672">|</span>
+    ansible<span style="color:#f92672">.</span>playbook <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">playbook.yml</span><span style="color:#e6db74">&#34;</span>
+  <span style="color:#66d9ef">end</span>
+  
+  <span style="color:#75715e"># Install Docker and pull Docker images on guest vm</span>
+  config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>provision <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">docker</span><span style="color:#e6db74">&#34;</span> <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>d<span style="color:#f92672">|</span>
+    d<span style="color:#f92672">.</span>pull_images <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ubuntu</span><span style="color:#e6db74">&#34;</span>
+    d<span style="color:#f92672">.</span>pull_images <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">vagrant</span><span style="color:#e6db74">&#34;</span>
+  <span style="color:#66d9ef">end</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>上面的示例都比较简单，每个<code>Provisioner</code>都有一些参数用于满足一些特殊场景，这些参数的用法参考<a href="https://www.vagrantup.com/docs/provisioning/">官方文档</a>就可以了。</p>
+<p>除此之外还可以进行一些网络相关的配置，主要是映射一些<a href="https://www.vagrantup.com/docs/networking/forwarded_ports.html">端口到宿主机</a>、<a href="https://www.vagrantup.com/docs/networking/private_network.html">设置私有网络</a>、<a href="https://www.vagrantup.com/docs/networking/public_network.html">设置公开网络</a>。如果是私有网络，则创建的虚拟机不对外公布，仅宿主机可访问。如果是公开网络，则创建的虚拟机会连接到局域网中的路由器上，如果能从路由器那里申请到IP，则其它主机也可以访问该虚拟机。</p>
+<p>vagrant还提供多种机制将宿主机上的一些目录同步到虚拟机中，平时用得比较多就是它的默认机制：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">Vagrant</span><span style="color:#f92672">.</span>configure(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">2</span><span style="color:#e6db74">&#34;</span>) <span style="color:#66d9ef">do</span> <span style="color:#f92672">|</span>config<span style="color:#f92672">|</span>
+  <span style="color:#75715e"># other config here</span>
+  config<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>synced_folder <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">src/</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/srv/website</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p><a href="https://www.vagrantup.com/docs/vagrantfile/">Vagrantfile</a>文件写好后，就可以以此为基础操作虚拟机了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动</span>
+vagrant up
+<span style="color:#75715e"># 关机</span>
+vagrant halt
+<span style="color:#75715e"># 重启</span>
+vagrant reload
+<span style="color:#75715e"># 暂停</span>
+vagrant suspend
+<span style="color:#75715e"># 恢复</span>
+vagrant resume
+<span style="color:#75715e"># 给虚拟机打个快照</span>
+vagrant snapshot save <span style="color:#e6db74">${</span>snapshotName<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># 将虚拟机还原到快照</span>
+vagrant snapshot restore <span style="color:#e6db74">${</span>snapshotName<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># 列出虚拟机的快照</span>
+vagrant snapshot list
+<span style="color:#75715e"># 删除虚拟机的某个快照</span>
+vagrant snapshot delete <span style="color:#e6db74">${</span>snapshotName<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># 用ssh连接虚拟机</span>
+vagrant ssh
+<span style="color:#75715e"># 输出虚拟机的SSH连接配置，其它SSH工具可参考这些配置连接虚拟机</span>
+vagrant ssh-config
+<span style="color:#75715e"># 用RDP客户端连接虚拟机</span>
+vagrant rdp
+<span style="color:#75715e"># 删除虚拟机</span>
+vagrant destroy
+</code></pre></div><p>这样操作虚拟机真的是很方便啊。</p>
+<p>还有一些高级功能，比如<a href="https://www.vagrantup.com/docs/multi-machine/">定义操控多个虚拟机</a>、<a href="https://www.vagrantup.com/docs/cli/cloud.html">发布自已的镜像</a>等，这些参考官方文档就可以了。</p>
+<h2 id="vagrant-3">为什么用vagrant</h2>
+<p>vagrant的功能介绍得差不多了，再来说一下为啥要用vagrant。原来我们搭建一个测试场景，会涉及很多台虚拟机，如果全部手工搭建，不仅很繁琐，而且不便于保存成果，下次遇到同样的需求又得重搭一次，而极容易出错，这些人肉操作也不便于修订管理。后面为了自动化实施，我们用了ansible之类工具，将操作步骤都写进ansible脚本中。ansbile方案确实解决了很大的问题，但失败率还是有些高，原因是待部署的虚拟机状态不统一。而vagrant直接将待部署的虚拟机也统一了，本身也支持用shell脚本、ansible脚本将操作步骤都记录下来。这样一来，只要拿到<a href="https://www.vagrantup.com/docs/vagrantfile/">Vagrantfile</a>，在任何主机上都只需要一条命令就可以将整套环境部署起来了。</p>
+<p>比如我写了一个搭建<a href="https://github.com/jeremyxu2010/vagrant_files/tree/master/k8s-centos7">单节点kubernetes环境的Vagrantfile</a>，别人只要在本机安装好了vagrant，将这个vagrantfile下载下来，在该目录执行<code>vagrant up</code>命令，一个单节点kubernetes环境就自动创建好了。</p>
+<h2 id="heading">总结</h2>
+<p>用正确的工具去做正确的事儿，真的是事半功倍。</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://www.vagrantup.com/docs">https://www.vagrantup.com/docs</a></li>
+<li><a href="https://jimmysong.io/posts/vagrant-intro/">https://jimmysong.io/posts/vagrant-intro/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-03-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/vagrant/">vagrant</a>
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">打通到kubernetes集群的网络</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/">
+            <span class="next-text nav-default">PosgreSQL高可用集群实践</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

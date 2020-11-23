@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>动手写个玩具编译器 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="一直对源码如何变成可在电脑上运行的二进制文件很感兴趣，虽然在大学时学过编译原理相关课程，但当时就是为了应对考试，基本了解个大概基本什么都没剩" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/10/%E5%8A%A8%E6%89%8B%E5%86%99%E4%B8%AA%E7%8E%A9%E5%85%B7%E7%BC%96%E8%AF%91%E5%99%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="动手写个玩具编译器" />
+<meta property="og:description" content="一直对源码如何变成可在电脑上运行的二进制文件很感兴趣，虽然在大学时学过编译原理相关课程，但当时就是为了应对考试，基本了解个大概基本什么都没剩" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/10/%E5%8A%A8%E6%89%8B%E5%86%99%E4%B8%AA%E7%8E%A9%E5%85%B7%E7%BC%96%E8%AF%91%E5%99%A8/" />
+<meta property="article:published_time" content="2020-10-06T18:00:00+08:00" />
+<meta property="article:modified_time" content="2020-10-06T18:00:00+08:00" />
+<meta itemprop="name" content="动手写个玩具编译器">
+<meta itemprop="description" content="一直对源码如何变成可在电脑上运行的二进制文件很感兴趣，虽然在大学时学过编译原理相关课程，但当时就是为了应对考试，基本了解个大概基本什么都没剩">
+<meta itemprop="datePublished" content="2020-10-06T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-10-06T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="5379">
+
+
+
+<meta itemprop="keywords" content="flex,bison,llvm," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="动手写个玩具编译器"/>
+<meta name="twitter:description" content="一直对源码如何变成可在电脑上运行的二进制文件很感兴趣，虽然在大学时学过编译原理相关课程，但当时就是为了应对考试，基本了解个大概基本什么都没剩"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">动手写个玩具编译器</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-10-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/cpp%E5%BC%80%E5%8F%91/"> cpp开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5379 字 </span>
+        <span class="more-meta"> 预计阅读 11 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">编译器理论知识</a></li>
+    <li><a href="#heading-1">定义要创造的语法</a></li>
+    <li><a href="#heading-2">安装三套件</a></li>
+    <li><a href="#flex">使用Flex进行文法分析</a></li>
+    <li><a href="#bison">使用Bison进行语法分析</a></li>
+    <li><a href="#astllvm-ir">组装AST和生成LLVM IR</a></li>
+    <li><a href="#heading-3">编译出二进制并执行</a></li>
+    <li><a href="#heading-4">总结</a></li>
+    <li><a href="#heading-5">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>一直对源码如何变成可在电脑上运行的二进制文件很感兴趣，虽然在大学时学过编译原理相关课程，但当时就是为了应对考试，基本了解个大概基本什么都没剩下。这个长假终于有时间作了些研究，终于算是补齐了这块知识盲区。</p>
+<p>想弄明白源码到底是如何变成二进制文件的，最好的方式莫过于动手写一个编译器试试。第一知觉，写个编译器应该很难吧。但在现在已经是2020年，各种工具文档满天飞，写个玩具编译器还真不是很难的事。</p>
+<h2 id="heading">编译器理论知识</h2>
+<p>一个编译器是由一组有三个到四个组件(还有一些子组件)构成，数据以管道的方式从一个组件输入并流向下一个组件。在我们这个编译器中，可能会用到一些稍微不同的工具。下面这个图展示了我们构造一个编译器的步骤，和每个步骤中将使用的工具。</p>
+<p><img src="/images/20201006/pipeline.png" alt="Compiler Pipeline"></p>
+<p>上图中<code>Linking</code>这一步一般不需要我们做什么。在文法分析阶段，这里使用开源工具Lex，即如今的<a href="http://flex.sourceforge.net/">Flex</a>，文法分析一般都伴随者语法分析，这里使用的语法分析工具将会是Yacc，或者说是<a href="http://www.gnu.org/software/bison/">Bison</a>，最后一旦语义分析完成，我们将遍历我们的抽象语法树，并生成”bytecode 字节码”。做这一步，这里使用<a href="http://llvm.org/">LLVM</a>，它能生成快速LLVM IR。再使用LLVM自带的工具<code>llc</code>将LLVM IR字节码文件编译为汇编代码文件，最后使用<code>clang++</code>工具将汇编代码文件编译为二进制文件。</p>
+<p>总结一下，步骤如下：</p>
+<ol>
+<li><strong>文法分析用<code>Flex</code></strong>:将数据分隔成一个个的标记token (标示符identifiers，关键字keywords，数字numbers, 中括号brackets, 大括号braces, 等等etc.)</li>
+<li><strong>语法分析用<code>Bison</code></strong>: 在分析标记的时候生成抽象语法树. Bison 将会做掉几乎所有的这些工作, 这里只需要定义好抽象语法树就OK了。</li>
+<li><strong>组装用<code>LLVM</code></strong>: 这里我们将遍历我们的抽象语法树，并未每一个节点生成字节/机器码。</li>
+<li>最后用几个命令完成编译为二进制文件的工作。</li>
+</ol>
+<h2 id="heading-1">定义要创造的语法</h2>
+<p>编译器的输入是源代码，既然是写个编译器，第一步是定义想要创造的语法。</p>
+<p><code>test/exmaple.txt</code></p>
+<pre><code>int do_math(int a) {
+  int x = a * 5
+  return x + 3
+}
+
+echo(do_math(13))
+echo(do_math(12))
+</code></pre><p>上述这个语法跟C语言很像，只是每行少了<code>;</code>号。</p>
+<h2 id="heading-2">安装三套件</h2>
+<p>首先安装<code>flex</code>、<code>bison</code>、<code>llvm</code>，分别用来进行词法分析、语法分析、构造AST及生成LLVM IR</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ brew install flex
+$ brew install bison
+$ brew install llvm
+$ export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/usr/local/opt/flex/bin:</span>$PATH<span style="color:#e6db74">&#34;</span>
+$ export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/usr/local/opt/bison/bin:</span>$PATH<span style="color:#e6db74">&#34;</span>
+$ export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/usr/local/opt/llvm/bin:</span>$PATH<span style="color:#e6db74">&#34;</span>
+</code></pre></div><h2 id="flex">使用Flex进行文法分析</h2>
+<p>面对一个源代码文件，编译器要做的第一件事就是扫描这个源文件，将其中包含的词法token解析出来。这个事情自己写代码用上一些正则表达式也可以搞定，但开源界已有了更好的选择Flex，一个快速的词法token扫描器。这个工具很简单，所有文档也就<a href="http://www.math.utah.edu/docs/info/flex_toc.html">一页</a>。</p>
+<p>我们参考文档写词法定义文件。</p>
+<p><code>token.l</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#f92672">%</span>{
+<span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;string&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;node.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;parser.hpp&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#</span><span style="color:#75715e">define STRING_TOKEN        yylval.string = new std::string(yytext, yyleng)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define KEYWORD_TOKEN(t)    yylval.token = t</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#f92672">%</span>}
+
+<span style="color:#f92672">%</span>option noyywrap
+
+<span style="color:#f92672">%</span><span style="color:#f92672">%</span>
+
+[ <span style="color:#960050;background-color:#1e0010">\</span>t<span style="color:#960050;background-color:#1e0010">\</span>n]                                         ;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">extern</span><span style="color:#e6db74">&#34;</span>                                        KEYWORD_TOKEN(TEXTERN); <span style="color:#66d9ef">return</span> TEXTERN;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">return</span><span style="color:#e6db74">&#34;</span>                                        KEYWORD_TOKEN(TRETURN); <span style="color:#66d9ef">return</span> TRETURN;
+
+[a<span style="color:#f92672">-</span>zA<span style="color:#f92672">-</span>Z_][a<span style="color:#f92672">-</span>zA<span style="color:#f92672">-</span>Z0<span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>_]<span style="color:#f92672">*</span>                          STRING_TOKEN; <span style="color:#66d9ef">return</span> TIDENTIFIER;
+[<span style="color:#ae81ff">0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>]<span style="color:#f92672">+</span><span style="color:#960050;background-color:#1e0010">\</span>.[<span style="color:#ae81ff">0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>]<span style="color:#f92672">*</span>                                  STRING_TOKEN; <span style="color:#66d9ef">return</span> TDOUBLE;
+[<span style="color:#ae81ff">0</span><span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>]<span style="color:#f92672">+</span>                                          STRING_TOKEN; <span style="color:#66d9ef">return</span> TINTEGER;
+
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TEQUAL); <span style="color:#66d9ef">return</span> TEQUAL;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">==</span><span style="color:#e6db74">&#34;</span>                                            KEYWORD_TOKEN(TCEQ); <span style="color:#66d9ef">return</span> TCEQ;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">!=</span><span style="color:#e6db74">&#34;</span>                                            KEYWORD_TOKEN(TCNE); <span style="color:#66d9ef">return</span> TCNE;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&lt;</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TCLT); <span style="color:#66d9ef">return</span> TCLT;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&lt;=</span><span style="color:#e6db74">&#34;</span>                                            KEYWORD_TOKEN(TCLE); <span style="color:#66d9ef">return</span> TCLE;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&gt;</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TCGT); <span style="color:#66d9ef">return</span> TCGT;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&gt;=</span><span style="color:#e6db74">&#34;</span>                                            KEYWORD_TOKEN(TCGE); <span style="color:#66d9ef">return</span> TCGE;
+
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TLPAREN); <span style="color:#66d9ef">return</span> TLPAREN;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">)</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TRPAREN); <span style="color:#66d9ef">return</span> TRPAREN;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TLBRACE); <span style="color:#66d9ef">return</span> TLBRACE;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TRBRACE); <span style="color:#66d9ef">return</span> TRBRACE;
+
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TDOT); <span style="color:#66d9ef">return</span> TDOT;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TCOMMA); <span style="color:#66d9ef">return</span> TCOMMA;
+
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">+</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TPLUS); <span style="color:#66d9ef">return</span> TPLUS;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TMINUS); <span style="color:#66d9ef">return</span> TMINUS;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TMUL); <span style="color:#66d9ef">return</span> TMUL;
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">/</span><span style="color:#e6db74">&#34;</span>                                             KEYWORD_TOKEN(TDIV); <span style="color:#66d9ef">return</span> TDIV;
+
+.                                               printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown token!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>); yyterminate();
+
+<span style="color:#f92672">%</span><span style="color:#f92672">%</span>
+</code></pre></div><p>可以看到上面一段<code>%{</code>和<code>%}</code>是cpp代码，引入了一些头文件，定了一些宏。</p>
+<p>接着是<code>%option noyywrap</code>，说明扫描完一个文件后即停止。</p>
+<p>再接着就是最关键的一段了，在<code>%%</code>与<code>%%</code>之间。左侧是每个词法token匹配的正则，右侧是对于匹配到的词法token，返回对应的token常量。这里注意，如果是关键字token，不仅要返回token常量前要设置好<code>yylval.token</code>。如果是标识符、数字常量token，则要在返回token常量前设置好<code>yylval.string</code>。如果上述所有正则都没匹配到，则说明出现了未知的词法token，词法解析中止。</p>
+<h2 id="bison">使用Bison进行语法分析</h2>
+<p>词法分析完成后，编译器面对的是一个个词法token，编译器要弄懂这些词法token究竟表达什么意义，这时就要进行语法分析了。怎么将理解出来的语法含义用数据结构表达出来，当然是用AST(抽象语法树)。AST(抽象语法树)既然是一颗树，树上就会有很多节点，这些节点根据语义的不同还需要是不同的类型，因此需要设计一下AST(抽象语法树)上节点的语义单元类型，如下图所示：</p>
+<p><img src="/images/20201006/ClassDiagram.png" alt="Our Toy Language AST"></p>
+<p>上图对应的cpp代码如下：</p>
+<p><code>node.h</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;vector&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/Value.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CodeGenContext</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NStatement</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NExpression</span>;
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NVariableDeclaration</span>;
+
+<span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>NStatement<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> StatementList;
+<span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>NExpression<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> ExpressionList;
+<span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>NVariableDeclaration<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> VariableList;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Node</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>Node() {}
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context) { <span style="color:#66d9ef">return</span> NULL; }
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NExpression</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Node {
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NStatement</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Node {
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NInteger</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> value;
+	NInteger(<span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> value) <span style="color:#f92672">:</span> value(value) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NDouble</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">double</span> value;
+	NDouble(<span style="color:#66d9ef">double</span> value) <span style="color:#f92672">:</span> value(value) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIdentifier</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name;
+	NIdentifier(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> name) <span style="color:#f92672">:</span> name(name) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NMethodCall</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id;
+	ExpressionList arguments;
+	NMethodCall(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id, ExpressionList<span style="color:#f92672">&amp;</span> arguments) <span style="color:#f92672">:</span>
+		id(id), arguments(arguments) { }
+	NMethodCall(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id) <span style="color:#f92672">:</span> id(id) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NBinaryOperator</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">int</span> op;
+	NExpression<span style="color:#f92672">&amp;</span> lhs;
+	NExpression<span style="color:#f92672">&amp;</span> rhs;
+	NBinaryOperator(NExpression<span style="color:#f92672">&amp;</span> lhs, <span style="color:#66d9ef">int</span> op, NExpression<span style="color:#f92672">&amp;</span> rhs) <span style="color:#f92672">:</span>
+		lhs(lhs), rhs(rhs), op(op) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NAssignment</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	NIdentifier<span style="color:#f92672">&amp;</span> lhs;
+	NExpression<span style="color:#f92672">&amp;</span> rhs;
+	NAssignment(NIdentifier<span style="color:#f92672">&amp;</span> lhs, NExpression<span style="color:#f92672">&amp;</span> rhs) <span style="color:#f92672">:</span> 
+		lhs(lhs), rhs(rhs) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NBlock</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NExpression {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	StatementList statements;
+	NBlock() { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NExpressionStatement</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NStatement {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	NExpression<span style="color:#f92672">&amp;</span> expression;
+	NExpressionStatement(NExpression<span style="color:#f92672">&amp;</span> expression) <span style="color:#f92672">:</span> 
+		expression(expression) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NReturnStatement</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NStatement {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	NExpression<span style="color:#f92672">&amp;</span> expression;
+	NReturnStatement(NExpression<span style="color:#f92672">&amp;</span> expression) <span style="color:#f92672">:</span> 
+		expression(expression) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NVariableDeclaration</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NStatement {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type;
+	NIdentifier<span style="color:#f92672">&amp;</span> id;
+	NExpression <span style="color:#f92672">*</span>assignmentExpr;
+	NVariableDeclaration(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type, NIdentifier<span style="color:#f92672">&amp;</span> id) <span style="color:#f92672">:</span>
+		type(type), id(id) { assignmentExpr <span style="color:#f92672">=</span> NULL; }
+	NVariableDeclaration(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type, NIdentifier<span style="color:#f92672">&amp;</span> id, NExpression <span style="color:#f92672">*</span>assignmentExpr) <span style="color:#f92672">:</span>
+		type(type), id(id), assignmentExpr(assignmentExpr) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NExternDeclaration</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NStatement {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type;
+    <span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id;
+    VariableList arguments;
+    NExternDeclaration(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type, <span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id,
+            <span style="color:#66d9ef">const</span> VariableList<span style="color:#f92672">&amp;</span> arguments) <span style="color:#f92672">:</span>
+        type(type), id(id), arguments(arguments) {}
+    <span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NFunctionDeclaration</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> NStatement {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+	<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type;
+	<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id;
+	VariableList arguments;
+	NBlock<span style="color:#f92672">&amp;</span> block;
+	NFunctionDeclaration(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type, <span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> id, 
+			<span style="color:#66d9ef">const</span> VariableList<span style="color:#f92672">&amp;</span> arguments, NBlock<span style="color:#f92672">&amp;</span> block) <span style="color:#f92672">:</span>
+		type(type), id(id), arguments(arguments), block(block) { }
+	<span style="color:#66d9ef">virtual</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Value<span style="color:#f92672">*</span> codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context);
+};
+
+</code></pre></div><p>这个没有什么太多好说的，基本与上图是一一对应的，除了每个class有一个<code>virtual llvm::*Value** codeGen(*CodeGenContext*&amp; *context*);</code>虚函数定义，这个是给后面生成LLVM IR预留的。</p>
+<p>接下来就可以定义语法了。</p>
+<p><code>parser.y</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#f92672">%</span>{
+        <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;node.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;cstdlib&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        NBlock <span style="color:#f92672">*</span>programBlock; <span style="color:#75715e">/* the top level root node of our final AST */</span>
+
+        <span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">yylex</span>();
+        <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">yyerror</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s) { std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Error: %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, s);std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>exit(<span style="color:#ae81ff">1</span>); }
+<span style="color:#f92672">%</span>}
+
+<span style="color:#75715e">/* Represents the many different ways we can access our data */</span>
+<span style="color:#f92672">%</span><span style="color:#66d9ef">union</span> {
+        Node <span style="color:#f92672">*</span>node;
+        NBlock <span style="color:#f92672">*</span>block;
+        NExpression <span style="color:#f92672">*</span>expr;
+        NStatement <span style="color:#f92672">*</span>stmt;
+        NIdentifier <span style="color:#f92672">*</span>ident;
+        NVariableDeclaration <span style="color:#f92672">*</span>var_decl;
+        std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>NVariableDeclaration<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">*</span>varvec;
+        std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>NExpression<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">*</span>exprvec;
+        std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">*</span>string;
+        <span style="color:#66d9ef">int</span> token;
+}
+
+<span style="color:#75715e">/* Define our terminal symbols (tokens). This should
+</span><span style="color:#75715e">   match our tokens.l lex file. We also define the node type
+</span><span style="color:#75715e">   they represent.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#f92672">%</span>token <span style="color:#f92672">&lt;</span>string<span style="color:#f92672">&gt;</span> TIDENTIFIER TINTEGER TDOUBLE
+<span style="color:#f92672">%</span>token <span style="color:#f92672">&lt;</span>token<span style="color:#f92672">&gt;</span> TCEQ TCNE TCLT TCLE TCGT TCGE TEQUAL
+<span style="color:#f92672">%</span>token <span style="color:#f92672">&lt;</span>token<span style="color:#f92672">&gt;</span> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT
+<span style="color:#f92672">%</span>token <span style="color:#f92672">&lt;</span>token<span style="color:#f92672">&gt;</span> TPLUS TMINUS TMUL TDIV
+<span style="color:#f92672">%</span>token <span style="color:#f92672">&lt;</span>token<span style="color:#f92672">&gt;</span> TRETURN TEXTERN
+
+<span style="color:#75715e">/* Define the type of node our nonterminal symbols represent.
+</span><span style="color:#75715e">   The types refer to the %union declaration above. Ex: when
+</span><span style="color:#75715e">   we call an ident (defined by union type ident) we are really
+</span><span style="color:#75715e">   calling an (NIdentifier*). It makes the compiler happy.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>ident<span style="color:#f92672">&gt;</span> ident
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>expr<span style="color:#f92672">&gt;</span> numeric call_expr value_expr assign_expr operand_expr
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>varvec<span style="color:#f92672">&gt;</span> func_decl_args
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>exprvec<span style="color:#f92672">&gt;</span> call_args
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>block<span style="color:#f92672">&gt;</span> program stmts block
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>stmt<span style="color:#f92672">&gt;</span> stmt var_decl func_decl extern_decl
+<span style="color:#f92672">%</span>type <span style="color:#f92672">&lt;</span>token<span style="color:#f92672">&gt;</span> comparison calculation
+
+<span style="color:#75715e">/* Operator precedence for mathematical operators */</span>
+<span style="color:#f92672">%</span>left TCGE
+<span style="color:#f92672">%</span>left TCGT
+<span style="color:#f92672">%</span>left TCLE
+<span style="color:#f92672">%</span>left TCLT
+<span style="color:#f92672">%</span>left TCNE
+<span style="color:#f92672">%</span>left TCEQ
+<span style="color:#f92672">%</span>left TMINUS
+<span style="color:#f92672">%</span>left TPLUS
+<span style="color:#f92672">%</span>left TDIV
+<span style="color:#f92672">%</span>left TMUL 
+
+<span style="color:#f92672">%</span>start program
+
+<span style="color:#f92672">%</span><span style="color:#f92672">%</span>
+
+program : stmts { programBlock <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>; }
+         ;
+                
+stmts : stmt { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NBlock(); <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>statements.push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>stmt<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> stmts stmt { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>statements.push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>stmt<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">2</span>); }
+         ;
+
+stmt : func_decl
+         <span style="color:#f92672">|</span> var_decl
+         <span style="color:#f92672">|</span> extern_decl
+         <span style="color:#f92672">|</span> call_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NExpressionStatement(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> assign_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NExpressionStatement(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> TRETURN call_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NReturnStatement(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>); }
+         <span style="color:#f92672">|</span> TRETURN value_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NReturnStatement(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>); }
+         ;
+
+block : TLBRACE stmts TRBRACE { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>; }
+         <span style="color:#f92672">|</span> TLBRACE TRBRACE { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NBlock(); }
+         ;
+
+var_decl : ident ident { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NVariableDeclaration(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>); }
+         <span style="color:#f92672">|</span> ident ident TEQUAL call_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NVariableDeclaration(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">4</span>); }
+         <span style="color:#f92672">|</span> ident ident TEQUAL value_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NVariableDeclaration(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">4</span>); }
+         ;
+
+extern_decl : TEXTERN ident ident TLPAREN func_decl_args TRPAREN
+                { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NExternDeclaration(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">5</span>); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">5</span>; }
+         ;
+
+func_decl : ident ident TLPAREN func_decl_args TRPAREN block 
+                        { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NFunctionDeclaration(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">4</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">6</span>); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">4</span>; }
+         ;
+        
+func_decl_args : <span style="color:#75715e">/*blank*/</span>  { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> VariableList(); }
+         <span style="color:#f92672">|</span> var_decl { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> VariableList(); <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>var_decl<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> func_decl_args TCOMMA var_decl { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>var_decl<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">3</span>); }
+         ;
+
+ident : TIDENTIFIER { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NIdentifier(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>; }
+         ;
+
+numeric : TINTEGER { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NInteger(atol(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>c_str())); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>; }
+         <span style="color:#f92672">|</span> TDOUBLE { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NDouble(atof(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>c_str())); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>; }
+         ;
+
+assign_expr : ident TEQUAL call_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NAssignment(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>ident<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         <span style="color:#f92672">|</span> ident TEQUAL value_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NAssignment(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>ident<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         ;
+
+call_expr : ident TLPAREN call_args TRPAREN { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NMethodCall(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); <span style="color:#66d9ef">delete</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>; }
+         ;
+
+operand_expr: call_expr <span style="color:#f92672">%</span>prec TMUL
+         <span style="color:#f92672">|</span> value_expr <span style="color:#f92672">%</span>prec TCEQ
+         ;
+
+value_expr: ident { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">&lt;</span>ident<span style="color:#f92672">&gt;</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>; }
+         <span style="color:#f92672">|</span> numeric
+         <span style="color:#f92672">|</span> TLPAREN value_expr TRPAREN { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>; }
+         <span style="color:#f92672">|</span> operand_expr calculation operand_expr <span style="color:#f92672">%</span>prec TMUL { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NBinaryOperator(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         <span style="color:#f92672">|</span> operand_expr comparison operand_expr <span style="color:#f92672">%</span>prec TCEQ { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NBinaryOperator(<span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>, <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">2</span>, <span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         ;
+        
+call_args : <span style="color:#75715e">/*blank*/</span>  { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExpressionList(); }
+         <span style="color:#f92672">|</span> value_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExpressionList(); <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> call_expr { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ExpressionList(); <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#960050;background-color:#1e0010">$</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>); }
+         <span style="color:#f92672">|</span> call_args TCOMMA value_expr  { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         <span style="color:#f92672">|</span> call_args TCOMMA call_expr  { <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>push_back(<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">3</span>); }
+         ;
+
+comparison : TCEQ <span style="color:#f92672">|</span> TCNE <span style="color:#f92672">|</span> TCLT <span style="color:#f92672">|</span> TCLE <span style="color:#f92672">|</span> TCGT <span style="color:#f92672">|</span> TCGE;
+
+calculation: TMUL <span style="color:#f92672">|</span> TDIV <span style="color:#f92672">|</span> TPLUS <span style="color:#f92672">|</span> TMINUS;
+
+<span style="color:#f92672">%</span><span style="color:#f92672">%</span>
+
+</code></pre></div><p>上述这个文件定义了支持的各种语法结构，这里的核心是一条条语法规则，类似于BNF范式定义。这个感觉是最难看懂的一部分了，可以结合着<a href="https://blog.csdn.net/wp1603710463/article/details/50365640">YACC（BISON）使用指南</a>看。</p>
+<p>掌握了bison的用法，写语法定义文件不难，但很容易出现移位/归约冲突。这时就可以将冲突的示例打印出来仔细分析，并对语法定义文件进行调整了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ bison -d -o parser.cpp parser.y -Wcounterexamples
+</code></pre></div><p>如果一切没什么问题，这时就可以生成语法解析cpp文件及词法扫描cpp文件了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ bison -d -o parser.cpp parser.y
+$ lex -o tokens.cpp tokens.l
+</code></pre></div><h2 id="astllvm-ir">组装AST和生成LLVM IR</h2>
+<p>其实经过上面的步骤后，我们写个小程序就已经可以组装出AST了。</p>
+<p><code>main.cpp</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;node.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">extern</span> NBlock<span style="color:#f92672">*</span> programBlock;
+<span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">yyparse</span>();
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span><span style="color:#f92672">*</span>argv)
+{
+    yyparse();
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> programBlock <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>简单编译一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$  clang++ -o parser parser.cpp tokens.cpp main.cpp
+</code></pre></div><p>再执行一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./parser
+</code></pre></div><p>这时应该就可以打印出<code>programBlock</code>这个AST树的根节点了。</p>
+<p>但组装出AST不是我们的目标，我们的目标是将抽象语法树AST转换为机器码。这意味着将每一个语义节点转换成等价的机器指令。LLVM将帮助我们把这步变得非常简单，因为LLVM将真实的指令抽象成类似AST的指令。这意味着我们真正要做的事就是将AST转换成抽象指令。
+你可以想象这个过程是从抽象语法树的根节点开始遍历每一个树上节点并产生字节码的过程。现在就是使用我们在Node中定义的codeGen方法的时候了。例如，当我们遍历NBlock代码的时候(语义上NBlock代表一组我们语言的语句的集合)，我们将调用列表中每条语句的codeGen方法。上面步骤代码类似如下的形式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Value<span style="color:#f92672">*</span> NBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	StatementList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator it;
+	Value <span style="color:#f92672">*</span>last <span style="color:#f92672">=</span> NULL;
+	<span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> statements.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> statements.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Generating code for </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">typeid</span>(<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).name() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+		last <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).codeGen(context);
+	}
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating block</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> last;
+}
+</code></pre></div><p>在实现批量<code>codeGen</code>函数前，这里还实现一个简单的代码生成上下文对象，里面维护了一个简单的block栈。</p>
+<p><code>codegen.h</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;stack&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;typeinfo&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/Module.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/Function.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/Type.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/DerivedTypes.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/LLVMContext.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/LegacyPassManager.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/Instructions.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/CallingConv.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/IRPrintingPasses.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/IR/IRBuilder.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/Support/TargetSelect.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/ExecutionEngine/ExecutionEngine.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/ExecutionEngine/MCJIT.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/ExecutionEngine/GenericValue.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/Support/raw_ostream.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;llvm/Bitcode/BitcodeWriter.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> llvm;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NBlock</span>;
+
+<span style="color:#66d9ef">static</span> LLVMContext MyContext;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CodeGenBlock</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    BasicBlock <span style="color:#f92672">*</span>block;
+    Value <span style="color:#f92672">*</span>returnValue;
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, Value<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> locals;
+};
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CodeGenContext</span> {
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>stack<span style="color:#f92672">&lt;</span>CodeGenBlock <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> blocks;
+    Function <span style="color:#f92672">*</span>mainFunction;
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+
+    Module <span style="color:#f92672">*</span>module;
+    CodeGenContext() { module <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Module(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">main</span><span style="color:#e6db74">&#34;</span>, MyContext); }
+    
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">generateCode</span>(NBlock<span style="color:#f92672">&amp;</span> root, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string bcFile);
+    GenericValue <span style="color:#a6e22e">runCode</span>();
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, Value<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">&amp;</span> locals() { <span style="color:#66d9ef">return</span> blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>locals; }
+    BasicBlock <span style="color:#f92672">*</span><span style="color:#a6e22e">currentBlock</span>() { <span style="color:#66d9ef">return</span> blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>block; }
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">pushBlock</span>(BasicBlock <span style="color:#f92672">*</span>block) { blocks.push(<span style="color:#66d9ef">new</span> CodeGenBlock()); blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>returnValue <span style="color:#f92672">=</span> NULL; blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>block <span style="color:#f92672">=</span> block; }
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">popBlock</span>() { CodeGenBlock <span style="color:#f92672">*</span>top <span style="color:#f92672">=</span> blocks.top(); blocks.pop(); <span style="color:#66d9ef">delete</span> top; }
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setCurrentReturnValue</span>(Value <span style="color:#f92672">*</span>value) { blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>returnValue <span style="color:#f92672">=</span> value; }
+    Value<span style="color:#f92672">*</span> <span style="color:#a6e22e">getCurrentReturnValue</span>() { <span style="color:#66d9ef">return</span> blocks.top()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>returnValue; }
+};
+
+</code></pre></div><p>最后为<code>node.h</code>中定义的每一种语义单元编写好<code>codeGen</code>代码实现。做这部分之前需要了解下LLVM IR，参考<a href="https://github.com/Evian-Zhang/llvm-ir-tutorial">LLVM IR入门指南</a>。</p>
+<p>另外如何用cpp代码操作LLVM IR，暂时也找不到更好参考指引，要多参照<a href="https://github.com/llvm/llvm-project/tree/master/llvm/examples">llvm的examples</a>研究，依葫芦画瓢。</p>
+<p><code>codegen.cpp</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;node.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;codegen.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;parser.hpp&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+
+<span style="color:#75715e">/* Compile the AST into a module */</span>
+<span style="color:#66d9ef">void</span> CodeGenContext<span style="color:#f92672">:</span><span style="color:#f92672">:</span>generateCode(NBlock<span style="color:#f92672">&amp;</span> root, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string bcFile)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Generating code...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+	
+	<span style="color:#75715e">/* Create the top level interpreter function to call as entry */</span>
+	vector<span style="color:#f92672">&lt;</span>Type<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> argTypes;
+	FunctionType <span style="color:#f92672">*</span>ftype <span style="color:#f92672">=</span> FunctionType<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getInt32Ty(MyContext), makeArrayRef(argTypes), false);
+	mainFunction <span style="color:#f92672">=</span> Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(ftype, GlobalValue<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ExternalLinkage, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">main</span><span style="color:#e6db74">&#34;</span>, module);
+	BasicBlock <span style="color:#f92672">*</span>bblock <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(MyContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">entry</span><span style="color:#e6db74">&#34;</span>, mainFunction, <span style="color:#ae81ff">0</span>);
+	
+	<span style="color:#75715e">/* Push a new variable/block context */</span>
+	pushBlock(bblock);
+	root.codeGen(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>); <span style="color:#75715e">/* emit bytecode for the toplevel block */</span>
+	ReturnInst<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(MyContext, ConstantInt<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getInt32Ty(MyContext), <span style="color:#ae81ff">0</span>), bblock);
+	popBlock();
+	
+	<span style="color:#75715e">/* Print the bytecode in a human-readable format 
+</span><span style="color:#75715e">	   to see if our program compiled properly
+</span><span style="color:#75715e">	 */</span>
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Code is generated.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+
+	legacy<span style="color:#f92672">:</span><span style="color:#f92672">:</span>PassManager pm;
+	pm.add(createPrintModulePass(outs()));
+	pm.run(<span style="color:#f92672">*</span>module);
+
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>error_code errInfo;
+    llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>raw_ostream <span style="color:#f92672">*</span>out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>raw_fd_ostream(bcFile, errInfo, sys<span style="color:#f92672">:</span><span style="color:#f92672">:</span>fs<span style="color:#f92672">:</span><span style="color:#f92672">:</span>F_None);
+    llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>WriteBitcodeToFile(<span style="color:#f92672">*</span>module, <span style="color:#f92672">*</span>out);
+    out<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>flush();
+	<span style="color:#66d9ef">delete</span> out;
+}
+
+<span style="color:#75715e">/* Executes the AST by running the main function */</span>
+GenericValue CodeGenContext<span style="color:#f92672">:</span><span style="color:#f92672">:</span>runCode() {
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Running code...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+	ExecutionEngine <span style="color:#f92672">*</span>ee <span style="color:#f92672">=</span> EngineBuilder( unique_ptr<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span>(module) ).create();
+	ee<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>finalizeObject();
+	vector<span style="color:#f92672">&lt;</span>GenericValue<span style="color:#f92672">&gt;</span> noargs;
+	GenericValue v <span style="color:#f92672">=</span> ee<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>runFunction(mainFunction, noargs);
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Code was run.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+	<span style="color:#66d9ef">return</span> v;
+}
+
+<span style="color:#75715e">/* Returns an LLVM type based on the identifier */</span>
+<span style="color:#66d9ef">static</span> Type <span style="color:#f92672">*</span><span style="color:#a6e22e">typeOf</span>(<span style="color:#66d9ef">const</span> NIdentifier<span style="color:#f92672">&amp;</span> type) 
+{
+	<span style="color:#66d9ef">if</span> (type.name.compare(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">int</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+		<span style="color:#66d9ef">return</span> Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getInt64Ty(MyContext);
+	}
+	<span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (type.name.compare(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">double</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+		<span style="color:#66d9ef">return</span> Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(MyContext);
+	}
+	<span style="color:#66d9ef">return</span> Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getVoidTy(MyContext);
+}
+
+<span style="color:#75715e">/* -- Code Generation -- */</span>
+
+Value<span style="color:#f92672">*</span> NInteger<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating integer: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> value <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> ConstantInt<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getInt64Ty(MyContext), value, true);
+}
+
+Value<span style="color:#f92672">*</span> NDouble<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating double: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> value <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(MyContext), value);
+}
+
+Value<span style="color:#f92672">*</span> NIdentifier<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating identifier reference: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">if</span> (context.locals().find(name) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> context.locals().end()) {
+		std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cerr <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">undeclared variable </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+		<span style="color:#66d9ef">return</span> NULL;
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">LoadInst</span>(context.locals()[name], <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, false, context.currentBlock());
+}
+
+Value<span style="color:#f92672">*</span> NMethodCall<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	Function <span style="color:#f92672">*</span>function <span style="color:#f92672">=</span> context.module<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getFunction(id.name.c_str());
+	<span style="color:#66d9ef">if</span> (function <span style="color:#f92672">=</span><span style="color:#f92672">=</span> NULL) {
+		std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cerr <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">no such function </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> id.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	}
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>Value<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> args;
+	ExpressionList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator it;
+	<span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> arguments.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> arguments.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		args.push_back((<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).codeGen(context));
+	}
+	CallInst <span style="color:#f92672">*</span>call <span style="color:#f92672">=</span> CallInst<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(function, makeArrayRef(args), <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, context.currentBlock());
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating method call: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> id.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> call;
+}
+
+Value<span style="color:#f92672">*</span> NBinaryOperator<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating binary operation </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> op <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>BinaryOps instr;
+	<span style="color:#66d9ef">switch</span> (op) {
+		<span style="color:#66d9ef">case</span> TPLUS: 	instr <span style="color:#f92672">=</span> Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Add; <span style="color:#66d9ef">goto</span> math;
+		<span style="color:#66d9ef">case</span> TMINUS: 	instr <span style="color:#f92672">=</span> Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Sub; <span style="color:#66d9ef">goto</span> math;
+		<span style="color:#66d9ef">case</span> TMUL: 		instr <span style="color:#f92672">=</span> Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Mul; <span style="color:#66d9ef">goto</span> math;
+		<span style="color:#66d9ef">case</span> TDIV: 		instr <span style="color:#f92672">=</span> Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>SDiv; <span style="color:#66d9ef">goto</span> math;
+				
+		<span style="color:#75715e">/* TODO comparison */</span>
+	}
+
+	<span style="color:#66d9ef">return</span> NULL;
+math:
+	<span style="color:#66d9ef">return</span> BinaryOperator<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(instr, lhs.codeGen(context), 
+		rhs.codeGen(context), <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, context.currentBlock());
+}
+
+Value<span style="color:#f92672">*</span> NAssignment<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating assignment for </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> lhs.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">if</span> (context.locals().find(lhs.name) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> context.locals().end()) {
+		std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cerr <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">undeclared variable </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> lhs.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+		<span style="color:#66d9ef">return</span> NULL;
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">StoreInst</span>(rhs.codeGen(context), context.locals()[lhs.name], false, context.currentBlock());
+}
+
+Value<span style="color:#f92672">*</span> NBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	StatementList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator it;
+	Value <span style="color:#f92672">*</span>last <span style="color:#f92672">=</span> NULL;
+	<span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> statements.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> statements.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Generating code for </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">typeid</span>(<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).name() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+		last <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).codeGen(context);
+	}
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating block</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> last;
+}
+
+Value<span style="color:#f92672">*</span> NExpressionStatement<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Generating code for </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">typeid</span>(expression).name() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> expression.codeGen(context);
+}
+
+Value<span style="color:#f92672">*</span> NReturnStatement<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Generating return code for </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">typeid</span>(expression).name() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	Value <span style="color:#f92672">*</span>returnValue <span style="color:#f92672">=</span> expression.codeGen(context);
+	context.setCurrentReturnValue(returnValue);
+	<span style="color:#66d9ef">return</span> returnValue;
+}
+
+Value<span style="color:#f92672">*</span> NVariableDeclaration<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating variable declaration </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> type.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> id.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	AllocaInst <span style="color:#f92672">*</span>alloc <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AllocaInst(typeOf(type), NULL, id.name.c_str(), context.currentBlock());
+	context.locals()[id.name] <span style="color:#f92672">=</span> alloc;
+	<span style="color:#66d9ef">if</span> (assignmentExpr <span style="color:#f92672">!</span><span style="color:#f92672">=</span> NULL) {
+		NAssignment <span style="color:#a6e22e">assn</span>(id, <span style="color:#f92672">*</span>assignmentExpr);
+		assn.codeGen(context);
+	}
+	<span style="color:#66d9ef">return</span> alloc;
+}
+
+Value<span style="color:#f92672">*</span> NExternDeclaration<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+    vector<span style="color:#f92672">&lt;</span>Type<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> argTypes;
+    VariableList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator it;
+    <span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> arguments.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> arguments.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+        argTypes.push_back(typeOf((<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).type));
+    }
+    FunctionType <span style="color:#f92672">*</span>ftype <span style="color:#f92672">=</span> FunctionType<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(typeOf(type), makeArrayRef(argTypes), false);
+    Function <span style="color:#f92672">*</span>function <span style="color:#f92672">=</span> Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(ftype, GlobalValue<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ExternalLinkage, id.name.c_str(), context.module);
+    <span style="color:#66d9ef">return</span> function;
+}
+
+Value<span style="color:#f92672">*</span> NFunctionDeclaration<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codeGen(CodeGenContext<span style="color:#f92672">&amp;</span> context)
+{
+	vector<span style="color:#f92672">&lt;</span>Type<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> argTypes;
+	VariableList<span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator it;
+	<span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> arguments.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> arguments.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		argTypes.push_back(typeOf((<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).type));
+	}
+	FunctionType <span style="color:#f92672">*</span>ftype <span style="color:#f92672">=</span> FunctionType<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(typeOf(type), makeArrayRef(argTypes), false);
+	Function <span style="color:#f92672">*</span>function <span style="color:#f92672">=</span> Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(ftype, GlobalValue<span style="color:#f92672">:</span><span style="color:#f92672">:</span>InternalLinkage, id.name.c_str(), context.module);
+	BasicBlock <span style="color:#f92672">*</span>bblock <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(MyContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">entry</span><span style="color:#e6db74">&#34;</span>, function, <span style="color:#ae81ff">0</span>);
+
+	context.pushBlock(bblock);
+
+	Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>arg_iterator argsValues <span style="color:#f92672">=</span> function<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>arg_begin();
+    Value<span style="color:#f92672">*</span> argumentValue;
+
+	<span style="color:#66d9ef">for</span> (it <span style="color:#f92672">=</span> arguments.begin(); it <span style="color:#f92672">!</span><span style="color:#f92672">=</span> arguments.end(); it<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		(<span style="color:#f92672">*</span><span style="color:#f92672">*</span>it).codeGen(context);
+		
+		argumentValue <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">*</span>argsValues<span style="color:#f92672">+</span><span style="color:#f92672">+</span>;
+		argumentValue<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setName((<span style="color:#f92672">*</span>it)<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>id.name.c_str());
+		StoreInst <span style="color:#f92672">*</span>inst <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> StoreInst(argumentValue, context.locals()[(<span style="color:#f92672">*</span>it)<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>id.name], false, bblock);
+	}
+	
+	block.codeGen(context);
+	ReturnInst<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(MyContext, context.getCurrentReturnValue(), bblock);
+
+	context.popBlock();
+	std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Creating function: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> id.name <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> endl;
+	<span style="color:#66d9ef">return</span> function;
+}
+
+</code></pre></div><p>上述文件中最上面的<code>generateCode</code>及<code>runCode</code>先不看，剩下的基本上全是为每一种语义单元编写好<code>codeGen</code>代码实现，将该语义单元翻译为对应的LLVM IR。</p>
+<p><code>generateCode</code>函数的作用是在最外层再包一个<code>main</code>函数，并将最终生成的LLVM IR字节码输出。</p>
+<p><code>runCode</code>函数的作用是使用LLVM自带的JIT执行引擎，直接运行LLVM IR字节码。</p>
+<p>再然后这里写个main函数，将生成的LLVM IR字节码写入到文件中。</p>
+<p><code>main.cpp</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;codegen.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&#34;node.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+
+<span style="color:#66d9ef">extern</span> FILE <span style="color:#f92672">*</span>yyin;
+<span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">yyparse</span>();
+<span style="color:#66d9ef">extern</span> NBlock <span style="color:#f92672">*</span>programBlock;
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">createCoreFunctions</span>(CodeGenContext <span style="color:#f92672">&amp;</span>context);
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span><span style="color:#f92672">*</span>argv)
+{
+	FILE <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> fopen(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">test/example.txt</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;</span>);
+	<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>fp)
+	{
+		printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">couldn&#39;t open file for reading</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+		exit(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+	}
+	yyin <span style="color:#f92672">=</span> fp;
+	<span style="color:#66d9ef">int</span> parseErr <span style="color:#f92672">=</span> yyparse();
+	<span style="color:#66d9ef">if</span> (parseErr <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+		printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">couldn&#39;t complete lex parse</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+		exit(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+	}
+	fclose(fp);
+	InitializeNativeTarget();
+	InitializeNativeTargetAsmPrinter();
+	InitializeNativeTargetAsmParser();
+	CodeGenContext context;
+	createCoreFunctions(context);
+	context.generateCode(<span style="color:#f92672">*</span>programBlock, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">test/example.bc</span><span style="color:#e6db74">&#34;</span>);
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+</code></pre></div><p>这里还通过<code>createCoreFunctions</code>函数植入了一些内置核心函数。</p>
+<p>编译出我们的编译器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang++ -std<span style="color:#f92672">=</span>c++14 -o compiler parser.cpp codegen.cpp main.cpp tokens.cpp corefn.cpp <span style="color:#e6db74">`</span>llvm-config --libs<span style="color:#e6db74">`</span> <span style="color:#e6db74">`</span>llvm-config --ldflags<span style="color:#e6db74">`</span> -lpthread -ldl -lz -lncurses -rdynamic
+</code></pre></div><p>使用新鲜出炉的编译器将<code>test/example.txt</code>编译为<code>test/example.bc</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./compiler
+</code></pre></div><p><code>test/example.bc</code>中的内容就是LLVM IR的字节码了。</p>
+<p>我们可以用<code>LLVM JIT</code>来执行一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ lli test/example.bc
+</code></pre></div><p>生成的<code>bc</code>文件不可读，可以用<code>llvm-dis</code>工具反解析一下得到人类可阅读的LLVM IR字节码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ llvm-dis &lt; test/example.bc |  less
+</code></pre></div><h2 id="heading-3">编译出二进制并执行</h2>
+<p>最后将上面得到的LLVM IR字节码文件编译出二进制文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ llc test/example.bc -o test/example.S <span style="color:#75715e"># 先将LLVM IR字节码转成汇编代码</span>
+$ clang++ test/example.S -o test/example.native <span style="color:#75715e"># 再用clang++将汇编代码编译为二进制文件</span>
+</code></pre></div><p>测试下二进制文件是否可以正常执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./test/example.native
+<span style="color:#ae81ff">68</span>
+<span style="color:#ae81ff">63</span>
+</code></pre></div><p>因为我们在语法定义文件里支持了链接外部函数，因此这里还支持调用cpp的函数，演示如下：</p>
+<p><code>test/example.txt</code></p>
+<pre><code>extern void printi(int val)
+
+int do_math(int a) {
+  int x = a * 5
+  return x + 3
+}
+
+echo(do_math(13))
+echo(do_math(12))
+printi(10)
+</code></pre><p>这里声明了一个外部的函数<code>printi</code>，我们在cpp文件中实现它：</p>
+<p><code>native.cpp</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">extern</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">void</span> printi(<span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> val)
+{
+    printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%lld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, val);
+}
+</code></pre></div><p>使用新鲜出炉的编译器将<code>test/example.txt</code>编译为<code>test/example.bc</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./compiler
+</code></pre></div><p>将上面得到的LLVM IR字节码文件编译出二进制文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ llc test/example.bc -o test/example.S <span style="color:#75715e"># 先将LLVM IR字节码转成汇编代码</span>
+$ clang++ native.cpp test/example.S -o test/example.native <span style="color:#75715e"># 再用clang++将汇编代码编译为二进制文件</span>
+</code></pre></div><p>测试下二进制文件是否可以正常执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./test/example.native
+<span style="color:#ae81ff">68</span>
+<span style="color:#ae81ff">63</span>
+<span style="color:#ae81ff">10</span>
+</code></pre></div><p>至此，一个工具性质的编译器就完成了。</p>
+<h2 id="heading-4">总结</h2>
+<p>在编写一个简易编译器的过程中，查阅了相关多的资料，学习并加强了编译原理相关的知识，对代码是如何运行的有了更深刻的认识，整个探究过程还挺有意思的。</p>
+<p>本篇涉及的所有代码见<a href="https://github.com/jeremyxu2010/toy-compiler">toy-compiler</a>。</p>
+<h2 id="heading-5">参考</h2>
+<ol>
+<li><a href="https://gnuu.org/2009/09/18/writing-your-own-toy-compiler/">https://gnuu.org/2009/09/18/writing-your-own-toy-compiler/</a></li>
+<li><a href="https://coolshell.cn/articles/1547.html">https://coolshell.cn/articles/1547.html</a></li>
+<li><a href="https://blog.csdn.net/wp1603710463/article/details/50365640">https://blog.csdn.net/wp1603710463/article/details/50365640</a></li>
+<li><a href="https://github.com/Evian-Zhang/llvm-ir-tutorial">https://github.com/Evian-Zhang/llvm-ir-tutorial</a></li>
+<li><a href="https://stackoverflow.com/questions/3167751/how-to-solve-a-shift-reduce-conflict">https://stackoverflow.com/questions/3167751/how-to-solve-a-shift-reduce-conflict</a></li>
+<li><a href="https://llvm.zcopy.site/">https://llvm.zcopy.site/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-10-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/flex/">flex</a>
+          
+          <a href="/tags/bison/">bison</a>
+          
+          <a href="/tags/llvm/">llvm</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">web浏览器自动化之playwright</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/">
+            <span class="next-text nav-default">python多进程实战</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

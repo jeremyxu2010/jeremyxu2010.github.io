@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>promise on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/promise/</link>
+    <description>Recent content in promise on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 22 Sep 2016 22:51:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/promise/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>利用promise实现简单的前端cache</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E5%88%A9%E7%94%A8promise%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E5%89%8D%E7%AB%AFcache/</link>
+      <pubDate>Thu, 22 Sep 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E5%88%A9%E7%94%A8promise%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E5%89%8D%E7%AB%AFcache/</guid>
+      <description>今天在工作中遇到一个关于promise有趣的小问题，这里分享一下分析的过程。 原始版本 //这个方法模拟从服务端加载数据 var loadData = function(){ return fetch(&amp;#39;/&amp;#39;).then(function(data){ return data.statusText }); }; loadData().then(function(data){ console.log(data);</description>
+    </item>
+    
+  </channel>
+</rss>

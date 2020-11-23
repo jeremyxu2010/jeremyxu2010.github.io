@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mybatis-generator on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mybatis-generator/</link>
+    <description>Recent content in mybatis-generator on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 20 Mar 2017 20:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mybatis-generator/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>编写mybatis-generator插件</title>
+      <link>https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/</link>
+      <pubDate>Mon, 20 Mar 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/</guid>
+      <description>背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&amp;lt;Demo&amp;gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记07 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记07" />
+<meta property="og:description" content="自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/" />
+<meta property="article:published_time" content="2017-06-16T21:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-16T21:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记07">
+<meta itemprop="description" content="自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性">
+<meta itemprop="datePublished" content="2017-06-16T21:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-16T21:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="2042">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记07"/>
+<meta name="twitter:description" content="自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记07</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2042 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#optimal-margin-classifier">最优间隔分类器(optimal margin classifier)</a></li>
+    <li><a href="#kktprimaldual-optimization-problem">原始/对偶优化问题（KKT）（primal/dual optimization problem）</a>
+      <ul>
+        <li><a href="#heading">拉格朗日二元性</a></li>
+        <li><a href="#heading-1">原始问题</a></li>
+        <li><a href="#heading-2">对偶问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#svm">使用对偶方法求解SVM最化间隔分类问题</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。</p>
+<h2 id="optimal-margin-classifier">最优间隔分类器(optimal margin classifier)</h2>
+<p>如果训练集是线性可分的， 就是说用超平面可以分隔正负样本. 我们要找到最大的几何间隔. 我们可以转化为下面的优化问题：</p>
+<p>​                                      <img src="http://img.blog.csdn.net/20150720113217354" alt=""></p>
+<p>即，找到一个超平面，在将正负样本分开的同时，使超平面到正负样本间的距离尽可能大。</p>
+<p>由于w和b可随意缩放，约束条件||w||=1，使得函数间隔等于几何间隔。但是这个约束本身是一个<code>非凸性约束</code>。（非凸性：是指系统有多个稳定的平衡态。）要求解的参数w在一个球体表面，如果想得到一个凸优化问题，必须保证如梯度下降算法这种局部最优值搜索算法不会找到局部最优值，而非凸性约束不能满足这个条件，所以需要改变优化问题。因此转化为更好的一个问题：</p>
+<p><img src="http://img.blog.csdn.net/20150721202753143" alt=""></p>
+<p>我们的目标变成要最大化<img src="http://img.blog.csdn.net/20150721202849001" alt="">,并且去掉了约束条件||w=1||，但是<img src="http://img.blog.csdn.net/20150721203229648" alt="">仍然是非凸性的.</p>
+<p>因此，加上规模的限制，对训练集的函数间隔设置为1：<img src="http://img.blog.csdn.net/20150721204121178" alt=""></p>
+<p>至此，我们得到最终的<code>最优间隔分类器</code>：</p>
+<p><img src="http://img.blog.csdn.net/20131121195907921" alt=""></p>
+<p>此时，我们的优化问题变为一个凸二次目标函数。</p>
+<h2 id="kktprimaldual-optimization-problem">原始/对偶优化问题（KKT）（primal/dual optimization problem）</h2>
+<h3 id="heading">拉格朗日二元性</h3>
+<p>考虑下式：</p>
+<p><img src="http://img.blog.csdn.net/20131121195937609" alt=""></p>
+<p>即最小化函数f(w)，并满足约束条件hi(w)=0，可以将hi写成0向量**，**我们可以通过拉格朗日乘数法的方法解决：</p>
+<p>1、创建拉格朗日算子：</p>
+<p><img src="http://img.blog.csdn.net/20131121195951375" alt=""></p>
+<p>即等于原始目标函数加限制函数的线性组合，其中参数β称为拉格朗日乘数。</p>
+<p>2、对下式求偏导数置为0，即可求出解w和β：</p>
+<p><img src="http://img.blog.csdn.net/20131121200002437" alt=""></p>
+<h3 id="heading-1">原始问题</h3>
+<p>拉格朗日乘数法的一般形式，也称为原始问题**。**</p>
+<p>考虑下式：</p>
+<p><img src="http://img.blog.csdn.net/20131121200014015" alt=""></p>
+<p>创建拉格朗日算子：</p>
+<p><img src="http://img.blog.csdn.net/20131121200057609" alt=""></p>
+<p>此时α和β为拉格朗日乘数，定义：</p>
+<p><img src="http://img.blog.csdn.net/20131121200107281" alt=""></p>
+<p>上式中的“p”表示“原始问题”（primal），</p>
+<p>如果w违反了约束条件，即<img src="http://img.blog.csdn.net/20150722091904550" alt="">**，**那么上式变成：</p>
+<p>​                                                             <img src="http://img.blog.csdn.net/20150722092053899" alt="">
+分析上式，若gi(w)&gt;0，那么只要使αi无穷大，θp(w)就会无穷大；若hi(w)<strong>≠</strong>0，只要使βi相应取无穷大（hi(w)&gt;0）或无穷小（hi(w)&lt;0），θp(w)也会无穷大。</p>
+<p>反之，若w满足约束条件，那么θp(w) = f(w)，所以可得：</p>
+<p><img src="http://img.blog.csdn.net/20131121200143828" alt=""></p>
+<p>那么，求min f(w)就是求下式的值，定义为p*：</p>
+<p>​                                                            <img src="http://img.blog.csdn.net/20150722093210166" alt=""></p>
+<p>​                                                                     <img src="http://img.blog.csdn.net/20131121200156281" alt=""></p>
+<h3 id="heading-2">对偶问题</h3>
+<p>与上面原始问题有略微差别，我们定义：</p>
+<p><img src="http://img.blog.csdn.net/20131121200210859" alt=""></p>
+<p>对其取最大值，即给出<strong>对偶优化问题</strong>，定义为d*：</p>
+<p>​                                                           <img src="http://img.blog.csdn.net/20150722094238996" alt=""></p>
+<p><img src="http://img.blog.csdn.net/20131121200227906" alt=""></p>
+<p>显然，我们有：</p>
+<p>​                              <img src="http://img.blog.csdn.net/20131121200240968" alt=""></p>
+<p>在某些条件下，会有<img src="http://img.blog.csdn.net/20150722094618117" alt="">，因此我们可以通过解决原始问题来解决对偶问题.</p>
+<p>原始问题和对偶问题获得相同解的条件：</p>
+<ol>
+<li>令f为凸函数（凸函数的hessian 矩阵是半正定的，H&gt;=0，即开口朝上的碗状函数）</li>
+<li>假设hi为仿射函数（(affine，和线性是一样的，只不过是加了截距），即<img src="http://img.blog.csdn.net/20131121200314953" alt=""></li>
+<li>假设gi是严格可执行的，即存在w，使得对于所有i，gi(w)&lt;0</li>
+</ol>
+<p>在上述条件下，存在w*，α*，β*，其中w*是原始问题的解，α*，β*是对偶问题的解，并且：</p>
+<p><img src="http://img.blog.csdn.net/20131121200336078" alt=""></p>
+<p>此外，还要满足以下条件：</p>
+<p><img src="http://img.blog.csdn.net/20160817193200045" alt=""></p>
+<p>这些条件被称为<strong>KKT条件</strong>。（KKT是三个人名的缩写），如果<img src="http://img.blog.csdn.net/20150722104154576" alt="">满足KKT条件，那么就是原始问题和对偶问题的解。</p>
+<p>其中，<img src="http://img.blog.csdn.net/20160817193555898" alt="">称为KKT对偶补充条件。即就是：</p>
+<p>如果αi&gt;0 ，那么 gi(w*)=0，但是一般来说αi&gt;0  &lt;=&gt;  gi(w*)=0。</p>
+<p>当gi(w*)=0，称gi(w*)为活动约束。</p>
+<h2 id="svm">使用对偶方法求解SVM最化间隔分类问题</h2>
+<p>前面，我们有了最优间隔分类器如下：</p>
+<p><img src="http://img.blog.csdn.net/20131121200405500" alt=""></p>
+<p>约束条件可以写为：</p>
+<p><img src="http://img.blog.csdn.net/20131121200416546" alt=""></p>
+<p>通过KKT条件，αi&gt;0  =&gt;  gi(w,b)=0 =&gt; y(i)(wTx(i)+b)=1，即函数间隔为1</p>
+<p>给出例子如下图：</p>
+<p><img src="http://img.blog.csdn.net/20131121200441656" alt=""></p>
+<p>图中的圈和叉即正负样本，实线即w,b确定的分割的超平面，<strong>最小的间隔是离决定边界最近的点，上图中有三个</strong>看出有三个样本的函数间隔为1，其他样本的函数间隔大于1，虚线即为函数间隔为1的点所构成的线。</p>
+<p>过KKT条件，这些函数间隔为1的样本对应的拉格朗日乘数一般不等于0， (因为根据KKT对偶补充条件，只有<img src="http://img.blog.csdn.net/20150722112851281" alt="">，函数边界才等于 1).<strong>。<strong>这三个点被称为</strong>支持向量（support vector）</strong>，由此可见，支持向量的数量比训练样本数量小很多**。**</p>
+<p>所以，总结为：αi&gt;0。这个函数间隔为1的样本称为<strong>支持向量</strong>。因为支撑向量数量很少，所以多数的αi=0，那么反推可得，αi=0，对应的样本不是支撑向量。</p>
+<p>对最优间隔优化问题构建拉格朗日算子，有：</p>
+<p>​                                                             <img src="http://img.blog.csdn.net/20150722113413184" alt=""></p>
+<p>由于这个问题只有不等式约束，所以没有β。</p>
+<p><strong>对w求偏导</strong>并设为0**：**</p>
+<p><img src="http://img.blog.csdn.net/20131121200533140" alt=""></p>
+<p>推出：</p>
+<p><img src="http://img.blog.csdn.net/20131121200552828" alt=""></p>
+<p>w就是输入特征向量的线性组合。对b求偏导：</p>
+<p><img src="http://img.blog.csdn.net/20131121200606859" alt=""></p>
+<p>将w代入拉格朗日算子，得到：</p>
+<p>​                                                         <img src="http://img.blog.csdn.net/20131121200622406" alt=""></p>
+<p>根据对b求偏导的结果，最后一项为0，得到：</p>
+<p><img src="http://img.blog.csdn.net/20131121200638625" alt=""></p>
+<p>将上式表示为W(α)，对偶问题就是：</p>
+<p><img src="http://img.blog.csdn.net/20131121200704203" alt=""></p>
+<p>运用梯度下降法或极大似然法解上面这个对偶问题，即可求出参数α。求出α后，代入</p>
+<p><img src="http://img.blog.csdn.net/20131121200552828" alt=""></p>
+<p>即可求出w。</p>
+<p>求出α和w后，容易求出b，因为w决定了超平面的斜率，那么根据最优间隔，将α和w代入原始问题，就容易求出b了，如下式：</p>
+<p><img src="http://img.blog.csdn.net/20131121200724906" alt=""></p>
+<p>再得到：</p>
+<p>​                                                                    <img src="http://img.blog.csdn.net/20160817203020048" alt=""></p>
+<p><code>$w^Tx + b = \sum_{i=1}^m\alpha_iy^{(i)}&lt;x^{(i)}, x&gt; + b = 0$</code>定义出了超平面，而函数间隔为1的样本对应的拉格朗日乘数<code>$\alpha_i$</code>才不等于0，所以这个公式的直观理解就是，找到最差的样本（离得最近的正负样本，也就是支持向量），接着，就只需要计算x和支持向量的内积就可以求出超平面的位置。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记08</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/">
+            <span class="next-text nav-default">机器学习课程_笔记06</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

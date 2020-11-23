@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TravisCI on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/travisci/</link>
+    <description>Recent content in TravisCI on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Mar 2019 10:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/travisci/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用TravisCI做个人博客的自动构建</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/</link>
+      <pubDate>Sun, 10 Mar 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/</guid>
+      <description>今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化</description>
+    </item>
+    
+  </channel>
+</rss>

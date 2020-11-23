@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用create-react-app简化前端项目的建立 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用create-react-app简化前端项目的建立" />
+<meta property="og:description" content="以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/" />
+<meta property="article:published_time" content="2017-01-25T18:30:00+08:00" />
+<meta property="article:modified_time" content="2017-01-25T18:30:00+08:00" />
+<meta itemprop="name" content="使用create-react-app简化前端项目的建立">
+<meta itemprop="description" content="以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实">
+<meta itemprop="datePublished" content="2017-01-25T18:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-01-25T18:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="999">
+
+
+
+<meta itemprop="keywords" content="react,nodejs," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用create-react-app简化前端项目的建立"/>
+<meta name="twitter:description" content="以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用create-react-app简化前端项目的建立</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-01-25 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 999 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">创建项目</a></li>
+    <li><a href="#heading-1">开发设置</a></li>
+    <li><a href="#java-webbrowserhistory">Java Web应用启用browserHistory</a></li>
+    <li><a href="#heading-2">重新组织工程目录结构</a></li>
+    <li><a href="#heading-3">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>以往启动一个Web项目，总要从一个现存的项目将<code>gulpfile.js</code>, <code>package.json</code>拷贝至新项目，然后根据需要修改这两个文件，确实挺麻烦的。今天在github上看到一个评分还比较高的项目<a href="https://github.com/facebookincubator/create-react-app">create-react-app</a>
+。细细看了下它的文档，发现facebook通过这个项目将react的前端项目标准化了，约定大于配置，通过这个工具创建项目方便多了，这里记录一下以备忘。</p>
+<h2 id="heading">创建项目</h2>
+<p>执行以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装create-react-app命令</span>
+npm install -g create-react-app
+<span style="color:#75715e">#创建一个名为demo1的前端项目</span>
+create-react-app demo1
+cd demo1
+<span style="color:#75715e">#这里直接启动了开发服务器</span>
+npm start
+</code></pre></div><p>它会自动打开浏览器，并访问<code>http://127.0.0.1:3000</code>。</p>
+<p>如果修改工程<code>src</code>目录下的文件，则会自动编译，并刷新浏览器。如果出现编译错误，终端及浏览器上均会有提示。</p>
+<h2 id="heading-1">开发设置</h2>
+<p>在我实际工作中，一般是用java做后台的，因此要配置前端页面的API都代理至后端的Java Web服务器。</p>
+<p>修改<code>package.json</code>文件，加入代理设置</p>
+<pre><code>&quot;proxy&quot;: &quot;http://127.0.0.1:8080&quot;
+</code></pre><p>配置SpringMVC处理后台的api请求</p>
+<pre><code>&lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;classpath:applicationContext.xml&lt;/param-value&gt;
+&lt;/context-param&gt;
+&lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+&lt;/listener&gt;
+&lt;servlet&gt;
+    &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;
+    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+    &lt;init-param&gt;
+        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+        &lt;param-value&gt;classpath:spring/mvc.xml&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;
+&lt;servlet-mapping&gt;
+    &lt;servlet-name&gt;springmvc&lt;/servlet-name&gt;
+    &lt;url-pattern&gt;/api/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+</code></pre><p>实际开发时，先启动Java Web服务器，再执行<code>npm start</code>启动Web开发服务器，然后就可以开发了。</p>
+<h2 id="java-webbrowserhistory">Java Web应用启用browserHistory</h2>
+<p>如果前端使用了<code>browserHistory</code>, 则后台还需处理TryFiles的逻辑，TryFilesFilter在web.xml里的配置如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;filter</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;filter-name</span><span style="color:#f92672">&gt;</span>TryFiles<span style="color:#f92672">&lt;/filter-name&gt;</span>
+    <span style="color:#f92672">&lt;filter-class</span><span style="color:#f92672">&gt;</span>personal.jeremyxu.filter.TryFilesFilter<span style="color:#f92672">&lt;/filter-class&gt;</span>
+    <span style="color:#f92672">&lt;init-param</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;param-name</span><span style="color:#f92672">&gt;</span>files<span style="color:#f92672">&lt;/param-name&gt;</span>
+        <span style="color:#f92672">&lt;param-value</span><span style="color:#f92672">&gt;</span>$path /index.html<span style="color:#f92672">&lt;/param-value&gt;</span>
+    <span style="color:#f92672">&lt;/init-param&gt;</span>
+    <span style="color:#f92672">&lt;init-param</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;param-name</span><span style="color:#f92672">&gt;</span>excludes<span style="color:#f92672">&lt;/param-name&gt;</span>
+        <span style="color:#f92672">&lt;param-value</span><span style="color:#f92672">&gt;</span>/api<span style="color:#f92672">&lt;/param-value&gt;</span>
+    <span style="color:#f92672">&lt;/init-param&gt;</span>
+<span style="color:#f92672">&lt;/filter&gt;</span>
+<span style="color:#f92672">&lt;filter-mapping</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;filter-name</span><span style="color:#f92672">&gt;</span>TryFiles<span style="color:#f92672">&lt;/filter-name&gt;</span>
+    <span style="color:#f92672">&lt;url-pattern</span><span style="color:#f92672">&gt;</span>/*<span style="color:#f92672">&lt;/url-pattern&gt;</span>
+<span style="color:#f92672">&lt;/filter-mapping&gt;</span>
+</code></pre></div><p>TryFilesFilter的代码见<a href="http://git.oschina.net/jeremy-xu/ssm-scaffold/raw/master/src/main/java/personal/jeremyxu/filter/TryFilesFilter.java?dir=0&amp;filepath=src%2Fmain%2Fjava%2Fpersonal%2Fjeremyxu%2Ffilter%2FTryFilesFilter.java">这里</a></p>
+<h2 id="heading-2">重新组织工程目录结构</h2>
+<p>在我实际工作中，一般是用java做后台的，因而希望直接将前端代码放到maven的webapp工程里，所以我一般是下面这样组织目录结构的。</p>
+<pre><code>demo1/
+  src/
+    main/
+      frontend/
+        src/
+          js/
+            index.js
+            actions/
+            components/
+            constants/
+            i18n/
+            reducers/
+            utils/
+          css/
+        public/
+          index.html
+          static/
+        package.json
+        .gitignore
+      java
+      webapp
+        WEB-INF
+  pom.xml
+</code></pre><p>创建一个frontend的目录与java目录平级，这里放置前端源代码。</p>
+<p>然后修改maven项目的pom.xml文件，确保打war包能自动编译前端代码，并将编译后的文件打入war包里。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.codehaus.mojo<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>exec-maven-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>1.3.2<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;executions</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;execution</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;phase</span><span style="color:#f92672">&gt;</span>prepare-package<span style="color:#f92672">&lt;/phase&gt;</span>
+            <span style="color:#f92672">&lt;goals</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#f92672">&lt;goal</span><span style="color:#f92672">&gt;</span>exec<span style="color:#f92672">&lt;/goal&gt;</span>
+            <span style="color:#f92672">&lt;/goals&gt;</span>
+        <span style="color:#f92672">&lt;/execution&gt;</span>
+    <span style="color:#f92672">&lt;/executions&gt;</span>
+    <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;executable</span><span style="color:#f92672">&gt;</span>npm<span style="color:#f92672">&lt;/executable&gt;</span>
+        <span style="color:#f92672">&lt;workingDirectory</span><span style="color:#f92672">&gt;</span>src/main/frontend<span style="color:#f92672">&lt;/workingDirectory&gt;</span>
+        <span style="color:#f92672">&lt;arguments</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;argument</span><span style="color:#f92672">&gt;</span>run<span style="color:#f92672">&lt;/argument&gt;</span>
+            <span style="color:#f92672">&lt;argument</span><span style="color:#f92672">&gt;</span>build<span style="color:#f92672">&lt;/argument&gt;</span>
+        <span style="color:#f92672">&lt;/arguments&gt;</span>
+    <span style="color:#f92672">&lt;/configuration&gt;</span>
+<span style="color:#f92672">&lt;/plugin&gt;</span>
+
+<span style="color:#f92672">&lt;plugin</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.apache.maven.plugins<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>maven-war-plugin<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>3.0.0<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;webResources</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;resource</span><span style="color:#f92672">&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> this is relative to the pom.xml directory </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;directory</span><span style="color:#f92672">&gt;</span>src/main/frontend/build<span style="color:#f92672">&lt;/directory&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> the default value is ** </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;includes</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;include</span><span style="color:#f92672">&gt;</span>**/*<span style="color:#f92672">&lt;/include&gt;</span>
+                <span style="color:#f92672">&lt;/includes&gt;</span>
+                <span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> there&#39;s no default value for this </span><span style="color:#75715e">--&gt;</span>
+                <span style="color:#f92672">&lt;excludes</span><span style="color:#f92672">&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>asset-manifest.json<span style="color:#f92672">&lt;/exclude&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>**/*.css.map<span style="color:#f92672">&lt;/exclude&gt;</span>
+                    <span style="color:#f92672">&lt;exclude</span><span style="color:#f92672">&gt;</span>**/*.js.map<span style="color:#f92672">&lt;/exclude&gt;</span>
+                <span style="color:#f92672">&lt;/excludes&gt;</span>
+            <span style="color:#f92672">&lt;/resource&gt;</span>
+        <span style="color:#f92672">&lt;/webResources&gt;</span>
+    <span style="color:#f92672">&lt;/configuration&gt;</span>
+<span style="color:#f92672">&lt;/plugin&gt;</span>
+</code></pre></div><h2 id="heading-3">总结</h2>
+<p>用<code>create-react-app</code>快速创建前端项目确实很方便，省去了用gulp、webpack写编译脚本的麻烦，约定大于配置的思想贯彻得挺好的，以后创建新项目就靠你了。</p>
+<p>项目完整源码见<a href="http://git.oschina.net/jeremy-xu/ssm-scaffold">这里</a>。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-01-25</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/react/">react</a>
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/01/webpack%E7%9A%84watch%E9%80%89%E9%A1%B9%E4%B8%8D%E5%B7%A5%E4%BD%9C%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">webpack的watch选项不工作原因分析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/01/hibernate%E9%87%8C%E4%BD%BF%E7%94%A8sqlquery/">
+            <span class="next-text nav-default">Hibernate里使用SQLQuery</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

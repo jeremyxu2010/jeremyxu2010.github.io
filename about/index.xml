@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/about/</link>
+    <description>Recent content on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    
+	<atom:link href="https://jeremyxu2010.github.io/about/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

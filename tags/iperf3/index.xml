@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>iperf3 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/iperf3/</link>
+    <description>Recent content in iperf3 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 30 May 2019 18:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/iperf3/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes中基础服务排障记</title>
+      <link>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</link>
+      <pubDate>Thu, 30 May 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</guid>
+      <description>工作中需要将原本部署在物理机或虚拟机上的一些基础服务搬到kubernetes中，在搬的过程中遇到了不少坑，这里记录一下。 异常网络引起的问题 之</description>
+    </item>
+    
+    <item>
+      <title>性能测试工具集锦</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</link>
+      <pubDate>Wed, 22 May 2019 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</guid>
+      <description>本周的工作中需要对一套部署好的redis集群进行性能测试，在这个过程中用到了几个工具，这里对这些工具的用法记录一下。 sar 我们拿到一台虚拟机，在</description>
+    </item>
+    
+  </channel>
+</rss>

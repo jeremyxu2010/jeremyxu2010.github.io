@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ansible简易入门之playbook - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础." />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="ansible简易入门之playbook" />
+<meta property="og:description" content="Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/" />
+<meta property="article:published_time" content="2018-03-20T22:53:00+08:00" />
+<meta property="article:modified_time" content="2018-03-20T22:53:00+08:00" />
+<meta itemprop="name" content="ansible简易入门之playbook">
+<meta itemprop="description" content="Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.">
+<meta itemprop="datePublished" content="2018-03-20T22:53:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-03-20T22:53:00&#43;08:00" />
+<meta itemprop="wordCount" content="2609">
+
+
+
+<meta itemprop="keywords" content="centos,ansible,deployment,automation," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ansible简易入门之playbook"/>
+<meta name="twitter:description" content="Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">ansible简易入门之playbook</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-03-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2609 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#playbooks-">Playbooks 简介</a></li>
+    <li><a href="#playbook">Playbook示例</a></li>
+    <li><a href="#playbook-1">创建可重用的Playbook</a></li>
+    <li><a href="#tasks-">Tasks 列表</a></li>
+    <li><a href="#playbook-2">Playbook中的变量</a>
+      <ul>
+        <li><a href="#heading">定义变量</a></li>
+        <li><a href="#heading-3">使用变量</a></li>
+      </ul>
+    </li>
+    <li><a href="#playbook-4">Playbook中的流程控制</a>
+      <ul>
+        <li><a href="#heading-5">条件选择</a></li>
+        <li><a href="#heading-7">循环</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">其它技巧</a>
+      <ul>
+        <li><a href="#yaml-1">YAML里的函数</a></li>
+        <li><a href="#heading-9">查看自动获取的变量</a></li>
+        <li><a href="#playbook-5">拆分Playbook文件</a></li>
+        <li><a href="#role">复用其它role</a></li>
+        <li><a href="#heading-10">快速失败</a></li>
+        <li><a href="#heading-11">最佳实践</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-12">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="playbooks-">Playbooks 简介</h2>
+<p>Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的.</p>
+<p>简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.与现有的其他系统有不同之处,且非常适合于复杂应用的部署.</p>
+<p>Playbooks 可用于声明配置,更强大的地方在于,在 playbooks 中可以编排有序的执行过程,甚至于做到在多组机器间,来回有序的执行特别指定的步骤.并且可以同步或异步的发起任务.</p>
+<p>我们使用 adhoc 时,主要是使用 <code>/usr/bin/ansible </code>程序执行任务.而使用 playbooks 时,更多是将之放入源码控制之中,用之推送你的配置或是用于确认你的远程系统的配置是否符合配置规范.</p>
+<h2 id="playbook">Playbook示例</h2>
+<p>首先看一个最简单的示例，基本全是<a href="http://docs.ansible.com/ansible/latest/YAMLSyntax.html">YAML语法</a>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tree -L <span style="color:#ae81ff">2</span>
+.
+├── ansible.cfg
+├── example1.yml
+├── hosts.yml
+└── templates
+    └── httpd.conf.j2
+    
+$ cat hosts.yml
+<span style="color:#f92672">[</span>webservers<span style="color:#f92672">]</span>
+192.168.1.1
+192.168.1.2
+    
+$ cat example1.yml
+---
+- hosts: webservers
+  vars:
+    http_port: <span style="color:#ae81ff">80</span>
+    max_clients: <span style="color:#ae81ff">200</span>
+  remote_user: root
+  tasks:
+  - name: ensure apache is at the latest version
+    yum: pkg<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>latest
+  - name: write the apache config file
+    template: src<span style="color:#f92672">=</span>./templates/httpd.conf.j2 dest<span style="color:#f92672">=</span>/etc/httpd/conf/httpd.conf
+    notify:
+    - restart apache
+  - name: ensure apache is running
+    service: name<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>started
+  handlers:
+    - name: restart apache
+      service: name<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>restarted
+      
+ $ cat httpd.conf.j2
+ ...
+ MaxClients         <span style="color:#f92672">{</span><span style="color:#f92672">{</span> max_clients <span style="color:#f92672">}</span><span style="color:#f92672">}</span>
+ ...
+ Listen <span style="color:#f92672">{</span><span style="color:#f92672">{</span> http_port <span style="color:#f92672">}</span><span style="color:#f92672">}</span>
+ ...
+</code></pre></div><p>这里主要看<code>example1.yml</code>这个文件，其代表的意义是在webservers这组主机上执行一个任务列表（先确保安装了httpd的软件包，再通过模板写入一个配置文件，再确保httpd服务已启动），很简单吧。</p>
+<p>执行一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-playbook example1.yml
+</code></pre></div><h2 id="playbook-1">创建可重用的Playbook</h2>
+<p>但为了代码的可维护性与重用，一般会重新组织下代码，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ tree -L <span style="color:#ae81ff">4</span>
+.
+├── ansible.cfg
+├── example1.yml
+├── hosts.yml
+└── roles
+    └── httpd
+        ├── handlers
+        │   └── main.yml
+        ├── tasks
+        │   └── main.yml
+        ├── templates
+        │   └── httpd.conf.j2
+        └── vars
+            └── main.yml
+            
+$ cat example1.yml
+---
+- hosts: webservers
+  remote_user: root
+  roles:
+    - httpd
+  
+$ cat roles/httpd/tasks/main.yml
+---
+- name: ensure apache is at the latest version
+  yum: pkg<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>latest
+- name: write the apache config file
+  template: src<span style="color:#f92672">=</span>httpd.conf.j2 dest<span style="color:#f92672">=</span>/etc/httpd/conf/httpd.conf
+  notify:
+  - restart apache
+- name: ensure apache is running
+  service: name<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>started
+  
+$ cat roles/httpd/vars/main.yml
+---
+- http_port: <span style="color:#ae81ff">80</span>
+- max_clients: <span style="color:#ae81ff">200</span>
+
+$ cat roles/httpd/handlers/main.yml
+---
+- name: restart apache
+  service: name<span style="color:#f92672">=</span>httpd state<span style="color:#f92672">=</span>restarted
+  
+$ cat roles/httpd/templates/httpd.conf.j2
+ ...
+ MaxClients         <span style="color:#f92672">{</span><span style="color:#f92672">{</span> max_clients <span style="color:#f92672">}</span><span style="color:#f92672">}</span>
+ ...
+ Listen <span style="color:#f92672">{</span><span style="color:#f92672">{</span> http_port <span style="color:#f92672">}</span><span style="color:#f92672">}</span>
+ ...
+</code></pre></div><p>比较简单，就是将ansible脚本封装到一个所谓的role里面，每个role里按照tasks、vars、templates、handlers等目录组织代码。tasks、vars、templates、handlers目录默认会加载目录中的main.yml，也可以继续拆分main.yml，并用import或include引入起来。</p>
+<p>这样做的好处：一是可以让每个role的功能更内敛，另一方面可以比较方便地利用role，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+- hosts: buzservers
+  remote_user: root
+  roles:
+    - httpd
+    - tomcat
+</code></pre></div><p>上面的将在buzservers这组主机上安装httpd和tomcat（这两个各是一个已经写好的role）。role除了自己手写外，还可以通过<code>ansible-galaxy</code>安装得到，如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ansible-galaxy install --roles-path ./roles bennojoy.mysql
+</code></pre></div><p>在<a href="https://galaxy.ansible.com/list#/roles">ansible-galaxy</a>上有大量别人写的role，基本覆盖了常用的运维需求，很多直接拿来使用就好。</p>
+<h2 id="tasks-">Tasks 列表</h2>
+<p>role的tasks目录下可定义任务列表，即在目标主机上执行的指令队列。ansible会按照顺序依次执行该指令队列里的指令。如下所示：</p>
+<pre><code>- name: ensure apache is at the latest version
+  yum: pkg=httpd state=latest
+- name: write the apache config file
+  template: src=./templates/httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
+  notify:
+  - restart apache
+- name: ensure apache is running
+  service: name=httpd state=started
+</code></pre><p>这里每一个指令可以用<code>name</code>给命个名，这样输出时方便观察当前执行的指令。</p>
+<p>每个指令其实是执行ansible里的模块Module，完整的模块列表在<a href="http://docs.ansible.com/ansible/latest/modules_by_category.html">这里</a>。每个模块都有很详尽的示例，照着写就可以了。比较常用的有</p>
+<ul>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_files_modules.html">Files Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_net_tools_modules.html">Net Tools Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_network_modules.html">Network Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_packaging_modules.html">Packaging Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_source_control_modules.html">Source Control Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_system_modules.html">System Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_utilities_modules.html">Utilities Modules</a></li>
+<li><a href="http://docs.ansible.com/ansible/latest/list_of_windows_modules.html">Windows Modules</a> 如果要操作windows的话</li>
+</ul>
+<h2 id="playbook-2">Playbook中的变量</h2>
+<p>变量在Playbook中算是比较复杂的，可以在很多地方定义变量。</p>
+<h3 id="heading">定义变量</h3>
+<h4 id="inventory">Inventory中定义变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># hosts.yml</span>
+[atlanta]
+host1 http_port=<span style="color:#ae81ff">80</span> maxRequestsPerChild=<span style="color:#ae81ff">808</span>
+host2 http_port=<span style="color:#ae81ff">303</span> maxRequestsPerChild=<span style="color:#ae81ff">909</span>
+
+[atlanta:vars]
+ntp_server=ntp.atlanta.example.com
+proxy=proxy.atlanta.example.com
+</code></pre></div><h4 id="playbook-3">Playbook中定义变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># exampl2.yml</span>
+- hosts: webservers
+  vars:
+    http_port: <span style="color:#ae81ff">80</span>
+</code></pre></div><h4 id="rolevars">role的vars目录下定义变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#75715e"># roles/httpd/vars/main.yml</span>
+- http_port: <span style="color:#ae81ff">80</span>
+- max_clients: <span style="color:#ae81ff">200</span>
+</code></pre></div><h4 id="roledefaults">role的defaults目录下定义默认变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#75715e"># roles/httpd/defaults/main.yml</span>
+- http_port: <span style="color:#ae81ff">80</span>
+- max_clients: <span style="color:#ae81ff">200</span>
+</code></pre></div><h4 id="include">include指令可以传递变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># roles/httpd/tasks/main.yml</span>
+- include: wordpress.yml
+vars:
+    wp_user: timmy
+    some_list_variable:
+      - alpha
+      - beta
+      - gamma
+</code></pre></div><h4 id="heading-1">命令行中传递变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">ansible-playbook release.yml --extra-vars <span style="color:#e6db74">&#34;version=1.23.45 other_variable=foo&#34;</span>
+</code></pre></div><h4 id="heading-2">自动发现的变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">$ ansible hostname -m setup
+...
+<span style="color:#e6db74">&#34;ansible_all_ipv4_addresses&#34;</span>: [
+    <span style="color:#e6db74">&#34;REDACTED IP ADDRESS&#34;</span>
+],
+<span style="color:#e6db74">&#34;ansible_all_ipv6_addresses&#34;</span>: [
+    <span style="color:#e6db74">&#34;REDACTED IPV6 ADDRESS&#34;</span>
+],
+<span style="color:#e6db74">&#34;ansible_architecture&#34;</span>: <span style="color:#e6db74">&#34;x86_64&#34;</span>,
+<span style="color:#e6db74">&#34;ansible_bios_date&#34;</span>: <span style="color:#e6db74">&#34;09/20/2012&#34;</span>,
+<span style="color:#e6db74">&#34;ansible_bios_version&#34;</span>: <span style="color:#e6db74">&#34;6.00&#34;</span>,
+...
+</code></pre></div><h4 id="register">通过register注册变量</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># roles/httpd/tasks/main.yml</span>
+- shell: /usr/bin/foo
+  register: foo_result
+  ignore_errors: True
+- shell: /usr/bin/bar
+  when: foo_result.rc == <span style="color:#ae81ff">5</span>
+</code></pre></div><h4 id="vars-files">通过vars_files引入外部变量文件</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+- hosts: all
+  remote_user: root
+  vars:
+    favcolor: blue
+  vars_files:
+    - /vars/external_vars.yml
+</code></pre></div><h3 id="heading-3">使用变量</h3>
+<h4 id="heading-4">模板文件里使用变量</h4>
+<p>ansible里使用了Jinja2模板，在模板里使用变量还是比较简单的</p>
+<pre><code class="language-jinja2" data-lang="jinja2"># roles/httpd/templates/test.j2
+My amp goes to {{ max_amp_value }}
+</code></pre><p>模板里使用变量还可以使用一些内置的过滤器，参见<a href="http://jinja.pocoo.org/docs/2.10/templates/#builtin-filters">这里</a>，如下：</p>
+<pre><code class="language-jinja2" data-lang="jinja2">{{ &quot;%s - %s&quot;|format(&quot;Hello?&quot;, &quot;Foo!&quot;) }}
+    -&gt; Hello? - Foo!
+</code></pre><h4 id="yaml">YAML文件里使用变量</h4>
+<p>yaml文件里使用变量跟Jinja2模板里一样，也是用<code>{{ }}</code>将变量包起来，不过要注意YAML语法要求如果值以<code>{{ foo }}</code>开头的话，需要将整行用双引号包起来，这是为了确认不想声明一个YAML字典。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- hosts: app_servers
+  vars:
+       app_path: <span style="color:#e6db74">&#34;{{ base_path }}/22&#34;</span>
+</code></pre></div><h2 id="playbook-4">Playbook中的流程控制</h2>
+<p>Playbook也算一种编程语言了，自然少不了流程控制。</p>
+<h3 id="heading-5">条件选择</h3>
+<h4 id="when">when语句</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># roles/httpd/tasks/main.yml</span>
+- name: <span style="color:#e6db74">&#34;shutdown Debian flavored systems&#34;</span>
+  command: /sbin/shutdown -t now
+  when: ansible_os_family == <span style="color:#e6db74">&#34;Debian&#34;</span>
+</code></pre></div><h4 id="roles--includes-when">在roles 和 includes 上面应用’when’语句</h4>
+<p>根据条件决定是否执行一段任务列表：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- include: tasks/sometasks.yml
+  when: <span style="color:#e6db74">&#34;&#39;reticulating splines&#39; in output&#34;</span>
+</code></pre></div><p>根据条件决定是否执行一个role上的所有操作序列：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- hosts: webservers
+  roles:
+     - { role: debian_stock_config, when: ansible_os_family == <span style="color:#e6db74">&#39;Debian&#39;</span> }
+</code></pre></div><h4 id="heading-6">基于变量选择文件和模版</h4>
+<p>怎样根据不同的系统选择不同的模板：</p>
+<pre><code class="language-ymal" data-lang="ymal">- name: template a file
+  template: src={{ item }} dest=/etc/myapp/foo.conf
+  with_first_found:
+    - files:
+       - {{ ansible_distribution }}.conf
+       - default.conf
+      paths:
+       - search_location/
+</code></pre><h3 id="heading-7">循环</h3>
+<p>ansible里循环的用法较多，最常用的是<code>with_items</code>，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">- name: add several users
+  user: name={{ item }} state=present groups=wheel
+  with_items:
+     - testuser1
+     - testuser2
+</code></pre></div><p>其它高级循环用法参见<a href="http://www.ansible.com.cn/docs/playbooks_loops.html#standard-loops">这里</a></p>
+<h2 id="heading-8">其它技巧</h2>
+<h3 id="yaml-1">YAML里的函数</h3>
+<p>ansible里批量删除文件，如果要删除的文件不存在，如果用file模块删除会报错，因此可以写一个工具yaml文件，相当于一个函数，然后使用include指令动态导入它，相当于调用函数。如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># delete_files.yml</span>
+---
+- name: Check file exists
+  stat:
+    path: <span style="color:#e6db74">&#34;{{ file_path }}&#34;</span>
+  register: stat_result
+
+- name: Delete file
+  file:
+    path: <span style="color:#e6db74">&#34;{{ file_path }}&#34;</span>
+    state: absent
+  when: stat_result.stat.exists
+  
+<span style="color:#75715e"># other.yml</span>
+- include_tasks: util/delete_files.yml
+  with_items:
+  - <span style="color:#e6db74">&#39;/var/log/sss&#39;</span>
+  - <span style="color:#e6db74">&#39;/tmp/xxx&#39;</span>
+  loop_control:
+    loop_var: file_path
+</code></pre></div><p>类似的，一些重复的代码可以用这种方式简化。</p>
+<p><strong>后面发现ansible2.0后添加了一个<a href="http://docs.ansible.com/ansible/latest/playbooks_blocks.html">Blocks</a>的功能，可以把多个指令当成一个块执行，这下一些简单的多指令操作可以直接用Blocks搞定了</strong></p>
+<h3 id="heading-9">查看自动获取的变量</h3>
+<p>有时需要使用到从目标主机自动获取的变量，但又清楚变量名是什么，这时可以使用setup模块单独获取该主机的所有自动获取变量：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">ansible -i hosts.yml <span style="color:#ae81ff">192.168</span><span style="color:#ae81ff">.1</span><span style="color:#ae81ff">.1</span> -m setup
+</code></pre></div><h3 id="playbook-5">拆分Playbook文件</h3>
+<p>如果部署的项目很复杂，这时Playbook文件会很大，这时可以用<code>import_playbook</code>按不同业务维度拆分Playbook文件，如下：</p>
+<pre><code>- import_playbook: playbooks/buz1.yml
+- import_playbook: playbooks/buz2.yml
+</code></pre><h3 id="role">复用其它role</h3>
+<p>如果在一个role的task list里想复用另一个role，可以使用<code>import_role</code>，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># roles/httpd/tasks/main.yml</span>
+...
+- import_role:
+  name: other_role
+...
+</code></pre></div><h3 id="heading-10">快速失败</h3>
+<p>有时执行某个指令，其结果不正确，这时可以使用<code>fail</code>进行快速失败，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># Example playbook using fail and when together</span>
+- fail:
+    msg: <span style="color:#e6db74">&#34;The system may not be provisioned according to the CMDB status.&#34;</span>
+  when: cmdb_status != <span style="color:#e6db74">&#34;to-be-staged&#34;</span>
+</code></pre></div><h3 id="heading-11">最佳实践</h3>
+<p><a href="http://docs.ansible.com/ansible/latest/playbooks_best_practices.html">官方文档中的最佳实践</a></p>
+<h2 id="heading-12">参考</h2>
+<ol>
+<li><a href="http://www.ansible.com.cn/docs/">http://www.ansible.com.cn/docs/</a></li>
+<li><a href="https://www.the5fire.com/ansible-guide-cn.html">https://www.the5fire.com/ansible-guide-cn.html</a></li>
+<li><a href="https://github.com/ansible/ansible-examples">https://github.com/ansible/ansible-examples</a></li>
+<li><a href="https://galaxy.ansible.com/intro">https://galaxy.ansible.com/intro</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-03-20</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos/">centos</a>
+          
+          <a href="/tags/ansible/">ansible</a>
+          
+          <a href="/tags/deployment/">deployment</a>
+          
+          <a href="/tags/automation/">automation</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">centos下无污染地打rpm包</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/">
+            <span class="next-text nav-default">ansible简易入门</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

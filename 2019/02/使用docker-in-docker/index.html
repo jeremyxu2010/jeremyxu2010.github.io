@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用docker in docker - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用docker in docker" />
+<meta property="og:description" content="工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/" />
+<meta property="article:published_time" content="2019-02-24T19:00:00+08:00" />
+<meta property="article:modified_time" content="2019-02-24T19:00:00+08:00" />
+<meta itemprop="name" content="使用docker in docker">
+<meta itemprop="description" content="工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记">
+<meta itemprop="datePublished" content="2019-02-24T19:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-02-24T19:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1332">
+
+
+
+<meta itemprop="keywords" content="docker,golang," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用docker in docker"/>
+<meta name="twitter:description" content="工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用docker in docker</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-02-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1332 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#dind">容器里用dind</a></li>
+    <li><a href="#k8sdind">k8s里使用dind</a></li>
+    <li><a href="#docker-in-docker">docker in docker的原理</a></li>
+    <li><a href="#golangdockerd">用golang语言操作dockerd</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记录一下。</p>
+<h2 id="dind">容器里用dind</h2>
+<p>首先直接用docker容器作试验，试验一下功能：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 启动docker in docker</span>
+docker run --privileged -v <span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/ca.crt:/etc/docker/certs.d/myregistrydomain.com/ca.crt -d --name dockerd docker:stable-dind --registry-mirror<span style="color:#f92672">=</span>https://myregistrydomain.com
+
+<span style="color:#75715e"># 在另一个容器里拉取镜像，从输出来看，拉取镜像是成功了的</span>
+docker run --rm --link dockerd:docker docker:stable docker pull busybox:latest
+
+<span style="color:#75715e"># 在宿主机上检查，并没有看到拉取的镜像，说明没有污染宿主机的docker镜像</span>
+docker images | grep busybox
+</code></pre></div><p>使用还是比较简单的。</p>
+<p>这里注意两点：</p>
+<ol>
+<li>
+<p>为了拉取镜像加速，我这里使用了自己架设的docker registry服务，因此<code>dockerd</code>加了参数<code>--registry-mirror=https://myregistrydomain.com</code>。</p>
+</li>
+<li>
+<p>自己架设的docker registry服务使用的是自签名证书，因此参考<a href="https://docs.docker.com/registry/insecure/#use-self-signed-certificates">官方文档</a>，还设置了自签名证书对应的ca证书<code>/etc/docker/certs.d/myregistrydomain.com/ca.crt</code>。</p>
+<p>在看官方文档时，发现文档上说<a href="https://docs.docker.com/registry/insecure/#docker-still-complains-about-the-certificate-when-using-authentication">有些版本的docker需要设置在操作系统级别信任证书</a>，不过我目前还没遇到这种情况，这里稍微关注一下。</p>
+</li>
+</ol>
+<h2 id="k8sdind">k8s里使用dind</h2>
+<p>简单写个deployment的k8s描述文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: docker-test
+spec:
+  replicas: <span style="color:#ae81ff">1</span>
+  template:
+    metadata:
+      labels:
+        app: docker-test
+    spec:
+      containers:
+        - name: dockerd
+          image: <span style="color:#e6db74">&#39;docker:stable-dind&#39;</span>
+          securityContext:
+            privileged: <span style="color:#66d9ef">true</span>
+          args: [<span style="color:#e6db74">&#34;--registry-mirror=https://myregistrydomain.com&#34;</span>]
+          volumeMounts:
+          - name: cert-volume
+            mountPath: /etc/docker/certs.d/myregistrydomain.com/
+        - name: docker-cli
+          image: <span style="color:#e6db74">&#39;docker:stable&#39;</span>
+          env:
+          - name: DOCKER_HOST
+            value: tcp://<span style="color:#ae81ff">127.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.1</span>:<span style="color:#ae81ff">2375</span>
+          command: [<span style="color:#e6db74">&#34;/bin/sh&#34;</span>]
+          args: [<span style="color:#e6db74">&#34;-c&#34;</span>, <span style="color:#e6db74">&#34;docker info &gt;/dev/null 2&gt;&amp;1; while [ $? -ne 0 ] ; do sleep 3; docker info &gt;/dev/null 2&gt;&amp;1; done; docker pull library/busybox:latest; docker save -o busybox-latest.tar library/busybox:latest; docker rmi library/busybox:latest; while true; do sleep 86400; done&#34;</span>]
+      volumes:
+      - name: cert-volume
+        configMap:
+            name: registry-ca-cert
+</code></pre></div><p>这里在pod里跑两个容器，其中一个dockerd，另外一个是使用docker命令的容器，这里注意两点：</p>
+<ol>
+<li>同样因为使用了私有的registry服务，而且证书是自签名的，dockerd容器要作一些配置</li>
+<li>因为两个container共享相同的网络空间，因此直接设置好<code>DOCKER_HOST</code>环境变量，<code>docker-cli</code>里就可以直接用docker命令了，因为不确定两个容器的启动顺序，这里用一段脚本做了个等待的处理<code>docker info &gt;/dev/null 2&gt;&amp;1; while [ $? -ne 0 ] ; do sleep 3; docker info &gt;/dev/null 2&gt;&amp;1; done;</code></li>
+</ol>
+<p>然后用<code>kubectl apply -f docker-test.yaml</code>把这个deployment部署起来，简单检查一下，一切正常。</p>
+<h2 id="docker-in-docker">docker in docker的原理</h2>
+<p>docker in docker的原理还是比较简单的，可以参考<a href="https://github.com/jpetazzo/dind/blob/master/wrapdocker">wrapdocker</a>源码，其实就是挂载cgroup、tmpfs、securityfs、cgroup的SUBSYS、关掉不需要的文件描述符、最后启动dockerd。<a href="https://github.com/jpetazzo/dind/blob/master/wrapdocker">wrapdocker</a>源码里注释写得比较清楚。</p>
+<h2 id="golangdockerd">用golang语言操作dockerd</h2>
+<p>运维时用docker命令来操作dockerd还是比较好的，但有时希望以编程的方式操作dockerd，这时docker的sdk就派上用场了，可以参考<a href="https://docs.docker.com/develop/sdk/">官方文档</a>和<a href="https://docs.docker.com/develop/sdk/examples/">示例</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;context&#34;</span>
+    <span style="color:#e6db74">&#34;os&#34;</span>
+    <span style="color:#e6db74">&#34;time&#34;</span>
+
+    <span style="color:#e6db74">&#34;github.com/docker/docker/client&#34;</span>
+    <span style="color:#e6db74">&#34;github.com/docker/docker/api/types&#34;</span>
+    <span style="color:#e6db74">&#34;github.com/docker/docker/api/types/container&#34;</span>
+    <span style="color:#e6db74">&#34;github.com/docker/docker/pkg/stdcopy&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()
+    <span style="color:#a6e22e">cli</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">NewClientWithOpts</span>(<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">FromEnv</span>)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        panic(<span style="color:#a6e22e">err</span>)
+    }
+    <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">NegotiateAPIVersion</span>(<span style="color:#a6e22e">ctx</span>)
+
+    <span style="color:#a6e22e">reader</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ImagePull</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#e6db74">&#34;docker.io/library/alpine&#34;</span>, <span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">ImagePullOptions</span>{})
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        panic(<span style="color:#a6e22e">err</span>)
+    }
+    <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Copy</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#a6e22e">reader</span>)
+    
+    <span style="color:#75715e">// sleep for a while before using pulled new image
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+
+    <span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ContainerCreate</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">Config</span>{
+        <span style="color:#a6e22e">Image</span>: <span style="color:#e6db74">&#34;alpine&#34;</span>,
+        <span style="color:#a6e22e">Cmd</span>:   []<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;echo&#34;</span>, <span style="color:#e6db74">&#34;hello world&#34;</span>},
+    }, <span style="color:#66d9ef">nil</span>, <span style="color:#66d9ef">nil</span>, <span style="color:#e6db74">&#34;&#34;</span>)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        panic(<span style="color:#a6e22e">err</span>)
+    }
+
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ContainerStart</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">ID</span>, <span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">ContainerStartOptions</span>{}); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        panic(<span style="color:#a6e22e">err</span>)
+    }
+
+    <span style="color:#a6e22e">statusCh</span>, <span style="color:#a6e22e">errCh</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ContainerWait</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">ID</span>, <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">WaitConditionNotRunning</span>)
+    <span style="color:#66d9ef">select</span> {
+    <span style="color:#66d9ef">case</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">errCh</span>:
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+            panic(<span style="color:#a6e22e">err</span>)
+        }
+    <span style="color:#66d9ef">case</span> <span style="color:#f92672">&lt;-</span><span style="color:#a6e22e">statusCh</span>:
+    }
+
+    <span style="color:#a6e22e">out</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ContainerLogs</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">ID</span>, <span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">ContainerLogsOptions</span>{<span style="color:#a6e22e">ShowStdout</span>: <span style="color:#66d9ef">true</span>})
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+        panic(<span style="color:#a6e22e">err</span>)
+    }
+
+    <span style="color:#a6e22e">stdcopy</span>.<span style="color:#a6e22e">StdCopy</span>(<span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>, <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stderr</span>, <span style="color:#a6e22e">out</span>)
+}
+</code></pre></div><p>这里要注意，刚pull下来的镜像要稍微等一下才可以使用，否则会报错，开发中踩到这个坑了，花了些时间才搞清楚原来是这个原因。</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://hub.docker.com/_/docker/">https://hub.docker.com/_/docker/</a></li>
+<li><a href="https://docs.docker.com/registry/insecure/#use-self-signed-certificates">https://docs.docker.com/registry/insecure/#use-self-signed-certificates</a></li>
+<li><a href="https://github.com/jpetazzo/dind">https://github.com/jpetazzo/dind</a></li>
+<li><a href="https://www.docker-cn.com/registry-mirror">https://www.docker-cn.com/registry-mirror</a></li>
+<li><a href="https://docs.docker.com/develop/sdk/">https://docs.docker.com/develop/sdk/</a></li>
+<li><a href="https://docs.docker.com/develop/sdk/examples/">https://docs.docker.com/develop/sdk/examples/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-02-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/golang/">golang</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用TravisCI做个人博客的自动构建</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">
+            <span class="next-text nav-default">docker日志丢失问题分析</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

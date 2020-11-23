@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sdn on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/sdn/</link>
+    <description>Recent content in sdn on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 09 Sep 2016 01:48:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/sdn/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>研究Open vSwitch</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</link>
+      <pubDate>Fri, 09 Sep 2016 01:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</guid>
+      <description>概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来</description>
+    </item>
+    
+    <item>
+      <title>尝试docker的overlay网络</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Mon, 29 Aug 2016 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</guid>
+      <description>docker搭建起集群后，跨主机的容器相互之间通信就要另想方案了。幸好docker1.9之后内置了跨节点通信技术Overlay网络，这里将使</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mqtt on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mqtt/</link>
+    <description>Recent content in mqtt on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 24 Aug 2019 20:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mqtt/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MQTT协议学习</title>
+      <link>https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sat, 24 Aug 2019 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</guid>
+      <description>偶然在github上看到paho.mqtt.golang项目，这是一个MQTT客户端库，进而花了些时间学习下时下十分火热的MQTT协议。 MQ</description>
+    </item>
+    
+  </channel>
+</rss>

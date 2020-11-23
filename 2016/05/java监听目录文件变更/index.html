@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Java监听目录文件变更 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Java监听目录文件变更" />
+<meta property="og:description" content="Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/" />
+<meta property="article:published_time" content="2016-05-12T23:38:00+08:00" />
+<meta property="article:modified_time" content="2016-05-12T23:38:00+08:00" />
+<meta itemprop="name" content="Java监听目录文件变更">
+<meta itemprop="description" content="Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa">
+<meta itemprop="datePublished" content="2016-05-12T23:38:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-12T23:38:00&#43;08:00" />
+<meta itemprop="wordCount" content="1259">
+
+
+
+<meta itemprop="keywords" content="java,nio,filesystem," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java监听目录文件变更"/>
+<meta name="twitter:description" content="Java 7中提供了java.nio.file.WatchService用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。 创建一个Wa"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Java监听目录文件变更</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-12 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1259 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#watchservice">创建一个WatchService</a></li>
+        <li><a href="#heading">注册监听一个目录</a></li>
+        <li><a href="#watchservicewatchkey">循环从WatchService里取出有信号的WatchKey</a></li>
+        <li><a href="#heading-1">递归监听目录</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Java 7中提供了<code>java.nio.file.WatchService</code>用来监听文件系统目录变更，用起来还是比较简单的，在这里记录一下。</p>
+<h3 id="watchservice">创建一个WatchService</h3>
+<p>代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">WatchService watcher <span style="color:#f92672">=</span> FileSystems<span style="color:#f92672">.</span><span style="color:#a6e22e">getDefault</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">newWatchService</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>当然一个WatchService是关联着操作系统资源的，需要完全的关闭，所以一般像下面这样写：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">WatchService watcher <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+  watcher <span style="color:#f92672">=</span> FileSystems<span style="color:#f92672">.</span><span style="color:#a6e22e">getDefault</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">newWatchService</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>watcher <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      watcher<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception ignore<span style="color:#f92672">)</span><span style="color:#f92672">{</span><span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading">注册监听一个目录</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Path dir <span style="color:#f92672">=</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/somewhere&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+WatchKey key <span style="color:#f92672">=</span> dir<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>watcher<span style="color:#f92672">,</span> ENTRY_CREATE<span style="color:#f92672">,</span> ENTRY_DELETE<span style="color:#f92672">,</span> ENTRY_MODIFY<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>这里这个<code>key</code>即与这个<code>dir</code>关联，以后<code>dir</code>里一旦发生监听的事件，则从<code>watcher</code>就可以<code>poll</code>或<code>take</code>到这个<code>key</code></p>
+<h3 id="watchservicewatchkey">循环从WatchService里取出有信号的WatchKey</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#f92672">;</span><span style="color:#f92672">;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// wait for key to be signalled
+</span><span style="color:#75715e"></span>    WatchKey key<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        key <span style="color:#f92672">=</span> watcher<span style="color:#f92672">.</span><span style="color:#a6e22e">take</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>WatchEvent<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span><span style="color:#f92672">&gt;</span> event<span style="color:#f92672">:</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">pollEvents</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        WatchEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">Kind</span> kind <span style="color:#f92672">=</span> event<span style="color:#f92672">.</span><span style="color:#a6e22e">kind</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// TBD - provide example of how OVERFLOW event is handled
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>kind <span style="color:#f92672">=</span><span style="color:#f92672">=</span> OVERFLOW<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#75715e">// Context for directory entry event is the file name of entry
+</span><span style="color:#75715e"></span>        WatchEvent<span style="color:#f92672">&lt;</span>Path<span style="color:#f92672">&gt;</span> ev <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>WatchEvent<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">)</span>event<span style="color:#f92672">;</span>
+        Path name <span style="color:#f92672">=</span> ev<span style="color:#f92672">.</span><span style="color:#a6e22e">context</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// reset key and remove from set if directory no longer accessible
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">boolean</span> valid <span style="color:#f92672">=</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">reset</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>valid<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>WatchKey</code>被<code>cancel</code>或<code>WatchService</code>被<code>close</code>时，<code>key.reset()</code>会返回<code>false</code>, 此时应该跳出循环。</p>
+<h3 id="heading-1">递归监听目录</h3>
+<p>上述的代码很简单了，跟Java原生NIO的思想差不多。不过经我实验，<code>dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);</code>只会监听该目录下一级的变更事件，子目录下的变更就监听不到了。例如在<code>/somewhere</code>目录下建一个目录<code>test</code>，再在test下建一个文件<code>test.txt</code>，此时就监听不到了。简单写了个递归监听某个目录下所有变更的例子，如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> java.nio.file.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import static</span> java.nio.file.StandardWatchEventKinds.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import static</span> java.nio.file.LinkOption.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.attribute.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.io.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.*<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/5/12.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WatchDir</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> WatchService watcher<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Map<span style="color:#f92672">&lt;</span>WatchKey<span style="color:#f92672">,</span>Path<span style="color:#f92672">&gt;</span> keys<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> trace <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@SuppressWarnings</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;unchecked&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> WatchEvent<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">cast</span><span style="color:#f92672">(</span>WatchEvent<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span><span style="color:#f92672">&gt;</span> event<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>WatchEvent<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span><span style="color:#f92672">)</span>event<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Register the given directory with the WatchService
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>Path dir<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        WatchKey key <span style="color:#f92672">=</span> dir<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>watcher<span style="color:#f92672">,</span> ENTRY_CREATE<span style="color:#f92672">,</span> ENTRY_DELETE<span style="color:#f92672">,</span> ENTRY_MODIFY<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>trace<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Path prev <span style="color:#f92672">=</span> keys<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>prev <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;register: %s\n&#34;</span><span style="color:#f92672">,</span> dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>dir<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>prev<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;update: %s -&gt; %s\n&#34;</span><span style="color:#f92672">,</span> prev<span style="color:#f92672">,</span> dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        keys<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Register the given directory, and all its sub-directories, with the
+</span><span style="color:#75715e">     * WatchService.
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">registerAll</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Path start<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// register directory and sub-directories
+</span><span style="color:#75715e"></span>        Files<span style="color:#f92672">.</span><span style="color:#a6e22e">walkFileTree</span><span style="color:#f92672">(</span>start<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> SimpleFileVisitor<span style="color:#f92672">&lt;</span>Path<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> FileVisitResult <span style="color:#a6e22e">preVisitDirectory</span><span style="color:#f92672">(</span>Path dir<span style="color:#f92672">,</span> BasicFileAttributes attrs<span style="color:#f92672">)</span>
+                    <span style="color:#66d9ef">throws</span> IOException
+            <span style="color:#f92672">{</span>
+                register<span style="color:#f92672">(</span>dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">return</span> FileVisitResult<span style="color:#f92672">.</span><span style="color:#a6e22e">CONTINUE</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Creates a WatchService and registers the given directory
+</span><span style="color:#75715e">     */</span>
+    WatchDir<span style="color:#f92672">(</span>Path dir<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">watcher</span> <span style="color:#f92672">=</span> FileSystems<span style="color:#f92672">.</span><span style="color:#a6e22e">getDefault</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">newWatchService</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">keys</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>WatchKey<span style="color:#f92672">,</span>Path<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Scanning %s ...\n&#34;</span><span style="color:#f92672">,</span> dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        registerAll<span style="color:#f92672">(</span>dir<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Done.&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// enable trace after initial registration
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">trace</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Process all events for keys queued to the watcher
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processEvents</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#f92672">;</span><span style="color:#f92672">;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+            <span style="color:#75715e">// wait for key to be signalled
+</span><span style="color:#75715e"></span>            WatchKey key<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                key <span style="color:#f92672">=</span> watcher<span style="color:#f92672">.</span><span style="color:#a6e22e">take</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+            Path dir <span style="color:#f92672">=</span> keys<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>dir <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;WatchKey not recognized!!&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>WatchEvent<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span><span style="color:#f92672">&gt;</span> event<span style="color:#f92672">:</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">pollEvents</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                WatchEvent<span style="color:#f92672">.</span><span style="color:#a6e22e">Kind</span> kind <span style="color:#f92672">=</span> event<span style="color:#f92672">.</span><span style="color:#a6e22e">kind</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                <span style="color:#75715e">// TBD - provide example of how OVERFLOW event is handled
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>kind <span style="color:#f92672">=</span><span style="color:#f92672">=</span> OVERFLOW<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">continue</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#75715e">// Context for directory entry event is the file name of entry
+</span><span style="color:#75715e"></span>                WatchEvent<span style="color:#f92672">&lt;</span>Path<span style="color:#f92672">&gt;</span> ev <span style="color:#f92672">=</span> cast<span style="color:#f92672">(</span>event<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                Path name <span style="color:#f92672">=</span> ev<span style="color:#f92672">.</span><span style="color:#a6e22e">context</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                Path child <span style="color:#f92672">=</span> dir<span style="color:#f92672">.</span><span style="color:#a6e22e">resolve</span><span style="color:#f92672">(</span>name<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                <span style="color:#75715e">// print out event
+</span><span style="color:#75715e"></span>                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;%s: %s\n&#34;</span><span style="color:#f92672">,</span> event<span style="color:#f92672">.</span><span style="color:#a6e22e">kind</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> child<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                <span style="color:#75715e">// if directory is created, and watching recursively, then
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// register it and its sub-directories
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>kind <span style="color:#f92672">=</span><span style="color:#f92672">=</span> ENTRY_CREATE<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Files<span style="color:#f92672">.</span><span style="color:#a6e22e">isDirectory</span><span style="color:#f92672">(</span>child<span style="color:#f92672">,</span> NOFOLLOW_LINKS<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                            registerAll<span style="color:#f92672">(</span>child<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        <span style="color:#f92672">}</span>
+                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException x<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        <span style="color:#75715e">// ignore to keep sample readbale
+</span><span style="color:#75715e"></span>                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+
+            <span style="color:#75715e">// reset key and remove from set if directory no longer accessible
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">boolean</span> valid <span style="color:#f92672">=</span> key<span style="color:#f92672">.</span><span style="color:#a6e22e">reset</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>valid<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                keys<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>key<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                <span style="color:#75715e">// all directories are inaccessible
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>keys<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">usage</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;usage: java WatchDir dir&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">exit</span><span style="color:#f92672">(</span><span style="color:#f92672">-</span>1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// parse arguments
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>args<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0 <span style="color:#f92672">|</span><span style="color:#f92672">|</span> args<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">)</span>
+            usage<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// register directory and process its events
+</span><span style="color:#75715e"></span>        Path dir <span style="color:#f92672">=</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>args<span style="color:#f92672">[</span>0<span style="color:#f92672">]</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">new</span> WatchDir<span style="color:#f92672">(</span>dir<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">processEvents</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>Path name = ev.context();</code>拿到的仅仅只是相对于<code>dir</code>的Path，并不是绝对路径，为了拼出绝对路径，没办法只能建了一个<code>Map keys</code>，用来维护<code>WatchKey</code>与<code>dir</code>的映射关系。本以为这样写，面对一个巨大的目录，<code>Map keys</code>将会很大，性能不好。实测监听一个100多G的目录，并没占用太多内存，进程使用的文件句柄数也正常得很，而且性能还比较高。</p>
+<p>希望Java以后的版本能直接在<code>WatchEvent</code>拿到变更<code>ENTRY</code>的绝对路径就好了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-12</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+          <a href="/tags/filesystem/">filesystem</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">现代Web开发系列教程_07</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/">
+            <span class="next-text nav-default">Web跨域总结</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>制作CentOS6基础镜像 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="搭建私有云时需要制作一些操作系统的基础镜像，这里也有一些持巧，在这里记录下来以备忘。 安装CentOS6操作系统 这里没有太多好说的，我是从这里" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E5%88%B6%E4%BD%9Ccentos6%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="制作CentOS6基础镜像" />
+<meta property="og:description" content="搭建私有云时需要制作一些操作系统的基础镜像，这里也有一些持巧，在这里记录下来以备忘。 安装CentOS6操作系统 这里没有太多好说的，我是从这里" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E5%88%B6%E4%BD%9Ccentos6%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F/" />
+<meta property="article:published_time" content="2016-08-07T23:29:00+08:00" />
+<meta property="article:modified_time" content="2016-08-07T23:29:00+08:00" />
+<meta itemprop="name" content="制作CentOS6基础镜像">
+<meta itemprop="description" content="搭建私有云时需要制作一些操作系统的基础镜像，这里也有一些持巧，在这里记录下来以备忘。 安装CentOS6操作系统 这里没有太多好说的，我是从这里">
+<meta itemprop="datePublished" content="2016-08-07T23:29:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-07T23:29:00&#43;08:00" />
+<meta itemprop="wordCount" content="1265">
+
+
+
+<meta itemprop="keywords" content="kvm,linux," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="制作CentOS6基础镜像"/>
+<meta name="twitter:description" content="搭建私有云时需要制作一些操作系统的基础镜像，这里也有一些持巧，在这里记录下来以备忘。 安装CentOS6操作系统 这里没有太多好说的，我是从这里"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">制作CentOS6基础镜像</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/"> 云计算 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1265 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#centos6">安装CentOS6操作系统</a></li>
+    <li><a href="#heading">操作系统的一些基础设置</a></li>
+    <li><a href="#heading-1">对镜像文件预处理</a></li>
+    <li><a href="#heading-2">待改进的地方</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>搭建私有云时需要制作一些操作系统的基础镜像，这里也有一些持巧，在这里记录下来以备忘。</p>
+<h2 id="centos6">安装CentOS6操作系统</h2>
+<p>这里没有太多好说的，我是从<a href="http://mirrors.aliyun.com/centos/6/isos/x86_64/CentOS-6.8-x86_64-minimal.iso">这里</a>下载最小安装ISO进行安装的，安装的硬盘大小为20G。安装时大部分选项都是默认的，只有分区采用了自定义分区方案，200M的boot分区，其它全部作为根分区。如果需要交换分区，以后可以使用文件分区，使用文件分区的操作方法如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>/dev/zero of<span style="color:#f92672">=</span>/swapfile bs<span style="color:#f92672">=</span>1G count<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+chmod <span style="color:#ae81ff">600</span> /swapfile
+mkswap -f /swapfile
+swapon /swapfile
+echo <span style="color:#e6db74">&#34;/swapfile none swap defaults 0 0&#34;</span> &gt;&gt; /etc/fstab
+mount -a
+</code></pre></div><h2 id="heading">操作系统的一些基础设置</h2>
+<p>安装好操作系统后，使用root帐户登入系统做一些基础设置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#关闭selinux</span>
+setenforce <span style="color:#ae81ff">0</span>
+sed -i -e <span style="color:#e6db74">&#39;s/^SELINUX=.*$/SELINUX=disabled/&#39;</span> /etc/sysconfig/selinux
+
+<span style="color:#75715e">#由于公司没有搭建centos的私有源，这里我都换用aliyun的centos源</span>
+rpm --import http://mirrors.aliyun.com/centos/RPM-GPG-KEY-CentOS-6
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+rpm --import http://mirrors.aliyun.com/epel/RPM-GPG-KEY-EPEL-6
+wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
+
+<span style="color:#75715e">#安装平时经常用到的vim wget等软件</span>
+yum install -y vim wget
+
+<span style="color:#75715e">#配置ntp服务，指向私有云中的时间服务器</span>
+yum install -y ntp
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">#在与上级时间服务器联系时所花费的时间，记录在driftfile参数后面的文件
+</span><span style="color:#e6db74">driftfile /var/lib/ntp/drift
+</span><span style="color:#e6db74">#默认关闭所有的 NTP 联机服务
+</span><span style="color:#e6db74">restrict default ignore
+</span><span style="color:#e6db74">restrict -6 default ignore
+</span><span style="color:#e6db74">#如从loopback网口请求，则允许NTP的所有操作
+</span><span style="color:#e6db74">restrict 127.0.0.1
+</span><span style="color:#e6db74">restrict -6 ::1
+</span><span style="color:#e6db74">#使用指定的时间服务器
+</span><span style="color:#e6db74">server </span><span style="color:#e6db74">${</span>inner_ntp_server_ip<span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">#允许指定的时间服务器查询本时间服务器的信息
+</span><span style="color:#e6db74">restrict </span><span style="color:#e6db74">${</span>inner_ntp_server_ip<span style="color:#e6db74">}</span><span style="color:#e6db74"> nomodify notrap nopeer noquery
+</span><span style="color:#e6db74">#其它认证信息
+</span><span style="color:#e6db74">includefile /etc/ntp/crypto/pw
+</span><span style="color:#e6db74">keys /etc/ntp/keys
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; /etc/ntp.conf
+service ntpd start
+chkconfig ntpd on
+
+<span style="color:#75715e">#禁用sshd服务的UseDNS、GSSAPIAuthentication两项特性</span>
+sed -i -e <span style="color:#e6db74">&#39;s/^#UseDNS.*$/UseDNS no/&#39;</span> /etc/ssh/sshd_config
+sed -e <span style="color:#e6db74">&#39;s/^GSSAPIAuthentication.*$/GSSAPIAuthentication no/&#39;</span> /etc/ssh/sshd_config
+
+<span style="color:#75715e">#升级系统</span>
+yum update -y <span style="color:#f92672">&amp;&amp;</span> yum clean all
+
+<span style="color:#75715e">#更改系统网络接口配置文件，设置该网络接口随系统启动而开启</span>
+sed -i -e <span style="color:#e6db74">&#39;/^HWADDR=/d&#39;</span> -e <span style="color:#e6db74">&#39;/^UUID=/d&#39;</span> /etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -e <span style="color:#e6db74">&#39;s/^ONBOOT.*$/ONBOOT=yes/&#39;</span> /etc/sysconfig/network-scripts/ifcfg-eth0
+sed -i -e <span style="color:#e6db74">&#39;s/^NM_CONTROLLED.*$/NM_CONTROLLED=no/&#39;</span> /etc/sysconfig/network-scripts/ifcfg-eth0
+
+<span style="color:#75715e">#删除已存在的网络接口udev规则定义</span>
+sed -i -e  <span style="color:#e6db74">&#39;/PCI device/d&#39;</span> -e <span style="color:#e6db74">&#39;/^SUBSYSTEM/d&#39;</span> /etc/udev/rules.d/70-persistent-net.rules
+
+<span style="color:#75715e">#关闭系统</span>
+halt
+</code></pre></div><p>最近精简一下生成的镜像文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">qemu-img convert -f qcow2 -O qcow2 centos6.img centos6_c.img
+mv centos6_c.img centos6.img
+</code></pre></div><h2 id="heading-1">对镜像文件预处理</h2>
+<p>使用虚拟机平台基于上述centos6基础镜像文件创建虚拟机后，在虚拟机启动前需对镜像文件进行预处理，我这里写个脚本处理这件事</p>
+<p>执行脚本前需安装libguestfs-tools</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum install -y libguestfs-tools
+<span style="color:#75715e">#以后可能还要修改windows镜像文件，顺便把libguestfs-winsupport也安装一下</span>
+yum install -y libguestfs-winsupport
+</code></pre></div><p><code>preprocess_img.sh</code>脚本内容：</p>
+<pre><code>#!/bin/bash
+
+domain_name=$1
+ip_fetch_method=$2
+static_ip=$3
+static_netmask=$4
+static_gateway=$5
+static_dns1=$6
+static_dns2=$7
+
+TMP_CONFIG_DIR=&quot;$(mktemp -d /tmp/$$_config_XXXX)&quot;
+trap &quot;[ -d &quot;$TMP_CONFIG_DIR&quot; ] &amp;&amp; rm -rf $TMP_CONFIG_DIR&quot; HUP INT QUIT TERM EXIT
+
+echo &quot;
+NETWORKING=yes
+HOSTNAME=$domain_name
+&quot; &gt; $TMP_CONFIG_DIR/network
+virt-copy-in -d $domain_name $TMP_CONFIG_DIR/network /etc/sysconfig
+
+if [ $ip_fetch_method == &quot;static&quot; ] ; then
+    echo &quot;
+DEVICE=eth0
+TYPE=Ethernet
+ONBOOT=yes
+NM_CONTROLLED=no
+BOOTPROTO=static
+IPADDR=$static_ip
+NETMASK=$static_netmask
+GATEWAY=$static_gateway
+DNS1=$static_dns1
+DNS2=$static_dns2
+&quot; &gt; $TMP_CONFIG_DIR/ifcfg-eth0
+    virt-copy-in -d $domain_name $TMP_CONFIG_DIR/ifcfg-eth0 /etc/sysconfig/network-scripts
+fi
+</code></pre><p>执行脚本</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 设置主机名为test，且eth0网络接口动态获取IP地址</span>
+./preprocess_img.sh test dhcp
+<span style="color:#75715e"># 设置主机名为test，且eth0网络接口配置静态IP地址</span>
+./preprocess_img.sh test static 188.188.100.137 255.255.255.0 188.188.100.1 202.96.134.133 202.96.128.86
+</code></pre></div><p>镜像文件预处理完毕后，再启动虚拟机，可以看到虚拟机的主机名及IP地址均已设置OK</p>
+<h2 id="heading-2">待改进的地方</h2>
+<ul>
+<li>目前的<code>preprocess_img.sh</code>脚本还比较原始，只能处理centos6操作系统，接下来会对这个脚本进行加强，以支持其它linux操作系统及windows系统</li>
+<li>要是能扩展虚拟化管理平台WebVirtMgr，能在首次启动时执行指定的脚本对镜像进行预处理就好了。可惜我对python不是太熟。</li>
+</ul>
+<h2 id="heading-3">参考</h2>
+<ul>
+<li><code>深度实践KVM/第16章 虚拟机镜像制作、配置与测试/16.2 Linux镜像制作方法</code></li>
+<li><code>http://www.361way.com/kvm-libguestfs-tools/3175.html</code></li>
+</ul>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kvm/">kvm</a>
+          
+          <a href="/tags/linux/">linux</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E5%88%9D%E8%AF%86ceph/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">初识ceph</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E8%AF%95%E7%94%A8webvirtmgr/">
+            <span class="next-text nav-default">试用WebVirtMgr</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

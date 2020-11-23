@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>现代Web开发系列教程_06 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_06/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="现代Web开发系列教程_06" />
+<meta property="og:description" content="作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_06/" />
+<meta property="article:published_time" content="2016-04-26T21:58:00+08:00" />
+<meta property="article:modified_time" content="2016-04-26T21:58:00+08:00" />
+<meta itemprop="name" content="现代Web开发系列教程_06">
+<meta itemprop="description" content="作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说">
+<meta itemprop="datePublished" content="2016-04-26T21:58:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-04-26T21:58:00&#43;08:00" />
+<meta itemprop="wordCount" content="1088">
+
+
+
+<meta itemprop="keywords" content="javascript,nodejs,webmvc," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="现代Web开发系列教程_06"/>
+<meta name="twitter:description" content="作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">现代Web开发系列教程_06</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-04-26 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1088 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">数据访问层</a></li>
+    <li><a href="#service">业务Service层</a></li>
+    <li><a href="#controller">Controller层</a></li>
+    <li><a href="#heading-1">中间件容器</a></li>
+    <li><a href="#heading-2">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>作为一个从事多年Java Web开发的程序员，面对现如今NodeJS开发Web后端程序一直十分感兴趣，于是花了点时间研究了下，本篇就主要说一说我在项目中应用NodeJS开发后端的具体步骤。实在是受Java Web后端开发影响太大了，我使用NodeJS开发后端程序还是采用了普通Java MVC分层架构，可能与一般的NodeJS程序员的做法不太一样。</p>
+<h2 id="heading">数据访问层</h2>
+<p>首先定义一个全局唯一的数据访问对象。</p>
+<p><code>src/server/dao/DB.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#34;use strict&#34;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">orm</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;orm&#34;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">qOrm</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;q-orm&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">transaction</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;orm-transaction&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">config</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;../config.js&#39;</span>);
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">defineSchemas</span>(<span style="color:#a6e22e">db</span>){
+    <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">schemas</span> <span style="color:#f92672">=</span> {
+        <span style="color:#a6e22e">qUser</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">qDefine</span>(<span style="color:#e6db74">&#34;users&#34;</span>, {
+            <span style="color:#a6e22e">id</span> <span style="color:#f92672">:</span> Number,
+            <span style="color:#a6e22e">username</span>      <span style="color:#f92672">:</span> String,
+            <span style="color:#a6e22e">pwd</span>   <span style="color:#f92672">:</span> String
+        })
+    };
+}
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DB</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">qOrm</span>.<span style="color:#a6e22e">qConnect</span>({
+    <span style="color:#a6e22e">host</span><span style="color:#f92672">:</span>     <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">host</span>,
+    <span style="color:#a6e22e">database</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">database</span>,
+    <span style="color:#a6e22e">user</span><span style="color:#f92672">:</span>     <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">user</span>,
+    <span style="color:#a6e22e">password</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">pwd</span>,
+    <span style="color:#a6e22e">protocol</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;mysql&#39;</span>,
+    <span style="color:#a6e22e">port</span><span style="color:#f92672">:</span>     <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">port</span>,
+    <span style="color:#a6e22e">query</span><span style="color:#f92672">:</span>    {
+        <span style="color:#a6e22e">reconnect</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+        <span style="color:#a6e22e">pool</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+        <span style="color:#a6e22e">debug</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>
+    }
+}).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">db</span>) {
+    <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">transaction</span>);
+    <span style="color:#a6e22e">defineSchemas</span>(<span style="color:#a6e22e">db</span>);
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">db</span>;
+}).<span style="color:#a6e22e">fail</span>(<span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">err</span>) {
+    <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">err</span>;
+});
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">DB</span>;
+</code></pre></div><p>可以看到DB还是比较简单的，就是按<a href="https://github.com/dresende/node-orm2">orm</a>的基本用法定义了数据库连接与数据库中的schema, 这里有一点不同的是我比较喜欢返回Promise对象，避免写过多callback，因此采用了<a href="https://github.com/rafaelkaufmann/q-orm">q-orm</a>。一般的数据访问层都提供了数据库事务的处理，在NodeJS里，我没找到太多选择，只找到<a href="https://github.com/dresende/node-orm-transaction">orm-transaction</a>，同样不太喜欢它默认给出的callback用法，简单封装了一个返回Promise的工具方法。</p>
+<p><code>Transaction.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">db</span>){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>){
+        <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">transaction</span>(<span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">t</span>) {
+            <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">err</span>){
+                <span style="color:#a6e22e">resolve</span>({
+                    <span style="color:#a6e22e">qCommit</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> (){
+                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve2</span>, <span style="color:#a6e22e">reject2</span>){
+                            <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">commit</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>){
+                                <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">err</span>){
+                                    <span style="color:#a6e22e">resolve2</span>();
+                                } <span style="color:#66d9ef">else</span> {
+                                    <span style="color:#a6e22e">reject2</span>(<span style="color:#a6e22e">err</span>);
+                                }
+                            });
+                        });
+                    },
+                    <span style="color:#a6e22e">qRollback</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> (){
+                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve2</span>, <span style="color:#a6e22e">reject2</span>){
+                            <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">rollback</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>){
+                                <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">err</span>){
+                                    <span style="color:#a6e22e">resolve2</span>();
+                                } <span style="color:#66d9ef">else</span> {
+                                    <span style="color:#a6e22e">reject2</span>(<span style="color:#a6e22e">err</span>);
+                                }
+                            });
+                        });
+                    }
+                });
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#a6e22e">reject</span>(<span style="color:#a6e22e">err</span>);
+            }
+        });
+    });
+};
+</code></pre></div><h2 id="service">业务Service层</h2>
+<p>这样简直写一个业务Service层实现，有Java基础的同学一看一定觉得很熟悉。</p>
+<p><code>src/server/service/UserService.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#34;use strict&#34;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">DB</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;../dao/DB.js&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Transaction</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;../dao/Transaction.js&#39;</span>);
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> {
+
+    <span style="color:#a6e22e">findAll</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(){
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">db</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">DB</span>;
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">users</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">schemas</span>.<span style="color:#a6e22e">qUser</span>.<span style="color:#a6e22e">qAll</span>();
+        <span style="color:#66d9ef">return</span> Promise.<span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">users</span>);
+    },
+
+    <span style="color:#a6e22e">findByUsername</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">username</span>){
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">db</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">DB</span>;
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">schemas</span>.<span style="color:#a6e22e">qUser</span>.<span style="color:#a6e22e">qOne</span>({<span style="color:#a6e22e">username</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">username</span>});
+        <span style="color:#66d9ef">return</span> Promise.<span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">user</span>);
+    },
+
+    <span style="color:#a6e22e">updateUserPwd</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">username</span>, <span style="color:#a6e22e">pwd</span>){
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">db</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">DB</span>;
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">schemas</span>.<span style="color:#a6e22e">qUser</span>.<span style="color:#a6e22e">qOne</span>({<span style="color:#a6e22e">username</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">username</span>});
+        <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">pwd</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">pwd</span>;
+        <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">transaction</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">Transaction</span>(<span style="color:#a6e22e">db</span>);
+        <span style="color:#66d9ef">try</span> {
+            <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">user</span>.<span style="color:#a6e22e">qSave</span>();
+            <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">transaction</span>.<span style="color:#a6e22e">qCommit</span>();
+        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">err</span>){
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">err</span>);
+            <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">transaction</span>.<span style="color:#a6e22e">qRollback</span>();
+        }
+    }
+};
+</code></pre></div><p>因为数据访问层都是返回的Promise，这里就可以很方便使用Generator函数与yield来书写代码逻辑了，避免了JavaScript里大量的callback，Generator函数与yield的用法可以参考阮一峰的<a href="http://es6.ruanyifeng.com/#docs/generator">异步操作的同步化表达</a>。</p>
+<h2 id="controller">Controller层</h2>
+<p>虽然NodeJS里叫这个为route，但我还是习惯按Java的玩法叫它Controller，我使用了<code>koa-router</code>，还是比较好用的。</p>
+<p><code>src\server\controller\UserController.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#34;use strict&#34;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">Router</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa-router&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">UserService</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;../service/UserService.js&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">UserController</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Router</span>({
+  <span style="color:#a6e22e">prefix</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;/users&#39;</span>
+});
+
+<span style="color:#a6e22e">UserController</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;/&#39;</span>, <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(){
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">users</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">UserService</span>.<span style="color:#a6e22e">findAll</span>();
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">body</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">users</span>;
+});
+
+<span style="color:#a6e22e">UserController</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;/:username&#39;</span>, <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(){
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">UserService</span>.<span style="color:#a6e22e">findByUsername</span>(<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">username</span>);
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">body</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">user</span>;
+});
+
+<span style="color:#a6e22e">UserController</span>.<span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;/:username&#39;</span>, <span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(){
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">UserService</span>.<span style="color:#a6e22e">updateUserPwd</span>(<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">username</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">request</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">pwd</span>);
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">body</span> <span style="color:#f92672">=</span> {<span style="color:#a6e22e">success</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>};
+});
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">UserController</span>;
+</code></pre></div><h2 id="heading-1">中间件容器</h2>
+<p>我使用<code>koa</code>作为这个小Web项目的中间件容器，简单写一个启动器。</p>
+<p><code>src\server\app.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">koa</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">koa</span>();
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">json</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa-json&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">bodyParser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa-bodyparser&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">UserController</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./controller/UserController.js&#39;</span>);
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">json</span>({ <span style="color:#a6e22e">pretty</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">param</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;pretty&#39;</span> }));
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">bodyParser</span>());
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">UserController</span>.<span style="color:#a6e22e">routes</span>()).<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">UserController</span>.<span style="color:#a6e22e">allowedMethods</span>());
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">listen</span>(<span style="color:#ae81ff">3000</span>);
+</code></pre></div><p>最后执行命令<code>node src\server\app.js</code>, 这个小Web项目就跑起来了。</p>
+<h2 id="heading-2">总结</h2>
+<p>个人感觉使用NodeJS写简单的Web后端程序确实比用Java简单了不少，最关键是不用编译，异常地快。</p>
+<p>本篇<a href="https://github.com/jeremyxu2010/web_dev/tree/master/demo6">源代码地址</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-04-26</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/javascript/">javascript</a>
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/webmvc/">webmvc</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">nginx使用备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_05/">
+            <span class="next-text nav-default">现代Web开发系列教程_05</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>巧妙调试docker容器 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="巧妙调试docker容器" />
+<meta property="og:description" content="问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/" />
+<meta property="article:published_time" content="2019-04-21T20:00:00+08:00" />
+<meta property="article:modified_time" content="2019-04-21T20:00:00+08:00" />
+<meta itemprop="name" content="巧妙调试docker容器">
+<meta itemprop="description" content="问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行">
+<meta itemprop="datePublished" content="2019-04-21T20:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-04-21T20:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1377">
+
+
+
+<meta itemprop="keywords" content="docker,bash," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="巧妙调试docker容器"/>
+<meta name="twitter:description" content="问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">巧妙调试docker容器</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-04-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1377 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题</a></li>
+    <li><a href="#heading-1">不太优雅的解决方案</a></li>
+    <li><a href="#heading-2">更优雅的方案</a></li>
+    <li><a href="#docker-debug">docker-debug的实现原理</a></li>
+    <li><a href="#docker-debug-1">docker-debug的源码分析</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">问题</h2>
+<p>工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过<code>docker logs</code>命令观察容器的运行日志。很可惜，有时容器中运行的程序仅从日志很难查明问题。这时我们会通过<code>docker exec</code>在目标容器中执行某些命令以探查问题，有时却发现一些镜像很精简，连基本的<code>sh</code>、<code>bash</code>、<code>netstat</code>等命令都没包含。这时就很尴尬了，诊断问题很困难。</p>
+<h2 id="heading-1">不太优雅的解决方案</h2>
+<p>为了避免上述问题，我们在开发过程中一般要求最终打出的docker镜像中包含一些基本的调试命令，如<code>sh</code>、<code>bash</code>、<code>netstat</code>、<code>telnet</code>等。但这个解决方案只能规范自己开发的docker镜像，对于第三方开发的docker镜像就没办法了，而且会导致最终打出的镜像变大了不少，影响镜像的分发效率。</p>
+<h2 id="heading-2">更优雅的方案</h2>
+<p>今天在<code>github.com</code>上闲逛时偶然发现一个工具<a href="https://github.com/zeromake/docker-debug">docker-debug</a>，发现这个工具可以很好的解决这个问题。</p>
+<p>这个工具的使用方法也很简单，参考以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Suppose the container below is a container which should be checked</span>
+docker run -d --name dev -p 8000:80 nginx:latest
+
+<span style="color:#75715e"># Enter a shell where we can access the above container&#39;s namespaces (ipc, pid, network, etc, filesystem)</span>
+docker-debug dev bash -l
+</code></pre></div><p>更丰富的使用说明参考<a href="https://asciinema.org/a/235025">这个视频</a></p>
+<h2 id="docker-debug">docker-debug的实现原理</h2>
+<p>看了下文档，发现<a href="https://github.com/zeromake/docker-debug">docker-debug</a>的实现原理也挺简单的。</p>
+<blockquote>
+<ol>
+<li>find image docker is has, not has pull the image.</li>
+<li>find container name is has, not has return error.</li>
+<li>from customize image runs a new container in the container's namespaces (ipc, pid, network, etc, filesystem) with the STDIN stay open.</li>
+<li>create and run a exec on new container.</li>
+<li>Debug in the debug container.</li>
+<li>then waits for the debug container to exit and do the cleanup.</li>
+</ol>
+</blockquote>
+<p>简单说执行docker-debug命令也会使用一个包含了常用诊断命令的镜像启动一个诊断容器，该诊断容器将在目标容器相关的命名空间中运行，这样在这个容器中就可以访问目标容器的ipc, pid, network, etc, filesystem，然后使用<code>docker exec</code>命令在诊断容器运行命令，并将<code>docker exec</code>运行命令的输入输出pipe到docker-debug命令的输入输出上。</p>
+<h2 id="docker-debug-1">docker-debug的源码分析</h2>
+<p>在大量使用该工具前，简单分析下这个工具的源码。</p>
+<p>工具的主逻辑源码在<a href="https://github.com/zeromake/docker-debug/blob/master/internal/command/root.go#L129">这里</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">containerID</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">FindContainer</span>(<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">container</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#a6e22e">containerID</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">CreateContainer</span>(<span style="color:#a6e22e">containerID</span>, <span style="color:#a6e22e">options</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#a6e22e">resp</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ExecCreate</span>(<span style="color:#a6e22e">options</span>, <span style="color:#a6e22e">containerID</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">chan</span> <span style="color:#66d9ef">error</span>, <span style="color:#ae81ff">1</span>)
+
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#66d9ef">defer</span> close(<span style="color:#a6e22e">errCh</span>)
+		<span style="color:#a6e22e">errCh</span> <span style="color:#f92672">&lt;-</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">ExecStart</span>(<span style="color:#a6e22e">options</span>, <span style="color:#a6e22e">resp</span>.<span style="color:#a6e22e">ID</span>)
+		}()
+	}()
+</code></pre></div><p>其中有两处重点：</p>
+<p>一个是创建一个容器使用目标容器的ipc, pid, network, etc, filesystem，源码在<a href="https://github.com/zeromake/docker-debug/blob/master/internal/command/cli.go#L248">这里</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// CreateContainer create new container and attach target container resource
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cli</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DebugCli</span>) <span style="color:#a6e22e">CreateContainer</span>(<span style="color:#a6e22e">attachContainer</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">options</span> <span style="color:#a6e22e">execOptions</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mounts</span> []<span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">MountDir</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">withContent</span>(<span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Timeout</span>)
+		<span style="color:#a6e22e">info</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ContainerInspect</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">attachContainer</span>)
+		<span style="color:#a6e22e">cancel</span>()
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">WithStack</span>(<span style="color:#a6e22e">err</span>)
+		}
+		<span style="color:#a6e22e">mountDir</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">info</span>.<span style="color:#a6e22e">GraphDriver</span>.<span style="color:#a6e22e">Data</span>[<span style="color:#e6db74">&#34;MergedDir&#34;</span>]
+		<span style="color:#a6e22e">mounts</span> = []<span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>{}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
+			<span style="color:#a6e22e">mounts</span> = append(<span style="color:#a6e22e">mounts</span>, <span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>{
+				<span style="color:#a6e22e">Type</span>:   <span style="color:#e6db74">&#34;bind&#34;</span>,
+				<span style="color:#a6e22e">Source</span>: <span style="color:#a6e22e">mountDir</span>,
+				<span style="color:#a6e22e">Target</span>: <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">MountDir</span>,
+			})
+		}
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">info</span>.<span style="color:#a6e22e">Mounts</span> {
+			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">mountType</span> = <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">Type</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">Type</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;volume&#34;</span> {
+				<span style="color:#a6e22e">mountType</span> = <span style="color:#e6db74">&#34;bind&#34;</span>
+			}
+			<span style="color:#a6e22e">mounts</span> = append(<span style="color:#a6e22e">mounts</span>, <span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>{
+				<span style="color:#a6e22e">Type</span>:     <span style="color:#a6e22e">mountType</span>,
+				<span style="color:#a6e22e">Source</span>:   <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">Source</span>,
+				<span style="color:#a6e22e">Target</span>:   <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">MountDir</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">Destination</span>,
+				<span style="color:#a6e22e">ReadOnly</span>: !<span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">RW</span>,
+			})
+		}
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">volumes</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#75715e">// -v bind mount
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mounts</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#a6e22e">mounts</span> = []<span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>{}
+		}
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">m</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">volumes</span> {
+			<span style="color:#a6e22e">mountArgs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Split</span>(<span style="color:#a6e22e">m</span>, <span style="color:#e6db74">&#34;:&#34;</span>)
+			<span style="color:#a6e22e">mountLen</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">mountArgs</span>)
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mountLen</span> &gt; <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">mountLen</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">3</span> {
+				<span style="color:#a6e22e">mountDefault</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mount</span>.<span style="color:#a6e22e">Mount</span>{
+					<span style="color:#a6e22e">Type</span>: <span style="color:#e6db74">&#34;bind&#34;</span>,
+					<span style="color:#a6e22e">ReadOnly</span>: <span style="color:#66d9ef">false</span>,
+				}
+				<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">mountLen</span> {
+				<span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span>:
+					<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Source</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+					<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Target</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+				<span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span>:
+					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;rw&#34;</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;ro&#34;</span> {
+						<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">ReadOnly</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;rw&#34;</span>
+						<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Source</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+						<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Target</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+					} <span style="color:#66d9ef">else</span> {
+						<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Source</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+						<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Target</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">1</span>]
+					}
+				<span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span>:
+					<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Source</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">0</span>]
+					<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">Target</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">1</span>]
+					<span style="color:#a6e22e">mountDefault</span>.<span style="color:#a6e22e">ReadOnly</span> = <span style="color:#a6e22e">mountArgs</span>[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;rw&#34;</span>
+				}
+				<span style="color:#a6e22e">mounts</span> = append(<span style="color:#a6e22e">mounts</span>, <span style="color:#a6e22e">mountDefault</span>)
+			}
+		}
+	}
+	<span style="color:#a6e22e">targetName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">containerMode</span>(<span style="color:#a6e22e">attachContainer</span>)
+
+	<span style="color:#a6e22e">conf</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">Config</span>{
+		<span style="color:#a6e22e">Entrypoint</span>: <span style="color:#a6e22e">strslice</span>.<span style="color:#a6e22e">StrSlice</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;/usr/bin/env&#34;</span>, <span style="color:#e6db74">&#34;sh&#34;</span>}),
+		<span style="color:#a6e22e">Image</span>:      <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Image</span>,
+		<span style="color:#a6e22e">Tty</span>:        <span style="color:#66d9ef">true</span>,
+		<span style="color:#a6e22e">OpenStdin</span>:  <span style="color:#66d9ef">true</span>,
+		<span style="color:#a6e22e">StdinOnce</span>:  <span style="color:#66d9ef">true</span>,
+	}
+	<span style="color:#a6e22e">hostConfig</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">HostConfig</span>{
+		<span style="color:#a6e22e">NetworkMode</span>: <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">NetworkMode</span>(<span style="color:#a6e22e">targetName</span>),
+		<span style="color:#a6e22e">UsernsMode</span>:  <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">UsernsMode</span>(<span style="color:#a6e22e">targetName</span>),
+		<span style="color:#a6e22e">IpcMode</span>:     <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">IpcMode</span>(<span style="color:#a6e22e">targetName</span>),
+		<span style="color:#a6e22e">PidMode</span>:     <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">PidMode</span>(<span style="color:#a6e22e">targetName</span>),
+		<span style="color:#a6e22e">Mounts</span>:      <span style="color:#a6e22e">mounts</span>,
+		<span style="color:#75715e">//VolumesFrom: []string{attachContainer},
+</span><span style="color:#75715e"></span>	}
+	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">withContent</span>(<span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Timeout</span>)
+	<span style="color:#a6e22e">body</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ContainerCreate</span>(
+		<span style="color:#a6e22e">ctx</span>,
+		<span style="color:#a6e22e">conf</span>,
+		<span style="color:#a6e22e">hostConfig</span>,
+		<span style="color:#66d9ef">nil</span>,
+		<span style="color:#e6db74">&#34;&#34;</span>,
+	)
+	<span style="color:#a6e22e">cancel</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">WithStack</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> = <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">withContent</span>(<span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Timeout</span>)
+	<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ContainerStart</span>(
+		<span style="color:#a6e22e">ctx</span>,
+		<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">ID</span>,
+		<span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">ContainerStartOptions</span>{},
+	)
+	<span style="color:#a6e22e">cancel</span>()
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">ID</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">WithStack</span>(<span style="color:#a6e22e">err</span>)
+}
+</code></pre></div><p>一个是将<code>docker exec</code>运行命令的输入输出pipe到docker-debug命令的输入输出，源码在<a href="https://github.com/zeromake/docker-debug/blob/master/internal/command/cli.go#L394">这里</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// ExecStart exec start
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">cli</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">DebugCli</span>) <span style="color:#a6e22e">ExecStart</span>(<span style="color:#a6e22e">options</span> <span style="color:#a6e22e">execOptions</span>, <span style="color:#a6e22e">execID</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#a6e22e">execConfig</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">types</span>.<span style="color:#a6e22e">ExecStartCheck</span>{
+		<span style="color:#a6e22e">Tty</span>: <span style="color:#66d9ef">true</span>,
+	}
+
+	<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">cancel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">withContent</span>(<span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">Timeout</span>)
+	<span style="color:#a6e22e">response</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">ContainerExecAttach</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">execID</span>, <span style="color:#a6e22e">execConfig</span>)
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">cancel</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">WithStack</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#a6e22e">streamer</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tty</span>.<span style="color:#a6e22e">HijackedIOStreamer</span>{
+		<span style="color:#a6e22e">Streams</span>:      <span style="color:#a6e22e">cli</span>,
+		<span style="color:#a6e22e">InputStream</span>:  <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">in</span>,
+		<span style="color:#a6e22e">OutputStream</span>: <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">out</span>,
+		<span style="color:#a6e22e">ErrorStream</span>:  <span style="color:#a6e22e">cli</span>.<span style="color:#a6e22e">err</span>,
+		<span style="color:#a6e22e">Resp</span>:         <span style="color:#a6e22e">response</span>,
+		<span style="color:#a6e22e">TTY</span>:          <span style="color:#66d9ef">true</span>,
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">streamer</span>.<span style="color:#a6e22e">Stream</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+}
+</code></pre></div><p>整个实现逻辑还是比较清晰的。</p>
+<p>另外，还发现类似的工具<a href="https://github.com/aylei/kubectl-debug">kube-debug</a>，以后诊断pod中的问题方便多了。</p>
+<h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://docs.docker.com/engine/api/latest">https://docs.docker.com/engine/api/latest</a></li>
+<li><a href="https://github.com/zeromake/docker-debug">https://github.com/zeromake/docker-debug</a></li>
+<li><a href="https://github.com/aylei/kubectl-debug">https://github.com/aylei/kubectl-debug</a></li>
+<li><a href="https://draveness.me/docker">https://draveness.me/docker</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-04-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/bash/">bash</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">工作任务项杂记_201904</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/">
+            <span class="next-text nav-default">打通到kubernetes集群的网络</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

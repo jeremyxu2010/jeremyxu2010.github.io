@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>云服务器上ssh服务安全加固 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="云服务器上ssh服务安全加固" />
+<meta property="og:description" content="今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/" />
+<meta property="article:published_time" content="2016-08-24T22:00:00+08:00" />
+<meta property="article:modified_time" content="2016-08-24T22:00:00+08:00" />
+<meta itemprop="name" content="云服务器上ssh服务安全加固">
+<meta itemprop="description" content="今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来">
+<meta itemprop="datePublished" content="2016-08-24T22:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-24T22:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1853">
+
+
+
+<meta itemprop="keywords" content="linux,denyhosts,ssh," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="云服务器上ssh服务安全加固"/>
+<meta name="twitter:description" content="今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">云服务器上ssh服务安全加固</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-24 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1853 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">使用普通用户密钥文件登录</a></li>
+    <li><a href="#ssh">修改ssh服务端口，升起防火墙</a></li>
+    <li><a href="#ssh-1">防止用户暴力破解ssh服务</a></li>
+    <li><a href="#heading-1">其它</a></li>
+    <li><a href="#heading-2">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来说ssh服务经过简单设置是很安全的，怎么可能会出现这种情况呢。进一步交流才知道他们购买linux服务器后，连一些基本的安全措施都没做。原来并不是所有人都知道放在公网上的服务器是要进行简单的安全加固的。下面把我这些年使用linux时对ssh服务的安全加固步骤写下来，以便其它人参考。（以下的命令脚本基于CentOS6，其它发行版类似）</p>
+<h2 id="heading">使用普通用户密钥文件登录</h2>
+<p>直接使用root用户登录服务器当然是不安全的，建议创建一个普通用户用于ssh远程登录。命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">useradd -m cloudop
+</code></pre></div><p>在另一台PC上生成登录密钥。命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh-keygen -N <span style="color:#e6db74">&#39;&#39;</span> -f ~/.ssh/cloudkey_rsa
+</code></pre></div><p>然后将上述命令生成的~/.ssh/cloudkey_rsa.pub文件拷贝到服务器，并执行以下命令配置好密钥登录：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p /home/cloudop/.ssh
+cat /tmp/cloudkey_rsa.pub &gt;&gt; /home/cloudop/.ssh/authorized_keys
+chown -R cloudop:cloudop /home/cloudop/.ssh <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">700</span> /home/cloudop/.ssh <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">600</span> /home/cloudop/.ssh/authorized_keys
+</code></pre></div><p>然后在另一台PC使用以下命令登录服务器：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh -i ~/.ssh/cloudkey_rsa cloudop@<span style="color:#e6db74">${</span>server_ip<span style="color:#e6db74">}</span>
+</code></pre></div><p>如果可成功登录，则说明密钥登录配置成功，登录成功后可执行<code>su - root</code>命令切换至root权限进行操作，当然你得知道root密码。</p>
+<p>最后修改ssh服务的配置文件禁用root用户登录、仅开放密钥验证方式禁用其它验证方式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sed -i -e <span style="color:#e6db74">&#39;/^PermitRootLogin.*$/d&#39;</span> /etc/ssh/sshd_config
+echo <span style="color:#e6db74">&#34;PermitRootLogin no&#34;</span> &gt;&gt; /etc/ssh/sshd_config
+sed -i -e <span style="color:#e6db74">&#39;/^PasswordAuthentication.*$/d&#39;</span> /etc/ssh/sshd_config
+echo <span style="color:#e6db74">&#34;PasswordAuthentication no&#34;</span> &gt;&gt; /etc/ssh/sshd_config
+sed -i -e <span style="color:#e6db74">&#39;/^ChallengeResponseAuthentication.*$/d&#39;</span> /etc/ssh/sshd_config
+echo <span style="color:#e6db74">&#34;ChallengeResponseAuthentication no&#34;</span> &gt;&gt; /etc/ssh/sshd_config
+sed -i -e <span style="color:#e6db74">&#39;/^GSSAPIAuthentication.*$/d&#39;</span> /etc/ssh/sshd_config
+echo <span style="color:#e6db74">&#34;GSSAPIAuthentication no&#34;</span> &gt;&gt; /etc/ssh/sshd_config
+service sshd restart
+</code></pre></div><h2 id="ssh">修改ssh服务端口，升起防火墙</h2>
+<p>有很多攻击程序会扫描公网上服务器的22端口，一旦发现22端口就开始调用程序暴力破解。安全起见，建议修改ssh服务器的端口，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sed -i -e <span style="color:#e6db74">&#39;/^Port.*$/d&#39;</span> /etc/ssh/sshd_config
+echo <span style="color:#e6db74">&#34;Port 1221&#34;</span> &gt;&gt; /etc/ssh/sshd_config
+service sshd restart
+</code></pre></div><p>同时修改防火墙设置，以允许外部访问修改后的端口，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">service iptables start
+iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport <span style="color:#ae81ff">1221</span> -j ACCEPT
+iptables-save &gt; /etc/sysconfig/iptables
+service iptables restart
+</code></pre></div><p>这里特意说明一下，放在公网上的服务器一定要升起防火墙，并只开必要的端口。我一般只开放80、443、1221三个端口。</p>
+<p>当然以后访问服务器时得使用以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh -i ~/.ssh/cloudkey_rsa -p <span style="color:#ae81ff">1221</span> cloudop@<span style="color:#e6db74">${</span>server_ip<span style="color:#e6db74">}</span>
+</code></pre></div><p>scp拷贝文件时得使用以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">scp -i ~/.ssh/cloudkey_rsa -P <span style="color:#ae81ff">1221</span> cloudop@<span style="color:#e6db74">${</span>server_ip<span style="color:#e6db74">}</span>:/tmp/xxxx.txt ./
+</code></pre></div><h2 id="ssh-1">防止用户暴力破解ssh服务</h2>
+<p>尽管已经只允许使用密钥登录，而且ssh服务的端口也修改了，可还是难以避免攻击者暴力破解，我一般使用denyhosts这个小软件防范。</p>
+<p>这个小软件的原理是分析/var/log/secure（redhat，Fedora Core）等日志文件，当发现同一IP在进行多次SSH密码尝试时就会记录IP到/etc/hosts.deny文件，从而达到自动屏蔽该IP的目的。</p>
+<p>安装配置过程如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 下载DenyHosts并解压</span>
+wget http://heanet.dl.sourceforge.net/project/denyhosts/denyhosts/2.6/DenyHosts-2.6.tar.gz
+tar zxvf DenyHosts-2.6.tar.gz
+cd DenyHosts-2.6
+
+<span style="color:#75715e"># 安装前清空以前的日志并重启一下rsyslog</span>
+echo <span style="color:#e6db74">&#34;&#34;</span> &gt; /var/log/secure <span style="color:#f92672">&amp;&amp;</span> service rsyslog restart
+
+<span style="color:#75715e"># 因为DenyHosts是基于python的，所以要已安装python，大部分Linux发行版一般都有。默认是安装到/usr/share/denyhosts/目录的,进入相应的目录修改配置文件</span>
+python setup.py install
+
+cd /usr/share/denyhosts/
+cp denyhosts.cfg-dist denyhosts.cfg
+cp daemon-control-dist daemon-control <span style="color:#f92672">&amp;&amp;</span> chown root daemon-control <span style="color:#f92672">&amp;&amp;</span> chmod <span style="color:#ae81ff">700</span> daemon-control
+
+<span style="color:#75715e"># 如果要使DenyHosts每次重起后自动启动还需做如下设置</span>
+ln -sf /usr/share/denyhosts/daemon-control /etc/init.d/denyhosts <span style="color:#f92672">&amp;&amp;</span> chkconfig --add denyhosts <span style="color:#f92672">&amp;&amp;</span> chkconfig --level <span style="color:#ae81ff">2345</span> denyhosts on
+
+<span style="color:#75715e"># 启动denyhosts服务</span>
+service denyhosts start
+</code></pre></div><p><code>/usr/share/denyhosts/denyhosts.cfg</code>为denyhosts服务的配置文件，默认的设置已经可以适合centos系统环境，这里对这个配置文件里一些关键配置项作一个说明，大家可以按需修改。</p>
+<pre><code>SECURE_LOG = /var/log/secure
+#sshd日志文件，它是根据这个文件来判断的，不同的操作系统，文件名稍有不同。
+HOSTS_DENY = /etc/hosts.deny
+#控制用户登陆的文件
+PURGE_DENY = 5m
+DAEMON_PURGE = 5m
+#过多久后清除已经禁止的IP，如5m（5分钟）、5h（5小时）、5d（5天）、5w（5周）、1y（一年）
+BLOCK_SERVICE  = sshd
+#禁止的服务名，可以只限制不允许访问ssh服务，也可以选择ALL
+DENY_THRESHOLD_INVALID = 5
+#允许无效用户失败的次数
+DENY_THRESHOLD_VALID = 10
+#允许普通用户登陆失败的次数
+DENY_THRESHOLD_ROOT = 5
+#允许root登陆失败的次数
+HOSTNAME_LOOKUP=NO
+#是否做域名反解
+DAEMON_LOG = /var/log/denyhosts
+</code></pre><p>如果你有一些确定的IP不希望被denyhosts屏蔽，可以执行以下命令将这些IP加入到白名单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">echo <span style="color:#e6db74">&#34;你的IP&#34;</span> &gt;&gt;  /usr/share/denyhosts/allowed-hosts
+<span style="color:#75715e"># 重启denyhosts服务</span>
+service denyhosts restart
+</code></pre></div><p>如有IP被误封，可以执行下面的命令解封：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget -O /usr/share/denyhosts/denyhosts_removeip.sh http://soft.vpser.net/security/denyhosts/denyhosts_removeip.sh
+bash /usr/share/denyhosts/denyhosts_removeip.sh 要解封的IP
+</code></pre></div><h2 id="heading-1">其它</h2>
+<p>服务器的root密码一般只在由普通用户切换至root用户时用到，设置得太复杂，操作不方便，太复杂形同虚设。</p>
+<p>所以我一般在团队内部约定一个root密码的规则，这个规则仅团队内部人员知道，比如设置为'R00T@主机名@公司名&rsquo;。</p>
+<p>另外服务器的登录密钥文件一定要妥善保存与分发。</p>
+<h2 id="heading-2">总结</h2>
+<p>做完以上几步，攻击者基本上就很难暴力攻击你的ssh服务了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-24</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/denyhosts/">denyhosts</a>
+          
+          <a href="/tags/ssh/">ssh</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">重搭docker集群</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E5%AD%A6%E4%B9%A0etcd/">
+            <span class="next-text nav-default">学习etcd</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

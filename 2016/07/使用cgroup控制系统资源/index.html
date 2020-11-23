@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用cgroup控制系统资源 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cg" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/07/%E4%BD%BF%E7%94%A8cgroup%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用cgroup控制系统资源" />
+<meta property="og:description" content="工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cg" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/07/%E4%BD%BF%E7%94%A8cgroup%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90/" />
+<meta property="article:published_time" content="2016-07-03T23:43:00+08:00" />
+<meta property="article:modified_time" content="2016-07-03T23:43:00+08:00" />
+<meta itemprop="name" content="使用cgroup控制系统资源">
+<meta itemprop="description" content="工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cg">
+<meta itemprop="datePublished" content="2016-07-03T23:43:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-07-03T23:43:00&#43;08:00" />
+<meta itemprop="wordCount" content="3889">
+
+
+
+<meta itemprop="keywords" content="linux,cgroup," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用cgroup控制系统资源"/>
+<meta name="twitter:description" content="工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cg"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用cgroup控制系统资源</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-07-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 3889 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">概念</a></li>
+    <li><a href="#heading-1">子系统</a></li>
+    <li><a href="#cgconfigconf-">cgconfig.conf 文件</a></li>
+    <li><a href="#heading-2">将某个进程移动到控制组群中</a></li>
+    <li><a href="#heading-3">设置子系统参数</a></li>
+    <li><a href="#heading-4">获取子系统参数</a></li>
+    <li><a href="#heading-5">子系统可调参数</a></li>
+    <li><a href="#heading-6">应用实例</a></li>
+    <li><a href="#heading-7">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cgroup，在这里记录备忘一下。</p>
+<h2 id="heading">概念</h2>
+<p>CGroup 技术被广泛用于 Linux 操作系统环境下的物理分割，是 Linux Container 技术的底层基础技术，是虚拟化技术的基础。CGroup 是 Control Groups 的缩写，是 Linux 内核提供的一种可以限制、记录、隔离进程组 (process groups) 所使用的物力资源 (如 cpu memory i/o 等等) 的机制。CGroup 是将任意进程进行分组化管理的 Linux 内核功能。CGroup 本身是提供将进程进行分组化管理的功能和接口的基础结构，I/O 或内存的分配控制等具体的资源管理功能是通过这个功能来实现的。这些具体的资源管理功能称为 CGroup 子系统或控制器。CGroup 子系统有控制内存的 Memory 控制器、控制进程调度的 CPU 控制器等。CGroup 提供了一个 CGroup 虚拟文件系统，作为进行分组管理和各子系统设置的用户接口。</p>
+<ul>
+<li>子系统（<strong>subsystem</strong>）。一个子系统就是一个资源控制器，比如cpu子系统就是控制cpu时间分配的一个控制器。子系统必须附加（attach）到一个层级上才能起作用，一个子系统附加到某个层级以后，这个层级上的所有控制组群都受到这个子系统的控制。使用<code>lssubsys -a</code>命令查看内核支持的子系统。</li>
+<li>层级（<strong>hierarchy</strong>）。子系统必须附加（attach）到一个层级上才能起作用。使用<code>mkdir -p /cgroup/name &amp;&amp; mount -t cgroup -o subsystems name /cgroup/name</code>命令创建一个层级，并把该层级挂载到目录。</li>
+<li>控制组群（<strong>control group</strong>）。控制组群就是一组按照某种标准划分的进程。cgroups中的资源控制都是以控制组群为单位实现。一个进程可以加入到某个控制组群，也从一个进程组迁移到另一个控制组群。一个进程组的进程可以使用cgroups以控制组群为单位分配的资源，同时受到cgroups以控制组群为单位设定的限制。某一个层级上默认存在一个<code>cgroup_path</code>为<code>/</code>的控制组群，另外还可以创建树形结构的控制组群。使用<code>cgcreate -g subsystems:cgroup_path</code>命令可以创建控制组群。</li>
+<li>任务（<strong>task</strong>）。任务就是系统的一个进程。控制组群所对应的目录中有一个<code>tasks</code>文件，将进程ID写进该文件，该进程就会受到该控制组群的限制。</li>
+</ul>
+<p>另外上述4个概念还存在一些规则，如下</p>
+<ul>
+<li>每次在系统中创建新层级时，该系统中的所有任务都是那个层级的默认 cgroup（我们称之为 root cgroup，此 cgroup 在创建层级时自动创建，后面在该层级中创建的 cgroup 都是此 cgroup 的后代）的初始成员；比如在创建其它控制组群之前，使用<code>cat /cgroup/memory/tasks</code>命令查看一下，就可以看到系统里所有进程的ID都在这儿。</li>
+<li>一个子系统最多只能附加到一个层级；比如使用<code>lssubsys -am</code>可以看到<code>memory</code>子系统都附件到<code>memory</code>层级并挂载至<code>/cgroup/memory</code>了，此时就不可再使用<code>mkdir -p /cgroup/memory2 &amp;&amp; mount -t cgroup -o memory memory2 /cgroup/memory2</code>命令将<code>memory</code>子系统再附加到其它层级了。</li>
+<li>一个层级可以附加多个子系统；可以使用<code>mkdir -p /cgroup/cpu,cpuacct &amp;&amp; mount -t cgroup -o cpu,cpuacct cpu,cpuacct /cgroup/cpu,cpuacct</code>命令将<code>cpu</code>、<code>cpuacct</code>附加至层级<code>cpu,cpuacct</code>并挂载至<code>/cgroup/cpu,cpuacct</code></li>
+<li>一个任务可以是多个 cgroup 的成员，但是这些 cgroup 必须在不同的层级；比如一个层级里某一个进程ID只能归属于唯一一个控制组群，但该进程ID还可以归属于另一个层级里的唯一一个控制组群。</li>
+<li>系统中的进程（任务）创建子进程（任务）时，该子任务自动成为其父进程所在 cgroup 的成员。然后可根据需要将该子任务移动到不同的 cgroup 中，但开始时它总是继承其父任务的 cgroup。</li>
+</ul>
+<p>设计成这样的原因如下：</p>
+<blockquote>
+<p>因为某个任务可属于任一层级中的单一cgroup，所以只有一个方法可让单一子系统限制或者影响任务。这是合理的：是一个功能，而不是限制。
+您可以将几个子系统分组在一起以便它们可影响单一层级中的所有任务。因为该层级中的cgroup有不同的参数设定，因此会对那些任务产生不同的影响。
+有时可能需要重构层级。例如：从附加了几个子系统的层级中删除一个子系统，并将其附加到不同的层级中。
+反正，如果从不同层级中分离子系统的需求降低，则您可以删除层级并将其子系统附加到现有层级中。
+这个设计允许简单的cgroup使用，比如为单一层级中的具体任务设定几个参数，单一层级可以是只附加了cpu和memeory子系统的层级。
+这个设计还允许高精度配置：系统中的每个任务（进程）都可以是每个层级的成员，每个层级都有单一附加的子系统。这样的配置可让系统管理员绝对控制每个单一任务的所有参数。</p>
+</blockquote>
+<h2 id="heading-1">子系统</h2>
+<p>cgroups为每种可以控制的资源定义了一个子系统。典型的子系统介绍如下：</p>
+<ul>
+<li>cpu 子系统，主要限制进程的 cpu 使用率。</li>
+<li>cpuacct 子系统，可以统计 cgroups 中的进程的 cpu 使用报告。</li>
+<li>cpuset 子系统，可以为 cgroups 中的进程分配单独的 cpu 节点或者内存节点。</li>
+<li>memory 子系统，可以限制进程的 memory 使用量。</li>
+<li>blkio 子系统，可以限制进程的块设备 io。</li>
+<li>devices 子系统，可以控制进程能够访问某些设备。</li>
+<li>net_cls 子系统，可以标记 cgroups 中进程的网络数据包，然后可以使用 tc 模块（traffic control）对数据包进行控制。</li>
+<li>freezer 子系统，可以挂起或者恢复 cgroups 中的进程。</li>
+<li>ns 子系统，可以使不同 cgroups 下面的进程使用不同的 namespace。</li>
+</ul>
+<h2 id="cgconfigconf-">cgconfig.conf 文件</h2>
+<p>上面都是使用命令控制层级和控制组群，而且并没有将创建的结果存储下来，系统重启后创建的结果就没了。所以系统提供了cgconfig.conf文件，cgconfig 服务启动时会读取 cgroup 配置文件 &ndash; /etc/cgconfig.conf。根据配置文件的内容，cgconfig 可创建层级、挂载所需文件系统、创建 cgroup 以及为每个组群设定子系统参数。</p>
+<p>cgconfig.conf 文件包含两个主要类型的条目 &ndash; mount 和 group。挂载条目生成并挂载层级并将其作为虚拟文件系统，同时将子系统附加到那些层级中。挂载条目使用以下语法定义：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount <span style="color:#f92672">{</span>
+    &lt;controller&gt; <span style="color:#f92672">=</span> &lt;path&gt;;
+    …
+<span style="color:#f92672">}</span>
+</code></pre></div><p>组群条目创建 cgroup 并设定子系统参数。组群条目使用以下语法定义：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">group &lt;name&gt; <span style="color:#f92672">{</span>
+    <span style="color:#f92672">[</span>&lt;permissions&gt;<span style="color:#f92672">]</span>
+    &lt;controller&gt; <span style="color:#f92672">{</span>
+        &lt;param name&gt; <span style="color:#f92672">=</span> &lt;param value&gt;;
+        …
+    <span style="color:#f92672">}</span>
+    …
+<span style="color:#f92672">}</span>
+</code></pre></div><p>请注意 permissions 部分是可选的。要为组群条目定义权限，请使用以下语法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">perm <span style="color:#f92672">{</span>
+    task <span style="color:#f92672">{</span>
+        uid <span style="color:#f92672">=</span> &lt;task user&gt;;
+        gid <span style="color:#f92672">=</span> &lt;task group&gt;;
+    <span style="color:#f92672">}</span>
+    admin <span style="color:#f92672">{</span>
+       uid <span style="color:#f92672">=</span> &lt;admin name&gt;;
+       gid <span style="color:#f92672">=</span> &lt;admin group&gt;;
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这个表示<code>&lt;admin group&gt;:&lt;admin name&gt;</code>的用户可以调整该控制组群中子系统的参数，而<code>&lt;task group&gt;:&lt;task user&gt;</code>的用户可以读写该控制组群中的tasks文件。</p>
+<p>还是举个实例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount <span style="color:#f92672">{</span>
+		cpuset  <span style="color:#f92672">=</span> /cgroup/cpuset;
+		cpu     <span style="color:#f92672">=</span> /cgroup/cpu;
+		cpuacct <span style="color:#f92672">=</span> /cgroup/cpuacct;
+		memory  <span style="color:#f92672">=</span> /cgroup/memory;
+		devices <span style="color:#f92672">=</span> /cgroup/devices;
+		freezer <span style="color:#f92672">=</span> /cgroup/freezer;
+		net_cls <span style="color:#f92672">=</span> /cgroup/net_cls;
+		blkio   <span style="color:#f92672">=</span> /cgroup/blkio;
+<span style="color:#f92672">}</span>
+
+group mysql_g1 <span style="color:#f92672">{</span>
+    perm <span style="color:#f92672">{</span>
+        task <span style="color:#f92672">{</span>
+            uid <span style="color:#f92672">=</span> root;
+            gid <span style="color:#f92672">=</span> sqladmin;
+        <span style="color:#f92672">}</span> admin <span style="color:#f92672">{</span>
+            uid <span style="color:#f92672">=</span> root;
+            gid <span style="color:#f92672">=</span> root;
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    cpu <span style="color:#f92672">{</span>
+           cpu.cfs_quota_us <span style="color:#f92672">=</span> 50000;
+           cpu.cfs_period_us <span style="color:#f92672">=</span> 100000;
+    <span style="color:#f92672">}</span>
+    cpuset <span style="color:#f92672">{</span>
+           cpuset.cpus <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;3&#34;</span>;
+           cpuset.mems <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span>;
+    <span style="color:#f92672">}</span>
+    memory <span style="color:#f92672">{</span>
+           memory.limit_in_bytes<span style="color:#f92672">=</span>104857600;
+           memory.swappiness<span style="color:#f92672">=</span>0;
+    <span style="color:#f92672">}</span>
+    blkio  <span style="color:#f92672">{</span>
+          blkio.throttle.read_bps_device<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8:0 524288&#34;</span>;
+          blkio.throttle.write_bps_device<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;8:0 524288&#34;</span>;
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+group mongodb_g1 <span style="color:#f92672">{</span>
+    perm <span style="color:#f92672">{</span>
+        task <span style="color:#f92672">{</span>
+            uid <span style="color:#f92672">=</span> root;
+            gid <span style="color:#f92672">=</span> mongodbadmin;
+        <span style="color:#f92672">}</span> admin <span style="color:#f92672">{</span>
+            uid <span style="color:#f92672">=</span> root;
+            gid <span style="color:#f92672">=</span> root;
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    cpu <span style="color:#f92672">{</span>
+           cpu.cfs_quota_us <span style="color:#f92672">=</span> 50000;
+           cpu.cfs_period_us <span style="color:#f92672">=</span> 100000;
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-2">将某个进程移动到控制组群中</h2>
+<p>有3个办法完成这个操作：</p>
+<ul>
+<li>###cgclassify 命令###
+可以运行 cgclassify 命令将进程移动到 cgroup 中，cgclassify 的语法为：<code>cgclassify -g subsystems:path_to_cgroup pidlist</code>，其中：
+<ul>
+<li>subsystems 是用逗号分开的子系统列表，或者 * 启动与所有可用子系统关联的层级中的进程。请注意：如果在多个层级中有同名的 cgroup，则 -g 选项会将该进程移动到每个组群中。</li>
+<li>path_to_cgroup 是到其层级中的 cgroup 的路径</li>
+<li>pidlist 是用空格分开的进程识别符（PID）列表
+还可以在 pid 前面添加 &ndash; sticky 选项以保证所有子进程位于同一 cgroup 中。
+举个例子</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgclassify -g cpu,memory:mysql_g1 <span style="color:#ae81ff">1701</span>
+</code></pre></div><ul>
+<li>###cgred 守护进程###
+Cgred 是一个守护进程，它可根据在 /etc/cgrules.conf 文件中设定的参数将任务移动到 cgroup 中。/etc/cgrules.conf 文件中的条目可以使用以下两个格式之一：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">user hierarchies control_group
+user:command hierarchies control_group
+</code></pre></div><p>举个例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">maria:ftp		devices		/usergroup/staff/ftp
+</code></pre></div><ul>
+<li>
+<p>###cgexec 命令###
+可以运行 cgexec 命令在 cgroup 中启动进程。cgexec 语法为：<code>cgexec -g subsystems:path_to_cgroup command arguments</code> ，其中：</p>
+<ul>
+<li>subsystems 是用逗号分开的子系统列表或者 * 启动与所有可用子系统关联的层级中的进程。请注意：如 第 2.7 节 “设置参数” 所述的cgset，如果在多个层级中有同名的 cgroup，-g 选项会在每个组群中创建进程。</li>
+<li>path_to_cgroup 是到与该层级相关的 cgroup 的路径。</li>
+<li>command 是要运行的命令</li>
+<li>arguments 是该命令所有参数</li>
+</ul>
+<p>举个例子</p>
+</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgexec -g cpu:group1 lynx http://www.redhat.com
+</code></pre></div><h2 id="heading-3">设置子系统参数</h2>
+<p>可以运行 cgset 命令设定子系统参数。cgset 的语法为：<code>cgset -r parameter=value path_to_cgroup</code> ，其中：</p>
+<ul>
+<li>parameter 是要设定的参数，该参数与给定 cgroup 的目录中的文件对应。</li>
+<li>value 是为参数设定的值</li>
+<li>path_to_cgroup 是到相对该层级 root 的 cgroup 路径</li>
+</ul>
+<p>举个例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgset -r cpuset.cpus<span style="color:#f92672">=</span>0-1 group1
+</code></pre></div><p>可以使用 cgset 将一个 cgroup 中的参数复制到另一个现有 cgroup 中。使用 cgset 复制参数的语法为：<code>cgset --copy-from path_to_source_cgroup path_to_target_cgroup</code>，其中：</p>
+<ul>
+<li>path_to_source_cgroup 是相对该层级中 root 组群，到要复制其参数的 cgroup 的路径。</li>
+<li>path_to_target_cgroup 是相对该层级 root 组群的目的 cgroup 的路径。</li>
+</ul>
+<p>举个例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgset --copy-from group1/ group2/
+</code></pre></div><h2 id="heading-4">获取子系统参数</h2>
+<p>可以运行 cgget 命令获取子系统参数。cgget 的语法为：<code>cgget -r parameter list_of_cgroups</code>，其中：</p>
+<ul>
+<li>parameter 是包含子系统值的伪文件</li>
+<li>list_of_cgroups 是用空格分开的 cgroup 列表</li>
+</ul>
+<p>举个例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgget -r cpuset.cpus -r memory.limit_in_bytes lab1 lab2
+</code></pre></div><p>如果不知道参数名称，请使用类似命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cgget -g cpuset lab1 lab2
+</code></pre></div><h2 id="heading-5">子系统可调参数</h2>
+<p>子系统可调参数比较多，可参考<code>https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html/Resource_Management_Guide/ch-Subsystems_and_Tunable_Parameters.html</code></p>
+<h2 id="heading-6">应用实例</h2>
+<p>在我的场景里需要对MongoDB服务进行资源限制，限制MongoDB服务所使用的内存在500M以内。</p>
+<p>修改/etc/cgconfig.conf文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount <span style="color:#f92672">{</span>
+		cpuset  <span style="color:#f92672">=</span> /cgroup/cpuset;
+		cpu     <span style="color:#f92672">=</span> /cgroup/cpu;
+		cpuacct <span style="color:#f92672">=</span> /cgroup/cpuacct;
+		memory  <span style="color:#f92672">=</span> /cgroup/memory;
+		devices <span style="color:#f92672">=</span> /cgroup/devices;
+		freezer <span style="color:#f92672">=</span> /cgroup/freezer;
+		net_cls <span style="color:#f92672">=</span> /cgroup/net_cls;
+		blkio   <span style="color:#f92672">=</span> /cgroup/blkio;
+<span style="color:#f92672">}</span>
+
+group mongodb_g1 <span style="color:#f92672">{</span>
+    memory <span style="color:#f92672">{</span>
+           memory.limit_in_bytes<span style="color:#f92672">=</span>524288000;
+           memory.swappiness<span style="color:#f92672">=</span>0;
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>然后修改/etc/init.d/mongod，使用cgexec启动mongod进程</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/sbin/startproc -u $MONGOD_USER -g $MONGOD_GROUP -s -e /usr/bin/cgexec -g memory:mongodb_g1 $MONGOD_BIN --config /etc/mongod.conf run
+</code></pre></div><h2 id="heading-7">参考</h2>
+<p><code>https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/6/html/Resource_Management_Guide/ch01.html</code>
+<code>http://www.ibm.com/developerworks/cn/linux/1506_cgroup/index.html</code>
+<code>http://colobu.com/2015/07/23/Using-Cgroups-to-Limit-MongoDB-memory-usage/</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-07-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/cgroup/">cgroup</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Systemd 入门教程（转载）</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/">
+            <span class="next-text nav-default">搭建简易的docker集群</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

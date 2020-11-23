@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CentOS6下rpm打包实战 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="CentOS6下rpm打包实战" />
+<meta property="og:description" content="最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/" />
+<meta property="article:published_time" content="2018-02-06T20:07:00+08:00" />
+<meta property="article:modified_time" content="2018-02-06T20:07:00+08:00" />
+<meta itemprop="name" content="CentOS6下rpm打包实战">
+<meta itemprop="description" content="最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，">
+<meta itemprop="datePublished" content="2018-02-06T20:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-02-06T20:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="974">
+
+
+
+<meta itemprop="keywords" content="centos,rpm,rpmbuild," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CentOS6下rpm打包实战"/>
+<meta name="twitter:description" content="最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">CentOS6下rpm打包实战</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-02-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 974 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#rpm-build">安装rpm-build</a></li>
+    <li><a href="#heading">创建必须的文件夹和文件</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#spec-1">找spec模板文件</a></li>
+    <li><a href="#spec-2">写自己软件包的spec文件</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#source">上传必要的source文件</a></li>
+    <li><a href="#heading-1">开始制作</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。</p>
+<h1 id="rpm">准备rpm打包环境</h1>
+<p>我这里用的操作系统是CentOS6.7，redhat系的其它发行版应该也类似。</p>
+<h2 id="rpm-build">安装rpm-build</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo yum install -y gcc make rpm-build redhat-rpm-config vim lrzsz
+</code></pre></div><h2 id="heading">创建必须的文件夹和文件</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir -p ~/rpmbuild/<span style="color:#f92672">{</span>BUILD,RPMS,SOURCES,SPECS,SRPMS<span style="color:#f92672">}</span>
+echo <span style="color:#e6db74">&#39;%_topdir %(echo $HOME)/rpmbuild&#39;</span> &gt; ~/.rpmmacros
+</code></pre></div><h1 id="spec">制作spec文件</h1>
+<h2 id="spec-1">找spec模板文件</h2>
+<p>一般找一个类似的rpm源码包，将其安装，然后参照它写自己软件包的spec文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir ~/rpms
+wget -O ~/rpms/python-2.6.6-64.el6.src.rpm http://vault.centos.org/6.7/os/Source/SPackages/python-2.6.6-64.el6.src.rpm
+rpm -ivh ~/rpms/python-2.6.6-64.el6.src.rpm
+vim ~/rpmbuild/SPECS/python.spec <span style="color:#75715e"># 参照这个文件来写自己软件包的spec文件</span>
+</code></pre></div><h2 id="spec-2">写自己软件包的spec文件</h2>
+<p>spec文件中各个选项的意义参照<a href="http://www.dahouduan.com/2015/06/15/linux-centos-make-rpm/">这里</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd ~/rpmbuild
+cat ./SPECS/python27-tstack.spec
+
+%debug_package %<span style="color:#f92672">{</span>nil<span style="color:#f92672">}</span>
+%define install_dir /usr/local/python27
+
+Name:		python27-tstack
+Version:	2.7.10
+Release:	1%<span style="color:#f92672">{</span>?dist<span style="color:#f92672">}</span>
+Summary:	python27 modified by tstack
+URL: 		http://www.python.org/
+Group:		Development/Languages
+License:	Python
+Provides:   python-abi <span style="color:#f92672">=</span> 2.7
+Provides:   python<span style="color:#f92672">(</span>abi<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> 2.7
+Source0:	Python-2.7.10.tgz
+BuildRequires:  readline-devel, openssl-devel, gmp-devel, pcre-devel, mysql-devel, libffi-devel
+Requires:	readline, openssl, gmp, pcre, mysql, libffi
+Autoreq: 	0
+
+%description
+Python is an interpreted, interactive, object-oriented programming
+language often compared to Tcl, Perl, Scheme or Java. Python includes
+modules, classes, exceptions, very high level dynamic data types and
+dynamic typing. Python supports interfaces to many system calls and
+libraries, as well as to various windowing systems <span style="color:#f92672">(</span>X11, Motif, Tk,
+Mac and MFC<span style="color:#f92672">)</span>.
+
+Programmers can write new built-in modules <span style="color:#66d9ef">for</span> Python in C or C++.
+Python can be used as an extension language <span style="color:#66d9ef">for</span> applications that need
+a programmable interface.
+
+Note that documentation <span style="color:#66d9ef">for</span> Python is provided in the python-docs
+package.
+
+%prep
+%setup -q -n Python-%<span style="color:#f92672">{</span>version<span style="color:#f92672">}</span>
+
+
+%build
+./configure --prefix<span style="color:#f92672">=</span>%<span style="color:#f92672">{</span>install_dir<span style="color:#f92672">}</span> --with-cxx-main<span style="color:#f92672">=</span>/usr/bin/g++
+make %<span style="color:#f92672">{</span>?_smp_mflags<span style="color:#f92672">}</span>
+
+%install
+rm -rf %<span style="color:#f92672">{</span>buildroot<span style="color:#f92672">}</span>
+make install DESTDIR<span style="color:#f92672">=</span>%<span style="color:#f92672">{</span>buildroot<span style="color:#f92672">}</span>
+
+%clean 
+rm -rf %<span style="color:#f92672">{</span>buildroot<span style="color:#f92672">}</span>
+
+%files
+%defattr <span style="color:#f92672">(</span>-,root,root<span style="color:#f92672">)</span>
+%<span style="color:#f92672">{</span>install_dir<span style="color:#f92672">}</span>/bin/
+%<span style="color:#f92672">{</span>install_dir<span style="color:#f92672">}</span>/include/
+%<span style="color:#f92672">{</span>install_dir<span style="color:#f92672">}</span>/lib/
+%<span style="color:#f92672">{</span>install_dir<span style="color:#f92672">}</span>/share/
+%doc
+
+%changelog
+</code></pre></div><h1 id="rpm-1">制作rpm包</h1>
+<h2 id="source">上传必要的source文件</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp <span style="color:#e6db74">${</span>some_where<span style="color:#e6db74">}</span>/Python-2.7.10.tgz ~/rpmbuild/SOURCES/
+</code></pre></div><h2 id="heading-1">开始制作</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">cd ~/rpmbuild
+rpmbuild -bb --target x86_64 SPECS/python27-tstack.spec &amp;&gt; rpmbuild.log <span style="color:#75715e"># 这时可以打开另一个终端观察下rpmbuild.log</span>
+</code></pre></div><p>一切顺序的话，最终会在<code>~/rpmbuild/RPMS/x86_64/</code>目录下找到编译好的rpm包。</p>
+<h1 id="heading-2">技巧总结</h1>
+<ul>
+<li>
+<p>不打debug的rpm包</p>
+<p>在spec文件中加入<code>%debug_package %{nil}</code>即可</p>
+</li>
+<li>
+<p>禁止自动分析源码添加不应该加入的依赖
+在spec文件中加入<code>Autoreq: 0</code>即可</p>
+</li>
+<li>
+<p>sepc文件中一些宏的用法
+在spec文件中经常出现一些宏，比如<code>%setup</code>、<code>%patch</code>，这两个宏的选项较多，使用时要特别注意，参见<a href="http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html">这里</a></p>
+</li>
+<li>
+<p>安装卸载rpm包前后的动作
+可以通过<code>%pre</code>, <code>%post</code>, <code>%preun</code>, <code>%postun</code>指定rpm包在安装卸载前后的动作，比如在安装前用脚本做一些准备、在安装后用脚本做一些初始化动作、在卸载前用脚本做一些准备、在卸载后用脚本做一些清理动作</p>
+</li>
+<li>
+<p>rpmbuild命令的选项
+rpmbuild命令有不少选项，参见<a href="http://ftp.rpm.org/max-rpm/rpmbuild.8.html">这里</a>，个人用得比较多的有：</p>
+<ol>
+<li><code>-bp</code> 只解压源码及应用补丁</li>
+<li><code>-bc</code> 只进行编译</li>
+<li><code>-bi</code> 只进行安装到%{buildroot}</li>
+<li><code>-bb</code> 只生成二进制rpm包</li>
+<li><code>-bs</code> 只生成源码rpm包</li>
+<li><code>-ba</code> 生成二进制rpm包和源码rpm包</li>
+<li><code>--target</code> 指定生成rpm包的平台，默认会生成<code>i686</code>和<code>x86_64</code>的rpm包，但一般我只需要<code>x86_64</code>的rpm包</li>
+</ol>
+</li>
+</ul>
+<h1 id="heading-3">参考</h1>
+<ol>
+<li><a href="http://vault.centos.org/6.7/os/Source/SPackages/">http://vault.centos.org/6.7/os/Source/SPackages/</a></li>
+<li><a href="http://tkdchen.github.io/blog/2013/05/19/rpm-spec-for-python-gist.html">http://tkdchen.github.io/blog/2013/05/19/rpm-spec-for-python-gist.html</a></li>
+<li><a href="http://www.dahouduan.com/2015/06/15/linux-centos-make-rpm/">http://www.dahouduan.com/2015/06/15/linux-centos-make-rpm/</a></li>
+<li><a href="http://www.centoscn.com/CentOS/Intermediate/2014/0419/2826.html">http://www.centoscn.com/CentOS/Intermediate/2014/0419/2826.html</a></li>
+<li><a href="http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment">http://wiki.centos.org/HowTos/SetupRpmBuildEnvironment</a></li>
+<li><a href="http://ftp.rpm.org/max-rpm/rpmbuild.8.html">http://ftp.rpm.org/max-rpm/rpmbuild.8.html</a></li>
+<li><a href="http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html">http://ftp.rpm.org/max-rpm/s1-rpm-inside-macros.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-02-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos/">centos</a>
+          
+          <a href="/tags/rpm/">rpm</a>
+          
+          <a href="/tags/rpmbuild/">rpmbuild</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">MariaDB Galera Cluster部署实战</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">powershell学习备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/" />
+
+  
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="alternate" type="application/rss+xml" title="jeremy的技术点滴" />
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="feed" type="application/rss+xml" title="jeremy的技术点滴" />
+  
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="jeremy的技术点滴" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/" />
+<meta property="og:updated_time" content="2020-11-22T20:54:00+08:00" />
+<meta itemprop="name" content="jeremy的技术点滴">
+<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="jeremy的技术点滴"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          
+  <section id="posts" class="posts">
+    
+    
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/">kubernetes CSI存储插件探究</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-09-29 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 5338 字 </span>
+      <span class="more-meta"> 预计阅读 11 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/">编译arm64平台的软件包</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-09-20 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 1824 字 </span>
+      <span class="more-meta"> 预计阅读 4 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/">kubernetes使用ceph存储卷</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-09-07 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 2867 字 </span>
+      <span class="more-meta"> 预计阅读 6 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/">kubernetes中部署mysql高可用集群</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-08-31 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 2510 字 </span>
+      <span class="more-meta"> 预计阅读 6 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/">MQTT协议学习</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-08-24 </span>
+      <div class="post-category">
+          
+            <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 4498 字 </span>
+      <span class="more-meta"> 预计阅读 9 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      偶然在github上看到paho.mqtt.golang项目，这是一个MQTT客户端库，进而花了些时间学习下时下十分火热的MQTT协议。 MQ
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/">让kong监听80和443端口</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-08-17 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 3760 字 </span>
+      <span class="more-meta"> 预计阅读 8 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/">使用casbin完成验证授权</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-08-10 </span>
+      <div class="post-category">
+          
+            <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 4663 字 </span>
+      <span class="more-meta"> 预计阅读 10 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      上一篇讲了搭建一个身份认证系统，可以看到借助dex搭建一个安全可靠的身份认证系统并不是太难。本篇再讲一下用casbin完成验证授权。 什么是验
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/">使用dex搭建一个身份认证系统</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-08-04 </span>
+      <div class="post-category">
+          
+            <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 4084 字 </span>
+      <span class="more-meta"> 预计阅读 9 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/">限制kubernetes里的系统资源使用</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-07-28 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 1396 字 </span>
+      <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/">使用Aggregated APIServer的方式构建API服务</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2019-07-20 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 3669 字 </span>
+      <span class="more-meta"> 预计阅读 8 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+  </section>
+  
+  <nav class="pagination">
+    
+      <a class="prev" href="/page/2/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text">上一页</span>
+      </a>
+    
+      <a class="next" href="/page/4/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+  </nav>
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>mongodb4.0多文档事务尝鲜 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="mongodb4.0多文档事务尝鲜" />
+<meta property="og:description" content="mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/" />
+<meta property="article:published_time" content="2018-08-19T20:20:00+08:00" />
+<meta property="article:modified_time" content="2018-08-19T20:20:00+08:00" />
+<meta itemprop="name" content="mongodb4.0多文档事务尝鲜">
+<meta itemprop="description" content="mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），">
+<meta itemprop="datePublished" content="2018-08-19T20:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-19T20:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="2046">
+
+
+
+<meta itemprop="keywords" content="mongodb,golang,transactions," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="mongodb4.0多文档事务尝鲜"/>
+<meta name="twitter:description" content="mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">mongodb4.0多文档事务尝鲜</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2046 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mongodb">mongodb多文档事务</a></li>
+    <li><a href="#heading">尝鲜步骤</a>
+      <ul>
+        <li><a href="#mongodb40">安装mongodb4.0</a></li>
+        <li><a href="#heading-1">设置复制集名称</a></li>
+        <li><a href="#heading-2">检查特性兼容版本</a></li>
+        <li><a href="#heading-3">初始化复制集</a></li>
+        <li><a href="#heading-4">运行多文档事务的例子</a></li>
+        <li><a href="#heading-5">多文档事务的限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">其它语言支持</a>
+      <ul>
+        <li><a href="#java">java语言支持</a></li>
+        <li><a href="#go">go语言支持</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-7">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），本文记录一下尝鲜该特性的过程。</p>
+<h2 id="mongodb">mongodb多文档事务</h2>
+<blockquote>
+<p>In MongoDB, an operation on a single document is atomic. Because you can use embedded documents and arrays to capture relationships between data in a single document structure instead of normalizing across multiple documents and collections, this single-document atomicity obviates the need for multi-document transactions for many practical use cases.</p>
+<p>However, for situations that require atomicity for updates to multiple documents or consistency between reads to multiple documents, MongoDB provides the ability to perform multi-document transactions against replica sets. Multi-document transactions can be used across multiple operations, collections, databases, and documents. Multi-document transactions provide an “all-or-nothing” proposition. When a transaction commits, all data changes made in the transaction are saved. If any operation in the transaction fails, the transaction aborts and all data changes made in the transaction are discarded without ever becoming visible. Until a transaction commits, no write operations in the transaction are visible outside the transaction.</p>
+</blockquote>
+<p>在mongodb里，对于单个文档的操作本身是原子性的。而因为在mongodb里还可以采用嵌入式文档和数组来描述文档中的数据结构关系，所以这种单文档原子性基本消除了许多实际对多文档事务的需求。</p>
+<p>在mongodb4.0里，对于副本集中的多文档，现在也有了一个机制用来原子性地更新多个文档，以保证读取多个文档的一致性。</p>
+<p>看上去挺美好，不过官方文档也说了：</p>
+<blockquote>
+<p>IMPORTANT</p>
+<p>In most cases, multi-document transaction incurs a greater performance cost over single document writes, and the availability of multi-document transaction should not be a replacement for effective schema design. For many scenarios, the <a href="https://docs.mongodb.com/master/core/data-model-design/#data-modeling-embedding">denormalized data model (embedded documents and arrays)</a> will continue to be optimal for your data and use cases. That is, for many scenarios, modeling your data appropriately will minimize the need for multi-document transactions.</p>
+<p>Multi-document transactions are available for replica sets only. Transactions for sharded clusters are scheduled for MongoDB 4.2</p>
+</blockquote>
+<p>在大多数场景，多文档事务会产生较大的性能开销，所以合理的模式设计（嵌入式文档和数组）还是应该是最应该优先考虑的解决方案。</p>
+<p>另外4.0版本仅支持复制集中的多文档事务，分片集群中的多文档事务将计划在4.2版本中实现。</p>
+<p>虽然有以上这些限制，还再怎么说也多了多文档事务能力，比以前还是进步了的。</p>
+<h2 id="heading">尝鲜步骤</h2>
+<h3 id="mongodb40">安装mongodb4.0</h3>
+<p>macOS系统比较简单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install mongodb
+brew services start mongodb
+</code></pre></div><h3 id="heading-1">设置复制集名称</h3>
+<p>参考mongodb的<a href="https://docs.mongodb.com/manual/reference/configuration-options/#replication-options">配置文件设置说明</a>，修改其主配置文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim /usr/local/etc/mongod.conf
+......
+<span style="color:#75715e"># 这里添加复制集名称的选项</span>
+replication:
+  replSetName: rs0
+  
+brew services start mongodb
+</code></pre></div><h3 id="heading-2">检查特性兼容版本</h3>
+<p>因为多文档事务功能是4.0版本新加的，所以要保证特性兼容版本大于等于4.0</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongo
+&gt; db.adminCommand<span style="color:#f92672">(</span> <span style="color:#f92672">{</span> getParameter: 1, featureCompatibilityVersion: <span style="color:#ae81ff">1</span> <span style="color:#f92672">}</span> <span style="color:#f92672">)</span>
+&gt; // 如果特性兼容版本小于4.0，则要设置为4.0
+&gt; db.adminCommand<span style="color:#f92672">(</span> <span style="color:#f92672">{</span> setFeatureCompatibilityVersion: <span style="color:#e6db74">&#34;4.0&#34;</span> <span style="color:#f92672">}</span> <span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><h3 id="heading-3">初始化复制集</h3>
+<p>使用<a href="https://docs.mongodb.com/manual/reference/method/js-replication/">复制集的方法</a>初始化复制集</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongo
+&gt; rs.initiate<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&gt; rs.status<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><h3 id="heading-4">运行多文档事务的例子</h3>
+<p>从<a href="https://docs.mongodb.com/master/core/transactions/#retry-transaction-and-commit-operation">这里</a>拷贝多文档事务的例子，保存为<code>test.js</code></p>
+<p><code>test.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// Runs the txnFunc and retries if TransientTransactionError encountered
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">runTransactionWithRetry</span>(<span style="color:#a6e22e">txnFunc</span>, <span style="color:#a6e22e">session</span>) {
+    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+        <span style="color:#66d9ef">try</span> {
+            <span style="color:#a6e22e">txnFunc</span>(<span style="color:#a6e22e">session</span>);  <span style="color:#75715e">// performs transaction
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">break</span>;
+        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+            <span style="color:#75715e">// If transient error, retry the whole transaction
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> ( <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">hasOwnProperty</span>(<span style="color:#e6db74">&#34;errorLabels&#34;</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">errorLabels</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#34;TransientTransactionError&#34;</span>)  ) {
+                <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;TransientTransactionError, retrying transaction ...&#34;</span>);
+                <span style="color:#66d9ef">continue</span>;
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">error</span>;
+            }
+        }
+    }
+}
+
+<span style="color:#75715e">// Retries commit if UnknownTransactionCommitResult encountered
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">commitWithRetry</span>(<span style="color:#a6e22e">session</span>) {
+    <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+        <span style="color:#66d9ef">try</span> {
+            <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">commitTransaction</span>(); <span style="color:#75715e">// Uses write concern set at transaction start.
+</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;Transaction committed.&#34;</span>);
+            <span style="color:#66d9ef">break</span>;
+        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+            <span style="color:#75715e">// Can retry commit
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">hasOwnProperty</span>(<span style="color:#e6db74">&#34;errorLabels&#34;</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">errorLabels</span>.<span style="color:#a6e22e">includes</span>(<span style="color:#e6db74">&#34;UnknownTransactionCommitResult&#34;</span>) ) {
+                <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;UnknownTransactionCommitResult, retrying commit operation ...&#34;</span>);
+                <span style="color:#66d9ef">continue</span>;
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;Error during commit ...&#34;</span>);
+                <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">error</span>;
+            }
+       }
+    }
+}
+
+<span style="color:#75715e">// Updates two collections in a transactions
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">updateEmployeeInfo</span>(<span style="color:#a6e22e">session</span>) {
+    <span style="color:#a6e22e">employeesCollection</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">getDatabase</span>(<span style="color:#e6db74">&#34;hr&#34;</span>).<span style="color:#a6e22e">employees</span>;
+    <span style="color:#a6e22e">eventsCollection</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">getDatabase</span>(<span style="color:#e6db74">&#34;reporting&#34;</span>).<span style="color:#a6e22e">events</span>;
+
+    <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">startTransaction</span>( { <span style="color:#a6e22e">readConcern</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;snapshot&#34;</span> }, <span style="color:#a6e22e">writeConcern</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">w</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;majority&#34;</span> } } );
+
+    <span style="color:#66d9ef">try</span>{
+        <span style="color:#a6e22e">employeesCollection</span>.<span style="color:#a6e22e">updateOne</span>( { <span style="color:#a6e22e">employee</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">3</span> }, { <span style="color:#a6e22e">$set</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">status</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Inactive&#34;</span> } } );
+        <span style="color:#a6e22e">eventsCollection</span>.<span style="color:#a6e22e">insertOne</span>( { <span style="color:#a6e22e">employee</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">3</span>, <span style="color:#a6e22e">status</span><span style="color:#f92672">:</span> { <span style="color:#66d9ef">new</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Inactive&#34;</span>, <span style="color:#a6e22e">old</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;Active&#34;</span> } } );
+    } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+        <span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;Caught exception during transaction, aborting.&#34;</span>);
+        <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">abortTransaction</span>();
+        <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">error</span>;
+    }
+
+    <span style="color:#a6e22e">commitWithRetry</span>(<span style="color:#a6e22e">session</span>);
+}
+
+<span style="color:#75715e">// Start a session.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">session</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">db</span>.<span style="color:#a6e22e">getMongo</span>().<span style="color:#a6e22e">startSession</span>( { <span style="color:#a6e22e">mode</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;primary&#34;</span> } );
+
+<span style="color:#66d9ef">try</span>{
+   <span style="color:#a6e22e">runTransactionWithRetry</span>(<span style="color:#a6e22e">updateEmployeeInfo</span>, <span style="color:#a6e22e">session</span>);
+} <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">error</span>) {
+   <span style="color:#75715e">// Do something with error
+</span><span style="color:#75715e"></span>} <span style="color:#66d9ef">finally</span> {
+   <span style="color:#a6e22e">session</span>.<span style="color:#a6e22e">endSession</span>();
+}
+</code></pre></div><p>在运行上述脚本前先创建好脚本依赖的databases及collections：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongo
+&gt; use hr
+&gt; db.createCollection<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;employees&#34;</span><span style="color:#f92672">)</span>;
+&gt; use reporting
+&gt; db.createCollection<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;events&#34;</span><span style="color:#f92672">)</span>
+&gt; exit
+</code></pre></div><p>最后运行示例脚本</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongo
+&gt; load<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test.js&#34;</span><span style="color:#f92672">)</span>
+Transaction committed.
+true
+&gt; exit
+</code></pre></div><p>如果结果是上面那样，说明一切正常。</p>
+<p>官方示例虽然写得复杂了一点，不过是考虑了重试运行事务、重试提交事务场景的，应该说考虑还是比较周全的，可以作为其它语言实现的参考。</p>
+<h3 id="heading-5">多文档事务的限制</h3>
+<blockquote>
+<p>The following operations are not allowed in multi-document transactions:</p>
+<ul>
+<li>
+<p>Operations that affect the database catalog, such as creating or dropping a collection or an index. For example, a multi-document transaction cannot include an insert operation that would result in the creation of a new collection.</p>
+<p>The <a href="https://docs.mongodb.com/master/reference/command/listCollections/#dbcmd.listCollections"><code>listCollections</code></a> and <a href="https://docs.mongodb.com/master/reference/command/listIndexes/#dbcmd.listIndexes"><code>listIndexes</code></a> commands and their helper methods are also excluded.</p>
+</li>
+<li>
+<p>Non-CRUD and non-informational operations, such as <a href="https://docs.mongodb.com/master/reference/command/createUser/#dbcmd.createUser"><code>createUser</code></a>, <a href="https://docs.mongodb.com/master/reference/command/getParameter/#dbcmd.getParameter"><code>getParameter</code></a>, <a href="https://docs.mongodb.com/master/reference/command/count/#dbcmd.count"><code>count</code></a>, etc. and their helpers.</p>
+</li>
+</ul>
+</blockquote>
+<p>说白了就是只支持对现有collections的增删查改操作及一些基本的信息查询操作，一般数据结构定义操作是不支持了。另外连 <a href="https://docs.mongodb.com/master/reference/command/listCollections/#dbcmd.listCollections"><code>listCollections</code></a> ， <a href="https://docs.mongodb.com/master/reference/command/listIndexes/#dbcmd.listIndexes"><code>listIndexes</code></a> 都不支持，如果真有需求，必须在事务外先查询保存起来，这点就比较变态了。</p>
+<h2 id="heading-6">其它语言支持</h2>
+<h3 id="java">java语言支持</h3>
+<p>mongodb的官方其实也提供了<a href="https://docs.mongodb.com/master/core/transactions/#retry-transaction-and-commit-operation">java语言的示例</a>，不过在java领域还是spring框架用得比较多，<code>spring-data</code>要比较新的版本才支持mongodb事务特性，文档见<a href="https://docs.spring.io/spring-data/mongodb/docs/2.1.0.M3/reference/html/#mongo.transactions">这里</a>，也有<a href="https://github.com/spring-projects/spring-data-examples/tree/master/mongodb/transactions">示例代码</a>。</p>
+<h3 id="go">go语言支持</h3>
+<p><a href="https://github.com/globalsign/mgo">mongodb社区版go语言驱动</a>目前还没有支持mongodb4.0的多文档事务特性，看其开发计划，短期是不太可能支持了。</p>
+<p>不过看<a href="https://github.com/mongodb/mongo-go-driver">mongodb官方go语言驱动</a>的提交记录，好像前几天刚好实现了这个功能，赶紧模仿mongo-shell脚本写个go语言测试代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;context&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;github.com/mongodb/mongo-go-driver/mongo&#34;</span>
+	<span style="color:#e6db74">&#34;github.com/mongodb/mongo-go-driver/core/command&#34;</span>
+	<span style="color:#e6db74">&#34;github.com/mongodb/mongo-go-driver/bson&#34;</span>
+)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">client</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Connect</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#e6db74">&#34;mongodb://localhost:27017&#34;</span>, <span style="color:#66d9ef">nil</span>)
+	<span style="color:#a6e22e">panicIfErr</span>(<span style="color:#a6e22e">err</span>)
+
+	<span style="color:#a6e22e">sess</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">StartSession</span>()
+	<span style="color:#a6e22e">panicIfErr</span>(<span style="color:#a6e22e">err</span>)
+	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">sess</span>.<span style="color:#a6e22e">EndSession</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+
+	<span style="color:#a6e22e">runTransactionWithRetry</span>(<span style="color:#a6e22e">updateEmployeeInfo</span>, <span style="color:#a6e22e">client</span>, <span style="color:#a6e22e">sess</span>)
+}
+
+<span style="color:#75715e">// Runs the txnFunc and retries if TransientTransactionError encountered
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">runTransactionWithRetry</span>(<span style="color:#a6e22e">txnFunc</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Client</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Session</span>) <span style="color:#66d9ef">error</span>, <span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Client</span>, <span style="color:#a6e22e">sess</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Session</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+	<span style="color:#66d9ef">for</span>
+	{
+		<span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">txnFunc</span>(<span style="color:#a6e22e">client</span>, <span style="color:#a6e22e">sess</span>) <span style="color:#75715e">// performs transaction
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">err</span>.(<span style="color:#a6e22e">command</span>.<span style="color:#a6e22e">Error</span>); <span style="color:#a6e22e">ok</span> {
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">contains</span>(<span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Labels</span>, <span style="color:#a6e22e">command</span>.<span style="color:#a6e22e">TransientTransactionError</span>) {
+					<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;TransientTransactionError, retrying transaction ...&#34;</span>)
+					<span style="color:#66d9ef">continue</span>
+				}
+			}
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+		}
+		<span style="color:#66d9ef">break</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+
+
+
+<span style="color:#75715e">// Retries commit if UnknownTransactionCommitResult encountered
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">commitWithRetry</span>(<span style="color:#a6e22e">sess</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Session</span>) <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">for</span>
+	{
+		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sess</span>.<span style="color:#a6e22e">CommitTransaction</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>()) <span style="color:#75715e">// Uses write concern set at transaction start.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">err</span>.(<span style="color:#a6e22e">command</span>.<span style="color:#a6e22e">Error</span>); <span style="color:#a6e22e">ok</span> {
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">contains</span>(<span style="color:#a6e22e">v</span>.<span style="color:#a6e22e">Labels</span>, <span style="color:#a6e22e">command</span>.<span style="color:#a6e22e">UnknownTransactionCommitResult</span>) {
+					<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;UnknownTransactionCommitResult, retrying commit operation ...&#34;</span>)
+					<span style="color:#66d9ef">continue</span>
+				}
+			}
+			<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Error during commit ...&#34;</span>)
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+		}
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Transaction committed.&#34;</span>)
+		<span style="color:#66d9ef">break</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+}
+
+<span style="color:#75715e">// Updates two collections in a transactions
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">updateEmployeeInfo</span>(<span style="color:#a6e22e">client</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Client</span>, <span style="color:#a6e22e">sess</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">mongo</span>.<span style="color:#a6e22e">Session</span>) <span style="color:#66d9ef">error</span>{
+	<span style="color:#a6e22e">employeesCollection</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Database</span>(<span style="color:#e6db74">&#34;hr&#34;</span>).<span style="color:#a6e22e">Collection</span>(<span style="color:#e6db74">&#34;employees&#34;</span>)
+	<span style="color:#a6e22e">eventsCollection</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">client</span>.<span style="color:#a6e22e">Database</span>(<span style="color:#e6db74">&#34;reporting&#34;</span>).<span style="color:#a6e22e">Collection</span>(<span style="color:#e6db74">&#34;events&#34;</span>)
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sess</span>.<span style="color:#a6e22e">StartTransaction</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">employeesCollection</span>.<span style="color:#a6e22e">UpdateOne</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">NewDocument</span>(
+		<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">Int32</span>(<span style="color:#e6db74">&#34;employee&#34;</span>, <span style="color:#ae81ff">3</span>),
+	),<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">NewDocument</span>(
+		<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">SubDocumentFromElements</span>(<span style="color:#e6db74">&#34;$set&#34;</span>,
+			<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;status&#34;</span>, <span style="color:#e6db74">&#34;Inactive&#34;</span>),
+		),
+	), <span style="color:#a6e22e">sess</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Caught exception during transaction, aborting.&#34;</span>)
+		<span style="color:#a6e22e">sess</span>.<span style="color:#a6e22e">AbortTransaction</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">eventsCollection</span>.<span style="color:#a6e22e">InsertOne</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>(), <span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">NewDocument</span>(
+		<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">Int32</span>(<span style="color:#e6db74">&#34;employee&#34;</span>, <span style="color:#ae81ff">3</span>),
+		<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">SubDocumentFromElements</span>(<span style="color:#e6db74">&#34;status&#34;</span>,
+			<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;new&#34;</span>, <span style="color:#e6db74">&#34;Inactive&#34;</span>),
+			<span style="color:#a6e22e">bson</span>.<span style="color:#a6e22e">EC</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;old&#34;</span>, <span style="color:#e6db74">&#34;Active&#34;</span>),
+		),
+	), <span style="color:#a6e22e">sess</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#e6db74">&#34;Caught exception during transaction, aborting.&#34;</span>)
+		<span style="color:#a6e22e">sess</span>.<span style="color:#a6e22e">AbortTransaction</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">Background</span>())
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">commitWithRetry</span>(<span style="color:#a6e22e">sess</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">panicIfErr</span>(<span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		panic(<span style="color:#a6e22e">err</span>)
+	}
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">contains</span>(<span style="color:#a6e22e">slice</span> []<span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">item</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#a6e22e">set</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">struct</span>{}, len(<span style="color:#a6e22e">slice</span>))
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">s</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">slice</span> {
+		<span style="color:#a6e22e">set</span>[<span style="color:#a6e22e">s</span>] = <span style="color:#66d9ef">struct</span>{}{}
+	}
+
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">set</span>[<span style="color:#a6e22e">item</span>]
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ok</span>
+}
+</code></pre></div><p>果然是好使的，不过<a href="https://github.com/mongodb/mongo-go-driver">mongodb官方go语言驱动</a>目前还未发正式版，现在还是第11个alpha版本，能否直接用于生产就很难说了。</p>
+<p>OVER</p>
+<h2 id="heading-7">参考</h2>
+<ol>
+<li><a href="https://docs.mongodb.com/master/core/transactions/">https://docs.mongodb.com/master/core/transactions/</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/configuration-options/#replication-options">https://docs.mongodb.com/manual/reference/configuration-options/#replication-options</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/method/js-replication/">https://docs.mongodb.com/manual/reference/method/js-replication/</a></li>
+<li><a href="https://docs.mongodb.com/master/core/transactions/">https://docs.mongodb.com/master/core/transactions/</a></li>
+<li><a href="https://docs.mongodb.com/manual/tutorial/write-scripts-for-the-mongo-shell/">https://docs.mongodb.com/manual/tutorial/write-scripts-for-the-mongo-shell/</a></li>
+<li><a href="https://github.com/mongodb/mongo-go-driver/">https://github.com/mongodb/mongo-go-driver/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mongodb/">mongodb</a>
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/transactions/">transactions</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">搭建k8s的开发调试环境</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <span class="next-text nav-default">servicecomb-saga源码解读</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

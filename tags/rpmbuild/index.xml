@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rpmbuild on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/rpmbuild/</link>
+    <description>Recent content in rpmbuild on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 01 Apr 2018 23:45:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/rpmbuild/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>centos下无污染地打rpm包</title>
+      <link>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</link>
+      <pubDate>Sun, 01 Apr 2018 23:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</guid>
+      <description>工作中要经常要给centos6, centos7打某应用程序的rpm包。原来安装了两个虚拟机专门干这个工作，但经常会因为打包给系统装上许多没用</description>
+    </item>
+    
+    <item>
+      <title>CentOS6下rpm打包实战</title>
+      <link>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Tue, 06 Feb 2018 20:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</guid>
+      <description>最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，</description>
+    </item>
+    
+  </channel>
+</rss>

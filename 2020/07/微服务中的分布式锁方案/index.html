@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>微服务中的分布式锁方案 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="微服务中的分布式锁方案" />
+<meta property="og:description" content="最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/" />
+<meta property="article:published_time" content="2020-07-19T17:50:00+08:00" />
+<meta property="article:modified_time" content="2020-07-19T17:50:00+08:00" />
+<meta itemprop="name" content="微服务中的分布式锁方案">
+<meta itemprop="description" content="最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式">
+<meta itemprop="datePublished" content="2020-07-19T17:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-07-19T17:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="5814">
+
+
+
+<meta itemprop="keywords" content="microservice,lock,redis,zk," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="微服务中的分布式锁方案"/>
+<meta name="twitter:description" content="最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">微服务中的分布式锁方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-07-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5814 字 </span>
+        <span class="more-meta"> 预计阅读 12 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">为什么需要分布式锁？</a></li>
+    <li><a href="#heading-1">常见的实现方案</a>
+      <ul>
+        <li><a href="#heading-2">基于数据库实现</a></li>
+        <li><a href="#redis">基于缓存redis实现</a></li>
+        <li><a href="#zookeeper">基于zookeeper实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">总结</a></li>
+    <li><a href="#heading-7">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。</p>
+<h2 id="heading">为什么需要分布式锁？</h2>
+<p>在分布式系统中，常常需要协调他们的动作。如果不同的系统或是同一个系统的不同主机之间共享了一个或一组资源，那么访问这些资源的时候，往往需要互斥来防止彼此干扰进而保证一致性，这个时候，便需要使用到分布式锁。</p>
+<h2 id="heading-1">常见的实现方案</h2>
+<h3 id="heading-2">基于数据库实现</h3>
+<h4 id="heading-3">数据表方案</h4>
+<p>最容易想到的一种实现方案就是基于数据库的。可以在数据库中创建一张锁表，然后通过操作该表中的数据来实现。</p>
+<p>可以这样创建一张表：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> TDistributedLock (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">11</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT <span style="color:#66d9ef">COMMENT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">主键</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#f92672">`</span>lock_key<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">64</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">COMMENT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">锁的键值</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#f92672">`</span>lock_timeout<span style="color:#f92672">`</span> datetime <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> NOW() <span style="color:#66d9ef">COMMENT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">锁的超时时间</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#f92672">`</span>create_time<span style="color:#f92672">`</span> datetime <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> NOW() <span style="color:#66d9ef">COMMENT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">记录创建时间</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#f92672">`</span>modify_time<span style="color:#f92672">`</span> datetime <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> NOW() <span style="color:#66d9ef">COMMENT</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">记录修改时间</span><span style="color:#e6db74">&#39;</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>(<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>),
+  <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> <span style="color:#f92672">`</span>uidx_lock_key<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>lock_key<span style="color:#f92672">`</span>) <span style="color:#66d9ef">USING</span> BTREE
+) ENGINE<span style="color:#f92672">=</span>InnoDB <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>utf8 <span style="color:#66d9ef">COMMENT</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">分布式锁表</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div><p>这样在需要加锁时，只需要往这张表里插入一条数据就可以了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> TDistributedLock(lock_key, lock_timeout) <span style="color:#66d9ef">values</span>(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lock_xxxx</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2020-07-19 18:20:00</span><span style="color:#e6db74">&#39;</span>);
+</code></pre></div><p>当对共享资源的操作完毕后，可以释放锁：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> TDistributedLock <span style="color:#66d9ef">where</span> lock_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lock_xxxx</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div><p>该方案简单方便，主要利用数据库表的唯一索引约束特性，保证多个微服务模块同时申请分布式锁时，只有一个能够获得锁。</p>
+<p>下面讨论下一些相关问题：</p>
+<ol>
+<li>获得锁的微服务模块意外crash，来不及释放锁怎么办？因为在插入锁记录时，同时设置了一个<code>lock_timeout</code>属性，可以另外跑一个<code>lock_cleaner</code>，将超时的锁记录删除。当然为了安全，<code>lock_timeout</code>最好设置一个合理的值，以确保在这之后正常的共享资源操作一定是完成了的。</li>
+<li>获得锁失败的微服务模块如何继续尝试获得锁？搞一个while循环，反复尝试，如能成功获得锁就跳出循环，否则sleep一会儿重新进入循环体继续尝试。</li>
+<li>数据库单点不安全怎么办？数据库领域有主从、一主多从、多主多从等复制方案，可保证一个数据库实例挂掉时，其它实例可以接管过来继续提供服务。不过需要注意的是有一些复制方案它是异步的，并不能保证写入一个数据库实例的数据立马可以在另外一个数据库实例中查询到， 这就容易造成锁丢失，导致授予了两把锁的问题。</li>
+<li>获得锁的微服务模块想重入地获得锁怎么办？在数据库表中加个字段，记录当前获得锁的机器的主机信息和线程信息，那么下次再获取锁的时候先查询数据库，如果当前机器的主机信息和线程信息在数据库可以查到的话，直接把锁分配给它就可以了。同样为了确保安全，必须在本微服务模块没有主动释放锁，同时离锁的超时时间还很久远的情况下，才可以安全地直接把锁再次分配给它，同时更新锁的超时时间。</li>
+</ol>
+<p>该方案的缺陷：</p>
+<ol>
+<li>该方案利用数据库表自身的唯一键约束，性能相比后面提到的redis方案会差一点。</li>
+<li>该方案中其它尝试获得锁的客户端会反复尝试插入数据，消耗数据库资源。</li>
+<li>该方案中需要为数据库找一种比较可靠的高可用方案，同时还得确保数据库实例之间复制方案是满足一致性要求的。</li>
+</ol>
+<h4 id="heading-4">数据库表的行排它锁方案</h4>
+<p>除了动态地往数据库表里插入数据外，还可以预先将锁信息写入数据库表，然后利用数据库的行排它锁来进行加锁与释放锁操作。</p>
+<p>例如加锁时可以执行以后命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SET</span> autocommit <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">START</span> <span style="color:#66d9ef">TRANSACTION</span>;
+<span style="color:#66d9ef">SELECT</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">FROM</span> TDistributedLock <span style="color:#66d9ef">WHERE</span> lock_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">lock_xxxx</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">FOR</span> <span style="color:#66d9ef">UPDATE</span>;
+</code></pre></div><p>当对共享资源的操作完毕后，可以释放锁：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">COMMIT</span>;
+</code></pre></div><p>该方案也很简单，利用数据库表的行排它锁特性，保证多个微服务模块同时申请分布式锁时，只有一个能够获得锁。</p>
+<p>下面讨论下一些相关问题：</p>
+<ol>
+<li>获得锁的微服务模块意外crash，来不及释放锁怎么办？没有<code>COMMIT</code>，数据库会自动将锁释放掉。</li>
+<li>获得锁失败的微服务模块如何继续尝试获得锁？<code>for update</code>语句会在执行成功后立即返回，在执行失败时一直处于阻塞状态，直到成功，因此不用写while循环反复尝试获得锁了。</li>
+<li>数据库单点问题跟上面那个方案一致，不再赘述。</li>
+<li>在这个方案下，好像很难做到锁可重入了。</li>
+</ol>
+<p>该方案的缺陷：</p>
+<ol>
+<li>该方案利用数据库表的行排它锁特性，性能上比上面那个方案好一点，但相比后面提到的redis方案还是差一点。</li>
+<li>该方案中需要为该表的数据库事务配置较高的事务超时时间，而且一个排他锁长时间不提交，会占用数据库连接。</li>
+<li>该方案中同样需要为数据库找一种比较可靠的高可用方案，同时还得确保数据库实例之间复制方案是满足一致性要求的。</li>
+</ol>
+<h3 id="redis">基于缓存redis实现</h3>
+<p>使用redis做分布式锁的思路大概是这样的：在redis中设置一个值表示加了锁，然后释放锁的时候就把这个key删除。</p>
+<p>具体代码如下：</p>
+<p><code>获取锁</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#75715e">-- NX是指如果key不存在就成功，key存在返回false，PX可以指定过期时间</span>
+redis.call(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">set</span><span style="color:#e6db74">&#34;</span>, key, ARGV[<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">NX</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PX</span><span style="color:#e6db74">&#34;</span>, ARGV[<span style="color:#ae81ff">2</span>])
+</code></pre></div><p><code>释放锁</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#75715e">-- 释放锁涉及到两条指令，这两条指令不是原子性的</span>
+<span style="color:#75715e">-- 需要用到redis的lua脚本支持特性，redis执行lua脚本是原子性的</span>
+<span style="color:#66d9ef">if</span> redis.call(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">get</span><span style="color:#e6db74">&#34;</span>, key) <span style="color:#f92672">==</span> ARGV[<span style="color:#ae81ff">1</span>] <span style="color:#66d9ef">then</span>
+	<span style="color:#66d9ef">return</span> redis.call(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">del</span><span style="color:#e6db74">&#34;</span>, key)
+<span style="color:#66d9ef">else</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">end</span>
+</code></pre></div><p>上述的lua代码比较简单，不具体解释了。这里要注意给锁键的value值要保证唯一，这个是为了避免释放错了锁。场景如下：假设A获取了锁，过期时间30s，此时35s之后，锁已经自动释放了，A去释放锁，但是此时可能B获取了锁。加上释放锁前的value值判断，A客户端就不能删除B的锁了。</p>
+<p>如果是javascript的项目，可以使用<a href="https://github.com/danielstjules/redislock">redislock</a>库，它封装了上述加锁、释放锁等操作逻辑，用起来很方便。</p>
+<p>才区区几行代码就优雅地搞定了分布式锁，而且redis的写入、删除键值的性能超高，看样子很完美，但事实上并非如此。</p>
+<h4 id="heading-5">键的超时时间</h4>
+<p>在redis中设置键时可以通过<code>PX</code>指定过期时间，这个时间不宜设置得太大，否则万一获得锁的进程crash了，要等很久此键才能过期自动删除。这个时间也不宜设得过小，否则对共享资源的操作还没完成，锁就释放了，其它服务就又能获得锁了。这里可以采用watchdog之类的方案，获得锁时设置一个较小的超时时间，然后在持有锁的过程中定期对锁的租期进行延长。</p>
+<h4 id="redis-1">redis的高可用架构</h4>
+<p>为了解决redis的单点问题，一般在生产环境会为redis实施高可用架构方案。可问题是redis主从复制方案均是异步的，在主从切换过程中有可能造成锁丢失。Redis的作者<code>Antirez</code>为此提出了一个<a href="https://redis.io/topics/distlock">RedLock的算法方案</a>，这个算法的大概逻辑如下：</p>
+<p>假设存在多个Redis实例，这些节点是完全独立的，不需要使用复制或者任何协调数据的系统，多个redis实例中获取锁的过程就变成了如下步骤：</p>
+<ol>
+<li>以毫秒为单位获取当前的服务器时间</li>
+<li>尝试使用相同的key和随机值来获取锁，对每一个机器获取锁时都应该有一个超时时间，比如锁的过期时间为10s，那么获取单个节点锁的超时时间就应该为5到50毫秒左右，他这样做的目的是为了保证客户端与故障的机器连接不耗费多余的时间！超时间时间内未获取数据就放弃该节点，从而去下一个节点获取，直至将所有节点全部获取一遍！</li>
+<li>获取完成后，获取当前时间减去步骤一获取的时间，当且仅当客户端半数以上获取成功且获取锁的时间小于锁额超时时间，则证明该锁生效！</li>
+<li>获取锁之后，锁的超时时间等于设置的有效时间-获取锁花费的时间</li>
+<li>如果获取锁的机器不满足半数以上，或者锁的超时时间计算完毕后为负数等异常操作，则系统会尝试解锁所有实例，即使有些实例没有获取锁成功，依旧会被尝试解锁！</li>
+<li>释放锁，只需在所有实例中释放锁，无论客户端是否认为它能够成功锁定给定的实例。</li>
+</ol>
+<p>这个方案看似很好，但仔细审视后还是发现一些问题的，分布式架构师<code>Martin</code>就提出了自己的<a href="http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">意见</a>。这些意见总结下来如下：</p>
+<blockquote>
+<p>分布式锁的用途无非两种：</p>
+<ul>
+<li>要么为了提升效率，用锁来保证一个任务没有必要被执行两次。比如（很昂贵的计算） 保证正确，使用锁来保证任务按照正常的步骤执行，防止两个节点同时操作一份数据，造成文件冲突，数据丢失。这种情况下对锁是有一定宽容度的，就算发生了两个节点同时工作，对系统的影响也仅仅是多付出了一些计算的成本，没什么额外的影响。这个时候 使用单点的 Redis 就能很好的解决问题，没有必要使用RedLock，维护那么多的Redis实例，提升系统的维护成本。</li>
+<li>要么为了安全性，此时必须从理论上确保拿到的锁是安全的，两个进程不可能同时持有某把锁，因为很可能涉及到一些金钱交易，如果锁定失败，并且两个节点同时处理同一数据，则结果将导致文件损坏，数据丢失，永久性不一致，或者金钱方面的损失！而RedLock方案从理论上说并不能保证这一点。</li>
+</ul>
+</blockquote>
+<p><code>RedLock</code>方案从理论上说并不能保证锁的安全性，主要有以下几点原因：</p>
+<ol>
+<li>锁的自动过期机制很可能导致锁的意外丢失。因此采用watchdog机制确保在持有锁之后持续地给锁续期是有必要的。</li>
+<li><code>RedLock</code>方案对于系统时钟有强依赖。假设有A、B、C、D、E 5个redis节点：
+<ol>
+<li>客户端1获取节点A，B，C的锁定。由于网络问题，无法访问D和E。</li>
+<li>节点C上的时钟向前跳，导致锁过期。</li>
+<li>客户端2获取节点C，D，E的锁定。由于网络问题，无法访问A和B。</li>
+<li>现在，客户1和2都认为他们持有该锁。</li>
+</ol>
+</li>
+<li><code>RedLock</code>方案同样无法避免redis实例意外重启导致的问题。假设有A、B、C、D、E 5个redis节点：
+<ol>
+<li>客户端1获取节点A，B，C的锁定。由于网络问题，无法访问D和E。</li>
+<li>节点C上的redis实例意外重启，重启后原来写入的键值丢失。</li>
+<li>客户端2获取节点C，D，E的锁定。由于网络问题，无法访问A和B。</li>
+<li>现在，客户1和2都认为他们持有该锁。</li>
+</ol>
+</li>
+</ol>
+<p>虽说<code>RedLock</code>从理论上说确实无法100%保证锁的安全性，但以上列举的场景极为严苛，事实上在现实中很难碰到。而由于该方案获取锁的效率确实很高，事实上还是有不少业务场景就是使用的该方案。</p>
+<p>如果是javascript的项目，配合着使用<a href="https://github.com/component/timers">timers</a>库，即可实施watchdog方案，在持有锁的过程中定期对锁的租期进行延长。如果要使用<code>RedLock</code>方案，可以使用<a href="https://github.com/mike-marcacci/node-redlock">node-redlock</a>库，它封装了上述<code>RedLock</code>方案的复杂逻辑，用起来也很方便。</p>
+<p>如果对锁的安全性要求极高，真的不允许任何锁安全性问题，还可以试试下面的zookeeper方案。</p>
+<h3 id="zookeeper">基于zookeeper实现</h3>
+<p><code>zookeeper</code>是一种提供配置管理、分布式协同以及命名的中心化服务。很明显<code>zookeeper</code>本身就是为了分布式协同这个目标而生的，它采用一种被称为ZAB(Zookeeper Atomic Broadcast)的一致性协议来保证数据的一致性。基于zk的一些特性，我们很容易得出使用zk实现分布式锁的落地方案：</p>
+<ol>
+<li>使用zk的临时节点和有序节点，每个线程获取锁就是在zk创建一个临时有序的节点，比如在/lock/目录下。</li>
+<li>创建节点成功后，获取/lock目录下的所有临时节点，再判断当前线程创建的节点是否是所有的节点的序号最小的节点</li>
+<li>如果当前线程创建的节点是所有节点序号最小的节点，则认为获取锁成功。</li>
+<li>如果当前线程创建的节点不是所有节点序号最小的节点，则对节点序号的前一个节点添加一个事件监听。
+比如当前线程获取到的节点序号为<code>/lock/003</code>,然后所有的节点列表为<code>[/lock/001,/lock/002,/lock/003]</code>,则对<code>/lock/002</code>这个节点添加一个事件监听器。</li>
+</ol>
+<p>如果锁释放了，会唤醒下一个序号的节点，然后重新执行第3步，判断是否自己的节点序号是最小。</p>
+<p>比如<code>/lock/001</code>释放了，<code>/lock/002</code>监听到时间，此时节点集合为<code>[/lock/002,/lock/003]</code>,则<code>/lock/002</code>为最小序号节点，获取到锁。</p>
+<p>从数据一致性的角度来说，zk的方案无疑是最可靠的，而且等候锁的客户端也不用不停地轮循锁是否可用，当锁的状态发生变化时可以自动得到通知。</p>
+<p>但zookeeper实现也存在较大的缺陷：</p>
+<ul>
+<li>性能问题</li>
+</ul>
+<p>zookeeper作为分布式协调系统，不适合作为频繁的读写存储系统。而且通过增加zookeeper服务器来提高集群的读写能力也是有上限的，因为zookeeper集群规模越大，zookeeper数据需要同步到更多的服务器。同时zookeeper分布式锁每一次都要申请锁和释放锁，都要动态创建删除临时节点，所以zookeeper不能维护大量的分布式锁，也不能维护大量的客户端心跳长连接。在分布式定理中，zookeeper追求的是CP，也就是zookeeper保证集群向外提供统一的视图，但是zookeeper牺牲了可用性，在极端情况下，zookeeper可能会丢弃一些请求。并且zookeeper集群在进行leader选举的时候整个集群也是不可用的，集群选举时间长达30 ~ 120s。</p>
+<ul>
+<li>惊群效应</li>
+</ul>
+<p>在获取锁的时候有一个细节，客户端在获取锁失败的情况下，会监听<code>/lock</code>节点。这会存在性能问题，如果在<code>/lock</code>节点下排队等待的有1000个进程，那么锁持有者释放锁(删除<code>/lock</code>节点下的临时节点)时，zookeeper会通知监听<code>/lock</code>的1000个进程。然后这1000个进程会读取zookeeper下<code>/lock</code>节点的全部临时节点，然后判断自己是否为最小的临时节点。但是这1000个进程中只有一个最小序号的进程会持有分布式锁，也就是说999个进程做的都是无用功。这些无用功会对zookeeper造成较大压力的读负载。为了解决惊群效应，需要对zookeeper分布式锁监听逻辑进行优化，实际上，排队进程真正感兴趣的是比自己临时节点序号小的节点，我们只需要监听序号比自己小的节点。</p>
+<p>另外还需要注意的是，使用zookeeper方案也不是说就高枕无忧了。假设某一个客户端通过上述方案获得了锁，但由于网络问题，该客户端与zookeeper集群间失去了联系，zookeeper的心跳无效后，该客户端会收到了一个zookeeper的SessionTimeout的事件。为了保证分布式锁的有效性，这个时候客户端就需要在下一个等侯者获得锁之前，中断对共享资源的访问，然后继续尝试获取锁。</p>
+<p>如果是javascript的项目，可以使用<a href="https://github.com/metamx/zk-lock">zk-lock</a>库，它封装了上述方案的复杂逻辑，用起来也很方便。</p>
+<h2 id="heading-6">总结</h2>
+<p>总的来说，目前分布式锁领域暂时没有出现十分完美、无懈可击的方案。个人觉得，综合对比下，还是推荐采用缓存redis方案。如果项目较小，影响面不大，采用单实例redis就差不多了。如果对redis的高可用有要求，可以采用<code>RedLock</code>方案，配合<code>watchdog</code>机制定期延长key的续约租期，不过要通过合理的部署、运维等方式规避系统时钟、网络分区问题。如果真的对分布锁有着极高的一致性要求，同时对锁的性能不太在意的话，也可以采用zookeeper方案。</p>
+<h2 id="heading-7">参考</h2>
+<ol>
+<li><a href="http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html">http://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html</a></li>
+<li><a href="https://redis.io/topics/distlock">https://redis.io/topics/distlock</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-07-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/microservice/">microservice</a>
+          
+          <a href="/tags/lock/">lock</a>
+          
+          <a href="/tags/redis/">redis</a>
+          
+          <a href="/tags/zk/">zk</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">nodejs项目技术小结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/06/%E8%BF%81%E7%A7%BB%E5%8E%86%E5%8F%B2%E9%81%97%E7%95%99%E4%BB%A3%E7%A0%81%E5%88%B0python3/">
+            <span class="next-text nav-default">迁移历史遗留代码到python3</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>retry on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/retry/</link>
+    <description>Recent content in retry on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 15 Jun 2017 00:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/retry/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Retrying_Library_For_Java</title>
+      <link>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</link>
+      <pubDate>Thu, 15 Jun 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/retrying_library_for_java/</guid>
+      <description>最近在github上看到一个得了不少星的项目Retrying library for Python，果然还是人家比较有想法，这些重试的逻辑是可以包装为一个库供别人</description>
+    </item>
+    
+  </channel>
+</rss>

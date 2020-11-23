@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vpn on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/vpn/</link>
+    <description>Recent content in vpn on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 31 Mar 2019 21:21:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/vpn/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>打通到kubernetes集群的网络</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</guid>
+      <description>最近在工作中验证istio的网格扩展方案，其中涉及打通网络的需求，也即希望在外部虚拟机可以连通kubernetes集群内部的服务IP、Pod</description>
+    </item>
+    
+  </channel>
+</rss>

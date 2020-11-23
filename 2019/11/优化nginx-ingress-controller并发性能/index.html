@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>优化nginx-ingress-controller并发性能 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="优化nginx-ingress-controller并发性能" />
+<meta property="og:description" content="这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/" />
+<meta property="article:published_time" content="2019-11-10T18:35:00+08:00" />
+<meta property="article:modified_time" content="2019-11-10T18:35:00+08:00" />
+<meta itemprop="name" content="优化nginx-ingress-controller并发性能">
+<meta itemprop="description" content="这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出">
+<meta itemprop="datePublished" content="2019-11-10T18:35:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-11-10T18:35:00&#43;08:00" />
+<meta itemprop="wordCount" content="2635">
+
+
+
+<meta itemprop="keywords" content="nginx,kubernetes,http,tcp,conntrack," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="优化nginx-ingress-controller并发性能"/>
+<meta name="twitter:description" content="这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">优化nginx-ingress-controller并发性能</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-11-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2635 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题复现</a></li>
+    <li><a href="#heading-1">分析原因</a></li>
+    <li><a href="#heading-2">解决问题</a></li>
+    <li><a href="#heading-3">分析原理</a>
+      <ul>
+        <li><a href="#keep-alive">什么是Keep-Alive模式？</a></li>
+        <li><a href="#keep-alive-1">启用Keep-Alive的优点</a></li>
+        <li><a href="#heading-4">性能大提升的原因</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出来，这时测试人员测得应用的页面响应性能较高，可以达到2w多的QPS；而将这个Kubernetes Service再用Ingress暴露出来，测试人员测得的QPS立马就较得只有1w多的QPS了。这个性能开销可以说相当巨大了，急需进行性能调优。花了一段时间分析这个问题，终于找到原因了，这里记录一下。</p>
+<h2 id="heading">问题复现</h2>
+<p>问题是在生产环境出现了，不便于直接在生产环境调参，这里搭建一个独立的测试环境以复现问题。</p>
+<p>首先在一台16C32G的服务器上搭建了一个单节点的kubernetes集群，并部署了跟生产环境一样的nginx-ingress-controller。然后进行基本的调优，以保证尽量与生产环境一致，涉及的调优步骤如下：</p>
+<ol>
+<li>
+<p>ClusterIP使用性能更优异的ipvs实现</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ yum install -y ipset
+   
+$ cat <span style="color:#e6db74">&lt;&lt; &#39;EOF&#39; &gt; /etc/sysconfig/modules/ipvs.modules
+</span><span style="color:#e6db74">#!/bin/bash
+</span><span style="color:#e6db74">ipvs_modules=(ip_vs ip_vs_lc ip_vs_wlc ip_vs_rr ip_vs_wrr ip_vs_lblc ip_vs_lblcr ip_vs_dh ip_vs_sh ip_vs_fo ip_vs_nq ip_vs_sed ip_vs_ftp nf_conntrack_ipv4)
+</span><span style="color:#e6db74">for kernel_module in ${ipvs_modules[*]}; do
+</span><span style="color:#e6db74">    /sbin/modinfo -F filename ${kernel_module} &gt; /dev/null 2&gt;&amp;1
+</span><span style="color:#e6db74">    if [ $? -eq 0 ]; then
+</span><span style="color:#e6db74">        /sbin/modprobe ${kernel_module}
+</span><span style="color:#e6db74">    fi
+</span><span style="color:#e6db74">done
+</span><span style="color:#e6db74">EOF</span>
+   
+$ chmod +x /etc/sysconfig/modules/ipvs.modules
+   
+$ /etc/sysconfig/modules/ipvs.modules
+   
+$ kubectl -n kube-system edit cm kube-proxy
+......
+mode: <span style="color:#e6db74">&#34;ipvs&#34;</span>
+......
+   
+$ kubectl -n kube-system get pod -l k8s-app<span style="color:#f92672">=</span>kube-proxy | grep -v <span style="color:#e6db74">&#39;NAME&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | xargs kubectl -n kube-system delete pod
+   
+$ iptables -t filter -F; iptables -t filter -X; iptables -t nat -F; iptables -t nat -X;
+</code></pre></div></li>
+<li>
+<p>flannel使用host-gw模式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n kube-system edit cm kube-flannel-cfg
+......
+      <span style="color:#e6db74">&#34;Backend&#34;</span>: <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#34;Type&#34;</span>: <span style="color:#e6db74">&#34;host-gw&#34;</span>
+      <span style="color:#f92672">}</span>
+......
+   
+$ kubectl -n kube-system get pod -l k8s-app<span style="color:#f92672">=</span>flannel  | grep -v <span style="color:#e6db74">&#39;NAME&#39;</span> | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span> | xargs kubectl -n kube-system delete pod
+</code></pre></div></li>
+<li>
+<p>集群node节点及客户端配置内核参数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt;&gt; /etc/sysctl.conf
+</span><span style="color:#e6db74">net.core.somaxconn = 655350
+</span><span style="color:#e6db74">net.ipv4.tcp_syncookies = 1
+</span><span style="color:#e6db74">net.ipv4.tcp_timestamps = 1
+</span><span style="color:#e6db74">net.ipv4.tcp_tw_reuse = 1
+</span><span style="color:#e6db74">net.ipv4.tcp_fin_timeout = 30
+</span><span style="color:#e6db74">net.ipv4.tcp_max_tw_buckets = 5000
+</span><span style="color:#e6db74">net.nf_conntrack_max = 2097152
+</span><span style="color:#e6db74">net.netfilter.nf_conntrack_max = 2097152
+</span><span style="color:#e6db74">net.netfilter.nf_conntrack_tcp_timeout_close_wait = 15
+</span><span style="color:#e6db74">net.netfilter.nf_conntrack_tcp_timeout_fin_wait = 30
+</span><span style="color:#e6db74">net.netfilter.nf_conntrack_tcp_timeout_time_wait = 30
+</span><span style="color:#e6db74">net.netfilter.nf_conntrack_tcp_timeout_established = 1200
+</span><span style="color:#e6db74">EOF</span>
+   
+$ sysctl -p --system
+</code></pre></div></li>
+<li>
+<p>集群node节点及客户端配置最大打大文件数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ulimit -n <span style="color:#ae81ff">655350</span>
+
+$ cat /etc/sysctl.conf
+...
+fs.file-max<span style="color:#f92672">=</span><span style="color:#ae81ff">655350</span>
+...
+
+$ sysctl -p --system
+
+$ cat /etc/security/limits.conf
+...
+*	hard	nofile	<span style="color:#ae81ff">655350</span>
+*	soft	nofile	<span style="color:#ae81ff">655350</span>
+*	hard	nproc	<span style="color:#ae81ff">6553</span>
+*	soft	nproc	<span style="color:#ae81ff">655350</span>
+root hard nofile <span style="color:#ae81ff">655350</span>
+root soft nofile <span style="color:#ae81ff">655350</span>
+root hard nproc <span style="color:#ae81ff">655350</span>
+root soft nproc <span style="color:#ae81ff">655350</span>
+   ...
+      
+$ echo <span style="color:#e6db74">&#39;session required pam_limits.so&#39;</span> &gt;&gt; /etc/pam.d/common-session
+</code></pre></div></li>
+</ol>
+<p>然后在集群中部署了一个测试应用，以模拟生产环境上的业务应用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat web.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+  name: web
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - image: nginx:1.17-alpine
+        imagePullPolicy: IfNotPresent
+        name: nginx
+        resources:
+          limits:
+            cpu: 60m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: web
+  name: web
+  namespace: default
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+  - nodePort: <span style="color:#ae81ff">32380</span>
+    port: <span style="color:#ae81ff">80</span>
+    protocol: TCP
+    targetPort: <span style="color:#ae81ff">80</span>
+  selector:
+    app: web
+  sessionAffinity: None
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: <span style="color:#e6db74">&#34;false&#34;</span>
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: <span style="color:#e6db74">&#34;300&#34;</span>
+    nginx.ingress.kubernetes.io/proxy-read-timeout: <span style="color:#e6db74">&#34;300&#34;</span>
+    nginx.ingress.kubernetes.io/proxy-send-timeout: <span style="color:#e6db74">&#34;300&#34;</span>
+    nginx.ingress.kubernetes.io/ssl-redirect: <span style="color:#e6db74">&#34;false&#34;</span>
+    nginx.ingress.kubernetes.io/connection-proxy-header: <span style="color:#e6db74">&#34;keep-alive&#34;</span>
+  labels:
+    app: web
+  name: web
+  namespace: default
+spec:
+  rules:
+  - host: web.test.com
+    http:
+      paths:
+      - backend:
+          serviceName: web
+          servicePort: <span style="color:#ae81ff">80</span>
+        path: /
+        
+$ kubectl apply -f web.yaml
+</code></pre></div><p><strong>注意：这里故意将pod的cpu限制在60m，这样一个pod副本可同时处理的页面请求数有限，以模拟真正的业务应用</strong></p>
+<p>接下来简单测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 使用httpd-utils中的ab命令直接压测Kubernetes Service NodePort，并发请求数为10000，总发出1000000个请求，此时测得QPS为2.4w</span>
+$ ab -r -n <span style="color:#ae81ff">1000000</span> -c <span style="color:#ae81ff">10000</span> http://<span style="color:#e6db74">${</span>k8s_node_ip<span style="color:#e6db74">}</span>:32380/ 2&gt;&amp;<span style="color:#ae81ff">1</span> | grep <span style="color:#e6db74">&#39;Requests per second&#39;</span>
+Requests per second:    24234.03 <span style="color:#f92672">[</span><span style="color:#75715e">#/sec] (mean)</span>
+
+<span style="color:#75715e"># 再在客户端的/etc/hosts中将域名web.test.com指向${k8s_node_ip}，通过Ingress域名压测业务应用，测得QPS为1.1w</span>
+$ ab -r -n <span style="color:#ae81ff">1000000</span> -c <span style="color:#ae81ff">10000</span> http://web.test.com/ 2&gt;&amp;<span style="color:#ae81ff">1</span> | grep <span style="color:#e6db74">&#39;Requests per second&#39;</span>
+Requests per second:    11736.21 <span style="color:#f92672">[</span><span style="color:#75715e">#/sec] (mean)</span>
+</code></pre></div><p>可以看到访问Ingress域名后，确实QPS下降很明显，跟生产环境的现象一致。</p>
+<h2 id="heading-1">分析原因</h2>
+<p>我们知道，nginx-ingress-controller的原理实际上是扫描Kubernetes集群中的Ingress资源，根据Ingress资源的定义自动为每个域名生成一段nginx虚拟主机及反向代理的配置，最后由nginx读取这些配置，完成实际的HTTP请求流量的处理，整个HTTP请求链路如下：</p>
+<pre><code>          client    -&gt;    nginx    -&gt;    upstream(kubernetes service)    -&gt;    pods  
+</code></pre><p>nginx的实现中必然要对接收的HTTP请求进行7层协议解析，并根据请求信息将HTTP请求转发给upstream。</p>
+<p>而<code>client</code>直接请求<code>kubernetes service</code>有不错的QPS值，说明<code>nginx</code>这里存在问题。</p>
+<h2 id="heading-2">解决问题</h2>
+<p>虽说nginx进行7层协议解析、HTTP请求转发会生产一些性能开销，但<code>nginx-ingress-controller</code>作为一个kubernetes推荐且广泛使用的<code>ingress-controller</code>，参考业界的测试数据，nginx可是可以实现百万并发HTTP反向代理的存在，照理说才一两万的QPS，其不应该有这么大的性能问题。所以首先怀疑<code>nginx-ingress-controller</code>的配置不够优化，需要进行一些调优。</p>
+<p>我们可以从<code>nginx-ingress-controller</code> pod中取得nginx的配置文件，再参考<a href="https://blog.csdn.net/tiantiandjava/article/details/79969909">nginx的常用优化配置</a>，可以发现有些优化配置没有应用上。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl -n kube-system exec -ti nginx-ingress-controller-xxx-xxxx cat /etc/nginx/nginx.conf &gt; /tmp/nginx.conf
+</code></pre></div><p>对比后，发现<code>server context</code>中<code>keepalive_requests</code>、<code>keepalive_timeout</code>，<code>upstream context</code>中的<code>keepalive</code>、<code>keepalive_requests</code>、<code>keepalive_timeout</code>这些配置项还可以优化下，于是参考<a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/">nginx-ingress-controller的配置方法</a>，这里配置了下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl -n kube-system edit configmap nginx-configuration
+...
+apiVersion: v1
+data:
+  keep-alive: <span style="color:#e6db74">&#34;60&#34;</span>
+  keep-alive-requests: <span style="color:#e6db74">&#34;100&#34;</span>
+  upstream-keepalive-connections: <span style="color:#e6db74">&#34;10000&#34;</span>
+  upstream-keepalive-requests: <span style="color:#e6db74">&#34;100&#34;</span>
+  upstream-keepalive-timeout: <span style="color:#e6db74">&#34;60&#34;</span>
+kind: ConfigMap
+...
+</code></pre></div><p>再次压测：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ab -r -n <span style="color:#ae81ff">1000000</span> -c <span style="color:#ae81ff">10000</span> http://web.test.com/ 2&gt;&amp;<span style="color:#ae81ff">1</span> | grep <span style="color:#e6db74">&#39;Requests per second&#39;</span>
+Requests per second:    22733.73 <span style="color:#f92672">[</span><span style="color:#75715e">#/sec] (mean)</span>
+</code></pre></div><p>此时发现性能好多了。</p>
+<h2 id="heading-3">分析原理</h2>
+<h3 id="keep-alive">什么是Keep-Alive模式？</h3>
+<p>HTTP协议采用请求-应答模式，有普通的非KeepAlive模式，也有KeepAlive模式。</p>
+<p>非KeepAlive模式时，每个请求/应答客户和服务器都要新建一个连接，完成 之后立即断开连接（HTTP协议为无连接的协议）；当使用Keep-Alive模式（又称持久连接、连接重用）时，Keep-Alive功能使客户端到服 务器端的连接持续有效，当出现对服务器的后继请求时，Keep-Alive功能避免了建立或者重新建立连接。</p>
+<h3 id="keep-alive-1">启用Keep-Alive的优点</h3>
+<p>启用Keep-Alive模式肯定更高效，性能更高。因为避免了建立/释放连接的开销。下面是RFC 2616 上的总结：</p>
+<ul>
+<li>
+<p>TCP连接更少，这样就会节约TCP连接在建立、释放过程中，主机和路由器上的CPU和内存开销。</p>
+</li>
+<li>
+<p>网络拥塞也减少了，拿到响应的延时也减少了</p>
+</li>
+<li>
+<p>错误处理更优雅：不会粗暴地直接关闭连接，而是report，retry</p>
+</li>
+</ul>
+<h3 id="heading-4">性能大提升的原因</h3>
+<p>压测命令<code>ab</code>并没有添加<code>-k</code>参数，因此<code>client-&gt;nginx</code>的HTTP处理并没有启用Keep-Alive。</p>
+<p>但由于<code>nginx-ingress-controller</code>配置了<code>upstream-keepalive-connections</code>、<code>upstream-keepalive-requests</code>、<code>upstream-keepalive-timeout</code>参数，这样<code>nginx-&gt;upstream</code>的HTTP处理是启用了Keep-Alive的，这样到Kuberentes Service的TCP连接可以高效地复用，避免了重建连接的开销。</p>
+<p>DONE.</p>
+<h2 id="heading-5">参考</h2>
+<ol>
+<li><a href="https://www.jianshu.com/p/024b33d1a1a1">https://www.jianshu.com/p/024b33d1a1a1</a></li>
+<li><a href="https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/">https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/34052073">https://zhuanlan.zhihu.com/p/34052073</a></li>
+<li><a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_requests">http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_requests</a></li>
+<li><a href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive">http://nginx.org/en/docs/http/ngx_http_upstream_module.html#keepalive</a></li>
+<li><a href="https://kiswo.com/article/1018">https://kiswo.com/article/1018</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-11-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/http/">http</a>
+          
+          <a href="/tags/tcp/">tcp</a>
+          
+          <a href="/tags/conntrack/">conntrack</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/12/%E8%A7%A3%E5%86%B3http-file-server-hang%E4%BD%8F%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">解决HTTP File Server Hang住问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/">
+            <span class="next-text nav-default">kubernetes集群部署运营实践总结</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

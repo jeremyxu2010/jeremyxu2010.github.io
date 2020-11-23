@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>学习django - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。 快速上手" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/12/%E5%AD%A6%E4%B9%A0django/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="学习django" />
+<meta property="og:description" content="项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。 快速上手" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/12/%E5%AD%A6%E4%B9%A0django/" />
+<meta property="article:published_time" content="2019-12-29T14:48:00+08:00" />
+<meta property="article:modified_time" content="2019-12-29T14:48:00+08:00" />
+<meta itemprop="name" content="学习django">
+<meta itemprop="description" content="项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。 快速上手">
+<meta itemprop="datePublished" content="2019-12-29T14:48:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-12-29T14:48:00&#43;08:00" />
+<meta itemprop="wordCount" content="1000">
+
+
+
+<meta itemprop="keywords" content="python,django,web," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="学习django"/>
+<meta name="twitter:description" content="项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。 快速上手"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">学习django</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-12-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1000 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">快速上手步骤</a>
+      <ul>
+        <li><a href="#django">安装django</a></li>
+        <li><a href="#heading-1">创建项目</a></li>
+        <li><a href="#heading-2">创建模型类</a></li>
+        <li><a href="#heading-3">写模型类对应的测试用例</a></li>
+        <li><a href="#heading-4">编写视图</a></li>
+        <li><a href="#server">运行开发Server</a></li>
+        <li><a href="#server-1">运行生产Server</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">亮点</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>项目中使用了django，这个之前并没有深度使用过，今天花了些时间把官方文档大概浏览了一遍，简单学习了一下，这里简单记录一下以备忘。</p>
+<h2 id="heading">快速上手步骤</h2>
+<h3 id="django">安装django</h3>
+<p>为了能使用<code>django-admin</code>命令，先将<code>django</code>安装到全局：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ pip install Django
+</code></pre></div><h3 id="heading-1">创建项目</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ django-admin startproject django_demo
+
+$ cd django_demo
+<span style="color:#75715e"># 创建较干净的python virtualenv环境</span>
+$ virtualenv --no-site-packages .venv
+$ source .venv/bin/activate
+<span style="color:#75715e"># 在此python virtualenv环境安装Django、mysqlclient</span>
+$ pip install Django
+$ pip install mysqlclient
+
+$ python manage.py startapp test_app
+</code></pre></div><h3 id="heading-2">创建模型类</h3>
+<p>编辑项目的settings文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim django_demo/settings.py
+</code></pre></div><p>修改如下的片断：</p>
+<pre><code>INSTALLED_APPS = [
+    'test_app.apps.TestAppConfig',
+    ......
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'test',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
+
+TIME_ZONE = 'Asia/Shanghai'
+</code></pre><p>修改模型文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim test_app/models.py
+</code></pre></div><p><code>test_app/models.py</code>的内容如<a href="https://github.com/jeremyxu2010/django_demo/tree/master/test_app/models.py">这个文件</a>。</p>
+<p>根据模型文件修改数据库schema：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ python ./manage.py makemigrations
+$ python ./manage.py migrate
+</code></pre></div><h3 id="heading-3">写模型类对应的测试用例</h3>
+<p>个人不太喜欢使用django的方案写测试用例，还是喜欢写标准的测试用例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim test_app/models_test.py
+</code></pre></div><p><code>test_app/models_test.py</code>的内容如<a href="https://github.com/jeremyxu2010/django_demo/tree/master/test_app/models_test.py">这个文件</a>。</p>
+<p>运行测试用例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ export PYTHONPATH<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>:<span style="color:#e6db74">${</span>PYTHONPATH<span style="color:#e6db74">}</span>
+$ python test_app/models_test.py
+</code></pre></div><h3 id="heading-4">编写视图</h3>
+<p>编写视图文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim test_app/views.py
+</code></pre></div><p><code>test_app/views.py</code>的内容如<a href="https://github.com/jeremyxu2010/django_demo/tree/master/test_app/views.py">这个文件</a>。</p>
+<p>编写模板文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim test_app/templates/index.html
+$ vim test_app/templates/detail.html
+</code></pre></div><p>这两个文件的内容如<a href="https://github.com/jeremyxu2010/django_demo/tree/master/test_app/templates/">这些文件</a>。</p>
+<p>配置url：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim test_app/urls.py
+$ vim django_demo/urls.py
+</code></pre></div><p>主要修改了以下几点：</p>
+<pre><code>from test_app import views
+
+app_name = 'test_app'
+
+urlpatterns = [
+    url(r'^$', views.index, name='index'),
+    url(r'^(?P&lt;question_id&gt;[0-9]+)/$', views.detail, name=&quot;detail&quot;)
+]
+</code></pre><pre><code>url(r'^', include('test_app.urls'))
+</code></pre><h3 id="server">运行开发Server</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ python ./manage.py runserver
+</code></pre></div><h3 id="server-1">运行生产Server</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ pip install gunicorn<span style="color:#f92672">=</span><span style="color:#f92672">=</span>19.10.0
+$ gunicorn -b 127.0.0.1:8000 -w <span style="color:#ae81ff">5</span> django_demo.wsgi
+</code></pre></div><h2 id="heading-5">亮点</h2>
+<p>之前接触过其它语言的web开发框架，django给我印象比较深刻的是其自带的ORM框架，可参考<a href="https://docs.djangoproject.com/en/1.11/intro/tutorial02/#playing-with-the-api">Model相关的API</a>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt;&gt;&gt; from polls.models import Question, Choice   <span style="color:#75715e"># Import the model classes we just wrote.</span>
+
+<span style="color:#75715e"># No questions are in the system yet.</span>
+&gt;&gt;&gt; Question.objects.all<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&lt;QuerySet <span style="color:#f92672">[</span><span style="color:#f92672">]</span>&gt;
+
+<span style="color:#75715e"># Create a new Question.</span>
+<span style="color:#75715e"># Support for time zones is enabled in the default settings file, so</span>
+<span style="color:#75715e"># Django expects a datetime with tzinfo for pub_date. Use timezone.now()</span>
+<span style="color:#75715e"># instead of datetime.datetime.now() and it will do the right thing.</span>
+&gt;&gt;&gt; from django.utils import timezone
+&gt;&gt;&gt; q <span style="color:#f92672">=</span> Question<span style="color:#f92672">(</span>question_text<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;What&#39;s new?&#34;</span>, pub_date<span style="color:#f92672">=</span>timezone.now<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e"># Save the object into the database. You have to call save() explicitly.</span>
+&gt;&gt;&gt; q.save<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e"># Now it has an ID. Note that this might say &#34;1L&#34; instead of &#34;1&#34;, depending</span>
+<span style="color:#75715e"># on which database you&#39;re using. That&#39;s no biggie; it just means your</span>
+<span style="color:#75715e"># database backend prefers to return integers as Python long integer</span>
+<span style="color:#75715e"># objects.</span>
+&gt;&gt;&gt; q.id
+<span style="color:#ae81ff">1</span>
+
+<span style="color:#75715e"># Access model field values via Python attributes.</span>
+&gt;&gt;&gt; q.question_text
+<span style="color:#e6db74">&#34;What&#39;s new?&#34;</span>
+&gt;&gt;&gt; q.pub_date
+datetime.datetime<span style="color:#f92672">(</span>2012, 2, 26, 13, 0, 0, 775217, tzinfo<span style="color:#f92672">=</span>&lt;UTC&gt;<span style="color:#f92672">)</span>
+
+<span style="color:#75715e"># Change values by changing the attributes, then calling save().</span>
+&gt;&gt;&gt; q.question_text <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;What&#39;s up?&#34;</span>
+&gt;&gt;&gt; q.save<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e"># objects.all() displays all the questions in the database.</span>
+&gt;&gt;&gt; Question.objects.all<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+&lt;QuerySet <span style="color:#f92672">[</span>&lt;Question: Question object&gt;<span style="color:#f92672">]</span>&gt;
+</code></pre></div><p>这个确实极大简化了操作数据库的复杂度，详情的配置文档可参考<a href="https://docs.djangoproject.com/en/1.11/ref/models/">这里</a>。</p>
+<p>如果想直接操作SQL，方法也很简单，参考<a href="https://docs.djangoproject.com/en/1.11/topics/db/sql/">这里</a></p>
+<p>另外在web开发领域，一些常见问题均有推荐的解决方案：</p>
+<ol>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/forms/">处理Form表单</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/http/middleware/">使用middleware</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/http/file-uploads/">文件上传</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/http/decorators/">视图的装饰器</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/ref/class-based-views/">复用视图</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/http/sessions/">使用会话</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/pagination/">页面数据分页</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/email/">发送邮件</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/files/">处理文件</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/logging/">日志处理</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/auth/">认证鉴权</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/security/">web安全防御</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/serialization/">序列化反序列化</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/performance/">性能优化</a></li>
+</ol>
+<p>还是挺全面的。</p>
+<p>DONE!</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://docs.djangoproject.com/en/1.11/intro/">https://docs.djangoproject.com/en/1.11/intro/</a></li>
+<li><a href="https://docs.djangoproject.com/en/1.11/topics/">https://docs.djangoproject.com/en/1.11/topics/</a></li>
+<li><a href="https://books.agiliq.com/projects/django-orm-cookbook/en/latest/introduction.html">https://books.agiliq.com/projects/django-orm-cookbook/en/latest/introduction.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-12-29</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/django/">django</a>
+          
+          <a href="/tags/web/">web</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">分析APP访问后台服务的网络故障</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/12/60%E7%A7%92%E5%AE%8C%E6%88%90linux%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E8%AF%91/">
+            <span class="next-text nav-default">60秒完成Linux系统的性能分析(译)</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

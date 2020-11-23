@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ajax on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/ajax/</link>
+    <description>Recent content in ajax on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 16 May 2016 01:07:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/ajax/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>获取后台任务进度的另类办法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</guid>
+      <description>今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &amp;#34;/AsyncServlet&amp;#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private</description>
+    </item>
+    
+  </channel>
+</rss>

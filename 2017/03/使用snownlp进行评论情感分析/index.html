@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用snownlp进行评论情感分析 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用snownlp进行评论情感分析" />
+<meta property="og:description" content="背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/" />
+<meta property="article:published_time" content="2017-03-16T20:40:00+08:00" />
+<meta property="article:modified_time" content="2017-03-16T20:40:00+08:00" />
+<meta itemprop="name" content="使用snownlp进行评论情感分析">
+<meta itemprop="description" content="背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然">
+<meta itemprop="datePublished" content="2017-03-16T20:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-03-16T20:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="1895">
+
+
+
+<meta itemprop="keywords" content="python,matplotlib,snownlp," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用snownlp进行评论情感分析"/>
+<meta name="twitter:description" content="背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用snownlp进行评论情感分析</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1895 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">背景</a></li>
+    <li><a href="#snownlp">snownlp的使用</a></li>
+    <li><a href="#snownlp-1">snownlp在项目中的应用</a></li>
+    <li><a href="#matplotlib">使用matplotlib观测数据的分布</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">背景</h2>
+<p>最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。</p>
+<p>这个问题属于<a href="https://en.wikipedia.org/wiki/Natural_language_processing">自然语言处理</a>的范畴，国外有很多这方面的论文。但我不是搞学术的，得想办法快速解决这个问题。</p>
+<p>从网上看到一哥们<a href="https://www.anotherhome.net/2920">通过微博分析女朋友的情绪</a>，他的方案里包括分词的选择、情绪分析词典的选择、情绪值的计算等，但因为自己实现的效果比较差，最后废弃了自己的方案，直接选择了<a href="http://nlp.qq.com/help.cgi#">腾讯文智的情感分析收费服务</a>。</p>
+<p>因为最近研究过tensorflow，也了解到使用tensorflow参照<a href="https://www.tensorflow.org/tutorials/word2vec">word2vec</a>完成了词向量后，使用训练好的词向量，应该可以很容易进行语句的情绪分类。这里海航的一个工程师做了个<a href="http://chuansong.me/n/1588922851927">方案</a>。</p>
+<p>一直在想有没有简单点的方案了，搜索了多天，还真被我发现一个简单的方案-<a href="https://github.com/isnowfy/snownlp">snownlp</a>。</p>
+<h2 id="snownlp">snownlp的使用</h2>
+<p>snownlp的文档写得很简单，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> snownlp <span style="color:#f92672">import</span> SnowNLP
+
+s <span style="color:#f92672">=</span> SnowNLP(<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">这个东西真心很赞</span><span style="color:#e6db74">&#39;</span>)
+
+s<span style="color:#f92672">.</span>words         <span style="color:#75715e"># [u&#39;这个&#39;, u&#39;东西&#39;, u&#39;真心&#39;,</span>
+                <span style="color:#75715e">#  u&#39;很&#39;, u&#39;赞&#39;]</span>
+
+s<span style="color:#f92672">.</span>tags          <span style="color:#75715e"># [(u&#39;这个&#39;, u&#39;r&#39;), (u&#39;东西&#39;, u&#39;n&#39;),</span>
+                <span style="color:#75715e">#  (u&#39;真心&#39;, u&#39;d&#39;), (u&#39;很&#39;, u&#39;d&#39;),</span>
+                <span style="color:#75715e">#  (u&#39;赞&#39;, u&#39;Vg&#39;)]</span>
+
+s<span style="color:#f92672">.</span>sentiments    <span style="color:#75715e"># 0.9769663402895832 positive的概率</span>
+
+s<span style="color:#f92672">.</span>pinyin        <span style="color:#75715e"># [u&#39;zhe&#39;, u&#39;ge&#39;, u&#39;dong&#39;, u&#39;xi&#39;,</span>
+                <span style="color:#75715e">#  u&#39;zhen&#39;, u&#39;xin&#39;, u&#39;hen&#39;, u&#39;zan&#39;]</span>
+
+s <span style="color:#f92672">=</span> SnowNLP(<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">「繁體字」「繁體中文」的叫法在臺灣亦很常見。</span><span style="color:#e6db74">&#39;</span>)
+
+s<span style="color:#f92672">.</span>han           <span style="color:#75715e"># u&#39;「繁体字」「繁体中文」的叫法</span>
+                <span style="color:#75715e"># 在台湾亦很常见。&#39;</span>
+
+text <span style="color:#f92672">=</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">自然语言处理是计算机科学领域与人工智能领域中的一个重要方向。</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">它研究能实现人与计算机之间用自然语言进行有效通信的各种理论和方法。</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">自然语言处理是一门融语言学、计算机科学、数学于一体的科学。</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">因此，这一领域的研究将涉及自然语言，即人们日常使用的语言，</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">所以它与语言学的研究有着密切的联系，但又有重要的区别。</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">自然语言处理并不是一般地研究自然语言，</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">而在于研制能有效地实现自然语言通信的计算机系统，</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">特别是其中的软件系统。因而它是计算机科学的一部分。</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+
+s <span style="color:#f92672">=</span> SnowNLP(text)
+
+s<span style="color:#f92672">.</span>keywords(<span style="color:#ae81ff">3</span>)   <span style="color:#75715e"># [u&#39;语言&#39;, u&#39;自然&#39;, u&#39;计算机&#39;]</span>
+
+s<span style="color:#f92672">.</span>summary(<span style="color:#ae81ff">3</span>)    <span style="color:#75715e"># [u&#39;因而它是计算机科学的一部分&#39;,</span>
+                <span style="color:#75715e">#  u&#39;自然语言处理是一门融语言学、计算机科学、</span>
+                <span style="color:#75715e">#    数学于一体的科学&#39;,</span>
+                <span style="color:#75715e">#  u&#39;自然语言处理是计算机科学领域与人工智能</span>
+                <span style="color:#75715e">#    领域中的一个重要方向&#39;]</span>
+s<span style="color:#f92672">.</span>sentences
+
+s <span style="color:#f92672">=</span> SnowNLP([[<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">这篇</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">文章</span><span style="color:#e6db74">&#39;</span>],
+             [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">那篇</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">论文</span><span style="color:#e6db74">&#39;</span>],
+             [<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">这个</span><span style="color:#e6db74">&#39;</span>]])
+s<span style="color:#f92672">.</span>tf
+s<span style="color:#f92672">.</span>idf
+s<span style="color:#f92672">.</span>sim([<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">文章</span><span style="color:#e6db74">&#39;</span>])<span style="color:#75715e"># [0.3756070762985226, 0, 0]</span>
+</code></pre></div><p>我这个场景主要用到<code>sentiments</code>得到某句话的情感倾向值，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> snownlp <span style="color:#f92672">import</span> SnowNLP
+s <span style="color:#f92672">=</span> SnowNLP(<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">这个东西真心很赞</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span>(s<span style="color:#f92672">.</span>sentiments) <span style="color:#75715e"># 得到这句话的情感倾向值，取值范围为0~1.0，0为负面评价的极限值，1.0为正面评价的极限值</span>
+</code></pre></div><p>文档中也说明</p>
+<blockquote>
+<p>情感分析（现在训练数据主要是买卖东西时的评价，所以对其他的一些可能效果不是很好，待解决）</p>
+</blockquote>
+<p>幸好它还提供了自己训练情感的方式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> snownlp <span style="color:#f92672">import</span> sentiment
+sentiment<span style="color:#f92672">.</span>train(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">neg.txt</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">pos.txt</span><span style="color:#e6db74">&#39;</span>)
+sentiment<span style="color:#f92672">.</span>save(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sentiment.marshal</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>这样训练好的文件就存储为<code>sentiment.marshal</code>了，之后修改<code>snownlp/sentiment/__init__.py</code>里的data_path指向刚训练好的文件即可</p>
+<h2 id="snownlp-1">snownlp在项目中的应用</h2>
+<p>实际在项目中应用时，我选择了<code>snownlp</code>的一个<a href="https://github.com/david30907d/snownlp">fork项目</a>，因为这个fork项目使用了jieba进行分词，同时加强了繁体中文的支持。</p>
+<p>贴一下<code>requirements.txt</code>文件:</p>
+<pre><code>jieba==0.38
+-e git+https://github.com/david30907d/snownlp.git@8af8237#egg=snownlp
+</code></pre><p>计算某个商品的情感倾向均值方法比较简单，就是取到每条评论的情感倾向值，加起来平均即可。</p>
+<p>实现时有几点要注意一下：</p>
+<ul>
+<li>某个商品的评论数太少，比如不足5条，这样统计出的均值可能不具代表性，因此忽略对这些商品的分析</li>
+<li>某个商品的评论数太多，多于200条，为了加快分析过程，随机取100条评论进行分析</li>
+</ul>
+<h2 id="matplotlib">使用matplotlib观测数据的分布</h2>
+<p>为了更直观地观测数据的分布，我这里还使了<code>matplotlib</code>进行图形显示，如下代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> matplotlib
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">showPlot</span>(goodsStats):
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#e6db74">显示情感均值分布图</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+    x <span style="color:#f92672">=</span> []
+    y <span style="color:#f92672">=</span> []
+    idx <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+    goodsSize <span style="color:#f92672">=</span> len(goodsStats)
+    zhfont1 <span style="color:#f92672">=</span> matplotlib<span style="color:#f92672">.</span>font_manager<span style="color:#f92672">.</span>FontProperties(fname<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">C:/Windows/Fonts/msyh.ttf</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">for</span> value <span style="color:#f92672">in</span> goodsStats<span style="color:#f92672">.</span>values():
+        x<span style="color:#f92672">.</span>append(idx)
+        y<span style="color:#f92672">.</span>append(value[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sentimentsAvg</span><span style="color:#e6db74">&#39;</span>])
+        idx <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+    plt<span style="color:#f92672">.</span>plot(x, y, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">bo</span><span style="color:#e6db74">&#39;</span>, label<span style="color:#f92672">=</span>(str(goodsSize) <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> Goods Sentiments Average</span><span style="color:#e6db74">&#34;</span>))
+    plt<span style="color:#f92672">.</span>ylabel(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Sentiments Avarage</span><span style="color:#e6db74">&#34;</span>)
+    plt<span style="color:#f92672">.</span>ylim(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1.0</span>)
+    plt<span style="color:#f92672">.</span>axis([<span style="color:#ae81ff">0</span>, goodsSize, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1.0</span>])
+    plt<span style="color:#f92672">.</span>title(str(goodsSize) <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">个商品的情感均值分布图</span><span style="color:#e6db74">&#34;</span>, fontproperties<span style="color:#f92672">=</span>zhfont1)
+    plt<span style="color:#f92672">.</span>legend()
+    plt<span style="color:#f92672">.</span>show()
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-03-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/matplotlib/">matplotlib</a>
+          
+          <a href="/tags/snownlp/">snownlp</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">tensorflow学习笔记_03</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/03/%E5%89%8D%E7%AB%AFreactjs%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/">
+            <span class="next-text nav-default">前端ReactJS技术介绍</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

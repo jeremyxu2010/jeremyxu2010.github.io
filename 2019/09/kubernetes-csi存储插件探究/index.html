@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes CSI存储插件探究 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="kubernetes CSI存储插件探究" />
+<meta property="og:description" content="本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/" />
+<meta property="article:published_time" content="2019-09-29T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-09-29T18:00:00+08:00" />
+<meta itemprop="name" content="kubernetes CSI存储插件探究">
+<meta itemprop="description" content="本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber">
+<meta itemprop="datePublished" content="2019-09-29T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-29T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="5338">
+
+
+
+<meta itemprop="keywords" content="k8s,devops,csi,volume," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes CSI存储插件探究"/>
+<meta name="twitter:description" content="本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes CSI存储插件探究</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-29 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5338 字 </span>
+        <span class="more-meta"> 预计阅读 11 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#csi">CSI相关概念</a></li>
+    <li><a href="#csi-1">CSI插件机制分析</a></li>
+    <li><a href="#csi-2">CSI插件的部署</a></li>
+    <li><a href="#csi-3">CSI的其它技术细节</a></li>
+    <li><a href="#csi-4">CSI插件的测试支持</a></li>
+    <li><a href="#csi-5">现成的CSI插件驱动</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kubernetes CSI插件的实现细节，这里详细记录一下。</p>
+<h2 id="csi">CSI相关概念</h2>
+<p>在CSI未出现之前，容器编排系统（Container Orchestration Systems，简称COs，如kubernetes）为了能使用外部存储系统，使这些存储系统为容器工作负载提供存储卷。COs需要在自身的代码中嵌入大量与存储相关的代码，参见<a href="https://github.com/kubernetes/kubernetes/tree/master/pkg/volume">kubernetes里的volume包</a>，这个包下面大部分就是所谓的in-tree（意思是在kubernetes的代码树里）存储卷插件。</p>
+<p>要支持的存储系统多种多样，而且有些存储系统的支持代码还不便于开源，所以很明显上述设计并不好。</p>
+<p>后面又出现了<code>Flexvolume</code>这种out-tree的存储卷插件机制，允许存储厂商将写好的存储卷插件二进制文件放置到各node节点预设的目录下，kubernetes即可在自动发现它们，并调用它们完成存储卷的供应。详情技术细节可参考<a href="https://github.com/kubernetes/community/blob/master/contributors/devel/sig-storage/flexvolume.md">这里</a>。</p>
+<p>上述<code>Flexvolume</code>方案很类似于kubernetes里用的网络方案CNI，都是将外部插件放置在预设的目录下，以供kubernetes调用。但总的来说还是跟kubernetes这一容器编排系统绑定得太死了。于是人们又发明了CSI。</p>
+<p>CSI 代表<a href="https://github.com/container-storage-interface/spec/blob/master/spec.md">容器存储接口</a>，CSI 试图建立一个行业标准接口的规范，借助 CSI 容器编排系统（CO）可以将任意存储系统暴露给自己的容器工作负载。有关详细信息，请查看<a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/storage/container-storage-interface.md">设计方案</a>。</p>
+<p><code>csi</code> 卷类型也是一种 out-tree（in-tree是指跟其它存储插件在同一个代码路径下，随 Kubernetes 的代码同时编译，out-tree则刚好相反） 的 CSI 卷插件，用于 Pod 与在同一节点上运行的外部 CSI 卷驱动程序交互。部署 CSI 兼容卷驱动后，用户可以使用 <code>csi</code> 作为卷类型来挂载驱动提供的存储。</p>
+<p>CSI 持久化卷支持是在 Kubernetes v1.9 中引入的，作为一个 alpha 特性，必须由集群管理员明确启用。换句话说，集群管理员需要在 apiserver、controller-manager 和 kubelet 组件的 “<code>--feature-gates =</code>” 标志中加上 “<code>CSIPersistentVolume = true</code>”。</p>
+<p>CSI 持久化卷具有以下字段可供用户指定：</p>
+<ul>
+<li><code>driver</code>：一个字符串值，指定要使用的卷驱动程序的名称。必须少于 63 个字符，并以一个字符开头。驱动程序名称可以包含 “。”、“ - ”、“_” 或数字。</li>
+<li><code>volumeHandle</code>：一个字符串值，唯一标识从 CSI 卷插件的 <code>CreateVolume</code> 调用返回的卷名。随后在卷驱动程序的所有后续调用中使用卷句柄来引用该卷。</li>
+<li><code>readOnly</code>：一个可选的布尔值，指示卷是否被发布为只读。默认是 false。</li>
+</ul>
+<h2 id="csi-1">CSI插件机制分析</h2>
+<p>光看上面的概念，还是很难理解到底CSI插件是怎样的。其实说到底一个CSI插件就是实现了CSI规范要求的多个gRPC接口的服务程序。</p>
+<p>一个CSI插件一般会以两种形式部署运行着，分别是Controller组件和Node组件。</p>
+<blockquote>
+<p><a href="https://kubernetes-csi.github.io/docs/deploying.html#controller-plugin">Controller Plugin</a></p>
+<p>The controller component can be deployed as a Deployment or StatefulSet on any node in the cluster. It consists of the CSI driver that implements the CSI Controller service and one or more sidecar containers. These controller sidecar containers typically interact with Kubernetes objects and make calls to the driver's CSI Controller service.</p>
+<p>It generally does not need direct access to the host and can perform all its operations through the Kubernetes API and external control plane services. Multiple copies of the controller component can be deployed for HA, however it is recommended to use leader election to ensure there is only one active controller at a time.</p>
+<p>Controller sidecars include the external-provisioner, external-attacher, external-snapshotter, and external-resizer. Including a sidecar in the deployment may be optional.</p>
+<p><a href="https://kubernetes-csi.github.io/docs/deploying.html#node-plugin">Node Plugin</a></p>
+<p>The node component should be deployed on every node in the cluster through a DaemonSet. It consists of the CSI driver that implements the CSI Node service and the node-driver-registrar sidecar container.</p>
+<p>The Kubernetes kubelet runs on every node and is responsible for making the CSI Node service calls. These calls mount and unmount the storage volume from the storage system, making it available to the Pod to consume. Kubelet makes calls to the CSI driver through a UNIX domain socket shared on the host via a HostPath volume. There is also a second UNIX domain socket that the node-driver-registrar uses to register the CSI driver to kubelet.</p>
+</blockquote>
+<p>可以看到Controller组件一般是以Deployment或StatefulSet形式部署的，它实现了CSI Controller service，它会与Kubernetes API、外部存储服务的控制面交互，但它并不会实际处理存储卷在宿主机上的挂载等事宜。</p>
+<p>而Node组件因为要运行在所有node节点上，因此一般是以DaemonSet形式部署的，它实现了CSI Node service，它会暴露出一个UNIX domain socket文件出来，从而让kubelet在进行存储卷操作时，通过这个UNIX domain socket文件调用它的gRPC接口。</p>
+<p>上述两个组件配合，即完成了将存储卷暴露给工作负载的功能。</p>
+<p>下面看一下一个CSI插件要实现的三组gRPC接口服务：</p>
+<blockquote>
+<ul>
+<li><strong>Identity Service</strong>: Both the Node Plugin and the Controller Plugin MUST implement this sets of RPCs.</li>
+<li><strong>Controller Service</strong>: The Controller Plugin MUST implement this sets of RPCs.</li>
+<li><strong>Node Service</strong>: The Node Plugin MUST implement this sets of RPCs.</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-protobuf" data-lang="protobuf"><span style="color:#66d9ef">service</span> Identity {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> GetPluginInfo(GetPluginInfoRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (GetPluginInfoResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> GetPluginCapabilities(GetPluginCapabilitiesRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (GetPluginCapabilitiesResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> Probe (ProbeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ProbeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">service</span> Controller {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> CreateVolume (CreateVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (CreateVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> DeleteVolume (DeleteVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (DeleteVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ControllerPublishVolume (ControllerPublishVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ControllerPublishVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ControllerUnpublishVolume (ControllerUnpublishVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ControllerUnpublishVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ValidateVolumeCapabilities (ValidateVolumeCapabilitiesRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ValidateVolumeCapabilitiesResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ListVolumes (ListVolumesRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ListVolumesResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> GetCapacity (GetCapacityRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (GetCapacityResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ControllerGetCapabilities (ControllerGetCapabilitiesRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ControllerGetCapabilitiesResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> CreateSnapshot (CreateSnapshotRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (CreateSnapshotResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> DeleteSnapshot (DeleteSnapshotRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (DeleteSnapshotResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ListSnapshots (ListSnapshotsRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ListSnapshotsResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> ControllerExpandVolume (ControllerExpandVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (ControllerExpandVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">service</span> Node {<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeStageVolume (NodeStageVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeStageVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeUnstageVolume (NodeUnstageVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeUnstageVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodePublishVolume (NodePublishVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodePublishVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeUnpublishVolume (NodeUnpublishVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeUnpublishVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeGetVolumeStats (NodeGetVolumeStatsRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeGetVolumeStatsResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeExpandVolume(NodeExpandVolumeRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeExpandVolumeResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeGetCapabilities (NodeGetCapabilitiesRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeGetCapabilitiesResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>  <span style="color:#66d9ef">rpc</span> NodeGetInfo (NodeGetInfoRequest)<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>    <span style="color:#66d9ef">returns</span> (NodeGetInfoResponse) {}<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>}<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><p>上述这堆接口，看着挺多。其实如果不想实现CSI的某些功能，有些接口也不用实现的。比如如果不想实现存储卷的动态供应，<code>Controller</code>的<code>CreateVolume</code>、<code>DeleteVolume</code>即可不实现。另外有些接口属于元数据接口，仅仅是声明该CSI的Capability，Info的，如<code>Identity</code>的所有接口，<code>ControllerGetCapabilities</code>的<code>ControllerGetCapabilities</code>接口，<code>Node</code>的<code>NodeGetCapabilities</code>、<code>NodeGetInfo</code>接口。再看一下storage volume的lifecycle，这些接口之前的调用关系就很清楚了。</p>
+<blockquote>
+<pre><code>   CreateVolume +------------+ DeleteVolume
+ +-------------&gt;|  CREATED   +--------------+
+ |              +---+----+---+              |
+ |       Controller |    | Controller       v
++++         Publish |    | Unpublish       +++
+|X|          Volume |    | Volume          | |
++-+             +---v----+---+             +-+
+                | NODE_READY |
+                +---+----^---+
+               Node |    | Node
+              Stage |    | Unstage
+             Volume |    | Volume
+                +---v----+---+
+                |  VOL_READY |
+                +------------+
+               Node |    | Node
+            Publish |    | Unpublish
+             Volume |    | Volume
+                +---v----+---+
+                | PUBLISHED  |
+                +------------+
+
+Figure 6: The lifecycle of a dynamically provisioned volume, from
+creation to destruction, when the Node Plugin advertises the
+STAGE_UNSTAGE_VOLUME capability.
+</code></pre></blockquote>
+<p>上面这个图是一个较为复杂的卷供应生命周期图，从这个图我们可以看出一个存储卷的供应分别调用了<code>Controller Plugin</code>的<code>CreateVolume</code>、<code>ControllerPublishVolume</code>及<code>Node Plugin</code>的<code>NodeStageVolume</code>、<code>NodePublishVolume</code>这4个gRPC接口，存储卷的销毁分别调用了<code>Node Plugin</code>的<code>NodeUnpublishVolume</code>、<code>NodeUnstageVolume</code>及<code>Controller</code>的<code>ControllerUnpublishVolume</code>、<code>DeleteVolume</code>这4个gRPC接口，这每个接口要完成的工作参见<a href="https://github.com/container-storage-interface/spec/blob/master/spec.md#controller-service-rpc">CSI规范</a>。</p>
+<p>只看规范可能会看得云里雾里的，我是参考一个现成的CSI插件实例来理解CSI规范的。这里推荐下<a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud">tencentcloud cbs块存储的CSI插件</a>，这个CSI插件实现得相当规范，分别在<a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/driver/cbs/controller.go">controller.go</a>里实现了Controller Service里的几个gRPC接口、<a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/driver/cbs/identity.go">identity.go</a>里实现了Identify Service里的几个gRPC接口、<a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/driver/cbs/node.go">node.go</a>里实现了Node Service里的几个gRPC接口。</p>
+<h2 id="csi-2">CSI插件的部署</h2>
+<p>按CSI规范实现了相应的gRPC接口后，一个CSI插件就基本成型了。但这并不是全部，回想下目前整个CSI插件的功能逻辑，我们只是实现了存储卷驱动的核心逻辑，但并没有与Kubernetes产生任何联动啊。这写好的CSI插件如何工作呢？</p>
+<p>与Kubernetes的联动逻辑比较统一，基本就是watch Kubrernetes API，根据watch到的资源状态调用相应的CSI接口，根据CSI接口的返回结果更新Kubernetes里的资源状态。官方为了简化开发CSI插件的复杂度，提供了一系列的sidecar来完成这些工作。而CSI的开发人员要做的就是在部署CSI插件时声明将相应的sidecar与CSI插件捆绑部署在一起。</p>
+<blockquote>
+<p>Kubernetes CSI Sidecar Containers are a set of standard containers that aim to simplify the development and deployment of CSI Drivers on Kubernetes.</p>
+<p>These containers contain common logic to watch the Kubernetes API, trigger appropriate operations against the “CSI volume driver” container, and update the Kubernetes API as appropriate.</p>
+<p>The containers are intended to be bundled with third-party CSI driver containers and deployed together as pods.</p>
+<p>The containers are developed and maintained by the Kubernetes Storage community.</p>
+<p>Use of the containers is strictly optional, but highly recommended.</p>
+</blockquote>
+<p>使用这些sidecar的好处很多，官方文档中下面这两段话说得很清楚。以后做设计时也可以参考这样优雅地实现。</p>
+<blockquote>
+<p>Benefits of these sidecar containers include:</p>
+<ul>
+<li>Reduction of &ldquo;boilerplate&rdquo; code.
+<ul>
+<li>CSI Driver developers do not have to worry about complicated, &ldquo;Kubernetes specific&rdquo; code.</li>
+</ul>
+</li>
+<li>Separation of concerns.
+<ul>
+<li>Code that interacts with the Kubernetes API is isolated from (and in a different container then) the code that implements the CSI interface.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<p>会使用到的sidecar如下：</p>
+<ul>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/external-provisioner.html">external-provisioner</a></p>
+<p>如果CSI插件要实现CREATE_DELETE_VOLUME能力（即动态供应），则CSI插件需要实现Controller Service的<code>CreateVolume</code>、<code>DeleteVolume</code>接口，并配合上该sidecar就可以了。这样当watch到指定StorageClass的 PersistentVolumeClaim资源状态变更，会自动地调用这两个接口。</p>
+</li>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/external-attacher.html">external-attacher</a></p>
+<p>如果CSI插件要实现PUBLISH_UNPUBLISH_VOLUME能力，则CSI插件需要实现Controller Service的<code>ControllerPublishVolume</code>、<code>ControllerUnpublishVolume</code>接口，并配合上该sidecar就可以了。这样当watch到VolumeAttachment资源状态变更，会自动地调用这两个接口。</p>
+</li>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/external-snapshotter.html">external-snapshotter</a></p>
+<p>如果CSI插件要实现CREATE_DELETE_SNAPSHOT能力，则CSI插件需要实现Controller Service的<code>CreateSnapshot</code>、<code>DeleteSnapshot</code>接口，并配合上该sidecar就可以了。这样当watch到指定SnapshotClass的VolumeSnapshot资源状态变更，会自动地调用这两个接口。</p>
+</li>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/external-resizer.html">external-resizer</a></p>
+<p>如果CSI插件要实现EXPAND_VOLUME能力，则CSI插件需要实现Controller Service的<code>ControllerExpandVolume</code>接口，并配合上该sidecar就可以了。这样当watch到PersistentVolumeClaim资源的容量发生变更，会自动地调用这个接口。</p>
+</li>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/node-driver-registrar.html">node-driver-registrar</a></p>
+<p>CSI插件实现Node Service的<code>NodeGetInfo</code>接口后，配合上该sidecar。这样当CSI Node Plugin部署到kubernetes的node节点时，该sidecar会自动调用接口获取CSI插件信息，并向kubelet进行注册。</p>
+</li>
+<li>
+<p><a href="https://kubernetes-csi.github.io/docs/livenessprobe.html">livenessprobe</a></p>
+<p>配合上该sidecar，kubernetes即可检测到CSI插件相关pod的健康状态，当不正常时自动重启相应pod。</p>
+</li>
+</ul>
+<p>怎么将这些sidecar与CSI Driver部署在一起，<a href="https://kubernetes-csi.github.io/docs/deploying.html">官方文档</a>其实讲得很清楚的。</p>
+<p>同样个人觉得还是结合实际的示例理解文档更快一点。比如<a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud">tencentcloud cbs块存储的CSI插件</a>的部署清单里：</p>
+<ol>
+<li><a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/deploy/kubernetes/csi-cbsplugin.yaml">csi-cbsplugin.yaml</a>以DaemonSet方式部署了<code>csi-tencentcloud-cbs:v1.0.0</code>这个CSI插件Driver程序，这个插件Driver程序旁边放了一个<code>csi-node-driver-registrar:v1.0.2</code>的sidecar，这个sidecar会自动调用接口获取CSI插件信息，并向kubelet进行注册。</li>
+<li><a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/deploy/kubernetes/csi-cbsplugin-provisioner.yaml">csi-cbsplugin-provisioner.yaml</a>以StatefulSet方式部署了<code>csi-provisioner:v1.0.1</code>、<code>csi-snapshotter:v1.0.1</code>这两个sidecar，这两个sidecar会watch指定StorageClass的 PersistentVolumeClaim资源状态变更、指定SnapshotClass的VolumeSnapshot资源状态变更，然后通过宿主机上的csi UNIX domain socket与CSI插件驱动通信，调用相应的gRPC接口方法。</li>
+<li><a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud/blob/master/deploy/kubernetes/csi-cbsplugin-attacher.yaml">csi-cbsplugin-attacher.yaml</a>以StatefulSet方式部署了<code>csi-attacher:v1.0.1</code>这个sidecar，这个sidecar会watch VolumeAttachment资源状态变更，然后通过宿主机上的csi UNIX domain socket与CSI插件驱动通信，调用相应的gRPC接口方法。</li>
+</ol>
+<p>其它的sidecar的使用方法都类似上面示例中的玩法，照着配置就可以了。</p>
+<h2 id="csi-3">CSI的其它技术细节</h2>
+<ol>
+<li>在进行存储系统操作时会使用到各种密码、身份凭证，而这些需要按照一定的规约进行配置，详见<a href="https://kubernetes-csi.github.io/docs/secrets-and-credentials.html">官方文档</a>。</li>
+<li>可以通过<code>CSIDriver</code>这一自定义资源，定制Kubernetes与CSI存储插件交互的行为，详见<a href="https://kubernetes-csi.github.io/docs/csi-driver-object.html">官方文档</a>。</li>
+<li>可以通过<code>CSINodeInfo</code>这一自定义资源，将kubernetes的node与CSI Node映射起来。还可以通过<code>CSINodeInfo</code>指定node节点的的topologyKey，这个能实现基于topology的CSI存储卷供应，详见<a href="https://kubernetes-csi.github.io/docs/csi-node-object.html">官方文档1</a>和<a href="https://kubernetes-csi.github.io/docs/topology.html">官方文档2</a>。</li>
+</ol>
+<h2 id="csi-4">CSI插件的测试支持</h2>
+<p>官方还为开发CSI插件提供了<a href="https://kubernetes-csi.github.io/docs/testing-drivers.html">单元测试与e2e测试的方案</a>，可惜时间关系，并没有演练一把，后面可以考虑把这一点实操一下，毕竟测试驱动开发是趋势。</p>
+<h2 id="csi-5">现成的CSI插件驱动</h2>
+<p>目前各大知名云厂商都实现了自家存储产品的CSI插件驱动，列表在<a href="https://kubernetes-csi.github.io/docs/drivers.html">这里</a>。正常情况下直接使用官方提供的CSI插件即可。当然如果要学习下也是可以，CSI插件的代码一般都不难，5-6个go文件而已。</p>
+<p>DONE</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://kubernetes-csi.github.io/docs">https://kubernetes-csi.github.io/docs</a></li>
+<li><a href="https://github.com/TencentCloud/kubernetes-csi-tencentcloud">https://github.com/TencentCloud/kubernetes-csi-tencentcloud</a></li>
+<li><a href="https://github.com/container-storage-interface/spec">https://github.com/container-storage-interface/spec</a></li>
+<li><a href="https://jimmysong.io/kubernetes-handbook/concepts/csi.html">https://jimmysong.io/kubernetes-handbook/concepts/csi.html</a></li>
+<li><a href="https://github.com/kubernetes/community/blob/master/contributors/devel/sig-storage/flexvolume.md">https://github.com/kubernetes/community/blob/master/contributors/devel/sig-storage/flexvolume.md</a></li>
+<li><a href="https://github.com/kubernetes/kubernetes/tree/master/pkg/volume">https://github.com/kubernetes/kubernetes/tree/master/pkg/volume</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-09-29</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+          <a href="/tags/csi/">csi</a>
+          
+          <a href="/tags/volume/">volume</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">生成多平台docker镜像</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/">
+            <span class="next-text nav-default">编译arm64平台的软件包</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>web浏览器自动化之playwright - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="web浏览器自动化之playwright" />
+<meta property="og:description" content="工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/" />
+<meta property="article:published_time" content="2020-11-01T20:54:00+08:00" />
+<meta property="article:modified_time" content="2020-11-01T20:54:00+08:00" />
+<meta itemprop="name" content="web浏览器自动化之playwright">
+<meta itemprop="description" content="工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver">
+<meta itemprop="datePublished" content="2020-11-01T20:54:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-11-01T20:54:00&#43;08:00" />
+<meta itemprop="wordCount" content="2316">
+
+
+
+<meta itemprop="keywords" content="nodejs,playwright,es6," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="web浏览器自动化之playwright"/>
+<meta name="twitter:description" content="工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">web浏览器自动化之playwright</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-01 </span>
+        <div class="post-category">
+            
+              <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2316 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">安装</a></li>
+    <li><a href="#heading-1">核心概念</a>
+      <ul>
+        <li><a href="#browser">Browser</a></li>
+        <li><a href="#browser-context">Browser context</a></li>
+        <li><a href="#page-and-frame">Page and frame</a></li>
+        <li><a href="#selector">Selector</a></li>
+        <li><a href="#execution-contexts-nodejs-and-browser">Execution contexts: Node.js and Browser</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">调试</a></li>
+    <li><a href="#heading-3">认证</a>
+      <ul>
+        <li><a href="#heading-4">自动登录</a></li>
+        <li><a href="#heading-5">利用认证状态</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">代码封装</a></li>
+    <li><a href="#heading-7">进一步思考</a></li>
+    <li><a href="#heading-8">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。</p>
+<p>之前就使用<a href="https://jeremyxu2010.github.io/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/">selenium-webdriver</a>做过一些web浏览器自动化的工作，在github上找了下，发现microsoft又开源了一个<a href="https://github.com/microsoft/playwright">playwright</a>，这个比以前的<code>selenium-webdriver</code>使用起来更简单了，这里就用它试一试。</p>
+<h2 id="heading">安装</h2>
+<p>由于是<code>playwright</code>是一个node库，这里最好新建一个目录，并在这个目录中安装npm依赖库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mkdir playwright-sandbox
+$ cd playwright-sandbox
+$ npm i -D playwright
+$ npm i -D playwright-cli
+</code></pre></div><p>安装时它会自动下载当前平台上3个浏览器二进制文件，可以通过一系统环境变量控制这种下载行为，参见<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Finstallation.md&amp;q=">Advanced installation</a>。</p>
+<p>安装完毕后可以写个小脚本测试一下：</p>
+<p><code>test.js</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">webkit</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;playwright&#39;</span>);
+
+(<span style="color:#a6e22e">async</span> () =&gt; {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">webkit</span>.<span style="color:#a6e22e">launch</span>();
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newPage</span>();
+  <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;http://whatsmyuseragent.org/&#39;</span>);
+  <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">screenshot</span>({ <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">example.png</span><span style="color:#e6db74">`</span> });
+  <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">close</span>();
+})();
+</code></pre></div><p>可以简单地执行一下看看效果：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ node ./test.js
+</code></pre></div><p>像上面这样写脚本跟<code>selenium-webdriver</code>也差不多，实在有些无趣。因此<code>playwright</code>还提供了杀手级辅助工具，可以直接录制用户的交互行为生成代码。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npx playwright-cli codegen wikipedia.org
+</code></pre></div><p>这个就方便太多了。</p>
+<h2 id="heading-1">核心概念</h2>
+<p>脚本都可以生成了，写脚本就不再是问题了，真正要花脑力的地方变成了如何修改生成的脚本。在可以随心所欲地修改脚本前，有必要了解下<code>playwright</code>脚本里的一些核心概念。</p>
+<h3 id="browser">Browser</h3>
+<p><code>Browser</code>代表的是一个Chromium、Firefox或WebKit浏览器实例。<code>Playwright</code>脚本通常会启动一个浏览器实例，最后会将这个实例关闭。<code>Browser</code>可以以headless模式或headful模式启动，分别是无GUI和有GUI模式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">chromium</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;playwright&#39;</span>);  <span style="color:#75715e">// Or &#39;firefox&#39; or &#39;webkit&#39;.
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">chromium</span>.<span style="color:#a6e22e">launch</span>({ <span style="color:#a6e22e">headless</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> });
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">close</span>();
+</code></pre></div><p>因为启动一个浏览器实例成本很高，因此在playwright脚本里一般会复用浏览器实例，通过多个浏览器上下文在同一个浏览器实例里达到完成不同的逻辑。</p>
+<h3 id="browser-context">Browser context</h3>
+<p><code>Browser context</code>是一个隔离地有点类似于session的浏览器实例上下文。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">chromium</span>.<span style="color:#a6e22e">launch</span>();
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">context</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newContext</span>();
+</code></pre></div><p><code>Browser context</code>可以用来模拟多个页面场景，每个场景可以有不同的权限、本地化、设备等。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">devices</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;playwright&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">iPhone</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">devices</span>[<span style="color:#e6db74">&#39;iPhone 11 Pro&#39;</span>];
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">context</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newContext</span>({
+  ...<span style="color:#a6e22e">iPhone</span>,
+  <span style="color:#a6e22e">permissions</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;geolocation&#39;</span>],
+  <span style="color:#a6e22e">geolocation</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">latitude</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">52.52</span>, <span style="color:#a6e22e">longitude</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">13.39</span>},
+  <span style="color:#a6e22e">colorScheme</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;dark&#39;</span>,
+  <span style="color:#a6e22e">locale</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;de-DE&#39;</span>
+});
+</code></pre></div><h3 id="page-and-frame">Page and frame</h3>
+<p><code>Page</code>代表着一个浏览器tab页面，它应该被用于导航到URL。脚本中的绝大部分用户交互行为都是在页面内容上执行的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// Create a page.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">newPage</span>();
+
+<span style="color:#75715e">// Navigate explicitly, similar to entering a URL in the browser.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;http://example.com&#39;</span>);
+<span style="color:#75715e">// Fill an input.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">fill</span>(<span style="color:#e6db74">&#39;#search&#39;</span>, <span style="color:#e6db74">&#39;query&#39;</span>);
+
+<span style="color:#75715e">// Navigate implicitly by clicking a link.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;#submit&#39;</span>);
+<span style="color:#75715e">// Expect a new url.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">url</span>());
+
+<span style="color:#75715e">// Page can navigate from the script - this will be picked up by Playwright.
+</span><span style="color:#75715e"></span>window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://example.com&#39;</span>;
+</code></pre></div><p>跟正常的html页面一样，一个页面中可以有多个<code>frame</code>，同样可以用脚本操作<code>frame</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// Get frame using the frame&#39;s name attribute
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">frame</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">frame</span>(<span style="color:#e6db74">&#39;frame-login&#39;</span>);
+
+<span style="color:#75715e">// Get frame using frame&#39;s URL
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">frame</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">frame</span>({ <span style="color:#a6e22e">url</span><span style="color:#f92672">:</span> <span style="color:#e6db74">/.*domain.*/</span> });
+
+<span style="color:#75715e">// Get frame using any other selector
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">frameElementHandle</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#39;.frame-class&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">frame</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">frameElementHandle</span>.<span style="color:#a6e22e">contentFrame</span>();
+
+<span style="color:#75715e">// Interact with the frame
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">frame</span>.<span style="color:#a6e22e">fill</span>(<span style="color:#e6db74">&#39;#username-input&#39;</span>, <span style="color:#e6db74">&#39;John&#39;</span>);
+</code></pre></div><h3 id="selector">Selector</h3>
+<p>要对web页面进行操作，首先就要定位到页面元素。<code>playwright</code>同样支持<code>CSS selectors</code>,  <code>XPath selectors</code>,  <code>HTML attributes</code>和<code> text content</code>方式定位页面元素。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// Using data-test-id= selector engine
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;data-test-id=foo&#39;</span>);
+
+<span style="color:#75715e">// CSS and XPath selector engines are automatically detected
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;div&#39;</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;//html/body/div&#39;</span>);
+
+<span style="color:#75715e">// Find node by text substring
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;text=Hello w&#39;</span>);
+
+<span style="color:#75715e">// Explicit CSS and XPath notation
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;css=div&#39;</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;xpath=//html/body/div&#39;</span>);
+
+<span style="color:#75715e">// Only search light DOM, outside WebComponent shadow DOM:
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;css:light=div&#39;</span>);
+
+<span style="color:#75715e">// Click an element with text &#39;Sign Up&#39; inside of a #free-month-promo.
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;#free-month-promo &gt;&gt; text=Sign Up&#39;</span>);
+
+<span style="color:#75715e">// Capture textContent of a section that contains an element with text &#39;Selectors&#39;.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sectionText</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">$eval</span>(<span style="color:#e6db74">&#39;*css=section &gt;&gt; text=Selectors&#39;</span>, <span style="color:#a6e22e">e</span> =&gt; <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">textContent</span>);
+</code></pre></div><h3 id="execution-contexts-nodejs-and-browser">Execution contexts: Node.js and Browser</h3>
+<p>除了操作web页面上已有的界面元素，还可以直接在浏览器上下文中执行自定义脚本，这个就相当于在页面的开发者工具Console中执行脚本。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">status</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">evaluate</span>(<span style="color:#a6e22e">async</span> () =&gt; {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">fetch</span>(<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span>);
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">status</span>;
+});
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">text</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;some data&#39;</span>, <span style="color:#a6e22e">value</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span> };
+<span style="color:#75715e">// Pass |data| as a parameter.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">result</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">evaluate</span>(<span style="color:#a6e22e">data</span> =&gt; {
+  window.<span style="color:#a6e22e">myApp</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">data</span>);
+}, <span style="color:#a6e22e">data</span>);
+</code></pre></div><p>主要核心概念就上面这些了，看起来不难。另外官方还很贴心地提供了<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Fselectors.md&amp;q=">一系列指引</a>，参考这些应该可以解决编写脚本过程中遇到的各类问题。</p>
+<h2 id="heading-2">调试</h2>
+<p>脚本写好后，需要简单调试一下，以确保脚本逻辑的正确性。<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Fdebug.md&amp;q=">官方文档</a>也写得比较清楚了，只要会用chrome的开发者工具应该可以快速上手，这里就不赘述了。</p>
+<h2 id="heading-3">认证</h2>
+<p>很多web页面都有认证鉴权，只有通过认证，获得合法的认证状态才能进行进一步的操作，因此需要特意说明一下。</p>
+<h3 id="heading-4">自动登录</h3>
+<p>如果是简单的用户名密码认证，可以直接在脚本中完成登录。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">newPage</span>();
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;https://github.com/login&#39;</span>);
+
+<span style="color:#75715e">// Interact with login form
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;text=Login&#39;</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">fill</span>(<span style="color:#e6db74">&#39;input[name=&#34;login&#34;]&#39;</span>, <span style="color:#a6e22e">USERNAME</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">fill</span>(<span style="color:#e6db74">&#39;input[name=&#34;password&#34;]&#39;</span>, <span style="color:#a6e22e">PASSWORD</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">click</span>(<span style="color:#e6db74">&#39;text=Submit&#39;</span>);
+<span style="color:#75715e">// Verify app is logged in
+</span></code></pre></div><h3 id="heading-5">利用认证状态</h3>
+<p>有些web应用安全性做得比较好，采取的是双因素认证。这时可以先将认证状态保存下来，然后在脚本中利用该认证状态。</p>
+<p>下面的例子假设认证状态是保存在cookies中的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">webkit</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;playwright&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fs</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;fs&#39;</span>).<span style="color:#a6e22e">promises</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#a6e22e">ms</span>) {
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise((<span style="color:#a6e22e">resolve</span>) =&gt; {
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">ms</span>);
+    });
+}
+
+(<span style="color:#a6e22e">async</span> () =&gt; {
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">webkit</span>.<span style="color:#a6e22e">launch</span>({ <span style="color:#a6e22e">headless</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> });
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">context</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newContext</span>();
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">newPage</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;https://www.google.com.hk/&#39;</span>);
+    <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">这时手动完成web页面上的登录流程</span>
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">60000</span>);
+    <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">登录完毕后将上下文中的cookies写入文件</span>
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cookies</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">cookies</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">writeFile</span>(<span style="color:#e6db74">&#39;cookies.json&#39;</span>, <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">cookies</span>));
+    <span style="color:#75715e">// Close page
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">close</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">close</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">close</span>();
+})();
+</code></pre></div><p>接下来可以利用认证状态。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">webkit</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;playwright&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fs</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;fs&#39;</span>).<span style="color:#a6e22e">promises</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#a6e22e">ms</span>) {
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise((<span style="color:#a6e22e">resolve</span>) =&gt; {
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">ms</span>);
+    });
+}
+
+(<span style="color:#a6e22e">async</span> () =&gt; {
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">browser</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">webkit</span>.<span style="color:#a6e22e">launch</span>({ <span style="color:#a6e22e">headless</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span> });
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">context</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newContext</span>();
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cookiesStr</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">readFile</span>(<span style="color:#e6db74">&#39;cookies.json&#39;</span>, <span style="color:#e6db74">&#39;utf8&#39;</span>);
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">addCookies</span>(<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">cookiesStr</span>));
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">newPage</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;https://www.google.com.hk/&#39;</span>);
+    <span style="color:#75715e">// 在这里执行正常的逻辑
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Close page
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">close</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">close</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">close</span>();
+})();
+</code></pre></div><p><code>playwright</code>支持<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Fauth.md&amp;q=cookies">Cookies</a>、<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Fauth.md&amp;q=local-storage">Local storage</a>、<a href="https://playwright.dev/#version=v1.5.2&amp;path=docs%2Fauth.md&amp;q=session-storage">Session storage</a>多种保存认证状态的方式。</p>
+<h2 id="heading-6">代码封装</h2>
+<p>所有脚本逻辑都写在一起不便于关注点分离，因此官方建议对于逻辑较复杂的脚本，可以将在一个页面内的各个逻辑代码段封装为一个个类中的方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// models/Search.js
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SearchPage</span> {
+  <span style="color:#a6e22e">constructor</span>(<span style="color:#a6e22e">page</span>) {
+    <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">page</span>;
+  }
+  <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">navigate</span>() {
+    <span style="color:#a6e22e">await</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">page</span>.<span style="color:#66d9ef">goto</span>(<span style="color:#e6db74">&#39;https://bing.com&#39;</span>);
+  }
+  <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">search</span>(<span style="color:#a6e22e">text</span>) {
+    <span style="color:#a6e22e">await</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">fill</span>(<span style="color:#e6db74">&#39;[aria-label=&#34;Enter your search term&#34;]&#39;</span>, <span style="color:#a6e22e">text</span>);
+    <span style="color:#a6e22e">await</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">page</span>.<span style="color:#a6e22e">keyboard</span>.<span style="color:#a6e22e">press</span>(<span style="color:#e6db74">&#39;Enter&#39;</span>);
+  }
+}
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">SearchPage</span> };
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">// search.spec.js
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">SearchPage</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;./models/Search&#39;</span>);
+
+<span style="color:#75715e">// In the test
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">page</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">browser</span>.<span style="color:#a6e22e">newPage</span>();
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">searchPage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">SearchPage</span>(<span style="color:#a6e22e">page</span>);
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">searchPage</span>.<span style="color:#a6e22e">navigate</span>();
+<span style="color:#a6e22e">await</span> <span style="color:#a6e22e">searchPage</span>.<span style="color:#a6e22e">search</span>(<span style="color:#e6db74">&#39;search query&#39;</span>);
+</code></pre></div><h2 id="heading-7">进一步思考</h2>
+<p><code>playwright</code>的介绍差不多就上面这些了，可以看出来这些功能之前<code>selenium-webdriver</code>也都可以提供，但无疑<code>playwright</code>做得更加易用了，特别是可以自动录制用户的交互行为，直接生成脚本，这个就很强了。</p>
+<p>再想一想，平时开发过程中Android UI自动化测试脚本的编写也是比较程式化的，这个是否可以有一个像<code>playwright</code>之类的框架自动生成脚本？看了下暂时是没有的，这是个方向。</p>
+<h2 id="heading-8">参考</h2>
+<ol>
+<li><a href="https://playwright.dev/#?path=docs/README.md">https://playwright.dev/#?path=docs/README.md</a></li>
+<li><a href="https://github.com/microsoft/playwright-cli">https://github.com/microsoft/playwright-cli</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-11-01</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/playwright/">playwright</a>
+          
+          <a href="/tags/es6/">es6</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">TypeScript项目小结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/10/%E5%8A%A8%E6%89%8B%E5%86%99%E4%B8%AA%E7%8E%A9%E5%85%B7%E7%BC%96%E8%AF%91%E5%99%A8/">
+            <span class="next-text nav-default">动手写个玩具编译器</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

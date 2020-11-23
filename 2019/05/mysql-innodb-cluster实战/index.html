@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MySQL InnoDB Cluster实战 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="MySQL InnoDB Cluster实战" />
+<meta property="og:description" content="对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/" />
+<meta property="article:published_time" content="2019-05-26T20:14:00+08:00" />
+<meta property="article:modified_time" content="2019-05-26T20:14:00+08:00" />
+<meta itemprop="name" content="MySQL InnoDB Cluster实战">
+<meta itemprop="description" content="对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，">
+<meta itemprop="datePublished" content="2019-05-26T20:14:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-05-26T20:14:00&#43;08:00" />
+<meta itemprop="wordCount" content="3098">
+
+
+
+<meta itemprop="keywords" content="mysql,vagrant,ansible," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MySQL InnoDB Cluster实战"/>
+<meta name="twitter:description" content="对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">MySQL InnoDB Cluster实战</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-05-26 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 3098 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mysql-innodb-cluster">MySQL InnoDB Cluster简介</a></li>
+    <li><a href="#mysql-innodb-cluster-1">搭建MySQL InnoDB Cluster</a>
+      <ul>
+        <li><a href="#heading">安装软件包</a></li>
+        <li><a href="#heading-1">配置主机名称映射</a></li>
+        <li><a href="#root">修改root密码</a></li>
+        <li><a href="#heading-2">配置本地实例</a></li>
+        <li><a href="#mysql-innodb-cluster-2">初始化MySQL InnoDB Cluster</a></li>
+        <li><a href="#mysql-router">初始化mysql-router</a></li>
+        <li><a href="#heading-3">部署验证</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">运维中可能遇到的问题</a>
+      <ul>
+        <li><a href="#heading-5">重启节点后需要手动重新加入集群</a></li>
+        <li><a href="#heading-6">集群所有节点发生重启</a></li>
+        <li><a href="#heading-7">脑裂场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">总结</a></li>
+    <li><a href="#heading-9">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，集群目前的状况不太清晰明确，发生故障转移时经常需要人工参与。这周使用<a href="https://github.com/oracle/mysql-operator">mysql-operator</a>，发现这里已经使用了MySQL官方推出的一套完整的、高可用的MySQL解决方案-<a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-innodb-cluster-introduction.html">MySQL InnoDB Cluster</a>，这绝对是MySQL运维工程师的福音，这里将一些研究过程中查阅的资料记录一下。</p>
+<h2 id="mysql-innodb-cluster">MySQL InnoDB Cluster简介</h2>
+<p>MySQL InnoDB Cluster 是最新GA的MySQL高可用方案，利用MySQL Group Replication和MySQL Shell、MySQL Router可以轻松搭建强壮的高可用方案。</p>
+<p>MySQL Shell 是新的mysql 客户端工具支持x protocol和mysql protocol，具备JavaScript和python可编程能力，作为搭建InnoDB Cluster管理工具。</p>
+<p>MySQL Router 是访问路由转发中间件，提供应用程序访问的failover能力。</p>
+<blockquote>
+<p>MySQL InnoDB cluster provides a complete high availability solution for MySQL. <a href="https://dev.mysql.com/doc/mysql-shell/8.0/en/">MySQL Shell</a> includes AdminAPI which enables you to easily configure and administer a group of at least three MySQL server instances to function as an InnoDB cluster. Each MySQL server instance runs MySQL Group Replication, which provides the mechanism to replicate data within InnoDB clusters, with built-in failover. AdminAPI removes the need to work directly with Group Replication in InnoDB clusters, but for more information see <a href="https://dev.mysql.com/doc/refman/5.7/en/group-replication.html">Chapter 17, <em>Group Replication</em></a> which explains the details. <a href="https://dev.mysql.com/doc/mysql-router/8.0/en/">MySQL Router</a> can automatically configure itself based on the cluster you deploy, connecting client applications transparently to the server instances. In the event of an unexpected failure of a server instance the cluster reconfigures automatically. In the default single-primary mode, an InnoDB cluster has a single read-write server instance - the primary. Multiple secondary server instances are replicas of the primary. If the primary fails, a secondary is automatically promoted to the role of primary. MySQL Router detects this and forwards client applications to the new primary. Advanced users can also configure a cluster to have multiple-primaries.</p>
+<p><img src="/images/20190526/innodb_cluster_overview.png" alt="img"></p>
+</blockquote>
+<p>上面这张图看着比较清楚，通过MySQL Shell可以配置出一个高可用自动进行故障转移的MySQL InnoDB Cluster，在后续运维过程中也可以通过MySQL Shell对集群进行状态监控及管理维护。通过MySQL Router向应用层屏蔽底层集群的细节，以应用层将普通的MySQL协议访问集群。</p>
+<p>MySQL Group Replication 是最新GA的同步复制方式，具有以下特点：</p>
+<ul>
+<li>支持单主和多主模式</li>
+<li>基于Paxos算法，实现数据复制的一致性</li>
+<li>插件化设计，支持插件检测，新增节点小于集群当前节点主版本号，拒绝加入集群，大于则加入，但无法作为主节点</li>
+<li>没有第三方组件依赖</li>
+<li>支持全链路SSL通讯</li>
+<li>支持IP白名单</li>
+<li>不依赖网络多播</li>
+</ul>
+<h2 id="mysql-innodb-cluster-1">搭建MySQL InnoDB Cluster</h2>
+<p>这里准备了3台虚拟机<code>mysql-host1</code>、<code>mysql-host2</code>、<code>mysql-host3</code>，IP分别为<code>192.168.33.21</code>、<code>192.168.33.22</code>、<code>192.168.33.23</code>。</p>
+<h3 id="heading">安装软件包</h3>
+<p>第一步是在三台虚拟机上均安装mysql-community-server、mysql-shell、mysql-router软件包。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 配置mysql的yum源</span>
+$ yum install -y https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+<span style="color:#75715e"># 安装</span>
+$ yum install -y mysql-community-server mysql-shell mysql-router
+</code></pre></div><h3 id="heading-1">配置主机名称映射</h3>
+<p>为保证三台虚拟机上可正常通过名称解析到对方的IP，这里将主机名称映射写入hosts文件中</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt;&gt; /etc/hosts
+</span><span style="color:#e6db74">192.168.33.21 mysql-host1
+</span><span style="color:#e6db74">192.168.33.22 mysql-host2
+</span><span style="color:#e6db74">192.168.33.23 mysql-host3
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><h3 id="root">修改root密码</h3>
+<p>为了后续操作方便，这里修改三台虚拟机上MySQL的root密码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 首先得到初始的root密码</span>
+$ systemctl start mysqld
+$ ORIGINAL_ROOT_PASSWORD<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>awk  <span style="color:#e6db74">&#39;/temporary password/{print $NF}&#39;</span> /var/log/mysqld.log<span style="color:#66d9ef">)</span>
+<span style="color:#75715e"># 这里将mysql的root密码修改为R00T@mysql，这个密码符合复杂度要求</span>
+$ MYSQL_PWD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$ORIGINAL_ROOT_PASSWORD<span style="color:#e6db74">&#34;</span> mysql --connect-expired-password -e <span style="color:#e6db74">&#34;ALTER USER &#39;root&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;R00T@mysql&#39;;&#34;</span>
+<span style="color:#75715e"># 顺便允许mysql可在其它主机登录过来</span>
+$ MYSQL_PWD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$ORIGINAL_ROOT_PASSWORD<span style="color:#e6db74">&#34;</span> mysql --connect-expired-password -e <span style="color:#e6db74">&#34;CREATE USER &#39;root&#39;@&#39;%&#39; IDENTIFIED WITH mysql_native_password BY &#39;R00T@mysql&#39;;&#34;</span>
+$ MYSQL_PWD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$ORIGINAL_ROOT_PASSWORD<span style="color:#e6db74">&#34;</span> mysql --connect-expired-password -e <span style="color:#e6db74">&#34;GRANT ALL ON *.* TO &#39;root&#39;@&#39;%&#39; WITH GRANT OPTION; FLUSH PRIVILEGES;&#34;</span>
+</code></pre></div><h3 id="heading-2">配置本地实例</h3>
+<p>MySQL InnoDB Cluster底层依赖Group Replication模式，而配置Group Replication模式首先要通过<code>dba.configureLocalInstance</code>设置每台虚拟机上的本地实例必要参数并持久化配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 通过mysqlsh即可轻松完成本机实例的配置</span>
+$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt; config_local_instance.js
+</span><span style="color:#e6db74">dba.configureLocalInstance(&#39;root@localhost:3306&#39;, {&#39;password&#39;: &#39;R00T@mysql&#39;, &#39;interactive&#39;: false})
+</span><span style="color:#e6db74">EOF</span>
+$ mysqlsh --no-password --js --file<span style="color:#f92672">=</span>config_local_instance.js
+<span style="color:#75715e"># 重启后才能生效</span>
+$ systemctl restart mysqld
+<span style="color:#75715e"># 再检查一下本地实例配置的状况</span>
+$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt; config_local_instance.js
+</span><span style="color:#e6db74">dba.checkLocalInstance(&#39;root@localhost:3306&#39;, {&#39;password&#39;: &#39;R00T@mysql&#39;, &#39;interactive&#39;: false})
+</span><span style="color:#e6db74">EOF</span>
+$ mysqlsh --no-password --js --file<span style="color:#f92672">=</span>check_local_instance.js
+</code></pre></div><h3 id="mysql-innodb-cluster-2">初始化MySQL InnoDB Cluster</h3>
+<p>只需在mysql-host1这台虚拟机上进行以下操作就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt; init_cluster.js
+</span><span style="color:#e6db74">shell.connect(&#39;root@localhost:3306&#39;, &#39;R00T@mysql&#39;)
+</span><span style="color:#e6db74">dba.createCluster(&#39;mycluster&#39;, {&#39;localAddress&#39;: &#39;192.168.33.21&#39;})
+</span><span style="color:#e6db74">var cluster=dba.getCluster(&#39;mycluster&#39;)
+</span><span style="color:#e6db74">cluster.addInstance(&#39;root@192.168.33.22:3306&#39;, {&#39;localAddress&#39;: &#39;192.168.33.22&#39;, &#39;password&#39;: &#39;R00T@mysql&#39;})
+</span><span style="color:#e6db74">cluster.addInstance(&#39;root@192.168.33.23:3306&#39;, {&#39;localAddress&#39;: &#39;192.168.33.23&#39;, &#39;password&#39;: &#39;R00T@mysql&#39;})
+</span><span style="color:#e6db74">EOF</span>
+$ mysqlsh --no-password --js --file<span style="color:#f92672">=</span>init_cluster.js
+</code></pre></div><h3 id="mysql-router">初始化mysql-router</h3>
+<p>为了向应用层屏蔽底层集群的细节，我们还可以在三台虚拟机上均部署mysql-router。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 以当前集群信息创建mysql-router的配置信息，注意这里密码R00T@mysql被编码为R00T%40mysql</span>
+$ mysqlrouter --bootstrap root:R00T%40mysql@192.168.33.21:3306 --user<span style="color:#f92672">=</span>mysqlrouter
+<span style="color:#75715e"># 重启mysqlrouter服务</span>
+$ systemctl restart mysqlrouter
+</code></pre></div><h3 id="heading-3">部署验证</h3>
+<p>至此整套MySQL InnoDB Cluster就部署好了，我们在其它节点以MySQL协议即可访问该MySQL集群。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mysql -h192.168.33.21 -P3306 -uroot -pR00T@mysql
+</code></pre></div><p>因为三台虚拟机上均安装了mysql-router，因此这里的IP三台虚拟机的IP均可，更好的办法用haproxy或nginx再做一下4层代理，由vip或LVS保证负载均衡器无单点故障，这个就是常规方案，按下不表了。</p>
+<p>这里还以Vagrant及Ansible脚本的方式，整理了上述部署方案，参见<a href="https://github.com/jeremyxu2010/vagrant_files/tree/master/mysql-ha-cluster">这里</a>。</p>
+<h2 id="heading-4">运维中可能遇到的问题</h2>
+<p>同样在运维MySQL InnoDB Cluster时还是会遇到一些需要手工处理的场景，这里简要列举一下。</p>
+<h3 id="heading-5">重启节点后需要手动重新加入集群</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">mysql-js&gt; var cluster = dba.getCluster(&#34;mycluster&#34;)
+mysql-js&gt; cluster.status()
+{
+...
+            &#34;192.168.33.23:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.23:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;(MISSING)&#34;
+            }
+        }
+    }
+}
+mysql-js&gt; cluster.rejoinInstance(&#39;root@192.168.33.23:3306&#39;)
+mysql-js&gt; cluster.status()
+{
+...
+            &#34;192.168.33.23:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.23:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;ONLINE&#34;
+            }
+        }
+    }
+}
+</code></pre></div><h3 id="heading-6">集群所有节点发生重启</h3>
+<p>当集群的所有节点都offline，直接获取集群信息失败，如何重新恢复集群</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">mysql-js&gt; var cluster=dba.getCluster(&#39;mycluster&#39;)
+Dba.getCluster: This function is not available through a session to a standalone instance (RuntimeError)
+</code></pre></div><p>执行rebootClusterFromCompleteOutage命令，可恢复集群</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">mysql-js&gt; dba.rebootClusterFromCompleteOutage(&#39;mycluster&#39;)
+Reconfiguring the cluster &#39;mycluster&#39; from complete outage...
+The instance &#39;192.168.33.22:3306&#39; was part of the cluster configuration.
+Would you like to rejoin it to the cluster? [y|N]: y
+The instance &#39;192.168.33.23:3306&#39; was part of the cluster configuration.
+Would you like to rejoin it to the cluster? [y|N]: y
+The cluster was successfully rebooted.
+</code></pre></div><h3 id="heading-7">脑裂场景</h3>
+<p>当集群中有部分节点出现UNREACHABLE状态，此时集群无法做出决策，，会出现以下局面，此时只剩下一个活跃节点，此节点只能提供查询，无法写入，执行写入操作会hang住。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">mysql-js&gt; cluster.status()
+{
+    &#34;clusterName&#34;: &#34;mycluster&#34;,
+    &#34;defaultReplicaSet&#34;: {
+        &#34;name&#34;: &#34;default&#34;,
+        &#34;primary&#34;: &#34;192.168.33.21:3306&#34;,
+        &#34;status&#34;: &#34;NO_QUORUM&#34;,
+        &#34;statusText&#34;: &#34;Cluster has no quorum as visible from &#39;192.168.33.21:3306&#39; and cannot process write transactions. 2 members are not active&#34;,
+        &#34;topology&#34;: {
+            &#34;192.168.33.21:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.21:3306&#34;,
+                &#34;mode&#34;: &#34;R/W&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;ONLINE&#34;
+            },
+            &#34;192.168.33.22:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.22:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;UNREACHABLE&#34;
+            },
+            &#34;192.168.33.23:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.23:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;(MISSING)&#34;
+            }
+        }
+    }
+}
+</code></pre></div><p>修复这种状态，需要执行forceQuorumUsingPartitionOf指定当前活跃节点(如果是多个则选择primary node)，此时活跃节点可以提供读写操作，然后将其他节点加入此集群。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">mysql-js&gt; cluster.forceQuorumUsingPartitionOf(&#39;root@192.168.33.21:3306&#39;)
+Restoring replicaset &#39;default&#39; from loss of quorum, by using the partition composed of [192.168.33.21:3306]
+Please provide the password for &#39;root@192.168.33.21:3306&#39;:
+Restoring the InnoDB cluster ...
+The InnoDB cluster was successfully restored using the partition from the instance &#39;root@10.186.23.94:3306&#39;.
+WARNING: To avoid a split-brain scenario, ensure that all other members of the replicaset are removed or joined back to the group that was restored.
+mysql-js&gt; cluster.status()
+{
+    &#34;clusterName&#34;: &#34;mycluster&#34;,
+    &#34;defaultReplicaSet&#34;: {
+        &#34;name&#34;: &#34;default&#34;,
+        &#34;primary&#34;: &#34;192.168.33.21:3306&#34;,
+        &#34;status&#34;: &#34;OK_NO_TOLERANCE&#34;,
+        &#34;statusText&#34;: &#34;Cluster is NOT tolerant to any failures. 2 members are not active&#34;,
+        &#34;topology&#34;: {
+            &#34;192.168.33.21:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.21:3306&#34;,
+                &#34;mode&#34;: &#34;R/W&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;ONLINE&#34;
+            },
+            &#34;192.168.33.22:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.22:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;(MISSING)&#34;
+            },
+            &#34;192.168.33.23:3306&#34;: {
+                &#34;address&#34;: &#34;192.168.33.23:3306&#34;,
+                &#34;mode&#34;: &#34;R/O&#34;,
+                &#34;readReplicas&#34;: {},
+                &#34;role&#34;: &#34;HA&#34;,
+                &#34;status&#34;: &#34;(MISSING)&#34;
+            }
+        }
+    }
+}
+mysql-js&gt; cluster.rejoinInstance(&#39;root@192.168.33.22:3306&#39;)
+mysql-js&gt; cluster.rejoinInstance(&#39;root@192.168.33.23:3306&#39;)
+</code></pre></div><p><strong>节点有哪状态</strong></p>
+<ul>
+<li>ONLINE - 节点状态正常。</li>
+<li>OFFLINE - 实例在运行，但没有加入任何Cluster。</li>
+<li>RECOVERING - 实例已加入Cluster，正在同步数据。</li>
+<li>ERROR - 同步数据发生异常。</li>
+<li>UNREACHABLE - 与其他节点通讯中断，可能是网络问题，可能是节点crash。</li>
+<li>MISSING 节点已加入集群，但未启动group replication</li>
+</ul>
+<p><strong>集群有哪些状态</strong></p>
+<ul>
+<li>OK – 所有节点处于online状态，有冗余节点。</li>
+<li>OK_PARTIAL – 有节点不可用，但仍有冗余节点。</li>
+<li>OK_NO_TOLERANCE – 有足够的online节点，但没有冗余，例如：两个节点的Cluster，其中一个挂了，集群就不可用了。</li>
+<li>NO_QUORUM – 有节点处于online状态，但达不到法定节点数，此状态下Cluster无法写入，只能读取。</li>
+<li>UNKNOWN – 不是online或recovering状态，尝试连接其他实例查看状态。</li>
+<li>UNAVAILABLE – 组内节点全是offline状态，但实例在运行，可能实例刚重启还没加入Cluster。</li>
+</ul>
+<h2 id="heading-8">总结</h2>
+<p>总的来说，MySQL InnoDB Cluster相对于之前的集群方案还是要方便不少的，不过手工部署还是挺费时间的，看官们如果对手工部署感兴趣，也可以参考我整理出的<a href="https://github.com/jeremyxu2010/vagrant_files/tree/master/mysql-ha-cluster/ansible">anisble脚本</a>，在Kubernetes环境快速部署MySQL InnoDB Cluster还是推荐直接使用<a href="https://github.com/oracle/mysql-operator">mysql-operator</a>。</p>
+<h2 id="heading-9">参考</h2>
+<ol>
+<li><a href="https://github.com/oracle/mysql-operator">https://github.com/oracle/mysql-operator</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/mysql-innodb-cluster-introduction.html">https://dev.mysql.com/doc/refman/5.7/en/mysql-innodb-cluster-introduction.html</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/44259581">https://zhuanlan.zhihu.com/p/44259581</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-05-26</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mysql/">mysql</a>
+          
+          <a href="/tags/vagrant/">vagrant</a>
+          
+          <a href="/tags/ansible/">ansible</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">kubernetes中基础服务排障记</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/">
+            <span class="next-text nav-default">性能测试工具集锦</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

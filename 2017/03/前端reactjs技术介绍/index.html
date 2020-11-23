@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>前端ReactJS技术介绍 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="WEB应用程序基本架构 胖服务端 这个架构的特点： 后台良好的分层模型 页面由后台输出至浏览器，一般采用JSP、PHP等动态页面技术处理页面的动态内" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/03/%E5%89%8D%E7%AB%AFreactjs%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="前端ReactJS技术介绍" />
+<meta property="og:description" content="WEB应用程序基本架构 胖服务端 这个架构的特点： 后台良好的分层模型 页面由后台输出至浏览器，一般采用JSP、PHP等动态页面技术处理页面的动态内" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/03/%E5%89%8D%E7%AB%AFreactjs%E6%8A%80%E6%9C%AF%E4%BB%8B%E7%BB%8D/" />
+<meta property="article:published_time" content="2017-03-09T18:00:00+08:00" />
+<meta property="article:modified_time" content="2017-03-09T18:00:00+08:00" />
+<meta itemprop="name" content="前端ReactJS技术介绍">
+<meta itemprop="description" content="WEB应用程序基本架构 胖服务端 这个架构的特点： 后台良好的分层模型 页面由后台输出至浏览器，一般采用JSP、PHP等动态页面技术处理页面的动态内">
+<meta itemprop="datePublished" content="2017-03-09T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-03-09T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="4076">
+
+
+
+<meta itemprop="keywords" content="reactjs,javascript," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="前端ReactJS技术介绍"/>
+<meta name="twitter:description" content="WEB应用程序基本架构 胖服务端 这个架构的特点： 后台良好的分层模型 页面由后台输出至浏览器，一般采用JSP、PHP等动态页面技术处理页面的动态内"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">前端ReactJS技术介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-09 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4076 字 </span>
+        <span class="more-meta"> 预计阅读 9 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#web">WEB应用程序基本架构</a>
+      <ul>
+        <li><a href="#heading">胖服务端</a></li>
+        <li><a href="#heading-1">胖客户端</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">胖客户端架构的优点</a></li>
+    <li><a href="#heading-3">前端架构模式</a>
+      <ul>
+        <li><a href="#mvc">前端架构模式－MVC</a></li>
+        <li><a href="#mvp">前端架构模式－MVP</a></li>
+        <li><a href="#mvvm">前端架构模式－MVVM</a></li>
+      </ul>
+    </li>
+    <li><a href="#reactjs">ReactJS介绍</a>
+      <ul>
+        <li><a href="#heading-4">简介</a></li>
+        <li><a href="#heading-5">原理</a></li>
+        <li><a href="#heading-6">特点</a></li>
+        <li><a href="#heading-7">关键概念</a></li>
+        <li><a href="#heading-8">简单示例</a></li>
+        <li><a href="#react">React简单的教程</a></li>
+        <li><a href="#heading-9">缺点</a></li>
+        <li><a href="#heading-10">适用场景</a></li>
+        <li><a href="#heading-11">一些小坑</a></li>
+      </ul>
+    </li>
+    <li><a href="#reactjs-1">ReactJS在老旧项目中的应用</a>
+      <ul>
+        <li><a href="#heading-12">限制</a></li>
+        <li><a href="#heading-13">目前的方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-14">其它相关技术资料</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="web">WEB应用程序基本架构</h2>
+<h3 id="heading">胖服务端</h3>
+<p><img src="/images/20170309/fat_server.png" alt="fat_server.png"></p>
+<p>这个架构的特点：</p>
+<ul>
+<li>后台良好的分层模型</li>
+<li>页面由后台输出至浏览器，一般采用JSP、PHP等动态页面技术处理页面的动态内容</li>
+</ul>
+<p>一些改进：</p>
+<ul>
+<li>引入AJAX，局部更新数据，避免整页面刷新</li>
+<li>后端使用模板技术，帮助输出页面</li>
+<li>前端使用模板技术，帮助构造html页面片断</li>
+<li>前端形成了一些CSS框架，如bootstrap</li>
+<li>前端形成了一些JS工具方法或常用组件，如jQuery, jQuery插件, ExtJS, YUI等</li>
+</ul>
+<h3 id="heading-1">胖客户端</h3>
+<p><img src="/images/20170309/fat_client.png" alt="fat_client.png"></p>
+<p>这个架构的特点：</p>
+<ul>
+<li>后端跟上面一样良好的分层模型，但成了仅提供API接口的API Server</li>
+<li>前端处理与显现相关的大部分逻辑，包括页面路由、数据请求、组件数据绑定、业务逻辑串联等</li>
+</ul>
+<h2 id="heading-2">胖客户端架构的优点</h2>
+<ul>
+<li>分离前后端关注点，前端负责界面显示，后端负责数据存储和计算，各司其职，不会把前后端的逻辑混杂在一起</li>
+<li>前端页面组件化，提高代码重复利用率，简化了开发，适合大型的项目</li>
+<li>减轻服务器压力，服务器只用出数据就可以，不用管展示逻辑和页面合成，吞吐能力会提高几倍</li>
+<li>同一套后端程序代码，不用修改就可以用于Web界面、手机、平板等多种客户端</li>
+</ul>
+<p>前端负责的逻辑这么复杂了，为了便于管理，自然要进行必要的分层。</p>
+<h2 id="heading-3">前端架构模式</h2>
+<h3 id="mvc">前端架构模式－MVC</h3>
+<p><img src="/images/20170309/web_mvc.png" alt="web_mvc.png"></p>
+<ul>
+<li>用户可以向 View 发送指令（DOM 事件），再由 View 直接要求 Model 改变状态。</li>
+<li>用户也可以直接向 Controller 发送指令（改变 URL 触发 hashChange 事件），再由 Controller 发送给 View。</li>
+<li>Controller 非常薄，只起到路由的作用，而 View 非常厚，业务逻辑都部署在 View。所以，Backbone 索性取消了 Controller，只保留一个 Router（路由器） 。</li>
+</ul>
+<p>典型代表：backbone之类的前端框架</p>
+<h3 id="mvp">前端架构模式－MVP</h3>
+<p><img src="/images/20170309/web_mvp.png" alt="web_mvp.png"></p>
+<ul>
+<li>MVP 模式将 Controller 改名为 Presenter，同时改变了通信方向。</li>
+<li>各部分之间的通信，都是双向的。</li>
+<li>View 与 Model 不发生联系，都通过 Presenter 传递。</li>
+<li>View 非常薄，不部署任何业务逻辑，称为&quot;被动视图&rdquo;（Passive View），即没有任何主动性，而 Presenter非常厚，所有逻辑都部署在那里。</li>
+</ul>
+<p>这个在Android开发中用得比较多。</p>
+<h3 id="mvvm">前端架构模式－MVVM</h3>
+<p><img src="/images/20170309/web_mvvm.png" alt="web_mvvm.png"></p>
+<p>MVVM 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然。这种双向绑定功能一般借助于ReactJS、VueJS、AngularJS之类的UI框架。</p>
+<h2 id="reactjs">ReactJS介绍</h2>
+<h3 id="heading-4">简介</h3>
+<p>React (有时叫 React.js 或 ReactJS) 是一个为数据提供渲染为 HTML 的视图的开源 JavaScript 库。React 视图通常采用包含以自定义 HTML 标记规定的其他组件的组件渲染。React 为程序员提供了一种子组件不能直接影响外层组件 (&ldquo;data flows down&rdquo;) 的模型，数据改变时对 HTML 文档的有效更新，和现代单页应用中组件之间干净的分离。它由 Facebook, Instagram 和一个由个人开发者和企业组成的社群维护，它于 2013 年 5 月在 JSConf US 开源。</p>
+<h3 id="heading-5">原理</h3>
+<p>在Web开发中，我们总需要将变化的数据实时反应到UI上，这时就需要对DOM进行操作，而复杂或频繁的DOM操作通常是性能瓶颈产生的原因。</p>
+<p>React为此引入了<a href="http://www.alloyteam.com/2015/10/react-virtual-analysis-of-the-dom/">虚拟DOM（Virtual DOM）</a>的机制：在浏览器端用Javascript实现了一套DOM API。基于React进行开发时所有的DOM构造都是通过虚拟DOM进行，每当数据变化时，React都会重新构建整个DOM树，然后React将当前整个DOM树和上一次的DOM树进行对比，得到DOM结构的区别，然后仅仅将需要变化的部分进行实际的浏览器DOM更新。而且React能够批处理虚拟DOM的刷新，在一个事件循环（Event Loop）内的两次数据变化会被合并。</p>
+<p>尽管每一次都需要构造完整的虚拟DOM树，但是因为虚拟DOM是内存数据，性能是极高的，而对实际DOM进行操作的仅仅是Diff部分，因而能达到提高性能的目的。这样，在保证性能的同时，开发者将不再需要关注某个数据的变化如何更新到一个或多个具体的DOM元素，而只需要关心在任意一个数据状态下，整个界面是如何Render的。</p>
+<p>这里有一个<a href="http://chaoxi.me/react.js/%E6%B5%85%E8%B0%88%E5%89%8D%E7%AB%AF/%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3/2017/02/20/In-depth-react-design-ideas.html">更通俗的解释</a></p>
+<p>如果对虚拟DOM的工作方式感兴趣，可以看<a href="https://www.zhihu.com/question/29504639">这里</a></p>
+<h3 id="heading-6">特点</h3>
+<ul>
+<li>简单</li>
+</ul>
+<p>仅仅只要表达出你的应用程序在任一个时间点应该长的样子，然后当底层的数据变了，React 会自动处理所有用户界面的更新。</p>
+<ul>
+<li>响应式 (Declarative)</li>
+</ul>
+<p>数据变化后，React 概念上与点击“刷新”按钮类似，但仅会更新变化的部分。</p>
+<ul>
+<li>构建可组合的组件</li>
+</ul>
+<p>React 易于构建可复用的组件。事实上，通过 React 你唯一要做的事情就是构建组件。得益于其良好的封装性，组件使代码复用、测试和关注分离（separation of concerns）更加简单。</p>
+<ul>
+<li>学习一次，到处都可以使</li>
+</ul>
+<p>React并没有依赖其它的技术栈，因此可以在老旧项目中使用ReactJS开发新功能，不需要重写存在的代码。React可以在浏览器端或服务端进行渲染，甚至借助于React Native，可在移动设备中渲染。</p>
+<h3 id="heading-7">关键概念</h3>
+<ul>
+<li>渲染函数</li>
+</ul>
+<p><code>ReactDOM.render</code>是 React 的最基本方法，用于将模板转为HTML语言，并插入指定的DOM节点。用于将模板转为HTML语言，并插入指定的 DOM 节点</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;script src=&quot;../build/react.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;../build/react-dom.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;../build/browser.min.js&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+    &lt;script type=&quot;text/babel&quot;&gt;
+      ReactDOM.render(
+        &lt;h1&gt;Hello, world!&lt;/h1&gt;,
+        document.getElementById('root')
+      );
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><ul>
+<li>JSX语法</li>
+</ul>
+<p>HTML语言直接写在JavaScript语言之中，不加任何引号，这就是JSX的语法，它允许HTML与JavaScript的混写。</p>
+<p>JSX的规则是：遇到HTML标签（以<code>&lt;</code>开头），就用HTML规则解析；遇到代码块（以<code>{</code>开头），就用 JavaScript 规则解析。</p>
+<p>这种写法虽然将模板直接写到JavaScript中了，但带来很多灵活，不需要去学特定的标签语法，会JS就成。比如下面的代码：</p>
+<pre><code>var names = ['Alice', 'Emily', 'Kate'];
+
+ReactDOM.render(
+  &lt;div&gt;
+  {
+    names.map(function (name) {
+      return &lt;div&gt;Hello, {name}!&lt;/div&gt;
+    })
+  }
+  &lt;/div&gt;,
+  document.getElementById('example')
+);
+</code></pre><ul>
+<li>组件</li>
+</ul>
+<p>React 允许将代码封装成组件（component），然后像插入普通 HTML 标签一样，在网页中插入这个组件。所有组件类都必须有自己的<code>render</code>方法，用于输出组件。组件的用法与原生的HTML标签完全一致，可以任意加入属性。组件的属性可以在组件类的<code>this.props</code>对象上获取。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HelloWorld</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+    <span style="color:#a6e22e">render</span>(){
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">Hello</span>, {<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">name</span>}<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span>
+    }
+}
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Container</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+    <span style="color:#a6e22e">render</span>(){
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">HelloWorld</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;world&#34;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">H</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">W</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">&gt;</span>
+    }
+}
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Container</span> <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>,
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;root&#39;</span>)
+);
+
+</code></pre></div><ul>
+<li>组件状态</li>
+</ul>
+<p>组件免不了要与用户互动，React将组件看成是一个状态机，一开始有一个初始状态，然后用户互动，导致状态变化，从而触发重新渲染UI。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LikeButton</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+    <span style="color:#a6e22e">constructor</span>(<span style="color:#a6e22e">props</span>){
+        <span style="color:#66d9ef">super</span>(<span style="color:#a6e22e">props</span>);
+        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">state</span> <span style="color:#f92672">=</span> {<span style="color:#a6e22e">liked</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>};
+    }
+
+    <span style="color:#a6e22e">handleClick</span>() {
+        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">setState</span>({<span style="color:#a6e22e">liked</span><span style="color:#f92672">:</span> <span style="color:#f92672">!</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">liked</span>});
+    }
+    <span style="color:#a6e22e">render</span>() {
+        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">state</span>.<span style="color:#a6e22e">liked</span> <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;like&#39;</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;haven\&#39;t liked&#39;</span>;
+        <span style="color:#66d9ef">return</span> (
+          <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">p</span> <span style="color:#a6e22e">onClick</span><span style="color:#f92672">=</span>{() =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">handleClick</span>()}<span style="color:#f92672">&gt;</span>
+            <span style="color:#a6e22e">You</span> {<span style="color:#a6e22e">text</span>} <span style="color:#66d9ef">this</span>. <span style="color:#a6e22e">Click</span> <span style="color:#a6e22e">to</span> <span style="color:#a6e22e">toggle</span>.
+          <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">&gt;</span>
+        );
+    }
+}
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">LikeButton</span> <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>,
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;example&#39;</span>)
+);
+</code></pre></div><ul>
+<li>组件的生命周期</li>
+</ul>
+<p>组件的生命周期分成三个状态：</p>
+<pre><code>Mounting：已插入真实 DOM
+Updating：正在被重新渲染
+Unmounting：已移出真实 DOM
+</code></pre><p>React 为每个状态都提供了两种处理函数，will 函数在进入状态之前调用，did 函数在进入状态之后调用，三种状态共计五种处理函数。</p>
+<pre><code>componentWillMount()
+componentDidMount()
+componentWillUpdate(object nextProps, object nextState)
+componentDidUpdate(object prevProps, object prevState)
+componentWillUnmount()
+</code></pre><p>比如说实际编码过程中，我们经常会在<code>componentDidMount</code>方法加入逻辑：发出AJAX请求，请求后台数据后修改组件状态。</p>
+<h3 id="heading-8">简单示例</h3>
+<p><img src="/images/20170309/react_sample.png" alt="react_sample.png"></p>
+<p>更多示例代码见 <code>https://facebook.github.io/react</code></p>
+<p>我自己写的一个SSM+ReactJS+Redux工程示例：<code>http://git.oschina.net/jeremy-xu/ssm-scaffold</code></p>
+<h3 id="react">React简单的教程</h3>
+<p><code>http://www.ruanyifeng.com/blog/2015/03/react.html</code>
+<code>http://wiki.jikexueyuan.com/project/react/</code></p>
+<h3 id="heading-9">缺点</h3>
+<ul>
+<li>尽管可以省掉编译过程体验ReactJS的特性，但要完全发挥它的优点，还得依赖webpack之类的前端打包工具</li>
+<li>JSX语法，在javascript代码里写标签，很难让人接受</li>
+<li>相对于VueJS来说组件封装不够彻底，CSS部分还在外部文件里</li>
+<li>由于整个页面都是JS渲染起来的，产生SEO问题，现在可以通过Prerender等技术解决一部分</li>
+<li>初次加载耗时相对增多，现在可以通过服务端渲染解决一部分</li>
+<li>有一定门槛，对前端开发人员技能水平要求较高</li>
+</ul>
+<h3 id="heading-10">适用场景</h3>
+<p>一些后台管理、UI交互特别复杂、频繁操作DOM的页面</p>
+<h3 id="heading-11">一些小坑</h3>
+<ul>
+<li>
+<p>文档虽多，但因为历史原因，找到的文档有的是ES5语法，有的是ES6语法，造成了一些混乱。推荐使用ES6语法，多参考官方文档。同时也读一下<a href="http://bbs.reactnative.cn/topic/15/react-react-native-%E7%9A%84es5-es6%E5%86%99%E6%B3%95%E5%AF%B9%E7%85%A7%E8%A1%A8/2">两种语法的对照表</a></p>
+</li>
+<li>
+<p>如果要支持IE8，有一些额外操作要做，参考<a href="https://github.com/xcatliu/react-ie8">这里</a></p>
+</li>
+<li>
+<p>即使是HTML标准标签，在React里也变成React的组件了，要拿到组件对应的DOM对象，需用<code>ReactDOM.findDOMNode(componentInstance)</code>或<code>ReactDOM.findDOMNode(this.refs.compRef)</code></p>
+</li>
+<li>
+<p>React里的事件是模拟事件<code>SyntheticEvent</code>，它不是原生的DOM事件，支持的属性与方法见<a href="https://facebook.github.io/react/docs/events.html">这里</a></p>
+</li>
+<li>
+<p>ES6语法中，组件的方法<code>this</code>回归JavaScript的本意。这样当指定事件回调方法时，<code>this</code>很有可能指定的是触发事件的组件。可以用ES6里的箭头函数来解决这个问题。</p>
+</li>
+</ul>
+<h2 id="reactjs-1">ReactJS在老旧项目中的应用</h2>
+<h3 id="heading-12">限制</h3>
+<ul>
+<li>要与现有前端页面技术无缝衔接</li>
+<li>没有前端编译工具</li>
+<li>没有前端模块依赖工具，全凭script标签引入</li>
+</ul>
+<h3 id="heading-13">目前的方案</h3>
+<ul>
+<li>将常用的JS库文件（ReactJS库、组件库、工具库）一起使用script标签引入</li>
+<li>将用ReactJS书写的代码保存在单独的文件里</li>
+<li>使用babel在前端实时将ES6的ReactJS代码编译为ES5（这个导致页面初次渲染更慢了）</li>
+</ul>
+<p>比如一个实际的例子：</p>
+<p><code>test.jsp</code></p>
+<pre><code>&lt;c:set var=&quot;ctx&quot; value=&quot;${pageContext.request.contextPath}&quot;/&gt;
+&lt;body&gt;
+    &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+    &lt;!-- 喜欢使用lodash里一些工具方法，高效且实用 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/lodash.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- React的库文件 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/react.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/react-dom.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- 阿里出品，强大的React组件库 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/antd.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- 时间日期工具库 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/moment.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- Promise风格发送AJAX请求，避免javascript callback hell http://callbackhell.com/ --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/axios.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- 使用babel将ES6的代码在浏览器端翻译为ES5代码 --&gt;
+    &lt;script type=&quot;text/javascript&quot; src=&quot;${ctx}/libs/babel/browser.min.js&quot;&gt;&lt;/script&gt;
+    &lt;!-- 声明一个JS变量保存webapp上下文，以后发送AJAX请求时会用到 --&gt;
+    &lt;script type=&quot;text/javascript&quot;&gt;var __CTX_PATH__='${ctx}';&lt;/script&gt;
+    &lt;!-- 引入业务JSX文件 --&gt;
+    &lt;script type=&quot;text/babel&quot; src=&quot;${ctx}/scripts/business1.jsx&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+</code></pre><p><code>business1.jsx</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">React</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">React</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">ReactDOM</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">ReactDOM</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">axios</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">axios</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">antd</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">antd</span>;
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">_</span> <span style="color:#f92672">=</span> window.<span style="color:#a6e22e">_</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Demo1</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+    <span style="color:#a6e22e">render</span>(){
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">TODO</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span>
+    }
+}
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Demo1</span> <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>,
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;root&#39;</span>)
+);
+
+</code></pre></div><h2 id="heading-14">其它相关技术资料</h2>
+<ul>
+<li>语法类</li>
+</ul>
+<p>ES6教程    <code>http://es6.ruanyifeng.com/</code></p>
+<ul>
+<li>编译工具类</li>
+</ul>
+<p>Gulp教程    <code>http://www.gulpjs.com.cn/docs/</code>
+Webpack教程    <code>http://zhaoda.net/webpack-handbook/module-system.html</code>
+Browserify文档    <code>https://github.com/substack/node-browserify#usage</code>
+Babeljs使用教程    <code>https://babeljs.io/docs/setup/#installation</code></p>
+<ul>
+<li>实用工具函数库</li>
+</ul>
+<p>lodash文档  <code>http://lodashjs.com/docs/</code></p>
+<ul>
+<li>避免<code>js callback hell</code>利器</li>
+</ul>
+<p>Promise教程    <code>http://es6.ruanyifeng.com/#docs/promise</code>
+Axios教程      <code>https://www.kancloud.cn/yunye/axios/234845</code></p>
+<ul>
+<li>前端路由类</li>
+</ul>
+<p>React-Router教程    <code>https://react-guide.github.io/react-router-cn/</code></p>
+<ul>
+<li>React组件类</li>
+</ul>
+<p>Antd文档    <code>https://ant.design/docs/react/introduce-cn</code></p>
+<ul>
+<li>前端数据流框架</li>
+</ul>
+<p>Redux教程   <code>http://cn.redux.js.org/docs/basics/index.html</code></p>
+<ul>
+<li>优秀的对标者</li>
+</ul>
+<p>VueJS文档     <code>https://cn.vuejs.org/v2/guide/</code>
+Vuex文档      <code>https://vuex.vuejs.org/zh-cn/</code>
+element组件文档     <code>http://element.eleme.io/#/zh-CN/component/installation</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-03-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/reactjs/">reactjs</a>
+          
+          <a href="/tags/javascript/">javascript</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用snownlp进行评论情感分析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">mybatis-generator使用备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>避免容器中运行的Java应用被杀掉 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="避免容器中运行的Java应用被杀掉" />
+<meta property="og:description" content="今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/" />
+<meta property="article:published_time" content="2019-10-06T13:19:00+08:00" />
+<meta property="article:modified_time" content="2019-10-06T13:19:00+08:00" />
+<meta itemprop="name" content="避免容器中运行的Java应用被杀掉">
+<meta itemprop="description" content="今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先">
+<meta itemprop="datePublished" content="2019-10-06T13:19:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-10-06T13:19:00&#43;08:00" />
+<meta itemprop="wordCount" content="1575">
+
+
+
+<meta itemprop="keywords" content="java,docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="避免容器中运行的Java应用被杀掉"/>
+<meta name="twitter:description" content="今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">避免容器中运行的Java应用被杀掉</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1575 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#oom">为啥会频繁OOM？</a></li>
+    <li><a href="#java-heap-sizing-basics">Java Heap Sizing Basics</a></li>
+    <li><a href="#heading">解决方案</a>
+      <ul>
+        <li><a href="#1">方案1</a></li>
+        <li><a href="#2">方案2</a></li>
+        <li><a href="#3">方案3</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。</p>
+<h2 id="oom">为啥会频繁OOM？</h2>
+<p>首先排除Java程序的问题，因为基本上Java程序刚运行起来没一会儿，容器就由于OOM被Killed掉了，料想程序还不会写得这么烂。</p>
+<p>经诊断，频繁OOM的容器是设置了memory quota的，因此这里做一个实验：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -m 100MB openjdk:8u121-alpine java -XshowSettings:vm -version
+VM settings:
+    Max. Heap Size <span style="color:#f92672">(</span>Estimated<span style="color:#f92672">)</span>: 239.75M
+    Ergonomics Machine Class: client
+    Using VM: OpenJDK 64-Bit Server VM
+
+openjdk version <span style="color:#e6db74">&#34;1.8.0_121&#34;</span>
+OpenJDK Runtime Environment <span style="color:#f92672">(</span>IcedTea 3.3.0<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Alpine 8.121.13-r0<span style="color:#f92672">)</span>
+OpenJDK 64-Bit Server VM <span style="color:#f92672">(</span>build 25.121-b13, mixed mode<span style="color:#f92672">)</span>
+</code></pre></div><p>这里发现给容器设置了100MB的memory quota，但JVM运行时实际最大的<code>Heap Size</code>却大于这个值。为啥会这样呢？</p>
+<p>查阅<a href="https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e">资料</a>，发现JVM默认分配本机内存的大约<code>25%</code>作为<code>Max Heap Size</code>。</p>
+<blockquote>
+<h2 id="java-heap-sizing-basics">Java Heap Sizing Basics</h2>
+<p>Per default the JVM automatically configures heap size according to the spec of the machine it is running on. On my brand new MacBook Pro 2018 this yields the following heap size:</p>
+</blockquote>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ java -XX:+PrintFlagsFinal -version | grep -Ei <span style="color:#e6db74">&#34;maxheapsize|maxram&#34;</span>
+    uintx DefaultMaxRAMFraction   <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>             <span style="color:#f92672">{</span>product<span style="color:#f92672">}</span>
+    uintx MaxHeapSize             :<span style="color:#f92672">=</span> <span style="color:#ae81ff">8589934592</span>   <span style="color:#f92672">{</span>product<span style="color:#f92672">}</span>
+    uint64_t MaxRAM               <span style="color:#f92672">=</span> <span style="color:#ae81ff">137438953472</span>  <span style="color:#f92672">{</span>pd product<span style="color:#f92672">}</span>
+    uintx MaxRAMFraction          <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>             <span style="color:#f92672">{</span>product<span style="color:#f92672">}</span>
+</code></pre></div><blockquote>
+<p>As you can see, the JVM defaults to 8.0 GB max heap <code>(8589934592 / 1024^3)</code> and 0.5 GB initial heap on my machine. The formula behind this is straight forward. Using the JVM configuration parameter names, we end up with: <code>MaxHeapSize = MaxRAM * 1 / MaxRAMFraction</code> where MaxRAM is the available RAM <a href="https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e#fn1-20439">(1</a>) and MaxRAMFraction is 4 <a href="https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e#fn2-20439">(2</a>) by default. That means the <strong>JVM allocates up to 25% of your RAM per JVM</strong> running on your machine.</p>
+</blockquote>
+<p>而在容器中运行的Java进程默认取到的系统内存是宿主机的内存信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -m 100MB openjdk:8u121-alpine cat /proc/meminfo
+MemTotal:        <span style="color:#ae81ff">1008492</span> kB
+MemFree:          <span style="color:#ae81ff">144328</span> kB
+MemAvailable:     <span style="color:#ae81ff">548688</span> kB
+Buffers:           <span style="color:#ae81ff">69864</span> kB
+Cached:           <span style="color:#ae81ff">421352</span> kB
+...
+</code></pre></div><p>如果宿主机上的内存容量较大，通过上述计算公式自然得到一个较大的<code>Max Heap Size</code>，这样Java程序在运行时如果频繁申请内存，而由于并没有接近<code>Max Heap Size</code>，因此不会去GC，这样运行下去，最终申请的内存超过了容器的memory quota，因而被cgroup杀掉容器进程了。</p>
+<h2 id="heading">解决方案</h2>
+<p>容器如此火热的今天，这个问题自然有解决方案了。</p>
+<h3 id="1">方案1</h3>
+<p>如果java可以升级到Java 10，则使用<code>-XX:+UseContainerSupport</code>打开容器支持就可以了，这时容器中运行的JVM进程取到的系统内存即是施加的memory quota了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -m 400MB openjdk:10 java -XX:+UseContainerSupport -XX:InitialRAMPercentage<span style="color:#f92672">=</span>40.0 -XX:MaxRAMPercentage<span style="color:#f92672">=</span>90.0 -XX:MinRAMPercentage<span style="color:#f92672">=</span>50.0 -XshowSettings:vm -version
+VM settings:
+    Max. Heap Size <span style="color:#f92672">(</span>Estimated<span style="color:#f92672">)</span>: 348.00M
+    Using VM: OpenJDK 64-Bit Server VM
+
+openjdk version <span style="color:#e6db74">&#34;10.0.2&#34;</span> 2018-07-17
+OpenJDK Runtime Environment <span style="color:#f92672">(</span>build 10.0.2+13-Debian-2<span style="color:#f92672">)</span>
+OpenJDK 64-Bit Server VM <span style="color:#f92672">(</span>build 10.0.2+13-Debian-2, mixed mode<span style="color:#f92672">)</span>
+</code></pre></div><p>同时还可以通过<code>-XX:InitialRAMPercentage</code>、<code>-XX:MaxRAMPercentage</code>、<code>-XX:MinRAMPercentage</code>这些参数控制JVM使用的内存比率。因为很多Java程序在运行时会调用外部进程、申请Native Memory等，所以即使是在容器中运行Java程序，也得预留一些内存给系统的。所以<code>-XX:MaxRAMPercentage</code>不能配置得太大。</p>
+<p>进行一步查阅<a href="https://www.oracle.com/technetwork/java/javase/8u191-relnotes-5032181.html">资料</a>，发现<code>-XX:+UseContainerSupport</code>这个标志选项在Java 8u191已经被backport到Java 8了。因此如果使用的jdk是Java 8u191之后的版本，上述那些JVM参数依然有效：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -m 400MB openjdk:8u191-alpine java -XX:+UseContainerSupport -XX:InitialRAMPercentage<span style="color:#f92672">=</span>40.0 -XX:MaxRAMPercentage<span style="color:#f92672">=</span>90.0 -XX:MinRAMPercentage<span style="color:#f92672">=</span>50.0 -XshowSettings:vm -version
+VM settings:
+    Max. Heap Size <span style="color:#f92672">(</span>Estimated<span style="color:#f92672">)</span>: 348.00M
+    Ergonomics Machine Class: client
+    Using VM: OpenJDK 64-Bit Server VM
+
+openjdk version <span style="color:#e6db74">&#34;1.8.0_191&#34;</span>
+OpenJDK Runtime Environment <span style="color:#f92672">(</span>IcedTea 3.10.0<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Alpine 8.191.12-r0<span style="color:#f92672">)</span>
+OpenJDK 64-Bit Server VM <span style="color:#f92672">(</span>build 25.191-b12, mixed mode<span style="color:#f92672">)</span>
+</code></pre></div><h3 id="2">方案2</h3>
+<p>如果使用的jdk是Java 8u131之后的版本，可使用<code>-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap</code>选项，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ docker run -m 400MB openjdk:8u131-alpine java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> -XshowSettings:vm -version
+VM settings:
+    Max. Heap Size <span style="color:#f92672">(</span>Estimated<span style="color:#f92672">)</span>: 193.38M
+    Ergonomics Machine Class: client
+    Using VM: OpenJDK 64-Bit Server VM
+
+openjdk version <span style="color:#e6db74">&#34;1.8.0_131&#34;</span>
+OpenJDK Runtime Environment <span style="color:#f92672">(</span>IcedTea 3.4.0<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>Alpine 8.131.11-r2<span style="color:#f92672">)</span>
+OpenJDK 64-Bit Server VM <span style="color:#f92672">(</span>build 25.131-b11, mixed mode<span style="color:#f92672">)</span>
+</code></pre></div><p><code>-XX:MaxRAMFraction</code>就是刚才那个公式里的<code>MaxRAMFraction</code>，默认值是4，代表默认分配系统内存大约25%给<code>Heap Size</code>，可以减小这个参数，从而使JVM尽量地使用memory quota。同时这个值不能太小，设置为1还是有些危险，见<a href="https://stackoverflow.com/questions/49854237/is-xxmaxramfraction-1-safe-for-production-in-a-containered-environment">这里</a>的说明，一般设置为2。</p>
+<h3 id="3">方案3</h3>
+<p>容器运行时会将容器的quota等cgroup目录挂载进容器，因此可以通过entrypoint脚本自行读取这些信息，并给JVM设置合理的<code>-Xms</code>、<code>-Xmx</code>等参数，参考<a href="https://github.com/jeremyxu2010/rocketmq-docker/blob/master/image-build/scripts/runbroker-customize.sh#L56">这里</a>的脚本。</p>
+<p>当然最好是能升级到Java 8u191或Java 10。</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e">https://medium.com/adorsys/jvm-memory-settings-in-a-container-environment-64b0840e1d9e</a></li>
+<li><a href="https://blog.csanchez.org/2017/05/31/running-a-jvm-in-a-container-without-getting-killed/">https://blog.csanchez.org/2017/05/31/running-a-jvm-in-a-container-without-getting-killed/</a></li>
+<li><a href="https://stackoverflow.com/questions/49854237/is-xxmaxramfraction-1-safe-for-production-in-a-containered-environment">https://stackoverflow.com/questions/49854237/is-xxmaxramfraction-1-safe-for-production-in-a-containered-environment</a></li>
+<li><a href="https://stackoverflow.com/questions/42187085/check-mem-limit-within-a-docker-container">https://stackoverflow.com/questions/42187085/check-mem-limit-within-a-docker-container</a></li>
+<li><a href="https://github.com/jeremyxu2010/rocketmq-docker">https://github.com/jeremyxu2010/rocketmq-docker</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-10-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">kubernetes集群部署运营实践总结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/">
+            <span class="next-text nav-default">生成多平台docker镜像</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

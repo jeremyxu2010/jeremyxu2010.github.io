@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>ansible简易入门 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="ansible简易入门" />
+<meta property="og:description" content="工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/" />
+<meta property="article:published_time" content="2018-02-26T02:53:00+08:00" />
+<meta property="article:modified_time" content="2018-02-26T02:53:00+08:00" />
+<meta itemprop="name" content="ansible简易入门">
+<meta itemprop="description" content="工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的">
+<meta itemprop="datePublished" content="2018-02-26T02:53:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-02-26T02:53:00&#43;08:00" />
+<meta itemprop="wordCount" content="2238">
+
+
+
+<meta itemprop="keywords" content="centos,ansible,deployment,automation," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="ansible简易入门"/>
+<meta name="twitter:description" content="工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">ansible简易入门</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-02-26 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2238 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading-1">主机与组</a></li>
+    <li><a href="#patterns">Patterns</a></li>
+    <li><a href="#heading-2">设置公钥认证登录托管主机</a></li>
+    <li><a href="#ad-hoc-">ad-hoc 命令</a>
+      <ul>
+        <li><a href="#heading-3">执行命令</a></li>
+        <li><a href="#heading-4">文件传输</a></li>
+        <li><a href="#heading-5">管理软件包</a></li>
+        <li><a href="#heading-6">用户与用户组</a></li>
+        <li><a href="#heading-7">管理服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#playbooks">Playbooks</a></li>
+    <li><a href="#playbooks-">Playbooks 简介</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的一些经验记录下来方便后续查阅。</p>
+<h1 id="ansible">什么是ansible</h1>
+<p>ansible是个什么东西呢？官方的title是“Ansible is Simple IT Automation”——简单的自动化IT工具。这个工具的目标有这么几项：让我们自动化部署APP；自动化管理配置项；自动化的持续交付；自动化的（AWS）云服务管理。</p>
+<p>所有的这几个目标本质上来说都是在一个台或者几台服务器上，执行一系列的命令而已。——<strong>批量的在远程服务器上执行命令</strong> 。</p>
+<p>Ansible提供了一套简单的流程，你要按照它的流程来做，就能轻松完成任务。这就像是库和框架的关系一样。</p>
+<p>Ansible是基于 <a href="https://github.com/paramiko/paramiko">paramiko</a> 开发的。这个paramiko是什么呢？它是一个纯Python实现的ssh协议库。因此fabric和ansible还有一个共同点就是不需要在远程主机上安装client/agents，因为它们是基于ssh来和远程主机通讯的。</p>
+<h1 id="heading">快速安装</h1>
+<p>我实验过程中管理主机的操作系统是macOS 10.13.3，托管主机的操作系统是CentOS 6.7，IP是10.211.55.10。</p>
+<p>管理主机上安装ansible</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install ansible
+</code></pre></div><p>托管主机上安装ansible</p>
+<pre><code># 启用epel源，并修改地址至sng源镜像地址
+yum install -y http://mirror-sng.oa.com/epel/epel-release-latest-6.noarch.rpm
+sed -i 's/^mirrorlist/#mirrorlist/g' /etc/yum.repos.d/epel.repo
+sed -i 's/^#baseurl=http:\/\/download.fedoraproject.org\/pub\/epel/baseurl=http://mirror-sng.oa.com/epel/g' /etc/yum.repos.d/epel.repo
+
+yum install -y ansible
+</code></pre><p>到管理主机执行命令简单测试一下</p>
+<pre><code>mkdir ansible_test
+cd ansible_test
+
+# 创建hosts文件
+echo '
+[centos6.7]
+10.211.55.10
+' &gt; hosts
+
+# 创建ansible配置文件，指定hosts文件使用当前目录下的hosts文件
+echo '
+[defaults]
+inventory=./hosts
+' &gt; ansible.cfg
+
+# 使用ansible执行一条ad-hoc命令，按照指示输入托管主机的root密码即可
+ansible all -m ping -u root -k
+</code></pre><h1 id="ansible-1">使用ansible</h1>
+<h2 id="heading-1">主机与组</h2>
+<p>Ansible 可同时操作属于一个组的多台主机,组和主机之间的关系通过 inventory 文件配置. 默认的文件路径为 /etc/ansible/hosts，也可在ansible.cfg里指定inventory。</p>
+<p>除默认文件外,你还可以同时使用多个 inventory 文件，也可以从动态源,或云上拉取 inventory 配置信息.详见 <a href="http://www.ansible.com.cn/docs/intro_dynamic_inventory.html"><em>动态 Inventory</em></a>.</p>
+<p>详见<a href="http://www.ansible.com.cn/docs/intro_inventory.html#inventoryformat">inventoryformat</a></p>
+<h2 id="patterns">Patterns</h2>
+<p>在Ansible中,Patterns 是指我们怎样确定由哪一台主机来管理. 意思就是与哪台主机进行交互. 但是在:doc:playbooks 中它指的是对应主机应用特定的配置或执行特定进程.</p>
+<p>ad-hoc命令里使用patterns:</p>
+<pre><code>ansible &lt;pattern_goes_here&gt; -m &lt;module_name&gt; -a &lt;arguments&gt;
+</code></pre><p>playbook里使用patterns:</p>
+<pre><code># example.yml里会指定不同role对应的patterns，参见https://github.com/ansible/ansible-examples/blob/master/tomcat-memcached-failover/site.yml
+ansible-playbook example.yml
+</code></pre><h2 id="heading-2">设置公钥认证登录托管主机</h2>
+<p>每次执行命令时都要输入密码显然很难进行自动化部署，因此在实际使用一般会设置公钥认证。</p>
+<p>在管理主机上输入以下命令</p>
+<pre><code>ssh-keygen -f $HOME/.ssh/id_rsa -t rsa -N ''  # 生成本地的ssh登录密钥
+ssh-add $HOME/.ssh/id_rsa
+ssh-copy-id -i $HOME/.ssh/id_rsa root@10.211.55.10  # 输入托管主机的root密码
+echo '
+host_key_checking = False' &gt;&gt; ansible.cfg  # 禁用对key信息的确认提示
+</code></pre><p>后面就不用再输入托管主机的密码了，可直接远程执行命令了。</p>
+<pre><code>ansible all -m ping -u root
+</code></pre><h2 id="ad-hoc-">ad-hoc 命令</h2>
+<p>ad hoc——临时的，在ansible中是指需要快速执行，并且不需要保存的命令。说白了就是执行简单的命令——一条命令。对于复杂的命令后面会说playbook。</p>
+<p>ansible有许多模块,默认是 ‘command’,也就是命令模块,我们可以通过 <code>-m</code> 选项来指定不同的模块.</p>
+<h3 id="heading-3">执行命令</h3>
+<pre><code>ansible all -m command -a '/bin/echo hello' -u root
+ansible all -m shell -a 'free -m' -u root
+</code></pre><p><strong>command 模块不支持 shell 变量,也不支持管道等 shell 相关的东西.如果你想使用 shell相关的这些东西, 请使用’shell’ 模块.两个模块之前的差别请参考 <a href="http://www.ansible.com.cn/docs/modules.html"><em>模块相关</em></a> .</strong></p>
+<h3 id="heading-4">文件传输</h3>
+<pre><code># 拷贝文件
+ansible all -m copy -a &quot;src=/etc/hosts dest=/tmp/hosts&quot;
+# 修改文件的属主和权限
+ansible all -m file -a &quot;dest=/srv/foo/a.txt mode=600&quot;
+ansible all -m file -a &quot;dest=/srv/foo/b.txt mode=600 owner=mdehaan group=mdehaan&quot;
+# 创建目录
+ansible all -m file -a &quot;dest=/path/to/c mode=755 owner=mdehaan group=mdehaan state=directory&quot;
+# 删除目录(递归的删除)和删除文件
+ansible all -m file -a &quot;dest=/path/to/c state=absent&quot;
+</code></pre><h3 id="heading-5">管理软件包</h3>
+<pre><code># 确认一个软件包已经安装,但不去升级它
+ansible webservers -m yum -a &quot;name=acme state=present&quot;
+# 确认一个软件包的安装版本
+ansible webservers -m yum -a &quot;name=acme-1.5 state=present&quot;
+# 确认一个软件包还没有安装
+ansible webservers -m yum -a &quot;name=acme state=absent&quot;
+</code></pre><h3 id="heading-6">用户与用户组</h3>
+<p>使用 ‘user’ 模块可以方便的创建账户,删除账户,或是管理现有的账户</p>
+<pre><code># 创建账户
+ansible all -m user -a &quot;name=foo password=&lt;crypted password here&gt;&quot;
+# 删除账户
+ansible all -m user -a &quot;name=foo state=absent&quot;
+</code></pre><h3 id="heading-7">管理服务</h3>
+<pre><code># 确认某个服务已经启动
+ansible webservers -m service -a &quot;name=httpd state=started&quot; 
+# 重启某个服务
+ansible webservers -m service -a &quot;name=httpd state=restarted&quot;
+# 确认某个服务已经停止
+ansible webservers -m service -a &quot;name=httpd state=stopped&quot;
+</code></pre><h4 id="heading-8">限时后台任务</h4>
+<pre><code># 后台执行长时间任务，其中 -B 1800 表示最多运行30分钟, -P 60 表示每隔60秒获取一次状态信息.
+ansible all -B 1800 -P 60 -a &quot;/usr/bin/long_running_operation --do-stuff&quot;
+# 前面执行后台命令后会返回一个 job id, 将这个 id 传给 async_status 模块，可查询任务的执行状态
+ansible web1.example.com -m async_status -a &quot;jid=488359678239.2844&quot;
+</code></pre><h2 id="playbooks">Playbooks</h2>
+<h2 id="playbooks-">Playbooks 简介</h2>
+<p>Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的.</p>
+<p>简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.与现有的其他系统有不同之处,且非常适合于复杂应用的部署.</p>
+<p>Playbooks 可用于声明配置,更强大的地方在于,在 playbooks 中可以编排有序的执行过程,甚至于做到在多组机器间,来回有序的执行特别指定的步骤.并且可以同步或异步的发起任务.</p>
+<p>我们使用 adhoc 时,主要是使用 <code>/usr/bin/ansible </code>程序执行任务.而使用 playbooks 时,更多是将之放入源码控制之中,用之推送你的配置或是用于确认你的远程系统的配置是否符合配置规范.</p>
+<p>playbooks就是按“约定大于配置“的方式组织需要远程执行的命令，先放在下一篇详细说明了，详见<a href="http://www.ansible.com.cn/docs/playbooks_intro.html">Playbooks 介绍</a>和<a href="http://www.ansible.com.cn/docs/playbooks_roles.html#id5">Playbook 角色(Roles) 和 Include 语句</a>。</p>
+<h1 id="heading-9">参考</h1>
+<ol>
+<li><a href="http://www.ansible.com.cn/docs/">http://www.ansible.com.cn/docs/</a></li>
+<li><a href="https://www.the5fire.com/ansible-guide-cn.html">https://www.the5fire.com/ansible-guide-cn.html</a></li>
+<li><a href="https://github.com/ansible/ansible-examples">https://github.com/ansible/ansible-examples</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-02-26</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/centos/">centos</a>
+          
+          <a href="/tags/ansible/">ansible</a>
+          
+          <a href="/tags/deployment/">deployment</a>
+          
+          <a href="/tags/automation/">automation</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">ansible简易入门之playbook</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/02/%E8%8B%B1%E6%96%87%E6%AF%8F%E5%A4%A9%E9%87%91%E5%8F%A5/">
+            <span class="next-text nav-default">英文每天金句</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

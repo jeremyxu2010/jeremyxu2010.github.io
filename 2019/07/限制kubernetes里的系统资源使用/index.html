@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>限制kubernetes里的系统资源使用 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="限制kubernetes里的系统资源使用" />
+<meta property="og:description" content="工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/" />
+<meta property="article:published_time" content="2019-07-28T20:00:00+08:00" />
+<meta property="article:modified_time" content="2019-07-28T20:00:00+08:00" />
+<meta itemprop="name" content="限制kubernetes里的系统资源使用">
+<meta itemprop="description" content="工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统">
+<meta itemprop="datePublished" content="2019-07-28T20:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-28T20:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1396">
+
+
+
+<meta itemprop="keywords" content="kuberentes," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="限制kubernetes里的系统资源使用"/>
+<meta name="twitter:description" content="工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">限制kubernetes里的系统资源使用</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-28 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1396 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#kubernetes">kubernetes的系统资源限制机制</a>
+      <ul>
+        <li><a href="#resource-quotas">Resource Quotas</a></li>
+        <li><a href="#limit-ranges">Limit Ranges</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。</p>
+<h2 id="kubernetes">kubernetes的系统资源限制机制</h2>
+<p>kuberentes里存在两种机制进行系统资源限制，一个是Resource Quotas，一个是Limit Ranges。</p>
+<h3 id="resource-quotas">Resource Quotas</h3>
+<p>使用Resource Quotas可以限制某个命名空间使用的系统资源，使用方法如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl create namespace quota-object-example
+
+cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: ResourceQuota
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: object-quota-demo
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  hard:
+</span><span style="color:#e6db74">  	requests.cpu: &#34;8&#34; # 限制该命名空间使用的总cpu request
+</span><span style="color:#e6db74">  	requests.memory: &#34;32Gi&#34; # 限制该命名空间使用的总memory request
+</span><span style="color:#e6db74">  	limits.cpu: &#34;16&#34; # 限制该命名空间使用的总cpu limit
+</span><span style="color:#e6db74">  	limits.memory: &#34;32Gi&#34; # 限制该命名空间使用的总memory limit
+</span><span style="color:#e6db74">  	requests.nvidia.com/gpu: 4 # 限制该命名空间使用的扩展资源
+</span><span style="color:#e6db74">  	requests.storage: &#34;500Gi&#34; # 限制该命名空间使用的总storage request
+</span><span style="color:#e6db74">  	limits.storage: &#34;1000Gi&#34; # 限制该命名空间使用的总storage limit
+</span><span style="color:#e6db74">  	foo.storageclass.storage.k8s.io/requests.storage: &#34;100Gi&#34; # 限制该命名空间经由某个storage class创建的总storage request
+</span><span style="color:#e6db74">  	foo.storageclass.storage.k8s.io/limits.storage: &#34;200Gi&#34; # 限制该命名空间经由某个storage class创建的总storage limit
+</span><span style="color:#e6db74">  	requests.ephemeral-storage: &#34;5Gi&#34; # 限制该命名空间使用的总ephemeral-storage request
+</span><span style="color:#e6db74">  	limits.ephemeral-storage: &#34;50Gi&#34; # 限制该命名空间使用的总ephemeral-storage limit
+</span><span style="color:#e6db74">  	count/services: 20 # 限制该命名空间创建的总service数目
+</span><span style="color:#e6db74">  	count/services.nodeports: 3 # 限制该命名空间创建的总nodeport类型service数目
+</span><span style="color:#e6db74">  	count/deployments.apps: 5 # 限制该命名空间创建的总deployment数目
+</span><span style="color:#e6db74">  	count/widgets.example.com: 5 # 限制该命名空间创建的总自定义资源widgets.example.com数目
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>可配置的系统资源表达式参考<a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/#compute-resource-quota">Compute Resource Quota</a>，<a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/#storage-resource-quota">Storage Resource Quota</a>，<a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/#object-count-quota">Object Count Quota</a>。</p>
+<p>另外还可以给不同的scope指定不同的系统资源限制，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: List
+</span><span style="color:#e6db74">items:
+</span><span style="color:#e6db74">- apiVersion: v1
+</span><span style="color:#e6db74">  kind: ResourceQuota
+</span><span style="color:#e6db74">  metadata:
+</span><span style="color:#e6db74">    name: pods-high
+</span><span style="color:#e6db74">  spec:
+</span><span style="color:#e6db74">    hard:
+</span><span style="color:#e6db74">      cpu: &#34;1000&#34;
+</span><span style="color:#e6db74">      memory: 200Gi
+</span><span style="color:#e6db74">      pods: &#34;10&#34;
+</span><span style="color:#e6db74">    scopeSelector:
+</span><span style="color:#e6db74">      matchExpressions:
+</span><span style="color:#e6db74">      - operator : In
+</span><span style="color:#e6db74">        scopeName: PriorityClass
+</span><span style="color:#e6db74">        values: [&#34;high&#34;]
+</span><span style="color:#e6db74">- apiVersion: v1
+</span><span style="color:#e6db74">  kind: ResourceQuota
+</span><span style="color:#e6db74">  metadata:
+</span><span style="color:#e6db74">    name: pods-medium
+</span><span style="color:#e6db74">  spec:
+</span><span style="color:#e6db74">    hard:
+</span><span style="color:#e6db74">      cpu: &#34;10&#34;
+</span><span style="color:#e6db74">      memory: 20Gi
+</span><span style="color:#e6db74">      pods: &#34;10&#34;
+</span><span style="color:#e6db74">    scopeSelector:
+</span><span style="color:#e6db74">      matchExpressions:
+</span><span style="color:#e6db74">      - operator : In
+</span><span style="color:#e6db74">        scopeName: PriorityClass
+</span><span style="color:#e6db74">        values: [&#34;medium&#34;]
+</span><span style="color:#e6db74">- apiVersion: v1
+</span><span style="color:#e6db74">  kind: ResourceQuota
+</span><span style="color:#e6db74">  metadata:
+</span><span style="color:#e6db74">    name: pods-low
+</span><span style="color:#e6db74">  spec:
+</span><span style="color:#e6db74">    hard:
+</span><span style="color:#e6db74">      cpu: &#34;5&#34;
+</span><span style="color:#e6db74">      memory: 10Gi
+</span><span style="color:#e6db74">      pods: &#34;10&#34;
+</span><span style="color:#e6db74">    scopeSelector:
+</span><span style="color:#e6db74">      matchExpressions:
+</span><span style="color:#e6db74">      - operator : In
+</span><span style="color:#e6db74">        scopeName: PriorityClass
+</span><span style="color:#e6db74">        values: [&#34;low&#34;]
+</span><span style="color:#e6db74">EOF</span>
+
+cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: Pod
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: high-priority
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  containers:
+</span><span style="color:#e6db74">  - name: high-priority
+</span><span style="color:#e6db74">    image: ubuntu
+</span><span style="color:#e6db74">    command: [&#34;/bin/sh&#34;]
+</span><span style="color:#e6db74">    args: [&#34;-c&#34;, &#34;while true; do echo hello; sleep 10;done&#34;]
+</span><span style="color:#e6db74">    resources:
+</span><span style="color:#e6db74">      requests:
+</span><span style="color:#e6db74">        memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">        cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">      limits:
+</span><span style="color:#e6db74">        memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">        cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">  priorityClassName: high
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>这个例子创建了分别限制3个scope的ResourceQuota，下面创建的那个pod因为<code>priorityClassName</code>为<code>high</code>，因此它使用的系统资源只会遵守<code>pods-high</code>定义出的配额限制。</p>
+<p>最后还可以组合<code>AdmissionConfiguration</code>，确保某些<code>priorityClassName</code>的资源只会被创建在有相应<code>ResourceQuota</code>的命名空间中，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: apiserver.k8s.io/v1alpha1
+</span><span style="color:#e6db74">kind: AdmissionConfiguration
+</span><span style="color:#e6db74">plugins:
+</span><span style="color:#e6db74">- name: &#34;ResourceQuota&#34;
+</span><span style="color:#e6db74">  configuration:
+</span><span style="color:#e6db74">    apiVersion: resourcequota.admission.k8s.io/v1beta1
+</span><span style="color:#e6db74">    kind: Configuration
+</span><span style="color:#e6db74">    limitedResources:
+</span><span style="color:#e6db74">    - resource: pods
+</span><span style="color:#e6db74">      matchScopes:
+</span><span style="color:#e6db74">      - scopeName: PriorityClass 
+</span><span style="color:#e6db74">        operator: In
+</span><span style="color:#e6db74">        values: [&#34;cluster-services&#34;]
+</span><span style="color:#e6db74">EOF</span>
+
+cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: ResourceQuota
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: pods-high
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  hard:
+</span><span style="color:#e6db74">    requests:
+</span><span style="color:#e6db74">      memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">      cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">    limits:
+</span><span style="color:#e6db74">      memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">      cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">  scopeSelector:
+</span><span style="color:#e6db74">    matchExpressions:
+</span><span style="color:#e6db74">    - scopeName: PriorityClass
+</span><span style="color:#e6db74">      operator: In
+</span><span style="color:#e6db74">      values: [&#34;cluster-services&#34;]
+</span><span style="color:#e6db74">EOF</span>
+
+cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n quota-object-example create -f -
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: Pod
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: test-service
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  containers:
+</span><span style="color:#e6db74">  - name: test-service
+</span><span style="color:#e6db74">    image: ubuntu
+</span><span style="color:#e6db74">    command: [&#34;/bin/sh&#34;]
+</span><span style="color:#e6db74">    args: [&#34;-c&#34;, &#34;while true; do echo hello; sleep 10;done&#34;]
+</span><span style="color:#e6db74">    resources:
+</span><span style="color:#e6db74">      requests:
+</span><span style="color:#e6db74">        memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">        cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">      limits:
+</span><span style="color:#e6db74">        memory: &#34;10Gi&#34;
+</span><span style="color:#e6db74">        cpu: &#34;500m&#34;
+</span><span style="color:#e6db74">  priorityClassName: cluster-services
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>如上的配置可保证该pod只会被创建在有相应<code>ResourceQuota</code>的命名空间中。</p>
+<h3 id="limit-ranges">Limit Ranges</h3>
+<p>除了限制整个命名空间的系统资源使用量外，还可以通过<code>Limit Ranges</code>限制容器或pod的系统资源使用量，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl create namespace limitrange-demo
+
+cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl -n limitrange-demo create -f -
+</span><span style="color:#e6db74">admin/resource/limit-mem-cpu-container.yaml 
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: LimitRange
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: limit-mem-cpu-per-container
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  limits:
+</span><span style="color:#e6db74">  - max:
+</span><span style="color:#e6db74">      cpu: &#34;800m&#34;
+</span><span style="color:#e6db74">      memory: &#34;1Gi&#34;
+</span><span style="color:#e6db74">    min:
+</span><span style="color:#e6db74">      cpu: &#34;100m&#34;
+</span><span style="color:#e6db74">      memory: &#34;99Mi&#34;
+</span><span style="color:#e6db74">    default:
+</span><span style="color:#e6db74">      cpu: &#34;700m&#34;
+</span><span style="color:#e6db74">      memory: &#34;900Mi&#34;
+</span><span style="color:#e6db74">    defaultRequest:
+</span><span style="color:#e6db74">      cpu: &#34;110m&#34;
+</span><span style="color:#e6db74">      memory: &#34;111Mi&#34;
+</span><span style="color:#e6db74">    maxLimitRequestRatio:
+</span><span style="color:#e6db74">      cpu: 2
+</span><span style="color:#e6db74">      memory: 4
+</span><span style="color:#e6db74">    type: Container # 也可以设置为Pod
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>这里跟<code>ResourceQuotas</code>的区别是这里设置的是最大最小值，只要申请的资源在范围内就算是合法的。同时还可以设置默认值，Container或Pod如果没有设置，就会使用默认值。</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://kubernetes.io/docs/concepts/policy/resource-quotas/">https://kubernetes.io/docs/concepts/policy/resource-quotas/</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/administer-cluster/quota-api-object/">https://kubernetes.io/docs/tasks/administer-cluster/quota-api-object/</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/policy/limit-range/">https://kubernetes.io/docs/concepts/policy/limit-range/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-07-28</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kuberentes/">kuberentes</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用dex搭建一个身份认证系统</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/">
+            <span class="next-text nav-default">使用Aggregated APIServer的方式构建API服务</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

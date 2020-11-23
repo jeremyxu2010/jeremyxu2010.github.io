@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>windows on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/windows/</link>
+    <description>Recent content in windows on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 03 Feb 2018 23:07:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/windows/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>powershell学习备忘</title>
+      <link>https://jeremyxu2010.github.io/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sat, 03 Feb 2018 23:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</guid>
+      <description>背景 早就听说微软的powershell非常强大，凭借它可以全命令行操控windows服务器了。最近终于要在工作中用到它了，于是花了几个小时将</description>
+    </item>
+    
+  </channel>
+</rss>

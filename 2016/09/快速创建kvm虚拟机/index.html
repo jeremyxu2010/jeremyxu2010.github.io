@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>快速创建KVM虚拟机 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="以前写到一篇文章制作CentOS6基础镜像，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建K" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/09/%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BAkvm%E8%99%9A%E6%8B%9F%E6%9C%BA/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="快速创建KVM虚拟机" />
+<meta property="og:description" content="以前写到一篇文章制作CentOS6基础镜像，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建K" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/09/%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BAkvm%E8%99%9A%E6%8B%9F%E6%9C%BA/" />
+<meta property="article:published_time" content="2016-09-21T23:21:00+08:00" />
+<meta property="article:modified_time" content="2016-09-21T23:21:00+08:00" />
+<meta itemprop="name" content="快速创建KVM虚拟机">
+<meta itemprop="description" content="以前写到一篇文章制作CentOS6基础镜像，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建K">
+<meta itemprop="datePublished" content="2016-09-21T23:21:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-09-21T23:21:00&#43;08:00" />
+<meta itemprop="wordCount" content="726">
+
+
+
+<meta itemprop="keywords" content="kvm,qemu,libvirt,libguestfs," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="快速创建KVM虚拟机"/>
+<meta name="twitter:description" content="以前写到一篇文章制作CentOS6基础镜像，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建K"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">快速创建KVM虚拟机</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-09-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/"> 云计算 </a>
+            
+          </div>
+        <span class="more-meta"> 约 726 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">快速创建一个虚拟机的脚本</a></li>
+    <li><a href="#n">快速创建N个虚拟机</a></li>
+    <li><a href="#heading-1">其它</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>以前写到一篇文章<a href="/2016/08/07/%E5%88%B6%E4%BD%9CCentOS6%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F/">制作CentOS6基础镜像</a>，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建KVM虚拟机。</p>
+<h2 id="heading">快速创建一个虚拟机的脚本</h2>
+<p>这里假设创建的基础镜像为<code>centos6.7-sys.img</code>，而且是<code>qcow2</code>格式的。</p>
+<p><code>create_vm.sh</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+domain_name<span style="color:#f92672">=</span>$1
+ip_fetch_method<span style="color:#f92672">=</span>$2
+static_ip<span style="color:#f92672">=</span>$3
+static_netmask<span style="color:#f92672">=</span>$4
+static_gateway<span style="color:#f92672">=</span>$5
+static_dns1<span style="color:#f92672">=</span>$6
+static_dns2<span style="color:#f92672">=</span>$7
+
+base_img_path<span style="color:#f92672">=</span>/vmdata/base/centos6.7-sys.img
+vm_img_dir<span style="color:#f92672">=</span>/vmdata
+
+<span style="color:#75715e">#创建虚拟机的磁盘镜像文件</span>
+qemu-img create -f qcow2 -b $base_img_path $vm_img_dir/$domain_name.img
+
+<span style="color:#75715e">#将磁盘镜像文件挂载至宿主机目录，便于修改内部文件</span>
+guestmount -i -w -a $vm_img_dir/$domain_name.img /mnt
+
+<span style="color:#75715e">#设置主机名</span>
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">NETWORKING=yes
+</span><span style="color:#e6db74">HOSTNAME=</span>$domain_name<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; /mnt/etc/sysconfig/network
+
+<span style="color:#75715e">#如采用静态IP，则设置IP地址相关信息</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $ip_fetch_method <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;static&#34;</span> <span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+    echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">DEVICE=eth0
+</span><span style="color:#e6db74">TYPE=Ethernet
+</span><span style="color:#e6db74">ONBOOT=yes
+</span><span style="color:#e6db74">NM_CONTROLLED=no
+</span><span style="color:#e6db74">BOOTPROTO=static
+</span><span style="color:#e6db74">IPADDR=</span>$static_ip<span style="color:#e6db74">
+</span><span style="color:#e6db74">NETMASK=</span>$static_netmask<span style="color:#e6db74">
+</span><span style="color:#e6db74">GATEWAY=</span>$static_gateway<span style="color:#e6db74">
+</span><span style="color:#e6db74">DNS1=</span>$static_dns1<span style="color:#e6db74">
+</span><span style="color:#e6db74">DNS2=</span>$static_dns2<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; /mnt/etc/sysconfig/network-scripts/ifcfg-eth0
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e">#取消挂载</span>
+umount /mnt
+
+<span style="color:#75715e">#创建并启动虚拟机</span>
+virt-install --import --name<span style="color:#f92672">=</span>$domain_name --vcpus<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> --ram <span style="color:#ae81ff">2048</span> --boot hd --disk path<span style="color:#f92672">=</span>$vm_img_dir/$domain_name.img,format<span style="color:#f92672">=</span>qcow2,bus<span style="color:#f92672">=</span>virtio --network bridge<span style="color:#f92672">=</span>br0,model<span style="color:#f92672">=</span>virtio --autostart --graphics vnc,keymap<span style="color:#f92672">=</span>en-us --noautoconsole
+</code></pre></div><p>脚本的逻辑比较简单，注释写得很清楚。需要注意跟以前不太一样的地方有两点：</p>
+<ul>
+<li>这次是使用<code>guestmount</code>命令将磁盘文件先挂载至临时目录，这样修改磁盘文件里的内容就很方便了，个人感觉这个比以前用的<code>virt-copy-in</code>命令方案还是简单一些的。<code>guestmount</code>命令的用法可直接<code>man guestmount</code>查看。</li>
+<li>这次是使用<code>virt-install</code>命令创建并启动虚拟机。这种方式相当快速，也是一般推荐的快速命令行创建虚拟机的办法。<code>virt-install</code>命令的参数相当多，虚拟机配置的方方面面都有参数，这里只使用了一些必须的，再详细的参数说明可直接<code>man virt-install</code>查看。</li>
+</ul>
+<h2 id="n">快速创建N个虚拟机</h2>
+<p>再写一个脚本，根据业务需要，调用上述脚本快速创建虚拟机。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+vm_name_prefix<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;test&#39;</span>
+
+<span style="color:#75715e">#循环创建20个虚拟机</span>
+<span style="color:#66d9ef">for</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span>i<span style="color:#f92672">=</span>1; i&lt;<span style="color:#f92672">=</span>20; i++<span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">do</span>
+  create_vm.sh $vm_name_prefix$i static 10.10.10.$i 255.255.255.0 10.10.10.254 202.96.134.133 8.8.8.8
+<span style="color:#66d9ef">done</span>
+</code></pre></div><h2 id="heading-1">其它</h2>
+<p><code>/usr/sbin/virt-install</code>本身就是用python编写的，使用了libvirt库API的python绑定，如果想了解如何使用libvirt库API，个人觉得这个源码还是可以读一读的。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-09-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kvm/">kvm</a>
+          
+          <a href="/tags/qemu/">qemu</a>
+          
+          <a href="/tags/libvirt/">libvirt</a>
+          
+          <a href="/tags/libguestfs/">libguestfs</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/09/%E5%88%A9%E7%94%A8promise%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E5%89%8D%E7%AB%AFcache/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">利用promise实现简单的前端cache</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/">
+            <span class="next-text nav-default">TCP细节分析</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

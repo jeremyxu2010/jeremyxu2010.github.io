@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nagios on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/nagios/</link>
+    <description>Recent content in nagios on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 30 Jun 2014 01:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/nagios/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>nagios安装配置</title>
+      <link>https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</guid>
+      <description>上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>macos on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/macos/</link>
+    <description>Recent content in macos on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 30 Mar 2014 01:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/macos/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>atom-shell_mac版应用打包</title>
+      <link>https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/</guid>
+      <description>上一篇文章写了一个简单的PingDemo应用，今天参照atom-shell的文档将那个应用打包到mac应用，试了多久终于成功了，记录一下。 a</description>
+    </item>
+    
+  </channel>
+</rss>

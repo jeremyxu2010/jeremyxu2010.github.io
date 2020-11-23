@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>snownlp on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/snownlp/</link>
+    <description>Recent content in snownlp on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 16 Mar 2017 20:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/snownlp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用snownlp进行评论情感分析</title>
+      <link>https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/</link>
+      <pubDate>Thu, 16 Mar 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/</guid>
+      <description>背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然</description>
+    </item>
+    
+  </channel>
+</rss>

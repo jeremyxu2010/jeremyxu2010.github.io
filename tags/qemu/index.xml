@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>qemu on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/qemu/</link>
+    <description>Recent content in qemu on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Wed, 21 Sep 2016 23:21:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/qemu/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>快速创建KVM虚拟机</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BAkvm%E8%99%9A%E6%8B%9F%E6%9C%BA/</link>
+      <pubDate>Wed, 21 Sep 2016 23:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BAkvm%E8%99%9A%E6%8B%9F%E6%9C%BA/</guid>
+      <description>以前写到一篇文章制作CentOS6基础镜像，今天在工作中突然要临时创建很多虚拟机，于是结合那篇文章得到的基础镜像，写了个简单的脚本快速创建K</description>
+    </item>
+    
+  </channel>
+</rss>

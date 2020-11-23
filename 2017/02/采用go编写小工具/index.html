@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>采用go编写小工具 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="采用go编写小工具" />
+<meta property="og:description" content="前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/" />
+<meta property="article:published_time" content="2017-02-22T11:30:00+08:00" />
+<meta property="article:modified_time" content="2017-02-22T11:30:00+08:00" />
+<meta itemprop="name" content="采用go编写小工具">
+<meta itemprop="description" content="前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows">
+<meta itemprop="datePublished" content="2017-02-22T11:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-02-22T11:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="896">
+
+
+
+<meta itemprop="keywords" content="golang,hexo,tomcat," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="采用go编写小工具"/>
+<meta name="twitter:description" content="前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">采用go编写小工具</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-02-22 </span>
+        <div class="post-category">
+            
+              <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 896 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#hexo">自动生成hexo博客静态文件</a></li>
+        <li><a href="#hexo-1">部署hexo博客</a></li>
+        <li><a href="#tomcat">杀Tomcat</a></li>
+        <li><a href="#heading">总结</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows的过程中发现一个很不便的地方，以前用类Unix系统，可以很方便写脚本完成一些小任务，但在windows里就变得很麻烦。解决方案有好几种：</p>
+<ul>
+<li>使用cygwin之类的bash环境模拟器。但涉及windows命令与cygwin里的命令互操作时，会出现一些问题，解决起来很麻烦。</li>
+<li>使用微软的powershell写脚本。不太想学一门新的类bash脚本语言。</li>
+<li>装上python，写python脚本。这似乎是个好办法，可对python语言不太熟。</li>
+</ul>
+<p>最后想了下，之前用过Go，可以用它来写小工具，试了试还挺好使的，下面举几个小例子。</p>
+<h3 id="hexo">自动生成hexo博客静态文件</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;os/exec&#34;</span>
+	<span style="color:#e6db74">&#34;time&#34;</span>
+	<span style="color:#e6db74">&#34;os&#34;</span>
+	<span style="color:#e6db74">&#34;path/filepath&#34;</span>
+)
+
+<span style="color:#75715e">// 此命令工具用于辅助hexo进行博客写作
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 原理：
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 1. 根据source目录下的文件提交变化自动重新生成博客静态文件
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 2. 启动hexo服务器，端口为5000
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">blogDir</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">filepath</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">W:\</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">gits</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">blog</span><span style="color:#e6db74">`</span>)
+
+	<span style="color:#75715e">//首先生成一次，然后取得当前的commitID
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">generateBlog</span>(<span style="color:#a6e22e">blogDir</span>)
+	<span style="color:#a6e22e">lastCommitID</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getLastCommitID</span>(<span style="color:#a6e22e">blogDir</span>)
+
+	<span style="color:#75715e">//运行hexo本地服务器
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#a6e22e">runBlog</span>(<span style="color:#a6e22e">blogDir</span>)
+	}()
+
+	<span style="color:#75715e">//不停地检查当前commitID是否与保存的是否一致，如不一致，则重新生成
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> {
+		<span style="color:#a6e22e">newCommitID</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getLastCommitID</span>(<span style="color:#a6e22e">blogDir</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">newCommitID</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">lastCommitID</span> {
+			<span style="color:#a6e22e">generateBlog</span>(<span style="color:#a6e22e">blogDir</span>)
+			<span style="color:#a6e22e">lastCommitID</span> = <span style="color:#a6e22e">newCommitID</span>
+		}
+		<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">10</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+	}
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">runBlog</span>(<span style="color:#a6e22e">blogDir</span> <span style="color:#66d9ef">string</span>) {
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">hexo</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">server</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">-s</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">-p</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">5000</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Dir</span> = <span style="color:#a6e22e">blogDir</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stdout</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stderr</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stderr</span>
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Run</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getLastCommitID</span>(<span style="color:#a6e22e">blogDir</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">git</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">rev-parse</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">HEAD</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Dir</span> = <span style="color:#a6e22e">filepath</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">blogDir</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">source</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">out</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Output</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#66d9ef">return</span> string(<span style="color:#a6e22e">out</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">generateBlog</span>(<span style="color:#a6e22e">blogDir</span> <span style="color:#66d9ef">string</span>) {
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">hexo</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">generate</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Dir</span> = <span style="color:#a6e22e">blogDir</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stdout</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stderr</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stderr</span>
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Run</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+}
+</code></pre></div><h3 id="hexo-1">部署hexo博客</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;path/filepath&#34;</span>
+	<span style="color:#e6db74">&#34;os/exec&#34;</span>
+	<span style="color:#e6db74">&#34;os&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+)
+
+<span style="color:#75715e">// 此命令工具用于将hexo部署至服务器
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">blogDir</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">filepath</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">W:\</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">gits</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">blog</span><span style="color:#e6db74">`</span>)
+
+	<span style="color:#a6e22e">deployBlog</span>(<span style="color:#a6e22e">blogDir</span>)
+}
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">deployBlog</span>(<span style="color:#a6e22e">blogDir</span> <span style="color:#66d9ef">string</span>) {
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">hexo</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">deploy</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Dir</span> = <span style="color:#a6e22e">blogDir</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stdout</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stdout</span>
+	<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Stderr</span> = <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Stderr</span>
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Run</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+}
+</code></pre></div><h3 id="tomcat">杀Tomcat</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;os/exec&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;bufio&#34;</span>
+	<span style="color:#e6db74">&#34;strings&#34;</span>
+	<span style="color:#e6db74">&#34;io&#34;</span>
+)
+
+<span style="color:#75715e">// 此命令工具杀掉意外未死的tomcat进程
+</span><span style="color:#75715e"></span><span style="color:#75715e">// idea有时候意外退出，此时开发用的tomcat服务器还在运行
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">cmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">netstat</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">-ano</span><span style="color:#e6db74">`</span>)
+	<span style="color:#a6e22e">output</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">StdoutPipe</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">err</span>)
+	}
+	<span style="color:#66d9ef">go</span> <span style="color:#66d9ef">func</span>() {
+		<span style="color:#a6e22e">cmd</span>.<span style="color:#a6e22e">Run</span>()
+	}()
+
+	<span style="color:#a6e22e">processOutput</span>(<span style="color:#a6e22e">output</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">processOutput</span>(<span style="color:#a6e22e">output</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">ReadCloser</span>) {
+	<span style="color:#a6e22e">scanner</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">bufio</span>.<span style="color:#a6e22e">NewScanner</span>(<span style="color:#a6e22e">output</span>)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Scan</span>() {
+		<span style="color:#a6e22e">line</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">scanner</span>.<span style="color:#a6e22e">Text</span>()
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">hasTomcatPort</span>(<span style="color:#a6e22e">line</span>) {
+			<span style="color:#a6e22e">parts</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Fields</span>(<span style="color:#a6e22e">line</span>)
+			<span style="color:#a6e22e">tomcatPid</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">parts</span>[len(<span style="color:#a6e22e">parts</span>) <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">tomcatPid</span>)
+			<span style="color:#a6e22e">killCmd</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">Command</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">taskkill</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">/F</span><span style="color:#e6db74">`</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">/PID</span><span style="color:#e6db74">`</span>, <span style="color:#a6e22e">tomcatPid</span>)
+			<span style="color:#a6e22e">killCmd</span>.<span style="color:#a6e22e">Run</span>()
+		}
+	}
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">hasTomcatPort</span>(<span style="color:#a6e22e">line</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">line</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">LISTENING</span><span style="color:#e6db74">`</span>) <span style="color:#f92672">&amp;&amp;</span> (<span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">line</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">8080</span><span style="color:#e6db74">`</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">line</span>, <span style="color:#e6db74">`</span><span style="color:#e6db74">1099</span><span style="color:#e6db74">`</span>))
+}
+</code></pre></div><h3 id="heading">总结</h3>
+<p>Go语言很精练，用来写这些小工具很合适。同时也可以经常用Go写点小东西练练手，以免长时间不用忘记了Go的玩法。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-02-22</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/hexo/">hexo</a>
+          
+          <a href="/tags/tomcat/">tomcat</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/02/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_01/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">tensorflow学习笔记_01</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/02/%E4%BF%AE%E5%A4%8Dhexo%E6%B6%89%E5%8F%8A%E4%B8%AD%E6%96%87%E7%9A%84302%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">修复hexo涉及中文的302问题</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

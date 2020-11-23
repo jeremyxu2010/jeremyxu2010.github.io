@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/" />
+
+  
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="alternate" type="application/rss+xml" title="jeremy的技术点滴" />
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="feed" type="application/rss+xml" title="jeremy的技术点滴" />
+  
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="jeremy的技术点滴" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/" />
+<meta property="og:updated_time" content="2020-11-22T20:54:00+08:00" />
+<meta itemprop="name" content="jeremy的技术点滴">
+<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="jeremy的技术点滴"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          
+  <section id="posts" class="posts">
+    
+    
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/">mongodb的两阶段提交实战</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-07-03 </span>
+      <div class="post-category">
+          
+            <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 3628 字 </span>
+      <span class="more-meta"> 预计阅读 8 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">servicecomb-saga开发实战</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-07-02 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+          
+        </div>
+      <span class="more-meta"> 约 1898 字 </span>
+      <span class="more-meta"> 预计阅读 4 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      最近的工作主要是微服务框架的设计与开发，期间要解决多个微服务的分布式事务问题，由于要解决的主要场景是用spring boot写的java项目，
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/">docker实战小结</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-06-18 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 2091 字 </span>
+      <span class="more-meta"> 预计阅读 5 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/">k8s学习记录02</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-05-21 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 670 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/05/consul%E5%9F%BA%E7%A1%80%E8%BF%90%E7%BB%B4-%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/">consul基础运维-备份还原导入导出</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-05-21 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+          
+        </div>
+      <span class="more-meta"> 约 658 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      本文档目标 工作中要保证生产环境部署的consul的集群能够安全稳定地对外提供服务，即使出现系统故障也能快速恢复，这里将讲述部分的备份还原操作
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/05/consul%E5%9F%BA%E7%A1%80%E8%BF%90%E7%BB%B4-%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/">k8s学习记录01</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-05-20 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 2334 字 </span>
+      <span class="more-meta"> 预计阅读 5 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      最近在本机macOS安装了开发用的k8s集群之后，花了些时间研究k8s，在这个过程中有一些零零星星的实操技巧，在这里记录一下，这些实际操作技
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/05/consul%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/">consul安全加固</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-05-18 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+          
+        </div>
+      <span class="more-meta"> 约 3685 字 </span>
+      <span class="more-meta"> 预计阅读 8 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      [TOC] 本文档目标 最近的工作需要对默认安装的consul集群进行安全加固，这里将安全加固的步骤记录下来。 consul 术语 首先介绍下在 consul 中会经常见到的术语： n
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/05/consul%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/">基于Docker for macOS的Kubernetes本地环境搭建与应用部署</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-05-05 </span>
+      <div class="post-category">
+          
+            <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+          
+        </div>
+      <span class="more-meta"> 约 1262 字 </span>
+      <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      最近的工作跟微服务有关，偶然在网上发现一个用k8s写微服务的小例子，觉得这样写微服务真的好简单，都不用在程序框架层面实现服务注册与服务发现了
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/">centos下无污染地打rpm包</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-04-01 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 628 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      工作中要经常要给centos6, centos7打某应用程序的rpm包。原来安装了两个虚拟机专门干这个工作，但经常会因为打包给系统装上许多没用
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/">ansible简易入门之playbook</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2018-03-20 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 2609 字 </span>
+      <span class="more-meta"> 预计阅读 6 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+  </section>
+  
+  <nav class="pagination">
+    
+      <a class="prev" href="/page/7/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text">上一页</span>
+      </a>
+    
+      <a class="next" href="/page/9/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+  </nav>
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

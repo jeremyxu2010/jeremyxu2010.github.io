@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mongodb on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mongodb/</link>
+    <description>Recent content in mongodb on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 13 Oct 2018 12:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mongodb/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>mongodb高可用集群部署</title>
+      <link>https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 13 Oct 2018 12:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
+      <description>最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记</description>
+    </item>
+    
+    <item>
+      <title>mongodb4.0多文档事务尝鲜</title>
+      <link>https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/</link>
+      <pubDate>Sun, 19 Aug 2018 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/</guid>
+      <description>mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），</description>
+    </item>
+    
+    <item>
+      <title>mongodb的两阶段提交实战</title>
+      <link>https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Tue, 03 Jul 2018 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/mongodb%E7%9A%84%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%E5%AE%9E%E6%88%98/</guid>
+      <description>项目中用到了mongodb（3.x版本），业务上需要操作mongodb的多个collections，希望要么同时操作成功，要么回滚操作保持数</description>
+    </item>
+    
+  </channel>
+</rss>

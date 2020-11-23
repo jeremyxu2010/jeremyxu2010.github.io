@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>编写mybatis-generator插件 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&amp;lt;Demo&amp;gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="编写mybatis-generator插件" />
+<meta property="og:description" content="背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&lt;Demo&gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/" />
+<meta property="article:published_time" content="2017-03-20T20:20:00+08:00" />
+<meta property="article:modified_time" content="2017-03-20T20:20:00+08:00" />
+<meta itemprop="name" content="编写mybatis-generator插件">
+<meta itemprop="description" content="背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&lt;Demo&gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了">
+<meta itemprop="datePublished" content="2017-03-20T20:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-03-20T20:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="840">
+
+
+
+<meta itemprop="keywords" content="mybatis,mybatis-generator," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="编写mybatis-generator插件"/>
+<meta name="twitter:description" content="背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&lt;Demo&gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">编写mybatis-generator插件</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 840 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">背景</a></li>
+    <li><a href="#heading-1">分析</a></li>
+    <li><a href="#mybatis-generator">编写mybatis-generator插件</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">背景</h2>
+<p>今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">DemoCriteria criteria <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DemoCriteria<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+criteria<span style="color:#f92672">.</span><span style="color:#a6e22e">createCriteria</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">andFiled1EqualTo</span><span style="color:#f92672">(</span>filed1Value<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> demoMapper<span style="color:#f92672">.</span><span style="color:#a6e22e">selectByCriteria</span><span style="color:#f92672">(</span>criteria<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>这样写很累啊，于是想了下能否在一行里搞定呢？</p>
+<h2 id="heading-1">分析</h2>
+<p>打开<code>DemoCriteria.java</code>，这样找到<code>createCriteriaInternal</code>这个方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">protected</span> Criteria <span style="color:#a6e22e">createCriteriaInternal</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Criteria criteria <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Criteria<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> criteria<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这里我应该可以将<code>DemoCriteria</code>对象的引用转入<code>Criteria</code>对象，而<code>Criteria</code>对象的大部分方法已经支持链式操作，这样就可以在一行完成查询操作，如下面代码示例：</p>
+<pre><code>protected Criteria createCriteriaInternal() {
+    Criteria criteria = new Criteria();
+    return criteria;
+}
+
+public static class Criteria extends GeneratedCriteria {
+    private DemoCriteria topCriteria;
+
+    protected Criteria() {
+        super();
+    }
+
+    protected Criteria(DemoCriteria topCriteria) {
+        super();
+        this.topCriteria = topCriteria;
+    }
+
+    public DemoCriteria getTopCriteria() {
+        return this.topCriteria;
+    }
+}
+
+// 使用代码示例方法
+List&lt;Demo&gt; demos = demoMapper.selectByCriteria(new DemoCriteria().createCriteria().andFiled1EqualTo(filed1Value)getTopCriteria());
+</code></pre><h2 id="mybatis-generator">编写mybatis-generator插件</h2>
+<p>因为工程中的Example类都是用<code>mybatis-generator</code>生成出来的，而<code>mybatis-generator</code>并没有自带插件完成这件事，因此自己动手写了个插件，如下代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> personal.jeremyxu2010.mybatis.plugins<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> org.mybatis.generator.api.IntrospectedTable<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.PluginAdapter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.Field<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.FullyQualifiedJavaType<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.InnerClass<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.JavaVisibility<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.Method<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.Parameter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.mybatis.generator.api.dom.java.TopLevelClass<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.util.List<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * @Description:
+</span><span style="color:#75715e"> * @Author: jeremyxu
+</span><span style="color:#75715e"> * @Created Date: 2017/3/20
+</span><span style="color:#75715e"> * @Created Time: 9:31
+</span><span style="color:#75715e"> * @Version:1.0
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ModelExampleBuilderPlugin</span> <span style="color:#66d9ef">extends</span> PluginAdapter <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">validate</span><span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> warnings<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">modelExampleClassGenerated</span><span style="color:#f92672">(</span>TopLevelClass topLevelClass<span style="color:#f92672">,</span>
+                                              IntrospectedTable introspectedTable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Method method <span style="color:#f92672">:</span> topLevelClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getMethods</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;createCriteriaInternal&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>method<span style="color:#f92672">.</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                method<span style="color:#f92672">.</span><span style="color:#a6e22e">getBodyLines</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                method<span style="color:#f92672">.</span><span style="color:#a6e22e">addBodyLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Criteria criteria = new Criteria(this);&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                method<span style="color:#f92672">.</span><span style="color:#a6e22e">addBodyLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;return criteria;&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>InnerClass innerClass <span style="color:#f92672">:</span> topLevelClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getInnerClasses</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> FullyQualifiedJavaType<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Criteria&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>innerClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                Field filed <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Field<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;topCriteria&#34;</span><span style="color:#f92672">,</span> topLevelClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                filed<span style="color:#f92672">.</span><span style="color:#a6e22e">setVisibility</span><span style="color:#f92672">(</span>JavaVisibility<span style="color:#f92672">.</span><span style="color:#a6e22e">PRIVATE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                innerClass<span style="color:#f92672">.</span><span style="color:#a6e22e">addField</span><span style="color:#f92672">(</span>filed<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                Method constructMethod <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Method<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setVisibility</span><span style="color:#f92672">(</span>JavaVisibility<span style="color:#f92672">.</span><span style="color:#a6e22e">PROTECTED</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Criteria&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">addParameter</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Parameter<span style="color:#f92672">(</span>topLevelClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;topCriteria&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setConstructor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">addBodyLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;super();&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                constructMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">addBodyLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;this.topCriteria = topCriteria;&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                innerClass<span style="color:#f92672">.</span><span style="color:#a6e22e">addMethod</span><span style="color:#f92672">(</span>constructMethod<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                Method getMethod <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Method<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                getMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setVisibility</span><span style="color:#f92672">(</span>JavaVisibility<span style="color:#f92672">.</span><span style="color:#a6e22e">PUBLIC</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                getMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getTopCriteria&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                getMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setReturnType</span><span style="color:#f92672">(</span>topLevelClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                getMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">setConstructor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                getMethod<span style="color:#f92672">.</span><span style="color:#a6e22e">addBodyLine</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;return this.topCriteria;&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//$NON-NLS-1$
+</span><span style="color:#75715e"></span>                innerClass<span style="color:#f92672">.</span><span style="color:#a6e22e">addMethod</span><span style="color:#f92672">(</span>getMethod<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>代码很简单，就不另外说明了。</p>
+<p>然后在<code>mybatis-generator</code>的配置文件里加入<code>&lt;plugin type=&quot;personal.jeremyxu2010.mybatis.plugins.ModelExampleBuilderPlugin&quot;&gt;&lt;/plugin&gt;</code>就可以了。</p>
+<p>这里值得注意的是<code>PluginAdapter</code>里提供了很多方法供插件来覆盖，开发者可根据自己的需要修改生成的<code>domain object</code>、<code>domain example object</code>、<code>mapper class</code>、<code>mapper xml file</code>，编写插件可参考<a href="http://www.mybatis.org/generator/reference/pluggingIn.html">这里</a>。</p>
+<p>最后安利一下自己常用的一些mybatis-generator插件，见<a href="http://git.oschina.net/jeremy-xu/mybatis-generator-plugins">这里</a>。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-03-20</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/mybatis/">mybatis</a>
+          
+          <a href="/tags/mybatis-generator/">mybatis-generator</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/04/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">开发小技巧备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/">
+            <span class="next-text nav-default">tensorflow学习笔记_03</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>解决pvc无法mount的问题 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="解决pvc无法mount的问题" />
+<meta property="og:description" content="这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/" />
+<meta property="article:published_time" content="2019-07-07T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-07-07T18:00:00+08:00" />
+<meta itemprop="name" content="解决pvc无法mount的问题">
+<meta itemprop="description" content="这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其">
+<meta itemprop="datePublished" content="2019-07-07T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-07T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1763">
+
+
+
+<meta itemprop="keywords" content="k8s,devops,ceph," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="解决pvc无法mount的问题"/>
+<meta name="twitter:description" content="这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">解决pvc无法mount的问题</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1763 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题一</a>
+      <ul>
+        <li><a href="#heading-1">问题描述</a></li>
+        <li><a href="#heading-2">问题解决</a></li>
+        <li><a href="#heading-3">根源分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">问题二</a>
+      <ul>
+        <li><a href="#heading-5">问题描述</a></li>
+        <li><a href="#heading-6">问题解决</a></li>
+        <li><a href="#heading-7">根源分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">总结</a></li>
+    <li><a href="#heading-9">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。</p>
+<h2 id="heading">问题一</h2>
+<h3 id="heading-1">问题描述</h3>
+<p>一个deployment，在其spec中指定使用了某一个pvc，在很偶然的情况下，出现这一个deployment对应的pod被调度到了另外一个node节点，但pod在另外的node由于无法正常attach pv volume一直没法正常运行。</p>
+<h3 id="heading-2">问题解决</h3>
+<p>首先检查一下有问题的pod：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pod xxxx
+
+Warning  FailedAttachVolume     43m                 attachdetach-controller  Multi-Attach error <span style="color:#66d9ef">for</span> volume <span style="color:#e6db74">&#34;pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512&#34;</span> Volume is already exclusively attached to one node and can<span style="color:#960050;background-color:#1e0010">&#39;</span>t be attached to another
+</code></pre></div><p>可以看到<code>attachdetach-controller</code>报告说这个volume已经被attach到一个node节点上了，因此不能被attach到其它的node节点。</p>
+<p>然后检查一下这个volume被哪个node节点attach住了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe pv pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512
+Source:
+    Type:          RBD <span style="color:#f92672">(</span>a Rados Block Device mount on the host that shares a pod<span style="color:#960050;background-color:#1e0010">&#39;</span>s lifetime<span style="color:#f92672">)</span>
+    ...
+    RBDImage:      kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512
+    ...
+    RBDPool:       k8s
+    ...
+</code></pre></div><p>这里可以看到这个volume对应的rbd镜像是<code>kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512</code>，rbd池是<code>k8s</code>。</p>
+<p>接下来可以用ceph的相关命令查一下该rbd镜像现在被哪个node节点使用了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rbd info k8s/kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512
+rbd image <span style="color:#e6db74">&#39;kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512&#39;</span>:
+	...
+	block_name_prefix: rbd_data.115f79643c9869
+	...
+
+<span style="color:#75715e"># 这里将上面的block_name_prefix属性值拿出来，将rbd_data修改为rbd_header即可</span>
+$ rados listwatchers -p k8s rbd_header.115f79643c9869
+watcher<span style="color:#f92672">=</span>10.125.53.47:0/3423687629 client.1138525 cookie<span style="color:#f92672">=</span><span style="color:#ae81ff">18446462598732840965</span>
+</code></pre></div><p>上述命令就看到了这个rbd镜像是被<code>10.125.53.47</code>这个node节点使用了。</p>
+<p>接下来登录到<code>10.125.53.47</code>这个node节点，消除其对rbd镜像的使用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 这里的路径为/dev/rbd/${rbdPool}/${rbdImage}</span>
+$ ls -l /dev/rbd/k8s/kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512
+lrwxrwxrwx <span style="color:#ae81ff">1</span> root root <span style="color:#ae81ff">10</span> 7月   <span style="color:#ae81ff">2</span> 11:30 /dev/rbd/k8s/kubernetes-dynamic-pvc-0a5eb91b-3720-11e8-8d2b-000c29f8a512 -&gt; ../../rbd4
+
+<span style="color:#75715e"># 直接使用rbd unmap命令将rbd镜像unmap</span>
+$ rbd unmap /dev/rbd4
+</code></pre></div><p>到此问题解决。</p>
+<h3 id="heading-3">根源分析</h3>
+<p>首先回顾一下k8s里volume的挂载过程：</p>
+<ul>
+<li>provision，卷分配成功，这个操作由<code>PVController</code>完成</li>
+<li>attach，卷挂载在对应worker node，这个操作为<code>AttachDetachController</code>完成</li>
+<li>mount，卷挂载为文件系统并且映射给对应Pod，这个操作为<code>VolumeManager</code>完成</li>
+</ul>
+<p><img src="/images/20190707/image-20190707214026773.png" alt="image-20190707214026773"></p>
+<p>k8s里volume的卸载过程跟上述场景完全相反：</p>
+<ul>
+<li>umount，卷已经和对应worker node解除映射，且已经从文件系统umount</li>
+<li>detach，卷已经从worker node卸载</li>
+<li>recycle，卷被回收</li>
+</ul>
+<p>在我这个场景里，pod的迁移会导致原来的pod从其node节点删除，这时<code>AttachDetachController</code>没有成为将rbd从原来的node节点detach。后面多次尝试却无法重现问题，猜测是当时由于某些原因<code>AttachDetachController</code>执行<code>detach</code>操作失败了，可能是强制删除pod导致的，所以删除pod时还是要慎用<code>—force —grace-period=0</code>选项。</p>
+<h2 id="heading-4">问题二</h2>
+<h3 id="heading-5">问题描述</h3>
+<p>还是上述那个场景，这次对deployment作了一次滚动更新，这时k8s会新创建一个pod，尝试挂载volume，但这次原来那个node节点上pod仍处于Running状态，因而其使用volume是正常的。</p>
+<h3 id="heading-6">问题解决</h3>
+<p>这次很容易解决，直接删除旧的pod就可以了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl delete pod xxxx
+</code></pre></div><h3 id="heading-7">根源分析</h3>
+<p>很明显，滚动更新时产生多了一个pod，为什么会这样了，我们看一下deployment里的滚动更新策略：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl get deployment xxxx -o yaml
+...
+deploySpec:
+  replicas: <span style="color:#ae81ff">1</span>
+  ...
+  strategy:
+    rollingUpdate:
+      maxSurge: <span style="color:#ae81ff">1</span>
+      maxUnavailable: <span style="color:#ae81ff">1</span>
+    type: RollingUpdate
+  template:
+    volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: data-vol
+...
+
+$ kubectl get pvc data-vol -o yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: data-vol
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: rbd
+</code></pre></div><p>可以看到这里默认配置的滚动更新参数为<code>maxSurge=1</code>，也即允许比desired的pod数目多1个。而pvc又是<code>ReadWriteOnce</code>的访问模式，因此滚动更新时会产生多一个pod，而<code>ReadWriteOnce</code>的访问模式又不允许两个pod挂载同一个volume。</p>
+<p>因此这里有几个的解决方案：</p>
+<ol>
+<li>使用<code>ReadWriteMany</code>访问模式的pvc</li>
+<li>将<code>maxSurge</code>设置为<code>0</code>，避免在更新过程中产生多余的pod</li>
+<li>将deployment改为statefulset，statefulset对应的pod与pvc是一一绑定的，在更新过程中不会产生多余的pod</li>
+</ol>
+<h2 id="heading-8">总结</h2>
+<p>kuberentes里使用存储自有其逻辑，按照它的逻辑去分析问题，很多问题都可以迎刃而解。</p>
+<h2 id="heading-9">参考</h2>
+<ol>
+<li><a href="http://newto.me/k8s-storage-architecture/">http://newto.me/k8s-storage-architecture/</a></li>
+<li><a href="https://juejin.im/entry/5bc8be2ce51d450e8377e21d">https://juejin.im/entry/5bc8be2ce51d450e8377e21d</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment">https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-07-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+          <a href="/tags/ceph/">ceph</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">彻底解决pvc无法mount的问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/">
+            <span class="next-text nav-default">完善cni的ipam方案</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

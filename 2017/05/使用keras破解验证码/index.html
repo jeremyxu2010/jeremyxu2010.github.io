@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用keras破解验证码 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用keras破解验证码" />
+<meta property="og:description" content="今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/" />
+<meta property="article:published_time" content="2017-05-07T18:20:00+08:00" />
+<meta property="article:modified_time" content="2017-05-07T18:20:00+08:00" />
+<meta itemprop="name" content="使用keras破解验证码">
+<meta itemprop="description" content="今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登">
+<meta itemprop="datePublished" content="2017-05-07T18:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-05-07T18:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="2030">
+
+
+
+<meta itemprop="keywords" content="keras,tensorflow,python," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用keras破解验证码"/>
+<meta name="twitter:description" content="今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用keras破解验证码</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-05-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2030 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">生成训练数据</a></li>
+    <li><a href="#heading-1">对训练数据预处理</a>
+      <ul>
+        <li><a href="#heading-2">验证码的向量化</a></li>
+        <li><a href="#heading-3">图片灰度化</a></li>
+        <li><a href="#heading-4">提供取得训练数据的方法</a></li>
+        <li><a href="#heading-5">构造深度学习模型</a></li>
+        <li><a href="#heading-6">验证结果</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-7">总结</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登录了。因为前一段时间研究过机器学习，觉得可以使用<code>keras</code>, <code>tensorflow</code>之类的深度学习框架解决验证码识别的问题。</p>
+<h2 id="heading">生成训练数据</h2>
+<p>机器学习一般都需要比较多的训练数据，怎么得到训练数据呢？主要有以下方法：</p>
+<ol>
+<li>手动（累死人系列）</li>
+<li>破解验证码生成机制，自动生成无限多的训练数据</li>
+<li>打入敌人内部（卧底+不要脸+不要命+多大仇系列）</li>
+</ol>
+<p>第1个方法太耗人力，当然依赖打码兔之类的技术也可以完成，但也比较费钱，第3个方法太不实际，于是只能从第2个方法入手。检查了下，发现这个第三方网站做得挺随意的，验证码的地址就是<code>http://xxx.xxx.com/kaptcha.jpg</code>。从事多年java开发，一看就知道是使用<a href="https://code.google.com/archive/p/kaptcha/wikis/HowToUse.wiki">kaptcha</a>库生成的验证码。进一步研究发现就是直接采用<code>kaptcha</code>的默认配置生成的验证码，这样就比较好办了，直接生成一批验证码出来。代码如下：</p>
+<p><code>GenKaptcha.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> com.google.code.kaptcha.Producer<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.google.code.kaptcha.util.Config<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> javax.imageio.ImageIO<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.awt.image.BufferedImage<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Files<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Path<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Paths<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Properties<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 2017/5/7.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GenKaptcha</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        ImageIO<span style="color:#f92672">.</span><span style="color:#a6e22e">setUseCache</span><span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Config config <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Config<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Properties<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Producer kaptchaProducer <span style="color:#f92672">=</span> config<span style="color:#f92672">.</span><span style="color:#a6e22e">getProducerImpl</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Path p <span style="color:#f92672">=</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;pics&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#f92672">!</span>Files<span style="color:#f92672">.</span><span style="color:#a6e22e">exists</span><span style="color:#f92672">(</span>p<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            Files<span style="color:#f92672">.</span><span style="color:#a6e22e">createDirectory</span><span style="color:#f92672">(</span>p<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        genPics<span style="color:#f92672">(</span>kaptchaProducer<span style="color:#f92672">,</span> 5000<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">genPics</span><span style="color:#f92672">(</span>Producer kaptchaProducer<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> count<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>0<span style="color:#f92672">;</span> i<span style="color:#f92672">&lt;</span>count<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            String capText <span style="color:#f92672">=</span> kaptchaProducer<span style="color:#f92672">.</span><span style="color:#a6e22e">createText</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            BufferedImage bi <span style="color:#f92672">=</span> kaptchaProducer<span style="color:#f92672">.</span><span style="color:#a6e22e">createImage</span><span style="color:#f92672">(</span>capText<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            Path p <span style="color:#f92672">=</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;pics&#34;</span><span style="color:#f92672">,</span> i <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;_&#34;</span> <span style="color:#f92672">+</span> capText <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.jpg&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span><span style="color:#f92672">!</span>Files<span style="color:#f92672">.</span><span style="color:#a6e22e">exists</span><span style="color:#f92672">(</span>p<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                Files<span style="color:#f92672">.</span><span style="color:#a6e22e">createFile</span><span style="color:#f92672">(</span>p<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            ImageIO<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>bi<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;jpg&#34;</span><span style="color:#f92672">,</span> Files<span style="color:#f92672">.</span><span style="color:#a6e22e">newOutputStream</span><span style="color:#f92672">(</span>p<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-1">对训练数据预处理</h2>
+<p>有了训练数据还需要进行简单的预处理</p>
+<h3 id="heading-2">验证码的向量化</h3>
+<p>验证码是形如<code>ncn34</code>之类的字符串，而机器学习时用到的标签也必须是向量，因此写两个方法，分别完成验证码字符串的向量化及反向量化。我们知道一个字符很容易向量化，采用<code>one-hot encoding</code>, 那么一个字符串向量化可以简单地把字符one-hot encoding得到的向量拼起来。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 验证码的可选字符是从kaptcha得到的默认值</span>
+captcha_chars <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abcde2345678gfynmnpwx</span><span style="color:#e6db74">&#39;</span>
+
+char_idx_mappings <span style="color:#f92672">=</span> {}
+idx_char_mappings <span style="color:#f92672">=</span> {}
+
+<span style="color:#66d9ef">for</span> idx, c <span style="color:#f92672">in</span> enumerate(list(captcha_chars)):
+    char_idx_mappings[c] <span style="color:#f92672">=</span> idx
+    idx_char_mappings[idx] <span style="color:#f92672">=</span> c
+
+MAX_CAPTCHA <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>
+CHAR_SET_LEN <span style="color:#f92672">=</span> len(captcha_chars)
+
+<span style="color:#75715e"># 验证码转化为向量</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">text2vec</span>(text):
+    text_len <span style="color:#f92672">=</span> len(text)
+    <span style="color:#66d9ef">if</span> text_len <span style="color:#f92672">&gt;</span> MAX_CAPTCHA:
+        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">验证码最长</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">个字符</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">%</span>MAX_CAPTCHA)
+
+    vector <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(MAX_CAPTCHA<span style="color:#f92672">*</span>CHAR_SET_LEN)
+    <span style="color:#66d9ef">for</span> i, c <span style="color:#f92672">in</span> enumerate(text):
+        idx <span style="color:#f92672">=</span> i <span style="color:#f92672">*</span> CHAR_SET_LEN <span style="color:#f92672">+</span> char_idx_mappings[c]
+        vector[idx] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">return</span> vector
+
+<span style="color:#75715e"># 向量转化为验证码</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">vec2text</span>(vec):
+    text <span style="color:#f92672">=</span> []
+    vec[vec<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">0.5</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    char_pos <span style="color:#f92672">=</span> vec<span style="color:#f92672">.</span>nonzero()[<span style="color:#ae81ff">0</span>]
+    <span style="color:#66d9ef">for</span> i, c <span style="color:#f92672">in</span> enumerate(char_pos):
+        char_idx <span style="color:#f92672">=</span> c <span style="color:#f92672">%</span> CHAR_SET_LEN
+        text<span style="color:#f92672">.</span>append(idx_char_mappings[char_idx])
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>join(text)
+</code></pre></div><h3 id="heading-3">图片灰度化</h3>
+<p>验证码识别这个场景里，图片的色彩并不能帮助识别，因此可以将图片灰度化以减少计算压力。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 将图片灰度化以减少计算压力</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">preprocess_pics</span>():
+    <span style="color:#66d9ef">for</span> (dirpath, dirnames, filenames) <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>walk(pics_dir):
+        <span style="color:#66d9ef">for</span> filename <span style="color:#f92672">in</span> filenames:
+            <span style="color:#66d9ef">if</span> filename<span style="color:#f92672">.</span>endswith(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.jpg</span><span style="color:#e6db74">&#39;</span>):
+                <span style="color:#66d9ef">with</span> open(pics_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+                    image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(f)
+                    <span style="color:#75715e"># 直接使用convert方法对图片进行灰度操作</span>
+                    image <span style="color:#f92672">=</span> image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">L</span><span style="color:#e6db74">&#39;</span>)
+                    <span style="color:#66d9ef">with</span> open(processed_pics_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">wb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> of:
+                        image<span style="color:#f92672">.</span>save(of)
+</code></pre></div><h3 id="heading-4">提供取得训练数据的方法</h3>
+<p>为了便于在模型训练时取得训练数据，提供工具方法供外部取得数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">img_idx_filename_mappings <span style="color:#f92672">=</span> {}
+img_idx_text_mappings <span style="color:#f92672">=</span> {}
+img_idxes <span style="color:#f92672">=</span> []
+
+<span style="color:#75715e"># 首先遍历目录，根据文件名初始化idx-&gt;filename, idx-&gt;text的映射，同时初始化idx列表</span>
+<span style="color:#66d9ef">for</span> (dirpath, dirnames, filenames) <span style="color:#f92672">in</span> os<span style="color:#f92672">.</span>walk(processed_pics_dir):
+    <span style="color:#66d9ef">for</span> filename <span style="color:#f92672">in</span> filenames:
+        <span style="color:#66d9ef">if</span> filename<span style="color:#f92672">.</span>endswith(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.jpg</span><span style="color:#e6db74">&#39;</span>):
+            idx <span style="color:#f92672">=</span> int(filename[<span style="color:#ae81ff">0</span>:filename<span style="color:#f92672">.</span>index(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_</span><span style="color:#e6db74">&#39;</span>)])
+            text <span style="color:#f92672">=</span> filename[int(filename<span style="color:#f92672">.</span>index(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">_</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):int(filename<span style="color:#f92672">.</span>index(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>))]
+            img_idx_filename_mappings[idx] <span style="color:#f92672">=</span> filename
+            img_idx_text_mappings[idx] <span style="color:#f92672">=</span> text
+            img_idxes<span style="color:#f92672">.</span>append(idx)
+
+<span style="color:#75715e"># 为避免频繁读入文件，将images及labels缓存起来</span>
+sample_idx_image_mappings <span style="color:#f92672">=</span> {}
+sample_idx_label_mappings <span style="color:#f92672">=</span> {}
+
+<span style="color:#75715e"># 提供给外部取得一批训练数据的接口</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_batch_data</span>(batch_size):
+    images <span style="color:#f92672">=</span> []
+    labels <span style="color:#f92672">=</span> []
+    target_idxes <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>sample(img_idxes, batch_size)
+    <span style="color:#66d9ef">for</span> target_idx <span style="color:#f92672">in</span> target_idxes:
+        image <span style="color:#f92672">=</span> None
+        <span style="color:#66d9ef">if</span> target_idx <span style="color:#f92672">in</span> sample_idx_image_mappings:
+            image <span style="color:#f92672">=</span> sample_idx_image_mappings[target_idx]
+        <span style="color:#66d9ef">else</span>:
+            <span style="color:#66d9ef">with</span> open(processed_pics_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">+</span> img_idx_filename_mappings[target_idx], <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+                image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(f)
+                <span style="color:#75715e"># 对数据正则化，tensorflow处理时更高效</span>
+                image <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(image)<span style="color:#f92672">/</span><span style="color:#ae81ff">255</span>
+            sample_idx_image_mappings[target_idx] <span style="color:#f92672">=</span> image
+        label <span style="color:#f92672">=</span> None
+        <span style="color:#66d9ef">if</span> target_idx <span style="color:#f92672">in</span> sample_idx_label_mappings:
+            label <span style="color:#f92672">=</span> sample_idx_label_mappings[target_idx]
+        <span style="color:#66d9ef">else</span>:
+            label <span style="color:#f92672">=</span> text2vec(img_idx_text_mappings[target_idx])
+            sample_idx_label_mappings[target_idx] <span style="color:#f92672">=</span> label
+        images<span style="color:#f92672">.</span>append(image)
+        labels<span style="color:#f92672">.</span>append(label)
+    x <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(images)
+    y <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(labels)
+    <span style="color:#66d9ef">return</span> (x, y)
+</code></pre></div><h3 id="heading-5">构造深度学习模型</h3>
+<p>以前直接玩过<code>tensorflow</code>，写起来真的很费劲，这回换<code>keras</code>使使，它相当于tensorflow的API简易封装，这次一用就喜欢上它了。直接上代码。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> pathlib <span style="color:#f92672">import</span> Path
+<span style="color:#f92672">from</span> keras.models <span style="color:#f92672">import</span> Sequential
+<span style="color:#f92672">from</span> keras.layers <span style="color:#f92672">import</span> Dense, InputLayer
+<span style="color:#f92672">from</span> keras.layers.core <span style="color:#f92672">import</span> Reshape, Dropout, Flatten
+<span style="color:#f92672">from</span> keras.layers.convolutional <span style="color:#f92672">import</span> Conv2D
+<span style="color:#f92672">from</span> keras.layers.pooling <span style="color:#f92672">import</span> MaxPooling2D
+<span style="color:#f92672">from</span> keras.layers <span style="color:#f92672">import</span> Input, concatenate
+<span style="color:#f92672">from</span> keras.models <span style="color:#f92672">import</span> Model
+
+<span style="color:#f92672">import</span> kaptcha_data
+
+model <span style="color:#f92672">=</span> Sequential()
+
+<span style="color:#75715e"># 首先对输入数据reshape一下，因为输入的数据是(-1, kaptcha_data.IMAGE_HEIGHT, kaptcha_data.IMAGE_WIDTH), 要把它变为(-1, kaptcha_data.IMAGE_HEIGHT, kaptcha_data.IMAGE_WIDTH, 1)这样才能方便后面卷积层处理</span>
+model<span style="color:#f92672">.</span>add(InputLayer(input_shape<span style="color:#f92672">=</span>(kaptcha_data<span style="color:#f92672">.</span>IMAGE_HEIGHT, kaptcha_data<span style="color:#f92672">.</span>IMAGE_WIDTH)))
+model<span style="color:#f92672">.</span>add(Reshape((kaptcha_data<span style="color:#f92672">.</span>IMAGE_HEIGHT, kaptcha_data<span style="color:#f92672">.</span>IMAGE_WIDTH, <span style="color:#ae81ff">1</span>)))
+
+<span style="color:#75715e"># 三组卷积逻辑，每组包括两个卷积层及一个池化层</span>
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">3</span>):
+    model<span style="color:#f92672">.</span>add(Conv2D(<span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span>i, <span style="color:#ae81ff">3</span>, strides<span style="color:#f92672">=</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>), padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">same</span><span style="color:#e6db74">&#39;</span>, use_bias<span style="color:#f92672">=</span>True))
+    model<span style="color:#f92672">.</span>add(Conv2D(<span style="color:#ae81ff">8</span><span style="color:#f92672">*</span><span style="color:#ae81ff">2</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span>i, <span style="color:#ae81ff">5</span>, strides<span style="color:#f92672">=</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>), padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">same</span><span style="color:#e6db74">&#39;</span>, use_bias<span style="color:#f92672">=</span>True))
+    model<span style="color:#f92672">.</span>add(MaxPooling2D(pool_size<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, strides<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, padding<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">same</span><span style="color:#e6db74">&#39;</span>))
+
+<span style="color:#75715e"># 马上要接上全连接层，要将数据展平</span>
+model<span style="color:#f92672">.</span>add(Flatten())
+
+<span style="color:#75715e"># 全连接层，输出维数是kaptcha_data.MAX_CAPTCHA * kaptcha_data.CHAR_SET_LEN</span>
+image_input <span style="color:#f92672">=</span> Input(shape<span style="color:#f92672">=</span>(kaptcha_data<span style="color:#f92672">.</span>IMAGE_HEIGHT, kaptcha_data<span style="color:#f92672">.</span>IMAGE_WIDTH))
+encoded_image <span style="color:#f92672">=</span> model(image_input)
+
+encoded_softmax <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(kaptcha_data<span style="color:#f92672">.</span>MAX_CAPTCHA):
+    encoded_softmax<span style="color:#f92672">.</span>append(Dense(kaptcha_data<span style="color:#f92672">.</span>CHAR_SET_LEN, use_bias<span style="color:#f92672">=</span>True, activation<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">softmax</span><span style="color:#e6db74">&#39;</span>)(encoded_image))
+
+output <span style="color:#f92672">=</span> concatenate(encoded_softmax)
+
+model <span style="color:#f92672">=</span> Model(inputs<span style="color:#f92672">=</span>[image_input], outputs<span style="color:#f92672">=</span>output)
+
+<span style="color:#75715e"># 编译模型，损失函数使用categorical_crossentropy， 优化函数使用adadelta，每一次epoch度量accuracy</span>
+model<span style="color:#f92672">.</span>compile(loss<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">categorical_crossentropy</span><span style="color:#e6db74">&#39;</span>, optimizer<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">adadelta</span><span style="color:#e6db74">&#39;</span>, metrics<span style="color:#f92672">=</span>[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">accuracy</span><span style="color:#e6db74">&#39;</span>])
+
+<span style="color:#75715e"># 模型可视化</span>
+<span style="color:#75715e"># from keras.utils import plot_model</span>
+<span style="color:#75715e"># plot_model(model, to_file=captcha_preprocess.base_dir + &#39;/captcha_recognition_model.png&#39;)</span>
+
+<span style="color:#75715e"># 加载之前模型的权值</span>
+<span style="color:#66d9ef">if</span> Path(kaptcha_data<span style="color:#f92672">.</span>base_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/kaptcha_recognition.h5</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>is_file():
+    model<span style="color:#f92672">.</span>load_weights(kaptcha_data<span style="color:#f92672">.</span>base_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/kaptcha_recognition.h5</span><span style="color:#e6db74">&#39;</span>)
+
+batch_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">64</span>
+
+epoch <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">while</span> True:
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">epoch {}...</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(epoch <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>))
+    (x_batch, y_batch) <span style="color:#f92672">=</span> kaptcha_data<span style="color:#f92672">.</span>get_batch_data(batch_size)
+    train_result <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>train_on_batch(x<span style="color:#f92672">=</span>x_batch, y<span style="color:#f92672">=</span>y_batch)
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74"> loss: </span><span style="color:#e6db74">%.6f</span><span style="color:#e6db74">, accuracy: </span><span style="color:#e6db74">%.6f</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (train_result[<span style="color:#ae81ff">0</span>], train_result[<span style="color:#ae81ff">1</span>]))
+    <span style="color:#66d9ef">if</span> epoch <span style="color:#f92672">%</span> <span style="color:#ae81ff">50</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#75715e"># 保存模型的权值</span>
+        model<span style="color:#f92672">.</span>save_weights(kaptcha_data<span style="color:#f92672">.</span>base_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/kaptcha_recognition.h5</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#75715e"># 当准确率大于0.5时，说明学习到的模型已经可以投入实际使用，停止计算</span>
+    <span style="color:#66d9ef">if</span> train_result[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0.5</span>:
+        <span style="color:#66d9ef">break</span>
+    epoch <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><h3 id="heading-6">验证结果</h3>
+<p>家里的电脑没有GPU支持，计算起来比较慢，但经过3000多次迭代后，还是达到了0.3以前的准确率。</p>
+<pre><code>epoch 3502...
+ loss: 8.298573, accuracy: 0.312500
+</code></pre><p>模型计算好了后，以后要计算某张图片的验证码就简单了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_single_image</span>(filename):
+    images <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">with</span> open(filename, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">rb</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+        image <span style="color:#f92672">=</span> Image<span style="color:#f92672">.</span>open(f)
+        image <span style="color:#f92672">=</span> image<span style="color:#f92672">.</span>convert(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">L</span><span style="color:#e6db74">&#39;</span>)
+        images<span style="color:#f92672">.</span>append(np<span style="color:#f92672">.</span>array(image)<span style="color:#f92672">/</span><span style="color:#ae81ff">255</span>)
+    <span style="color:#66d9ef">return</span> np<span style="color:#f92672">.</span>array(images)
+
+
+<span style="color:#75715e"># 计算某一张图片的验证码</span>
+predicts <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>predict(kaptcha_data<span style="color:#f92672">.</span>get_single_image(kaptcha_data<span style="color:#f92672">.</span>base_dir <span style="color:#f92672">+</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/pics/0_ncn34.jpg</span><span style="color:#e6db74">&#39;</span>), batch_size<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">predict: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> kaptcha_data<span style="color:#f92672">.</span>vec2text(predicts[<span style="color:#ae81ff">0</span>]))
+</code></pre></div><h2 id="heading-7">总结</h2>
+<p>有了机器学习以后，以前认为很难突破的障碍变得越来越容易突破了，比如文字验证码，理论上说像<code>kaptcha</code>之类的纯粹文字验证码，对机器学习来说真的太容易破解了。另外在平时工作中如正在要用验证码，一定要设置别人不容易猜出来的规则，绝对不能直接用默认的。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-05-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/keras/">keras</a>
+          
+          <a href="/tags/tensorflow/">tensorflow</a>
+          
+          <a href="/tags/python/">python</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E4%BD%BF%E7%94%A8mathjax/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用mathjax</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/04/%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">开发小技巧备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

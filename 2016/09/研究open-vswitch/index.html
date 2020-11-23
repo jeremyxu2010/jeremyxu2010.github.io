@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>研究Open vSwitch - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="研究Open vSwitch" />
+<meta property="og:description" content="概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/" />
+<meta property="article:published_time" content="2016-09-09T01:48:00+08:00" />
+<meta property="article:modified_time" content="2016-09-09T01:48:00+08:00" />
+<meta itemprop="name" content="研究Open vSwitch">
+<meta itemprop="description" content="概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来">
+<meta itemprop="datePublished" content="2016-09-09T01:48:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-09-09T01:48:00&#43;08:00" />
+<meta itemprop="wordCount" content="3907">
+
+
+
+<meta itemprop="keywords" content="Open vSwitch,sdn," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="研究Open vSwitch"/>
+<meta name="twitter:description" content="概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">研究Open vSwitch</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-09-09 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 3907 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">概念</a></li>
+    <li><a href="#heading-1">名词解释</a></li>
+    <li><a href="#heading-2">实操</a>
+      <ul>
+        <li><a href="#ovs">安装OVS</a></li>
+        <li><a href="#kvmlinux-bridge">在KVM里代替Linux Bridge网桥使用</a></li>
+        <li><a href="#vlan">设置VLAN</a></li>
+        <li><a href="#ovsvlan-trunk">OVS的VLAN Trunk配置</a></li>
+        <li><a href="#ovs-1">OVS链路聚合</a></li>
+        <li><a href="#vlan-1">VLAN的限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">总结</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">概念</h2>
+<p>现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来越难以满足需求了。为了更加高效地利用网络，SDN应运而生。而SDN如何落地很大程度上取决于如何用软件交换机替代传统的交换机。</p>
+<p>从名称来看，openvswitch就是一个用软件实现的虚拟交换机。一个物理交换机基本支持flows, VLANs, trunking, QoS, port aggregation, firewalling, 还有一些具备3层交换的功能，而虚拟环境kvm或者docker下的网络层就贫乏多了，没什么像样的东西。ovs就恰恰补充了这方面的功能。Open vSwitch 支持flows，VLANS, trunking和port aggregation，跟其他主流交换机基本一样。</p>
+<h2 id="heading-1">名词解释</h2>
+<p>Open vSwitch中许多网络上的概念与平时接触到的不同，这里介绍一下Open vSwitch中用到的一些名词。</p>
+<ul>
+<li>Packet （数据包） 网络转发的最小数据单元，每个包都来自某个端口，最终会被发往一个或多个目标端口，转发数据包的过程就是网络的唯一功能。</li>
+<li>Bridge （网桥） Open vSwitch中的网桥对应物理交换机，其功能是根据一定流规则，把从端口收到的数据包转发到另一个或多个端口。</li>
+</ul>
+<blockquote>
+<ul>
+<li>Normal Port: 用户可以把操作系统中的网卡绑定到Open vSwitch上，Open vSwitch会生成一个普通端口处理这块网卡进出的数据包。</li>
+</ul>
+</blockquote>
+<ul>
+<li>Internal Port: 当设置端口类型为internal，Open vSwitch会创建一快虚拟网卡，此端口收到的所有数据包都会交给这块网卡，网卡发出的包会通过这个端口交给Open vSwitch。当Open vSwitch创建一个新网桥时，默认会创建一个与网桥同名的Internal Port，同时也创建一个与Port同名的Interface。三位一体，所以操作系统里就多了一块网卡，但是状态是down的。</li>
+<li>Patch Port: 当机器中有多个Open vSwitch网桥时，可以使用Patch Port把两个网桥连起来。Patch Port总是成对出现，分别连接在两个网桥上，在两个网桥之间交换数据。Patch Port是机房术语，特指用于切换网线连接的接线卡。此卡上面网口成对出现，当需要把两台设备连接起来时，只需要把两台设备接入同一对网口即可。</li>
+<li>Tunnel Port: 隧道端口是一种虚拟端口，支持使用gre或vxlan等隧道技术与位于网络上其他位置的远程端口通讯。</li>
+<li>Interface （iface/接口） 接口是Open vSwitch与外部交换数据包的组件。一个接口就是操作系统的一块网卡，这块网卡可能是Open vSwitch生成的虚拟网卡，也可能是物理网卡挂载在Open vSwitch上，也可能是操作系统的虚拟网卡（TUN/TAP）挂载在Open vSwitch上。</li>
+<li>Flow （流） 流定义了端口之间数据包的交换规则。每条流分为匹配和动作两部分，匹配部分选择哪些数据包需要可以通过这条流处理，动作决定这些匹配到的数据包如何转发。流描述了一个网桥上，端口到端口的转发规则。比如我可以定义这样一条流：<code>当数据包来自端口A，则发往端口B</code>, <code>来自端口A</code>就是匹配部分，<code>发往端口B</code>就是动作部分。流的定义可能非常复杂，比如：<code>当数据包来自端口A，并且其源MAC是aa:aa:aa:aa:aa:aa，并且其拥有vlan tag为a，并且其源IP是a.a.a.a，并且其协议是TCP，其TCP源端口号为a，则修改其源IP为b.b.b.b，发往端口B</code></li>
+<li>Datapath 由于流可能非常复杂，对每个进来的数据包都去尝试匹配所有流，效率会非常低，所以有了datapath这个东西。Datapath是流的一个缓存，会把流的执行结果保存起来，当下次遇到匹配到同一条流的数据包，直接通过datapath处理。考虑到转发效率，datapath完全是在内核态实现的，并且默认的超时时间非常短，大概只有3秒左右。</li>
+</ul>
+<h2 id="heading-2">实操</h2>
+<h3 id="ovs">安装OVS</h3>
+<p>ovs的概念还比较复杂，还是实际操作一下印象比较深刻，我这里在CentOS7系统上操作一下。</p>
+<p>一向懒得编译安装，这里就直接使用别人编译好的rpm包安装。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum install -y http://mirror.beyondhosting.net/OpenVSwitch/openvswitch-2.3.1-1.el7.x86_64.rpm
+modprobe openvswitch
+systemctl enable openvswitch <span style="color:#f92672">&amp;&amp;</span> systemctl start openvswitch
+<span style="color:#75715e">#检查一下是否安装成功</span>
+ovs-vsctl show
+</code></pre></div><p>然后创建一个OVS的网桥，可以命令行操作如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ovs-vsctl add-br ovsbr0
+ovs-vsctl add-port ovsbr0 enp3s1
+ifconfig enp3s1 0.0.0.0
+ifconfig ovsbr0 188.188.100.54/24
+route del default
+route add default gw 188.188.100.1 dev ovsbr0
+</code></pre></div><p>不过由于我这里是远程操作，还是采取修改配置文件的方式：</p>
+<p>修改/etc/sysconfig/network-scripts/ifcfg-ovsbr0</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">TYPE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;OVSBridge&#34;</span>
+DEVICETYPE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ovs&#34;</span>
+BOOTPROTO<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;static&#34;</span>
+DEFROUTE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV4_FAILURE_FATAL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+IPV6INIT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_AUTOCONF<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_DEFROUTE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_FAILURE_FATAL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ovsbr0&#34;</span>
+DEVICE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ovsbr0&#34;</span>
+ONBOOT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPADDR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;188.188.100.54&#34;</span>
+PREFIX<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;24&#34;</span>
+GATEWAY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;188.188.100.1&#34;</span>
+DNS1<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;202.96.134.133&#34;</span>
+IPV6_PEERDNS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_PEERROUTES<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_PRIVACY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+</code></pre></div><p>修改/etc/sysconfig/network-scripts/ifcfg-enp3s1</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">OVS_BRIDGE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ovsbr0&#34;</span>
+TYPE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;OVSPort&#34;</span>
+DEVICETYPE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;ovs&#34;</span>
+BOOTPROTO<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;none&#34;</span>
+DEFROUTE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV4_FAILURE_FATAL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+IPV6INIT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_AUTOCONF<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_DEFROUTE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_FAILURE_FATAL<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+NAME<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;enp3s1&#34;</span>
+DEVICE<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;enp3s1&#34;</span>
+ONBOOT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+PREFIX<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;24&#34;</span>
+IPV6_PEERDNS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_PEERROUTES<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;yes&#34;</span>
+IPV6_PRIVACY<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;no&#34;</span>
+</code></pre></div><p>最后重启一下网络</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">systemctl restart network
+<span style="color:#75715e">#检查一下OVS网桥</span>
+ovs-vsctl show
+</code></pre></div><p>上述步骤跟Linux Bridge网桥的创建过程很相似。</p>
+<h3 id="kvmlinux-bridge">在KVM里代替Linux Bridge网桥使用</h3>
+<p>在KVM里想用ovs网桥步骤也与Linux Bridge网桥很类似，如下：</p>
+<p>编辑ovsbr0.xml</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;network&gt;
+  &lt;name&gt;ovsbr0&lt;/name&gt;
+  &lt;forward mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bridge&#39;</span>/&gt;
+  &lt;bridge name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ovsbr0&#39;</span>/&gt;
+  &lt;virtualport type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;openvswitch&#39;</span>/&gt;
+&lt;/network&gt;
+</code></pre></div><p>使用libvirt创建一个网络</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">virsh net-define ovsbr0.xml
+virsh net-start ovsbr0
+virsh net-autostart ovsbr0
+</code></pre></div><p>最后在安装kvm虚拟机时使用ovsbr0</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">virt-install <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -n nagios <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -r <span style="color:#ae81ff">4096</span>  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --disk path<span style="color:#f92672">=</span>/export/kvm/nagios.qcow2,format<span style="color:#f92672">=</span>qcow2,size<span style="color:#f92672">=</span><span style="color:#ae81ff">60</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --vcpus <span style="color:#ae81ff">4</span>  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --noautoconsole <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --cdrom<span style="color:#f92672">=</span>/export/kvm/iso/FAN-2.4-x86_64.iso <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --os-type<span style="color:#f92672">=</span>linux  <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --network network:ovsbr0 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --vnc --vnclisten<span style="color:#f92672">=</span>0.0.0.0 --vncport<span style="color:#f92672">=</span><span style="color:#ae81ff">5901</span>
+</code></pre></div><p>或使用<code>virsh edit vm1.xml</code>修改kvm虚拟机的定义</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;interface type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bridge&#39;</span>&gt;
+  &lt;source bridge<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ovsbr0&#39;</span>/&gt;
+  &lt;virtualport type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;openvswitch&#39;</span>&gt;
+&lt;/interface&gt;
+</code></pre></div><p>还可以将正在运行的KVM虚拟机的vnet网络接口强制接到ovs上</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#可使用virsh dumpxml $vmname|grep vnet得到某个KVM虚拟机在宿主机上对应的网络接口</span>
+ovs-vsctl add-port ovsbr0 vnet0
+</code></pre></div><h3 id="vlan">设置VLAN</h3>
+<p>如果只是上面的用法，那跟Linux Bridge并没有太大的任何区别，ovs还可以支持VLAN</p>
+<p>首先给ovsbr0增加两个端口vlan10，vlan20，并给它们vlan tag ID</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ovs-vsctl add-port ovsbr0 vlan10 tag<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> -- set interface vlan10 type<span style="color:#f92672">=</span>internal
+ifconfig vlan10 192.168.10.1 netmask 255.255.255.0
+
+ovs-vsctl add-port ovsbr0 vlan20 tag<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span> -- set interface vlan20 type<span style="color:#f92672">=</span>internal
+ifconfig vlan20 192.168.20.1 netmask 255.255.255.0
+</code></pre></div><p>然后在两个KVM虚拟机里执行命令</p>
+<p>在kvm1里执行</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link add link eth0 name eth0.10 type vlan id <span style="color:#ae81ff">10</span>
+ifconfig eth0.10 192.168.10.33 netmask 255.255.255.0 broadcast 192.168.10.255 up
+route add default gw 192.168.10.1 dev eth0.10
+</code></pre></div><p>在kvm2里执行</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link add link eth0 name eth0.20 type vlan id <span style="color:#ae81ff">20</span>
+ifconfig eth0.20 192.168.20.33 netmask 255.255.255.0 broadcast 192.168.20.255 up
+route add default gw 192.168.20.1 dev eth0.20
+</code></pre></div><p>在kvm3里执行</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ip link add link eth0 name eth0.10 type vlan id <span style="color:#ae81ff">10</span>
+ifconfig eth0.20 192.168.10.34 netmask 255.255.255.0 broadcast 192.168.10.255 up
+route add default gw 192.168.10.1 dev eth0.10
+</code></pre></div><p>这样kvm1与kvm3就在同一个vlan里，而kvm2在另一个vlan里，使用vlan隔离了KVM虚拟机。</p>
+<p>还可以使用在定义libvirt网络时使用portgroup，这样在guest os里就不用专门设置网络接口的vlan tag ID了。</p>
+<p>编辑ovsbr0.xml</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;network&gt;
+  &lt;name&gt;ovsbr0&lt;/name&gt;
+  &lt;forward mode<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bridge&#39;</span>/&gt;
+  &lt;bridge name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ovsbr0&#39;</span>/&gt;
+  &lt;virtualport type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;openvswitch&#39;</span>/&gt;
+  &lt;portgroup name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ovsbr0&#39;</span> default<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;yes&#39;</span>&gt;
+  &lt;/portgroup&gt;
+    &lt;portgroup name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;vlan10&#39;</span>&gt;
+    &lt;vlan&gt;
+      &lt;tag id<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;10&#39;</span>/&gt;
+    &lt;/vlan&gt;
+  &lt;/portgroup&gt;
+  &lt;portgroup name<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;vlan20&#39;</span>&gt;
+    &lt;vlan&gt;
+      &lt;tag id<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;20&#39;</span>/&gt;
+    &lt;/vlan&gt;
+  &lt;/portgroup&gt;
+&lt;/network&gt;
+</code></pre></div><p>KVM虚拟机中的网络配置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&lt;interface type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;bridge&#39;</span>&gt;
+  &lt;source bridge<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;ovsbr0&#39;</span> portgroup<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;vlan10&#39;</span>/&gt;
+  &lt;virtualport type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;openvswitch&#39;</span>&gt;
+&lt;/interface&gt;
+</code></pre></div><h3 id="ovsvlan-trunk">OVS的VLAN Trunk配置</h3>
+<p>带 VLAN 的交换机的端口分为两类：</p>
+<ul>
+<li>Access port：这些端口被打上了 VLAN Tag。离开交换机的 Access port 进入计算机的以太帧中没有 VLAN Tag，这意味着连接到 access ports 的机器不会觉察到 VLAN 的存在。离开计算机进入这些端口的数据帧被打上了 VLAN Tag。</li>
+<li>Trunk port： 有多个交换机时，组A中的部分机器连接到 switch 1，另一部分机器连接到 switch 2。要使得这些机器能够相互访问，你需要连接两台交换机。 要避免使用一根电缆连接每个 VLAN 的两个端口，我们可以在每个交换机上配置一个 VLAN trunk port。Trunk port 发出和收到的数据包都带有 VLAN header，该 header 表明了该数据包属于那个 VLAN。因此，只需要分别连接两个交换机的一个 trunk port 就可以转发所有的数据包了。通常来讲，只使用 trunk port 连接两个交换机，而不是用来连接机器和交换机，因为机器不想看到它们收到的数据包带有 VLAN Header。</li>
+</ul>
+<p>所以假如一台物理机上的交换机上有vlan10与vlan20, 另一台物理机上的交换机上也有vlan10与vlan20，如果想让两台物理的vlan10内部可互相访问，则要用到OVS的VLAN Trunk端口。</p>
+<p>具体配置可参考<a href="http://www.rendoumi.com/open-vswitchru-he-gei-kvmxu-ji-pei-zhi-vlan-trunk/">这里</a>，不过我感觉这个例子里使用有些奇怪，一般使用trunk port的目的是为了连接两个交换机，使得两个交换机上的相同Tag的VLAN可互相访问。</p>
+<h3 id="ovs-1">OVS链路聚合</h3>
+<p>OVS也支持链路聚合，见<a href="http://www.rendoumi.com/open-vswitchxia-zuo-duan-kou-bang-ding-bonding/">这里</a>，不过据说性能不是太好。所以还是建议参照<a href="http://www.cnblogs.com/qmfsun/p/3810905.html">这里</a>创建Linux的Bonding，再将bonding出来的网口接入ovs的网桥。</p>
+<h3 id="vlan-1">VLAN的限制</h3>
+<p>来看看VLAN的定义：</p>
+<blockquote>
+<p>LAN 表示 Local Area Network，本地局域网，通常使用 Hub 和 Switch 来连接LAN 中的计算机。一般来说，当你将两台计算机连入同一个 Hub 或者 Switch 时，它们就在同一个 LAN 中。同样地，你连接两个 Switch 的话，它们也在一个 LAN 中。一个 LAN 表示一个广播域，它的意思是，LAN 中的所有成员都会收到 LAN 中一个成员发出的广播包。可见，LAN 的边界在路由器或者类似的3层设备。</p>
+</blockquote>
+<blockquote>
+<p>VLAN 表示 Virutal LAN。一个带有 VLAN 功能的switch 能够同时处于多个 LAN 中。最简单地说，VLAN 是一种将一个交换机分成多个交换机的一种方法。比方说，你有两组机器，group A 和 B，你想配置成组 A 中的机器可以相互访问，B 中的机器也可以相互访问，但是A组中的机器不能访问B组中的机器。你可以使用两个交换机，两个组分别接到一个交换机。如果你只有一个交换机，你可以使用 VLAN 达到同样的效果。你在交换机上分配配置连接组A和B的机器的端口为 VLAN access ports。这个交换机就会只在同一个 VLAN 的端口之间转发包。</p>
+</blockquote>
+<blockquote>
+<p>IEEE 802.1Q 标准定义了 VLAN Header 的格式。它在普通以太网帧结构的 SA （src addr）之后加入了 4bytes 的 VLAN Tag/Header 数据，其中包括 12-bits 的 VLAN ID。VLAN ID 最大值为4096，但是有效值范围是 1 - 4094。</p>
+</blockquote>
+<p>可以看到VLAN ID的bit位只有12位，因此一个网络架构中最多只可能设置4094个VLAN。试想一下在云厂商的环境，VPC的数量可能远远大于4094，因此简单的VLAN并不能解决云厂商对虚拟子网的要求。于是又出现了VXLAN，这个比较复杂，后面研究后再开贴说明。</p>
+<h2 id="heading-3">总结</h2>
+<p>最后附一个<a href="http://www.rendoumi.com/open-vswitchde-ovs-vsctlming-ling-xiang-jie/">Open vSwitch的ovs-vsctl常用命令</a></p>
+<p>OVS确实还挺复杂的，要理解它的概念很考验网络知识基础，通过对它的学习对网络知识的了解有进一步加深。</p>
+<h2 id="heading-4">参考</h2>
+<p><code>http://blog.chinaunix.net/uid-25518484-id-5707513.html</code>
+<code>http://www.rendoumi.com/openvswitch/</code>
+<code>http://www.rendoumi.com/open-vswitch-gong-zuo-yuan-li/</code>
+<code>http://www.rendoumi.com/openvswitchzai-centos-6-6xia-de-an-zhuang-2/</code>
+<code>http://www.rendoumi.com/ovsxia-ru-he-she-zhi-linuxde-wang-qia/</code>
+<code>https://github.com/openvswitch/ovs/blob/master/INSTALL.md</code>
+<code>http://www.rendoumi.com/open-vswitchshe-zhi-vlande-ce-shi/</code>
+<code>http://www.rendoumi.com/open-vswitchyu-kvmshi-yong-vlanjin-jie/</code>
+<code>http://www.rendoumi.com/open-vswitchxia-zuo-duan-kou-bang-ding-bonding/</code>
+<code>http://www.cnblogs.com/qmfsun/p/3810905.html</code>
+<code>http://geek.csdn.net/news/detail/68291</code>
+<code>http://www.rendoumi.com/open-vswitchde-ovs-vsctlming-ling-xiang-jie/</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-09-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/open-vswitch/">Open vSwitch</a>
+          
+          <a href="/tags/sdn/">sdn</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">获取docker容器的主机虚拟网卡</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/09/%E9%87%8D%E6%96%B0%E7%90%86%E8%A7%A3http%E4%B8%AD%E7%9A%84%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5/">
+            <span class="next-text nav-default">重新理解HTTP中的“持久连接”</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

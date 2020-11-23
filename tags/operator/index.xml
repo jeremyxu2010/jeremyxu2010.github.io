@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>operator on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/operator/</link>
+    <description>Recent content in operator on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 11 Jun 2019 20:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/operator/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>构建基于kubernetes的PaaS服务</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要向外部提供一些诸如MySQL、Redis、MongoDB、Kafka之类的基础PaaS服务。以前每做一个PaaS都要自己去实现工作</description>
+    </item>
+    
+    <item>
+      <title>编写Kubernetes Operator</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</link>
+      <pubDate>Sun, 12 May 2019 10:31:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</guid>
+      <description>这周的工作主要是验证几个Kubernetes Operator： mysql-operator redis-operator Redis-Operator percona-server-mongodb-operator 这些operator基本上都是用来部署、管理、维护一些基础服务的。在验</description>
+    </item>
+    
+  </channel>
+</rss>

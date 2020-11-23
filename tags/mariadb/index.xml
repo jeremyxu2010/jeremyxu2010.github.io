@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mariadb on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mariadb/</link>
+    <description>Recent content in mariadb on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 10 Feb 2018 21:45:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mariadb/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MariaDB Galera Cluster部署实战</title>
+      <link>https://jeremyxu2010.github.io/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sat, 10 Feb 2018 21:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/</guid>
+      <description>背景 项目中使用的mariadb+gelera集群模式部署，之前一直用的是mysql的master/slave方式部署数据库的，这种集群模式以</description>
+    </item>
+    
+  </channel>
+</rss>

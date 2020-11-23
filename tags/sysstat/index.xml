@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sysstat on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/sysstat/</link>
+    <description>Recent content in sysstat on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Wed, 22 May 2019 11:16:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/sysstat/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>性能测试工具集锦</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</link>
+      <pubDate>Wed, 22 May 2019 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</guid>
+      <description>本周的工作中需要对一套部署好的redis集群进行性能测试，在这个过程中用到了几个工具，这里对这些工具的用法记录一下。 sar 我们拿到一台虚拟机，在</description>
+    </item>
+    
+  </channel>
+</rss>

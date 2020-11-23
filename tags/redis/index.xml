@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>redis on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/redis/</link>
+    <description>Recent content in redis on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 19 Jul 2020 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>微服务中的分布式锁方案</title>
+      <link>https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/</guid>
+      <description>最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式</description>
+    </item>
+    
+    <item>
+      <title>kuberntes中的redis集群性能调优</title>
+      <link>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
+      <pubDate>Sun, 23 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
+      <description>上周在kubernetes里发布了一个redis PaaS服务，不过其它同学简单测了一下，虽说功能上没啥问题，但性能相比物理上运行的Redis</description>
+    </item>
+    
+    <item>
+      <title>构建基于kubernetes的PaaS服务</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要向外部提供一些诸如MySQL、Redis、MongoDB、Kafka之类的基础PaaS服务。以前每做一个PaaS都要自己去实现工作</description>
+    </item>
+    
+    <item>
+      <title>kubernetes中基础服务排障记</title>
+      <link>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</link>
+      <pubDate>Thu, 30 May 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</guid>
+      <description>工作中需要将原本部署在物理机或虚拟机上的一些基础服务搬到kubernetes中，在搬的过程中遇到了不少坑，这里记录一下。 异常网络引起的问题 之</description>
+    </item>
+    
+    <item>
+      <title>性能测试工具集锦</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</link>
+      <pubDate>Wed, 22 May 2019 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E9%9B%86%E9%94%A6/</guid>
+      <description>本周的工作中需要对一套部署好的redis集群进行性能测试，在这个过程中用到了几个工具，这里对这些工具的用法记录一下。 sar 我们拿到一台虚拟机，在</description>
+    </item>
+    
+    <item>
+      <title>工作任务项杂记_201904</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</guid>
+      <description>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo</description>
+    </item>
+    
+    <item>
+      <title>使用哨兵模式部署redis高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Tue, 12 Mar 2019 10:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很早以前就听说过redis社区推崇一种哨兵模式的高可用集群部署模式，今天花时间研究了一下，正好记录下来。 哨兵模式 哨兵简介 哨兵模式是在Redi</description>
+    </item>
+    
+    <item>
+      <title>redis研究</title>
+      <link>https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/</link>
+      <pubDate>Sun, 13 Nov 2016 01:18:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/</guid>
+      <description>最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不</description>
+    </item>
+    
+  </channel>
+</rss>

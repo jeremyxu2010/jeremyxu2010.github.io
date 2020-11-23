@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>WEB界面测试实践之Selenium WebDriver - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了Selenium WebDriver。 WebDriver简介 The primary new feature in Selenium 2.0 is the" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="WEB界面测试实践之Selenium WebDriver" />
+<meta property="og:description" content="工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了Selenium WebDriver。 WebDriver简介 The primary new feature in Selenium 2.0 is the" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/web%E7%95%8C%E9%9D%A2%E6%B5%8B%E8%AF%95%E5%AE%9E%E8%B7%B5%E4%B9%8Bselenium-webdriver/" />
+<meta property="article:published_time" content="2016-05-22T22:54:00+08:00" />
+<meta property="article:modified_time" content="2016-05-22T22:54:00+08:00" />
+<meta itemprop="name" content="WEB界面测试实践之Selenium WebDriver">
+<meta itemprop="description" content="工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了Selenium WebDriver。 WebDriver简介 The primary new feature in Selenium 2.0 is the">
+<meta itemprop="datePublished" content="2016-05-22T22:54:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-22T22:54:00&#43;08:00" />
+<meta itemprop="wordCount" content="6139">
+
+
+
+<meta itemprop="keywords" content="nodejs,webdriver,es6," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="WEB界面测试实践之Selenium WebDriver"/>
+<meta name="twitter:description" content="工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了Selenium WebDriver。 WebDriver简介 The primary new feature in Selenium 2.0 is the"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">WEB界面测试实践之Selenium WebDriver</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-22 </span>
+        <div class="post-category">
+            
+              <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 6139 字 </span>
+        <span class="more-meta"> 预计阅读 13 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#webdriver">WebDriver简介</a></li>
+    <li><a href="#webdriverdriver">WebDriver的Driver</a></li>
+    <li><a href="#webdriversdkapi">WebDriver的SDK的API介绍</a></li>
+    <li><a href="#webdriver-1">使用WebDriver控制浏览器</a>
+      <ul>
+        <li><a href="#ui">定位UI元素</a></li>
+        <li><a href="#ui-1">对UI元素的操作</a></li>
+        <li><a href="#frame">在窗口或Frame间移动</a></li>
+        <li><a href="#alert">操作Alert窗口</a></li>
+        <li><a href="#heading">操作浏览器的导航及地址栏</a></li>
+        <li><a href="#cookie">操作Cookie</a></li>
+        <li><a href="#heading-1">操作窗口</a></li>
+        <li><a href="#heading-2">高级用户接口</a></li>
+        <li><a href="#heading-3">操作等待</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">特别要注意的地方</a>
+      <ul>
+        <li><a href="#promise">绝大部分接口返回值都是Promise</a></li>
+        <li><a href="#nodejs">控制NodeJS主线程</a></li>
+        <li><a href="#heading-5">同时进行多个测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">经验教训</a></li>
+    <li><a href="#heading-7">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要对web界面进行测试，在网上找了找解决方案，最终找到了<code>Selenium WebDriver</code>。</p>
+<h2 id="webdriver">WebDriver简介</h2>
+<blockquote>
+<p>The primary new feature in Selenium 2.0 is the integration of the WebDriver API. WebDriver is designed to provide a simpler, more concise programming interface in addition to addressing some limitations in the Selenium-RC API. Selenium-WebDriver was developed to better support dynamic web pages where elements of a page may change without the page itself being reloaded. WebDriver’s goal is to supply a well-designed object-oriented API that provides improved support for modern advanced web-app testing problems.</p>
+</blockquote>
+<blockquote>
+<p>Selenium-WebDriver makes direct calls to the browser using each browser’s native support for automation. How these direct calls are made, and the features they support depends on the browser you are using. Information on each ‘browser driver’ is provided later in this chapter.</p>
+</blockquote>
+<blockquote>
+<p>For those familiar with Selenium-RC, this is quite different from what you are used to. Selenium-RC worked the same way for each supported browser. It ‘injected’ javascript functions into the browser when the browser was loaded and then used its javascript to drive the AUT within the browser. WebDriver does not use this technique. Again, it drives the browser directly using the browser’s built in support for automation.</p>
+</blockquote>
+<p>上面的官方介绍，我简单提练一下：</p>
+<ul>
+<li><code>WebDriver API</code>相对于<code>Selenium Remote Control API</code>来说，虽然同样是控制浏览器，但它的编程接口更加简洁</li>
+<li><code>WebDriver</code>可以应对那些网页本身不重新加载的动态网页。</li>
+<li><code>Selenium Remote Control</code>是采用向浏览器注入javascript脚本来控制浏览器的，但<code>WebDriver</code>与之不同，它是直接使用浏览器内置的自动化支持来控制浏览器的。</li>
+</ul>
+<p><code>WebDriver</code>实际上就像它的名字一样，向上屏蔽各厂商浏览器的差异，提供了一个统一的编程API，方便广大程序员控制浏览器的行为。</p>
+<h2 id="webdriverdriver">WebDriver的Driver</h2>
+<p>即然要屏蔽各厂商浏览器的差异，那么各厂商自然需要根据<code>WebDriver</code>规范作出各自的实现。<code>WebDriver</code>官方文档就列出各实现：<code>HtmlUnit Driver</code>、<code>Firefox Driver</code>、<code>InternetExplorerDriver</code>、<code>ChromeDriver</code>、<code>Opera Driver</code>、<code>iOS Driver</code>、<code>Android Driver</code>。这些<code>Driver</code>各有优缺点及各自适用的场景，具体可看<a href="http://www.seleniumhq.org/docs/03_webdriver.jsp#selenium-webdriver-s-drivers">官方文档说明</a>。其实一看这些名字就知道是什么意思，要控制哪种浏览器就需要下载安装对应的<code>Driver</code>。比如我这里是Mac OSX系统，而且想控制该系统上的Chrome浏览器，那么就下载<a href="http://chromedriver.storage.googleapis.com/2.21/chromedriver_mac32.zip">chromedriver_mac32.zip</a>(注意该Driver对你的Chrome浏览器有版本要求，要求版本必须是v46-50这个范围)，将该压缩包里的可执行文件放到PATH环境变量目录中，比如放到/usr/local/bin目录中。</p>
+<h2 id="webdriversdkapi">WebDriver的SDK的API介绍</h2>
+<p>官方还很贴心地为<code>WebDriver</code>提供了更主流语言的SDK。支持的语言有<code>Java</code>、<code>C#</code>、<code>Python</code>、<code>Ruby</code>、<code>Perl</code>、<code>PHP</code>、<code>JavaScript</code>。但我感觉这种测试相关的编程语言最好还是用脚本语言合适一点，改起来很方便，不需要时时编译。因此我最后选择了<code>JavaScript SDK</code>。安装过程见下面的命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">//前提是先安装好NodeJS
+mkdir test <span style="color:#f92672">&amp;&amp;</span> cd test
+npm init //这里根据提示一步步初始化一个新的NodeJS项目
+npm install selenium-webdriver --save //安装WebDriver JavaScript SDK的npm依赖
+</code></pre></div><h2 id="webdriver-1">使用WebDriver控制浏览器</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>()
+    .<span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>)
+    .<span style="color:#a6e22e">build</span>();
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;http://www.google.com/ncr&#39;</span>);
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;q&#39;</span>)).<span style="color:#a6e22e">sendKeys</span>(<span style="color:#e6db74">&#39;webdriver&#39;</span>);
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;btnG&#39;</span>)).<span style="color:#a6e22e">click</span>();
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">wait</span>(<span style="color:#a6e22e">until</span>.<span style="color:#a6e22e">titleIs</span>(<span style="color:#e6db74">&#39;webdriver - Google Search&#39;</span>), <span style="color:#ae81ff">1000</span>);
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">quit</span>();
+</code></pre></div><p>上面是一个最简单的例子，它以沙箱方式打开一个Chrome窗口，然后访问<code>http://www.google.com/ncr</code>，再在搜索框中输入<code>webdriver</code>，再点击搜索按钮，最后等待浏览器显示出搜索结果页面后关闭浏览器窗口。</p>
+<p>这个小例子确实简单了一些，接下来我们看一下<code>WebDriver</code>的其它一些常用的API。</p>
+<h3 id="ui">定位UI元素</h3>
+<ul>
+<li>根据ID定位：driver.findElement(By.id(&lsquo;eleID&rsquo;));</li>
+<li>根据Class类名定位：driver.findElements(By.className(&ldquo;eleCls&rdquo;))</li>
+<li>根据tag名定位：driver.findElement(By.tagName(&lsquo;iframe&rsquo;));</li>
+<li>根据name属性定位：driver.findElement(By.name(&lsquo;eleName&rsquo;));</li>
+<li>根据链接的文字定位：driver.findElement(By.linkText(&lsquo;linkText&rsquo;));</li>
+<li>根据链接的部分文字定位：driver.findElement(By.linkText(&lsquo;partialLinkText&rsquo;));</li>
+<li>根据CSS3的css selector定位：driver.findElement(By.css('#food span.dairy.aged&rsquo;));</li>
+<li>根据XPath定位：driver.findElements(By.xpath(&quot;//input&rdquo;));</li>
+</ul>
+<p>这么多种定位UI元素的办法，总有一款可以适应你的需求。我个人比较喜欢使用<code>css selector</code>来定位元素。要得到一个元素的<code>css selector</code>也很简单，只需要使用Chrome的开发者工具查看这个元素，然后在这个元素上右键，点击<code>Copy selector</code>就得到了(当然如有可能最好对得到的css selector简写一下)。</p>
+<h3 id="ui-1">对UI元素的操作</h3>
+<ul>
+<li>取得元素的text values: driver.findElement(By.id(&lsquo;elementID&rsquo;)).getText();</li>
+<li>查找多个元素：driver.findElement(By.tagName(&ldquo;select&rdquo;)).findElements(By.tagName(&ldquo;option&rdquo;));</li>
+<li>清空input元素的内容：driver.findElement(By.id(&lsquo;nameInput&rsquo;)).clear();</li>
+<li>向input元素输入文字：driver.findElement(By.id(&lsquo;nameInput&rsquo;)).sendKeys(&lsquo;abcd&rsquo;);</li>
+<li>向文件input元素指定文字：driver.findElement(By.id(&lsquo;fileInput&rsquo;)).sendKeys('/tmp/somefile.txt&rsquo;);</li>
+<li>点击按钮：driver.findElement(By.id(&lsquo;submit&rsquo;).click();</li>
+<li>提交表单：driver.findElement(By.id(&lsquo;submit&rsquo;).submit();</li>
+</ul>
+<h3 id="frame">在窗口或Frame间移动</h3>
+<ul>
+<li>切换到窗口: driver.switchTo().window(&lsquo;windowName&rsquo;);</li>
+<li>切换到Frame: driver.switchTo().frame(&lsquo;frameName&rsquo;);</li>
+<li>取得当前窗口的Handle: driver.getWindowHandle();</li>
+<li>列出所有浏览器窗口的Handles: driver.getAllWindowHandles();</li>
+</ul>
+<h3 id="alert">操作Alert窗口</h3>
+<ul>
+<li>点击Alert窗口中的OK：driver.switchTo().alert().accept();</li>
+<li>点击Alert窗口中的Cancel：driver.switchTo().alert().dismiss();</li>
+<li>向Alert窗口输入文字：driver.switchTo().alert().sendKeys(&lsquo;abcd&rsquo;);</li>
+</ul>
+<h3 id="heading">操作浏览器的导航及地址栏</h3>
+<ul>
+<li>导航到某个URL：driver.navigate().to(&lsquo;<code>http://www.baidu.com</code>&rsquo;);或driver.get(&lsquo;<code>http://www.baidu.com</code>&rsquo;);</li>
+<li>导航后退：driver.navigate().back();</li>
+<li>导航前进：driver.navigate().forward();</li>
+<li>导航刷新：driver.navigate().refresh();</li>
+</ul>
+<h3 id="cookie">操作Cookie</h3>
+<ul>
+<li>得到所有Cookie：driver.manage().getCookies();</li>
+<li>得到某一个Cookie：driver.manage().getCookie(&lsquo;cookieName&rsquo;);</li>
+<li>删除所有Cookie：driver.manage().deleteAllCookies();</li>
+<li>删除某一个Cookie：driver.manage().deleteCookie(&lsquo;cookieName&rsquo;);</li>
+<li>添加一个Cookie：driver.manage().addCookie(&lsquo;cookieName&rsquo;, &lsquo;cookieValue&rsquo;);</li>
+</ul>
+<h3 id="heading-1">操作窗口</h3>
+<ul>
+<li>设置窗口位置：driver.manage().window().setPosition(100, 100);</li>
+<li>设置窗口大小：driver.manage().window().setSize(1280, 800);</li>
+<li>最大化窗口：driver.manage().window().maximize();</li>
+</ul>
+<h3 id="heading-2">高级用户接口</h3>
+<ul>
+<li>移动鼠标至某个UI元素：driver.actions().mouseMove(ele).perform();</li>
+<li>鼠标按下：driver.actions().mouseDown().perform();</li>
+<li>鼠标抬起：driver.actions().mouseUp().perform();</li>
+<li>拖拽鼠标：driver.actions().dragAndDrop(ele, {x: 100, y: 80}).perform();</li>
+<li>鼠标点击：driver.actions().click().perform();</li>
+<li>鼠标双击：driver.actions().doubleClick().perform();</li>
+<li>按键按下：driver.actions().keyDown(Key.CONTROL).perform();</li>
+<li>按键抬起：driver.actions().keyUp(Key.CONTROL).perform();</li>
+<li>发送按钮：driver.actions().sendKeys().perform(Key.chord(Key.CONTROL, &lsquo;c&rsquo;));</li>
+</ul>
+<p>上述这些在<code>actions()</code>与<code>perform()</code>之间的操作是可以串行执行的，如<code>driver.actions().mouseMove(ele).click().perform();</code></p>
+<h3 id="heading-3">操作等待</h3>
+<ul>
+<li>显式等待：driver.sleep(2000);</li>
+<li><code>Wait for Expected Condition</code>: driver.wait(until.titleIs(&lsquo;webdriver - Google Search&rsquo;), 5000);</li>
+</ul>
+<p>上述<code>Wait for Expected Condition</code>的意思是说等待<code>Condition</code>满足，但如果等待的时间超过指定的值<code>Condition</code>还是没有满足，则抛出异常。第一种方式傻傻地等也不太好，因此一般也推荐使用第二种办法来做操作等待。这样可以尽可能快地完成测试的操作序列。</p>
+<p>JavaScript SDK内置了很多方便产生<code>Condition</code>的方法，如：</p>
+<ul>
+<li>until.ableToSwitchToFrame(&lsquo;frameName&rsquo;);</li>
+<li>until.alertIsPresent();</li>
+<li>until.titleIs(&lsquo;test&rsquo;);</li>
+<li>until.titleContains(&lsquo;test&rsquo;);</li>
+<li>until.titleMatches(/test/);</li>
+<li>until.elementLocated(By.css('.test-cls&rsquo;));</li>
+<li>until.elementsLocated(By.css('.test-cls&rsquo;));</li>
+<li>until.stalenessOf(ele);</li>
+<li>until.elementIsVisible(ele);</li>
+<li>until.elementIsNotVisible(ele);</li>
+<li>until.elementIsEnabled(ele);</li>
+<li>until.elementIsDisabled(ele);</li>
+<li>until.elementIsSelected(ele);</li>
+<li>until.elementIsNotSelected(ele);</li>
+<li>unitl.elementTextIs(ele, &lsquo;test&rsquo;);</li>
+<li>until.elementTextContains(ele, &lsquo;test&rsquo;);</li>
+<li>until.elementTextMatches(ele, /test/);</li>
+</ul>
+<p>上述这些方法含义很明确了，看方法名就可以了。另外自己也可以写产生<code>Condition</code>的方法，如下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#75715e">//产生是否可以切换至第二个窗口Condition的方法
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ableToSwitchToSecondWindow</span>() {
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Condition</span>(<span style="color:#e6db74">&#39;to be able to switch to second window&#39;</span>, <span style="color:#66d9ef">function</span> (<span style="color:#a6e22e">driver</span>) {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">getAllWindowHandles</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">winHandles</span>){
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">winHandles</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">2</span>) {
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+        } <span style="color:#66d9ef">else</span> {
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">NoSuchWindowError</span>(<span style="color:#e6db74">&#39;second window is not present&#39;</span>);
+        }
+    }, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>(<span style="color:#a6e22e">e</span> <span style="color:#66d9ef">instanceof</span> <span style="color:#a6e22e">error</span>.<span style="color:#a6e22e">NoSuchWindowError</span>)) {
+            <span style="color:#66d9ef">throw</span> <span style="color:#a6e22e">e</span>;
+          }
+    });
+  });
+};
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">wait</span>(<span style="color:#a6e22e">ableToSwitchToSecondWindow</span>(), <span style="color:#ae81ff">5000</span>);
+</code></pre></div><p><code>WebDriver JavaScript API</code>大概就上面这些内容了，还是比较简单的。其实我感觉官方的文档还是写得太简略了，只需要有个大致印象，真要查找特别API接口时直接查看<code>selenium-webdriver/lib</code>目录下的源码就好了，npm包的另一好处是基本也不用太写文档，源码即文档。</p>
+<h2 id="heading-4">特别要注意的地方</h2>
+<h3 id="promise">绝大部分接口返回值都是Promise</h3>
+<p>这也是说最前面那个例子本来应该要像下面这样写的</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>()
+    .<span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>)
+    .<span style="color:#a6e22e">build</span>();
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;http://www.google.com/ncr&#39;</span>)
+  .<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;q&#39;</span>)).<span style="color:#a6e22e">sendKeys</span>(<span style="color:#e6db74">&#39;webdriver&#39;</span>);
+  })
+  .<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;btnG&#39;</span>)).<span style="color:#a6e22e">click</span>();
+  })
+  .<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">wait</span>(<span style="color:#a6e22e">until</span>.<span style="color:#a6e22e">titleIs</span>(<span style="color:#e6db74">&#39;webdriver - Google Search&#39;</span>), <span style="color:#ae81ff">1000</span>);
+  })
+  .<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">quit</span>();
+  });
+</code></pre></div><p>但这样写就成<code>then hell</code>了，看起来仅仅比那个著名的<a href="http://callbackhell.com/">callback hell</a>好一点点，但仍然很难看。幸好ES6推出了Generator函数，大神也写了<code>co</code>，现在终于可以比较好地解决Promise的<code>then hell</code>问题了。详见我之前关于<a href="/2016/05/06/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">Generator函数的日志</a>。而且<code>WebDriver JavaScript API</code>自已还提供Generator函数的执行器，连<code>co</code>模块都不用导入了。总之现在可以写成这样了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>()
+    .<span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>)
+    .<span style="color:#a6e22e">build</span>();
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">call</span>(<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span> () {
+  <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;http://www.google.com/ncr&#39;</span>);
+  <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;q&#39;</span>)).<span style="color:#a6e22e">sendKeys</span>(<span style="color:#e6db74">&#39;webdriver&#39;</span>);
+  <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;btnG&#39;</span>)).<span style="color:#a6e22e">click</span>();
+  <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">wait</span>(<span style="color:#a6e22e">until</span>.<span style="color:#a6e22e">titleIs</span>(<span style="color:#e6db74">&#39;webdriver - Google Search&#39;</span>), <span style="color:#ae81ff">1000</span>);
+  <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">quit</span>();
+});
+</code></pre></div><p>虽然JavaScript方法都是异步的，有了Generator函数，至少在形式上很像同步的写法了。</p>
+<h3 id="nodejs">控制NodeJS主线程</h3>
+<p>凡是上述使用driver的脚本，其实是交给<code>Driver</code>执行去了，一旦NodeJS将这些脚本交给<code>Driver</code>了，NodeJS主线程的工作就完成了，NodeJS主线程的事件队列里没有其它事件需要处理，因此NodeJS主线程就退出了。但有时我们想在用户自动按Ctrl+C结束脚本执行后做一些清理工作，比如关闭打开的浏览器窗口。于是想了点办法，于是写了下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>).<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>()
+    .<span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>)
+    .<span style="color:#a6e22e">build</span>();
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">call</span>(<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span> () {
+  <span style="color:#66d9ef">while</span>(<span style="color:#66d9ef">true</span>){
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;http://www.google.com/ncr&#39;</span>);
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;q&#39;</span>)).<span style="color:#a6e22e">sendKeys</span>(<span style="color:#e6db74">&#39;webdriver&#39;</span>);
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">findElement</span>(<span style="color:#a6e22e">By</span>.<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#39;btnG&#39;</span>)).<span style="color:#a6e22e">click</span>();
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">wait</span>(<span style="color:#a6e22e">until</span>.<span style="color:#a6e22e">titleIs</span>(<span style="color:#e6db74">&#39;webdriver - Google Search&#39;</span>), <span style="color:#ae81ff">1000</span>);
+  }
+});
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">shutdown</span>(<span style="color:#a6e22e">exitCode</span>){
+    <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">rl</span>){
+      <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">close</span>();
+    }
+    <span style="color:#75715e">//nodejs主线程退出时一定关闭打开的浏览器
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">quit</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">exit</span>(<span style="color:#a6e22e">exitCode</span>);
+    }, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">exit</span>(<span style="color:#a6e22e">exitCode</span>);
+    });
+}
+
+<span style="color:#75715e">//block to nodejs&#39;s main thread
+</span><span style="color:#75715e"></span>(<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">wait</span> () {
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">wait</span>, <span style="color:#ae81ff">500</span>);
+    }
+})();
+
+<span style="color:#75715e">//Windows平台需要这样监听Ctrl+C事件
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">platform</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;win32&#34;</span>) {
+  <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;readline&#34;</span>).<span style="color:#a6e22e">createInterface</span>({
+    <span style="color:#a6e22e">input</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdin</span>,
+    <span style="color:#a6e22e">output</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdout</span>
+  });
+
+  <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;SIGINT&#34;</span>, <span style="color:#66d9ef">function</span> () {
+    <span style="color:#a6e22e">shutdown</span>(<span style="color:#ae81ff">0</span>);
+  });
+}
+
+<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;SIGINT&#39;</span>, <span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">shutdown</span>(<span style="color:#ae81ff">0</span>);
+});
+</code></pre></div><p>关键是使用一个递归调用保持NodeJS主线程的事件队列里一直有事件，另外用户按了Ctrl+C后主动关闭浏览器。</p>
+<h3 id="heading-5">同时进行多个测试</h3>
+<p>一开始并不知道<code>WebDriver JavaScript SDK</code>支持多个测试同时进行，因此还搞了个主进程控制多个子进程的实现。主要代码如下：</p>
+<p>parent.js</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">child_process</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;child_process&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">process</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;process&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">co</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;co&#39;</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">child_processes</span> <span style="color:#f92672">=</span> [];
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">child_count</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">argv</span>[<span style="color:#ae81ff">2</span>];
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#a6e22e">ms</span>){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Promise(<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">resolve</span>, <span style="color:#a6e22e">reject</span>){
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#66d9ef">function</span>(){
+            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+                <span style="color:#a6e22e">resolve</span>();
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#a6e22e">reject</span>();
+            }
+        }, <span style="color:#a6e22e">ms</span>);
+    });
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">restartChildProcess</span>(<span style="color:#a6e22e">j</span>){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;restart child process &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">j</span>);
+        <span style="color:#a6e22e">co</span>(<span style="color:#a6e22e">startChildProcess</span>(<span style="color:#a6e22e">j</span>));
+    };
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">startChildProcess</span>(<span style="color:#a6e22e">j</span>){
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;start child process &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">j</span>);
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">child_process</span>.<span style="color:#a6e22e">exec</span>(<span style="color:#e6db74">&#39;node &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">__dirname</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/child.js &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; 2&gt;&amp;1&#39;</span> , <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">err</span>, <span style="color:#a6e22e">stdout</span>,<span style="color:#a6e22e">stderr</span>){
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">err</span>){
+            <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">kill</span>();
+            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">idx</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">child_processes</span>.<span style="color:#a6e22e">indexOf</span>(<span style="color:#a6e22e">p</span>);
+            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">idx</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>){
+                <span style="color:#a6e22e">child_processes</span>.<span style="color:#a6e22e">splice</span>(<span style="color:#a6e22e">idx</span>, <span style="color:#ae81ff">1</span>);
+            }
+            <span style="color:#a6e22e">p</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+                <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">nextTick</span>(<span style="color:#a6e22e">restartChildProcess</span>(<span style="color:#a6e22e">j</span>));
+            }
+        }
+    });
+    <span style="color:#a6e22e">child_processes</span>.<span style="color:#a6e22e">push</span>(<span style="color:#a6e22e">p</span>);
+    <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">sleep</span>(<span style="color:#ae81ff">20000</span>);
+}
+
+<span style="color:#a6e22e">co</span>(<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span> (){
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">child_count</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span>){
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+            <span style="color:#66d9ef">yield</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">startChildProcess</span>(<span style="color:#a6e22e">j</span>);
+        }
+    }
+}).<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;all child processes started&#39;</span>);
+});
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">shutdown</span>(){
+    <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">child_processes</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>){
+        <span style="color:#a6e22e">child_processes</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">kill</span>();
+    }
+}
+
+<span style="color:#75715e">//block to nodejs&#39;s main thread
+</span><span style="color:#75715e"></span>(<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">wait</span> () {
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">wait</span>, <span style="color:#ae81ff">500</span>);
+    }
+})();
+
+<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">platform</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;win32&#34;</span>) {
+  <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;readline&#34;</span>).<span style="color:#a6e22e">createInterface</span>({
+    <span style="color:#a6e22e">input</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdin</span>,
+    <span style="color:#a6e22e">output</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdout</span>
+  });
+
+  <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;SIGINT&#34;</span>, <span style="color:#66d9ef">function</span> () {
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Caught interrupt signal&#34;</span>);
+    <span style="color:#a6e22e">shutdown</span>();
+  });
+}
+
+<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;SIGINT&#39;</span>, <span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Caught interrupt signal&#34;</span>);
+    <span style="color:#a6e22e">shutdown</span>();
+});
+</code></pre></div><p>child.js</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#39;use strict&#39;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">process</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;process&#39;</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>().<span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>).<span style="color:#a6e22e">build</span>();
+
+<span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">call</span>(<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span> (){
+  <span style="color:#66d9ef">try</span> {
+    ...
+  } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>){
+      <span style="color:#75715e">//发生异常时打印异常并退出nodejs&#39;s main thread
+</span><span style="color:#75715e"></span>      <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">e</span>);
+      <span style="color:#a6e22e">shutdown</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+  }
+});
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">shutdown</span>(<span style="color:#a6e22e">exitCode</span>){
+    <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">rl</span>){
+      <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">close</span>();
+    }
+    <span style="color:#75715e">//nodejs主线程退出时一定关闭打开的浏览器
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">quit</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+        <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">exit</span>(<span style="color:#a6e22e">exitCode</span>);
+    }, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+        <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">exit</span>(<span style="color:#a6e22e">exitCode</span>);
+    });
+}
+
+<span style="color:#75715e">//block to nodejs&#39;s main thread
+</span><span style="color:#75715e"></span>(<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">wait</span> () {
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">wait</span>, <span style="color:#ae81ff">500</span>);
+    }
+})();
+
+<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">platform</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;win32&#34;</span>) {
+  <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;readline&#34;</span>).<span style="color:#a6e22e">createInterface</span>({
+    <span style="color:#a6e22e">input</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdin</span>,
+    <span style="color:#a6e22e">output</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdout</span>
+  });
+
+  <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;SIGINT&#34;</span>, <span style="color:#66d9ef">function</span> () {
+    <span style="color:#a6e22e">shutdown</span>(<span style="color:#ae81ff">0</span>);
+  });
+}
+
+
+<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;SIGINT&#39;</span>, <span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">shutdown</span>(<span style="color:#ae81ff">0</span>);
+});
+</code></pre></div><p>这样写虽然也能解决问题，但每个测试示例都要对应一个node进程，而且还需要一个父node进程，进程数多了之后进程间切换开销也很大。</p>
+<p>后面翻阅<code>selenium-webdriver</code>的源码，在它的examples里找到了<code>parallel_flows.js</code>，原来<code>WebDriver JavaScript SDK</code>本身也是支持多个测试同时进行的。于是改进了原来的代码，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#39;use strict&#39;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">webdriver</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;selenium-webdriver&#39;</span>),
+    <span style="color:#a6e22e">By</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">By</span>,
+    <span style="color:#a6e22e">until</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">until</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">flow_interval</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">30000</span>;
+
+<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">drivers</span> <span style="color:#f92672">=</span> {};
+
+<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">restartFlow</span>(<span style="color:#a6e22e">flowNo</span>){
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">function</span>(){
+        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>) {
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;restart flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">flowNo</span>);
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;quit flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">flowNo</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;s driver&#39;</span>);
+            <span style="color:#66d9ef">try</span> {
+                <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">flowNo</span>].<span style="color:#a6e22e">controlFlow</span>().<span style="color:#a6e22e">reset</span>();
+            } <span style="color:#66d9ef">catch</span>(<span style="color:#a6e22e">e</span>){
+                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;reset flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">flowNo</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;s controlFlow failed: %s&#39;</span>, <span style="color:#a6e22e">e</span>);
+            }
+            <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">flowNo</span>].<span style="color:#a6e22e">quit</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">function</span>(){
+                <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">flowNo</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+                <span style="color:#a6e22e">runOneFlow</span>(<span style="color:#a6e22e">flowNo</span>, <span style="color:#66d9ef">true</span>);
+            }, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;quit flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">flowNo</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; failed: %s&#39;</span>, <span style="color:#a6e22e">e</span>);
+            });
+        }
+    };
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">runOneFlow</span>(<span style="color:#a6e22e">flowNo</span>, <span style="color:#a6e22e">noSleep</span>){
+    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;start flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">flowNo</span>);
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">flow</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">promise</span>.<span style="color:#a6e22e">ControlFlow</span>()
+        .<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;uncaughtException&#39;</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>) {
+            <span style="color:#75715e">//console.log(&#39;uncaughtException in flow %d: %s&#39;, flowNo, e);
+</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">nextTick</span>(<span style="color:#a6e22e">restartFlow</span>(<span style="color:#a6e22e">flowNo</span>));
+        });
+
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">driver</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webdriver</span>.<span style="color:#a6e22e">Builder</span>().
+        <span style="color:#a6e22e">forBrowser</span>(<span style="color:#e6db74">&#39;chrome&#39;</span>).
+        <span style="color:#a6e22e">setControlFlow</span>(<span style="color:#a6e22e">flow</span>).  <span style="color:#75715e">// Comment out this line to see the difference.
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">build</span>();
+
+    <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">flowNo</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">driver</span>;
+
+    <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">call</span>(<span style="color:#66d9ef">function</span><span style="color:#f92672">*</span> () {
+
+        <span style="color:#75715e">// Position and resize window so it&#39;s easy to see them running together.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">manage</span>().window().<span style="color:#a6e22e">setSize</span>(<span style="color:#ae81ff">1280</span>, <span style="color:#ae81ff">800</span>);
+        <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">manage</span>().window().<span style="color:#a6e22e">setPosition</span>(<span style="color:#ae81ff">90</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">flowNo</span>, <span style="color:#ae81ff">80</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">flowNo</span>);
+
+        <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">noSleep</span>){
+            <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">driver</span>.<span style="color:#a6e22e">sleep</span>(<span style="color:#a6e22e">flow_interval</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">flowNo</span>);
+        }
+
+        ...
+    });
+}
+
+<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">session_count</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+  <span style="color:#a6e22e">runOneFlow</span>(<span style="color:#a6e22e">i</span>);
+}
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">quitAllDrivers</span>(){
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">drivers</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>){
+        <span style="color:#66d9ef">try</span> {
+            <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">controlFlow</span>().<span style="color:#a6e22e">reset</span>();
+        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">e</span>) {
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;reset flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;\&#39;s controlFlow failed: %s&#39;</span>, <span style="color:#a6e22e">e</span>);
+        }
+        <span style="color:#a6e22e">drivers</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">quit</span>().<span style="color:#a6e22e">then</span>(<span style="color:#66d9ef">undefined</span>, <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">e</span>){
+            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;quit flow &#39;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39; failed: %s&#39;</span>, <span style="color:#a6e22e">e</span>);
+        });
+    }
+}
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">shutdown</span>(){
+    <span style="color:#a6e22e">running</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">rl</span>){
+      <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">close</span>();
+    }
+    <span style="color:#75715e">//进程退出时关闭打开的浏览器
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">quitAllDrivers</span>();
+}
+
+<span style="color:#75715e">//block to nodejs&#39;s main thread
+</span><span style="color:#75715e"></span>(<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">wait</span> () {
+    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">running</span>){
+        <span style="color:#a6e22e">setTimeout</span>(<span style="color:#a6e22e">wait</span>, <span style="color:#ae81ff">500</span>);
+    }
+})();
+
+<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">platform</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#34;win32&#34;</span>) {
+  <span style="color:#a6e22e">rl</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;readline&#34;</span>).<span style="color:#a6e22e">createInterface</span>({
+    <span style="color:#a6e22e">input</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdin</span>,
+    <span style="color:#a6e22e">output</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">stdout</span>
+  });
+
+  <span style="color:#a6e22e">rl</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#34;SIGINT&#34;</span>, <span style="color:#66d9ef">function</span> () {
+    <span style="color:#a6e22e">shutdown</span>();
+  });
+}
+
+
+<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">on</span>(<span style="color:#e6db74">&#39;SIGINT&#39;</span>, <span style="color:#66d9ef">function</span>() {
+    <span style="color:#a6e22e">shutdown</span>();
+});
+</code></pre></div><p>终于是运行多个测试终于只有一个node进程了。</p>
+<h2 id="heading-6">经验教训</h2>
+<p>以后使用第三方重要库决不能只看它给出的文档，还是应该仔细看一看人家给出的使用示例。</p>
+<h2 id="heading-7">参考</h2>
+<p><code>http://www.seleniumhq.org/docs/03_webdriver.jsp</code>
+<code>http://www.seleniumhq.org/docs/04_webdriver_advanced.jsp</code>
+<code>https://github.com/SeleniumHQ/selenium/tree/master/javascript/node/selenium-webdriver/lib</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-22</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/webdriver/">webdriver</a>
+          
+          <a href="/tags/es6/">es6</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">处理一个NodeJS程序内存泄露的问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/">
+            <span class="next-text nav-default">获取后台任务进度的另类办法</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

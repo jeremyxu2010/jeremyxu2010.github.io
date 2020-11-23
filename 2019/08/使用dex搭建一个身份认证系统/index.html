@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用dex搭建一个身份认证系统 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用dex搭建一个身份认证系统" />
+<meta property="og:description" content="一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/" />
+<meta property="article:published_time" content="2019-08-04T15:20:00+08:00" />
+<meta property="article:modified_time" content="2019-08-04T15:20:00+08:00" />
+<meta itemprop="name" content="使用dex搭建一个身份认证系统">
+<meta itemprop="description" content="一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方">
+<meta itemprop="datePublished" content="2019-08-04T15:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-04T15:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="4084">
+
+
+
+<meta itemprop="keywords" content="dex,golang,idp," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用dex搭建一个身份认证系统"/>
+<meta name="twitter:description" content="一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用dex搭建一个身份认证系统</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/golang%E5%BC%80%E5%8F%91/"> golang开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4084 字 </span>
+        <span class="more-meta"> 预计阅读 9 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">什么是身份认证</a></li>
+    <li><a href="#heading-1">实现身份认证系统</a>
+      <ul>
+        <li><a href="#heading-2">运行示例</a></li>
+        <li><a href="#heading-3">示例的技术细节</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">项目定制扩展</a></li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方案，一般拿过来按项目的实际需求进行一些简单的定制基本就可以实现业务目标了。最近刚好在这方面进行了一些工作，这里将如何实现身份认证及权限验证分两篇博文大概梳理一下，这篇先讲身份认证。</p>
+<h2 id="heading">什么是身份认证</h2>
+<blockquote>
+<p>身份验证（英语：Authentication）又称“验证”，是指通过一定的手段，完成对用户身份的确认。</p>
+<p>身份验证的目的是确认当前所声称为某种身份的用户，确实是所声称的用户。在日常生活中，身份验证并不罕见；比如，通过检查对方的证件，我们一般可以确信对方的身份。虽然日常生活中的这种确认对方身份的做法也属于广义的“身份验证”，但“身份验证”一词更多地被用在计算机、通信等领域。</p>
+</blockquote>
+<p>以上是维基百科的解释，说白了就是用某种方式确保用户是某种身份，这种确保需要保证其它用户没那么容易伪装其身份。一般只有经过身份认证得到可靠的用户身份后，才能基于该身份进行后续的权限验证流程。</p>
+<h2 id="heading-1">实现身份认证系统</h2>
+<p>一般来说业务系统会专注于业务逻辑的处理，而身份认证相关的功能会放入独立的身份认证系统进行开发维护。要纯自研地完成一套可靠、安全度高的身份认证系统还是比较花费精力的，幸好开源领域目前已经有不错的解决方案，一般拿过来按项目的实际需求进行一些简单的定制基本就可以实现业务目标了。我这里的示例使用<a href="https://github.com/dexidp/dex">dex</a>实现了一个<a href="https://github.com/jeremyxu2010/demo-dex">简单的用户认证系统</a>。</p>
+<h3 id="heading-2">运行示例</h3>
+<p>前提是已经搭建好了go语言的开发环境，并设置好了GOPATH。</p>
+<p>然后按以下步骤运行本程序：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 编译dexserver</span>
+$ make build-dexserver
+
+<span style="color:#75715e"># 编译dexclient</span>
+$ make build-dexclient
+
+<span style="color:#75715e"># 运行dexserver</span>
+$ make run-dexserver
+
+<span style="color:#75715e"># 运行dexclient</span>
+$ run-dexclient
+</code></pre></div><p>然后用浏览器访问<a href="http://127.0.0.1:8080">http://127.0.0.1:8080</a>, 页面会自动跳转至<code>dexserver</code>的登录页面，输入用户名<code>admin@example.com</code>、密码<code>password</code>之后，会跳回<code>dexclient</code>的callback页面<code>http://127.0.0.1:8080/callback</code>。</p>
+<h3 id="heading-3">示例的技术细节</h3>
+<h4 id="dexserver">dexserver</h4>
+<p>这里使用的<code>dexserver</code>是由官方代码直接编译得出的，没有修改任何代码。只不过使用了自定义的配置文件<a href="config/dexserver-config.yaml">dexserver-config.yaml</a>，这里分析一下这个配置文件。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># The base path of dex and the external name of the OpenID Connect service.</span>
+<span style="color:#75715e"># This is the canonical URL that all clients MUST use to refer to dex. If a</span>
+<span style="color:#75715e"># path is provided, dex&#39;s HTTP service will listen at a non-root URL.</span>
+issuer: http://<span style="color:#ae81ff">127.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.1</span>:<span style="color:#ae81ff">5556</span>/dex
+
+<span style="color:#75715e"># The storage configuration determines where dex stores its state. Supported</span>
+<span style="color:#75715e"># options include SQL flavors and Kubernetes third party resources.</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># See the storage document at Documentation/storage.md for further information.</span>
+storage:
+  type: sqlite3
+  config:
+    file: config/dex.db
+
+<span style="color:#75715e"># Configuration for the HTTP endpoints.</span>
+web:
+  http: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">5556</span>
+  <span style="color:#75715e"># Uncomment for HTTPS options.</span>
+  <span style="color:#75715e"># https: 127.0.0.1:5554</span>
+  <span style="color:#75715e"># tlsCert: /etc/dex/tls.crt</span>
+  <span style="color:#75715e"># tlsKey: /etc/dex/tls.key</span>
+
+<span style="color:#75715e"># Configuration for telemetry</span>
+telemetry:
+  http: <span style="color:#ae81ff">0.0</span><span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>:<span style="color:#ae81ff">5558</span>
+
+<span style="color:#75715e"># Uncomment this block to enable the gRPC API. This values MUST be different</span>
+<span style="color:#75715e"># from the HTTP endpoints.</span>
+<span style="color:#75715e"># grpc:</span>
+<span style="color:#75715e">#   addr: 127.0.0.1:5557</span>
+<span style="color:#75715e">#  tlsCert: examples/grpc-client/server.crt</span>
+<span style="color:#75715e">#  tlsKey: examples/grpc-client/server.key</span>
+<span style="color:#75715e">#  tlsClientCA: /etc/dex/client.crt</span>
+
+<span style="color:#75715e"># Uncomment this block to enable configuration for the expiration time durations.</span>
+<span style="color:#75715e"># expiry:</span>
+<span style="color:#75715e">#   signingKeys: &#34;6h&#34;</span>
+<span style="color:#75715e">#   idTokens: &#34;24h&#34;</span>
+
+<span style="color:#75715e"># Options for controlling the logger.</span>
+<span style="color:#75715e"># logger:</span>
+<span style="color:#75715e">#   level: &#34;debug&#34;</span>
+<span style="color:#75715e">#   format: &#34;text&#34; # can also be &#34;json&#34;</span>
+
+<span style="color:#75715e"># Uncomment this block to control which response types dex supports. For example</span>
+<span style="color:#75715e"># the following response types enable the implicit flow for web-only clients.</span>
+<span style="color:#75715e"># Defaults to [&#34;code&#34;], the code flow.</span>
+<span style="color:#75715e"># oauth2:</span>
+<span style="color:#75715e">#   responseTypes: [&#34;code&#34;, &#34;token&#34;, &#34;id_token&#34;]</span>
+
+oauth2:
+  skipApprovalScreen: <span style="color:#66d9ef">true</span>
+
+<span style="color:#75715e"># Instead of reading from an external storage, use this list of clients.</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># If this option isn&#39;t chosen clients may be added through the gRPC API.</span>
+staticClients:
+- id: demo-dexclient
+  redirectURIs:
+  - <span style="color:#e6db74">&#39;http://127.0.0.1:8080/callback&#39;</span>
+  name: <span style="color:#e6db74">&#39;Demo dex client&#39;</span>
+  secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+
+connectors: []
+<span style="color:#75715e"># - type: mockCallback</span>
+<span style="color:#75715e">#   id: mock</span>
+<span style="color:#75715e">#   name: Example</span>
+<span style="color:#75715e"># - type: oidc</span>
+<span style="color:#75715e">#   id: google</span>
+<span style="color:#75715e">#   name: Google</span>
+<span style="color:#75715e">#   config:</span>
+<span style="color:#75715e">#     issuer: https://accounts.google.com</span>
+<span style="color:#75715e">#     # Connector config values starting with a &#34;$&#34; will read from the environment.</span>
+<span style="color:#75715e">#     clientID: $GOOGLE_CLIENT_ID</span>
+<span style="color:#75715e">#     clientSecret: $GOOGLE_CLIENT_SECRET</span>
+<span style="color:#75715e">#     redirectURI: http://127.0.0.1:5556/dex/callback</span>
+<span style="color:#75715e">#     hostedDomains:</span>
+<span style="color:#75715e">#     - $GOOGLE_HOSTED_DOMAIN</span>
+
+<span style="color:#75715e"># Let dex keep a list of passwords which can be used to login to dex.</span>
+enablePasswordDB: <span style="color:#66d9ef">true</span>
+
+<span style="color:#75715e"># A static list of passwords to login the end user. By identifying here, dex</span>
+<span style="color:#75715e"># won&#39;t look in its underlying storage for passwords.</span>
+<span style="color:#75715e">#</span>
+<span style="color:#75715e"># If this option isn&#39;t chosen users may be added through the gRPC API.</span>
+<span style="color:#75715e"># staticPasswords: </span>
+<span style="color:#75715e"># - email: &#34;admin@example.com&#34;</span>
+<span style="color:#75715e">#   # bcrypt hash of the string &#34;password&#34;</span>
+<span style="color:#75715e">#   hash: &#34;$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W&#34;</span>
+<span style="color:#75715e">#   username: &#34;admin&#34;</span>
+<span style="color:#75715e">#   userID: &#34;08a8684b-db88-4b73-90a9-3cd1661f5466&#34;</span>
+</code></pre></div><p><code>web</code>段配置的是<code>dexserver</code>的监听地址及HTTPS证书参数，<code>issuer</code>配置的是外部会访问到的系统URL，这两者一般要对应地设置。</p>
+<p><code>telemetry</code>段配置的是监控指标抓取地址，本例中<code>dexserver</code>启动完毕后，可访问<a href="http://127.0.0.1:5558/metrics">http://127.0.0.1:5558/metrics</a>抓取到该<code>dexserver</code>的监控指标。</p>
+<p><code>storage</code>段配置的是<code>dexserver</code>的存储设置。<code>dexserver</code>在运行时跟踪<code>refresh_token</code>、<code>auth_code</code>、<code>keys</code>、<code>password</code>等的状态，因此需要将这些状态保存下来。<a href="https://github.com/dexidp/dex">dex</a>提供了多种存储方案，如<code>etcd</code>、<code>CRDs</code>、<code>SQLite3</code>、<code>Postgres</code>、<code>MySQL</code>、<code>memory</code>，总有一款能满足需求。如果要其它需求，还可以参考<a href="https://github.com/dexidp/dex/tree/master/storage">现有Storage</a>及<a href="https://github.com/dexidp/dex/blob/master/Documentation/storage.md#adding-a-new-storage-options">文档</a>扩展一个。我这里使用的是比较简单的<code>SQLite3</code>Storage，提前插入了一条测试的用户数据：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sqlite3 config/dex.db
+sqlite&gt; insert info password values<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;admin@example.com&#39;</span>, <span style="color:#e6db74">&#39;$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W&#39;</span>, <span style="color:#e6db74">&#39;admin&#39;</span>, <span style="color:#e6db74">&#39;08a8684b-db88-4b73-90a9-3cd1661f5466&#39;</span><span style="color:#f92672">)</span>;
+sqlite&gt; .quit
+</code></pre></div><p><code>oauth2.skipApprovalScreen</code>这个选项我设置成了<code>true</code>，这样就不会有提示用户同意的页面出现。</p>
+<p><code>staticClients</code>段配置的是该<code>dexserver</code>允许接入的<code>dexclient</code>信息，这个要跟<code>dexclient</code>那边的配置一致。</p>
+<p><code>connectors</code>段我并没有配置任何<code>Connector</code>。<code>Connector</code>是<code>dex</code>中一项重要特性，其可以将<code>dex</code>这个身份认证系统与其它身份认证系统串联起来。<code>dex</code>目前自带的<code>Connector</code>有<code>LDAP</code>、<code>GitHub</code>、<code>SAML 2.0</code>、<code>GitLab</code>、<code>OpenID Connect</code>、<code>LinkedIn</code>、<code>Microsoft</code>、<code>AuthProxy</code>、<code>Bitbucket Cloud</code>，基本上满足绝大部分需求，如果要扩展，参考某个<a href="https://github.com/dexidp/dex/tree/master/connector">现成的Connector</a>实现即可。我这个示例里因为直接使用保存在DB里的帐户密码信息，因此只需要配置<code>enablePasswordDB</code>为<code>true</code>，就会自动使用上<code>passwordDB</code>这个<code>Connector</code>，<code>passwordDB</code>的实现代码见<a href="https://github.com/dexidp/dex/blob/master/server/server.go#L325">这里</a>。</p>
+<p>最近由于登录页面是由<code>dexserver</code>提供了，这里还将<code>dex</code>自带的<a href="web">登录页面web端资源</a>带上了，具体的项目中根据场景对页面进行一些定制就可以了。</p>
+<h4 id="dexclient">dexclient</h4>
+<p><code>dexclient</code>就很简单了，就两个go文件，重点是<code>cmd/dexclient/main.go</code>。</p>
+<p>首先是根据一系列参数构造出<code>oidc.Provider</code>及<code>oidc.IDTokenVerifier</code>，这个后面获取认证系统的跳转地址、获取<code>id_token</code>、校验<code>id_token</code>都会用到:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#f92672">...</span>
+            <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">provider</span> = <span style="color:#a6e22e">provider</span>
+            <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">verifier</span> = <span style="color:#a6e22e">provider</span>.<span style="color:#a6e22e">Verifier</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">oidc</span>.<span style="color:#a6e22e">Config</span>{<span style="color:#a6e22e">ClientID</span>: <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">clientID</span>})
+</code></pre></div><p>然后声明处理三个请求地址，并启动Web Server：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">			<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">handleIndex</span>)
+			<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/login&#34;</span>, <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">handleLogin</span>)
+			<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#a6e22e">u</span>.<span style="color:#a6e22e">Path</span>, <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">handleCallback</span>)
+
+			<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">listenURL</span>.<span style="color:#a6e22e">Scheme</span> {
+			<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;http&#34;</span>:
+				<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;listening on %s&#34;</span>, <span style="color:#a6e22e">listen</span>)
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#a6e22e">listenURL</span>.<span style="color:#a6e22e">Host</span>, <span style="color:#66d9ef">nil</span>)
+			<span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;https&#34;</span>:
+				<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;listening on %s&#34;</span>, <span style="color:#a6e22e">listen</span>)
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServeTLS</span>(<span style="color:#a6e22e">listenURL</span>.<span style="color:#a6e22e">Host</span>, <span style="color:#a6e22e">tlsCert</span>, <span style="color:#a6e22e">tlsKey</span>, <span style="color:#66d9ef">nil</span>)
+			<span style="color:#66d9ef">default</span>:
+				<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;listen address %q is not using http or https&#34;</span>, <span style="color:#a6e22e">listen</span>)
+			}
+</code></pre></div><p>很明显<code>handleIndex</code>就是WEB应用的主页，这里一般逻辑应该是检查用户的登录身份信息是否合法，如果不合法则跳至<code>dexserver</code>的登录页面。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">indexTmpl</span> = <span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">Must</span>(<span style="color:#a6e22e">template</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;index.html&#34;</span>).<span style="color:#a6e22e">Parse</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">&lt;html&gt;
+</span><span style="color:#e6db74">  &lt;!-- TODO Redirect to login page if not logged  --&gt;
+</span><span style="color:#e6db74">  &lt;body&gt;
+</span><span style="color:#e6db74">    &lt;form action=&#34;/login&#34; method=&#34;post&#34;&gt;
+</span><span style="color:#e6db74">       &lt;p&gt;
+</span><span style="color:#e6db74">         Authenticate for:&lt;input type=&#34;text&#34; name=&#34;cross_client&#34; placeholder=&#34;list of client-ids&#34;&gt;
+</span><span style="color:#e6db74">       &lt;/p&gt;
+</span><span style="color:#e6db74">       &lt;p&gt;
+</span><span style="color:#e6db74">         Extra scopes:&lt;input type=&#34;text&#34; name=&#34;extra_scopes&#34; placeholder=&#34;list of scopes&#34;&gt;
+</span><span style="color:#e6db74">       &lt;/p&gt;
+</span><span style="color:#e6db74">       &lt;p&gt;
+</span><span style="color:#e6db74">         Connector ID:&lt;input type=&#34;text&#34; name=&#34;connector_id&#34; placeholder=&#34;connector id&#34;&gt;
+</span><span style="color:#e6db74">       &lt;/p&gt;
+</span><span style="color:#e6db74">       &lt;p&gt;
+</span><span style="color:#e6db74">         Request offline access:&lt;input type=&#34;checkbox&#34; name=&#34;offline_access&#34; value=&#34;yes&#34; checked&gt;
+</span><span style="color:#e6db74">       &lt;/p&gt;
+</span><span style="color:#e6db74">       &lt;input type=&#34;submit&#34; value=&#34;Login&#34; id=&#34;submitBtn&#34;&gt;
+</span><span style="color:#e6db74">    &lt;/form&gt;
+</span><span style="color:#e6db74">  &lt;/body&gt;
+</span><span style="color:#e6db74">  &lt;script type=&#34;text/javascript&#34;&gt;
+</span><span style="color:#e6db74">    &lt;!-- Redirect to login page --&gt;
+</span><span style="color:#e6db74">	document.getElementById(&#34;submitBtn&#34;).click();
+</span><span style="color:#e6db74">  &lt;/script&gt;
+</span><span style="color:#e6db74">&lt;/html&gt;</span><span style="color:#e6db74">`</span>))
+</code></pre></div><p><code>handleLogin</code>根据浏览器发来的<code>cross_client</code>、<code>extra_scopes</code>、<code>connector_id</code>、<code>offline_access</code>参数构造出登录页跳转地址，并提示浏览器跳至该地址:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">    <span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">FormValue</span>(<span style="color:#e6db74">&#34;offline_access&#34;</span>) <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;yes&#34;</span> {
+		<span style="color:#a6e22e">authCodeURL</span> = <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">oauth2Config</span>(<span style="color:#a6e22e">scopes</span>).<span style="color:#a6e22e">AuthCodeURL</span>(<span style="color:#a6e22e">exampleAppState</span>)
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">offlineAsScope</span> {
+		<span style="color:#a6e22e">scopes</span> = append(<span style="color:#a6e22e">scopes</span>, <span style="color:#e6db74">&#34;offline_access&#34;</span>)
+		<span style="color:#a6e22e">authCodeURL</span> = <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">oauth2Config</span>(<span style="color:#a6e22e">scopes</span>).<span style="color:#a6e22e">AuthCodeURL</span>(<span style="color:#a6e22e">exampleAppState</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">authCodeURL</span> = <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">oauth2Config</span>(<span style="color:#a6e22e">scopes</span>).<span style="color:#a6e22e">AuthCodeURL</span>(<span style="color:#a6e22e">exampleAppState</span>, <span style="color:#a6e22e">oauth2</span>.<span style="color:#a6e22e">AccessTypeOffline</span>)
+	}
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">connectorID</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#a6e22e">authCodeURL</span> = <span style="color:#a6e22e">authCodeURL</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;&amp;connector_id=&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">connectorID</span>
+	}
+
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Redirect</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">r</span>, <span style="color:#a6e22e">authCodeURL</span>, <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusSeeOther</span>)
+</code></pre></div><p><code>handleCallback</code>处理登录成功后的回调请求，其根据回调请求中的<code>code</code>参数，调用<code>dexserver</code>的相关接口换取包含用户身份信息的<code>Token</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">        <span style="color:#a6e22e">code</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">FormValue</span>(<span style="color:#e6db74">&#34;code&#34;</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">code</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+			<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;no code in request: %q&#34;</span>, <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Form</span>), <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>)
+			<span style="color:#66d9ef">return</span>
+		}
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">state</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">FormValue</span>(<span style="color:#e6db74">&#34;state&#34;</span>); <span style="color:#a6e22e">state</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">exampleAppState</span> {
+			<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Error</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;expected state %q got %q&#34;</span>, <span style="color:#a6e22e">exampleAppState</span>, <span style="color:#a6e22e">state</span>), <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">StatusBadRequest</span>)
+			<span style="color:#66d9ef">return</span>
+		}
+		<span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">oauth2Config</span>.<span style="color:#a6e22e">Exchange</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">code</span>)
+</code></pre></div><p>一般来说，会将该<code>Token</code>中的<code>id_token</code>进行适当的编码发回到浏览器中保存（以Cookie或WebStorage等方式），这样浏览器中就保存了用户的身份信息。</p>
+<p>安全起见，<code>dexserver</code>签发的<code>id_token</code>有效期通常不会太长，这就需要<code>dexclient</code>凭借<code>Token</code>中的<code>refresh_token</code>隔段时间重新换取新的<code>Token</code>，并通过某种机制将新<code>Token</code>中的<code>id_token</code>重新发回浏览器端保存。以<code>refresh_token</code>重新换取新的<code>Token</code>的代码实现如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-golang" data-lang="golang">		<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">oauth2</span>.<span style="color:#a6e22e">Token</span>{
+			<span style="color:#a6e22e">RefreshToken</span>: <span style="color:#a6e22e">refresh</span>,
+			<span style="color:#a6e22e">Expiry</span>:       <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Now</span>().<span style="color:#a6e22e">Add</span>(<span style="color:#f92672">-</span><span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Hour</span>),
+		}
+		<span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">oauth2Config</span>.<span style="color:#a6e22e">TokenSource</span>(<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">t</span>).<span style="color:#a6e22e">Token</span>()
+</code></pre></div><h2 id="heading-4">项目定制扩展</h2>
+<p>上面的示例基本说明得比较清楚了，在真实的生产项目需要进行必要的定制以满足项目需求，生产项目的代码必须保密，这里只简要说明下关键点：</p>
+<ol>
+<li>生产系统，无论<code>dexserver</code>还是<code>dexclient</code>都必须配置HTTPS证书，通过HTTPS协议访问站点。</li>
+<li><code>dexserver</code>会根据项目情况配置一个更合适的<code>Storage</code>，用以安全可靠地保存<code>refresh_token</code>、<code>auth_code</code>、<code>keys</code>、<code>password</code>等的状态。要考虑这个<code>Storage</code>实现方案的性能、稳定性、高可用性等多个因素。</li>
+<li>一般还需要对保存进<code>Storage</code>的帐户身份信息进行维护管理，不可能每次都命令行增删帐户身份信息。</li>
+<li>示例中<code>dexserver</code>直接使用的<code>passwordDB</code>这个<code>Connector</code>，实际场景可能会扩展<code>passwordDB</code>，比如需要往返回的<code>claims</code>里植入<code>Groups</code>等其它信息。</li>
+<li>示例中<code>dexserver</code>只使用了<code>passwordDB</code>这个<code>Connector</code>，实际场景为了接入其它身份认证系统，会配置一些<code>Connect</code>以对接其它身份认证系统。</li>
+<li>示例中<code>dexserver</code>只使用了<code>dex</code>官方自带的登录页模板，这个放在实际项目中还是太简陋了，一般需要一些定制美化。</li>
+<li>示例中<code>dexclient</code>并没有在浏览器中完成用户身份信息验证，以决定是否跳转登录页面，这个在实际项目中肯定是要做的。</li>
+<li>示例中<code>dexclient</code>并没有根据用户的选择跳转至指定的<code>Connector</code>登录页，对于支持多种认证方式的业务系统来说，这个也是必须的。</li>
+<li>示例中<code>dexclient</code>并没有实现将<code>Token</code>中的<code>id_token</code>进行适当的编码发回到浏览器中保存的逻辑，这个一般也是必须的。</li>
+<li>示例中<code>dexclient</code>并没有凭借<code>Token</code>中的<code>refresh_token</code>隔段时间重新换取新的<code>Token</code>，并通过某种机制将新<code>Token</code>中的<code>id_token</code>重新发回浏览器端保存，这个一般也是必须的。</li>
+</ol>
+<p>总之这个示例要最终在生产项目中落地，还是要不少工作要处理的，不过要了解其核心工作原理，看这个示例也就差不多了。</p>
+<h2 id="heading-5">总结</h2>
+<p>总体来说，采用<code>dex</code>实现一个身份认证系统相比纯自研，还是简单了不少。一旦掌握其原理，后续实现会很方便，其核心代码值得学习一下。</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://github.com/dexidp/dex">https://github.com/dexidp/dex</a></li>
+<li><a href="https://github.com/dexidp/dex/blob/master/Documentation/getting-started.md">https://github.com/dexidp/dex/blob/master/Documentation/getting-started.md</a></li>
+<li><a href="https://github.com/dexidp/dex/blob/master/Documentation/using-dex.md">https://github.com/dexidp/dex/blob/master/Documentation/using-dex.md</a></li>
+<li><a href="https://github.com/dexidp/dex/blob/master/Documentation/storage.md">https://github.com/dexidp/dex/blob/master/Documentation/storage.md</a></li>
+<li><a href="https://github.com/dexidp/dex/blob/master/Documentation/kubernetes.md">https://github.com/dexidp/dex/blob/master/Documentation/kubernetes.md</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-08-04</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/dex/">dex</a>
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/idp/">idp</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用casbin完成验证授权</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/">
+            <span class="next-text nav-default">限制kubernetes里的系统资源使用</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

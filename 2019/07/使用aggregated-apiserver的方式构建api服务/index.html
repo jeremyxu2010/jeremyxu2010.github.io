@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用Aggregated APIServer的方式构建API服务 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用Aggregated APIServer的方式构建API服务" />
+<meta property="og:description" content="工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/" />
+<meta property="article:published_time" content="2019-07-20T18:00:00+08:00" />
+<meta property="article:modified_time" content="2019-07-20T18:00:00+08:00" />
+<meta itemprop="name" content="使用Aggregated APIServer的方式构建API服务">
+<meta itemprop="description" content="工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上">
+<meta itemprop="datePublished" content="2019-07-20T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-20T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="3669">
+
+
+
+<meta itemprop="keywords" content="k8s,devops,api," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用Aggregated APIServer的方式构建API服务"/>
+<meta name="twitter:description" content="工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用Aggregated APIServer的方式构建API服务</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3669 字 </span>
+        <span class="more-meta"> 预计阅读 8 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">好处</a>
+      <ul>
+        <li><a href="#user-defined-types">User-Defined Types</a></li>
+        <li><a href="#combining-new-apis-with-automation">Combining New APIs with Automation</a></li>
+        <li><a href="#changing-built-in-resources">Changing Built-in Resources</a></li>
+        <li><a href="#api-access-extensions">API Access Extensions</a></li>
+        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#authorization">Authorization</a></li>
+        <li><a href="#dynamic-admission-control">Dynamic Admission Control</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-1">实现方案</a>
+      <ul>
+        <li><a href="#api-access-control">API Access Control</a></li>
+        <li><a href="#api-schema">API Schema</a></li>
+      </ul>
+    </li>
+    <li><a href="#api">实现API接口服务</a>
+      <ul>
+        <li><a href="#heading-2">快速实现</a></li>
+        <li><a href="#api-1">定制API接口</a></li>
+        <li><a href="#controller">定制Controller</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">打包部署</a></li>
+    <li><a href="#heading-4">生成文档</a></li>
+    <li><a href="#heading-5">其它</a></li>
+    <li><a href="#heading-6">总结</a></li>
+    <li><a href="#heading-7">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上。本周花了不少时间研究这个，这里记录一下。</p>
+<h2 id="heading">好处</h2>
+<p>尽管可以使用gin, go-restful等go语言web框架轻易地构建出一个稳定的API接口服务，但以kubernetes原生的方式构建API接口服务还是有很多吸引人的好处的。<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/extend-cluster/#api-extensions">官方文档</a>中已经将这些好处列出了：</p>
+<blockquote>
+<h3 id="user-defined-types">User-Defined Types</h3>
+<p>Consider adding a Custom Resource to Kubernetes if you want to define new controllers, application configuration objects or other declarative APIs, and to manage them using Kubernetes tools, such as <code>kubectl</code>.</p>
+<p>Do not use a Custom Resource as data storage for application, user, or monitoring data.</p>
+<p>For more about Custom Resources, see the <a href="https://kubernetes.io/docs/concepts/api-extension/custom-resources/">Custom Resources concept guide</a>.</p>
+<h3 id="combining-new-apis-with-automation">Combining New APIs with Automation</h3>
+<p>The combination of a custom resource API and a control loop is called the <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">Operator pattern</a>. The Operator pattern is used to manage specific, usually stateful, applications. These custom APIs and control loops can also be used to control other resources, such as storage or policies.</p>
+<h3 id="changing-built-in-resources">Changing Built-in Resources</h3>
+<p>When you extend the Kubernetes API by adding custom resources, the added resources always fall into a new API Groups. You cannot replace or change existing API groups. Adding an API does not directly let you affect the behavior of existing APIs (e.g. Pods), but API Access Extensions do.</p>
+<h3 id="api-access-extensions">API Access Extensions</h3>
+<p>When a request reaches the Kubernetes API Server, it is first Authenticated, then Authorized, then subject to various types of Admission Control. See <a href="https://kubernetes.io/docs/reference/access-authn-authz/controlling-access/">Controlling Access to the Kubernetes API</a> for more on this flow.</p>
+<p>Each of these steps offers extension points.</p>
+<p>Kubernetes has several built-in authentication methods that it supports. It can also sit behind an authenticating proxy, and it can send a token from an Authorization header to a remote service for verification (a webhook). All of these methods are covered in the <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/">Authentication documentation</a>.</p>
+<h3 id="authentication">Authentication</h3>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/">Authentication</a> maps headers or certificates in all requests to a username for the client making the request.</p>
+<p>Kubernetes provides several built-in authentication methods, and an <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">Authentication webhook</a> method if those don’t meet your needs.</p>
+<h3 id="authorization">Authorization</h3>
+<p><a href="https://kubernetes.io/docs/reference/access-authn-authz/webhook/">Authorization</a> determines whether specific users can read, write, and do other operations on API resources. It just works at the level of whole resources – it doesn’t discriminate based on arbitrary object fields. If the built-in authorization options don’t meet your needs, and <a href="https://kubernetes.io/docs/reference/access-authn-authz/webhook/">Authorization webhook</a> allows calling out to user-provided code to make an authorization decision.</p>
+<h3 id="dynamic-admission-control">Dynamic Admission Control</h3>
+<p>After a request is authorized, if it is a write operation, it also goes through <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/">Admission Control</a> steps. In addition to the built-in steps, there are several extensions:</p>
+<ul>
+<li>The <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#imagepolicywebhook">Image Policy webhook</a> restricts what images can be run in containers.</li>
+<li>To make arbitrary admission control decisions, a general <a href="https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#admission-webhooks">Admission webhook</a> can be used. Admission Webhooks can reject creations or updates.</li>
+</ul>
+</blockquote>
+<p>简单一句话就是构建出的API接口更加规范整齐，能利用kubernetes原生的认证、授权、准入机制。当然对个人来说，也能更了解kubernetes里那些API接口到底是如何实现的。</p>
+<h2 id="heading-1">实现方案</h2>
+<p>官方提供了两种方式以实现对标准kubernetes API接口的扩展：1）Aggregated APIServer  2）Custom Resource</p>
+<p>两种方式的区别是定义api-resource的方式不同。在Aggregated APIServer方式中，api-resource是通过代码向kubernetes注册资源类型的方式实现的，而Custom Resource是直接通过yaml文件创建自定义资源的方式实现的。</p>
+<p>最终达到的效果倒是比较类似，最终都可以通过访问<code>/apis/myextension.mycompany.io/v1/…</code>之类的API接口来存取api-resource。除此之外，在很多方面也存在一些区别，见<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/compare_with_kubebuilder.md">这里</a>。</p>
+<blockquote>
+<h3 id="api-access-control">API Access Control</h3>
+<h5 id="authentication-1">Authentication</h5>
+<ul>
+<li><strong>CR</strong>: All strategies supported. Configured by root apiserver.</li>
+<li><strong>AA</strong>: Supporting all root apiserver's authenticating strategies but it has to be done via <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#webhook-token-authentication">authentication token review api</a>except for <a href="https://kubernetes.io/docs/reference/access-authn-authz/authentication/#authenticating-proxy">authentication proxy</a> which will cause an extra cost of network RTT.</li>
+</ul>
+<h5 id="authorization-1">Authorization</h5>
+<ul>
+<li><strong>CR</strong>: All strategies supported. Configured by root apiserver.</li>
+<li><strong>AA</strong>: Delegating authorization requests to root apiserver via <a href="https://kubernetes.io/docs/reference/access-authn-authz/authorization/#checking-api-access">SubjectAccessReview api</a>. Note that this approach will also cost a network RTT.</li>
+</ul>
+<h5 id="admission-control">Admission Control</h5>
+<ul>
+<li><strong>CR</strong>: You could extend via dynamic admission control webhook (which is costing network RTT).</li>
+<li><strong>AA</strong>: While You can develop and customize your own admission controller which is dedicated to your AA. While You can't reuse root-apiserver's built-in admission controllers nomore.</li>
+</ul>
+<h3 id="api-schema">API Schema</h3>
+<p>Note: CR's integration with OpenAPI schema is being enhanced in the future releases and it will have a stronger integration with OpenAPI mechanism.</p>
+<h5 id="validating">Validating</h5>
+<ul>
+<li><strong>CR</strong>: (landed in 1.12) Defined via OpenAPIv3 Schema grammar. <a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#validation">more</a></li>
+<li><strong>AA</strong>: You can customize any validating flow you want.</li>
+</ul>
+<h5 id="conversion">Conversion</h5>
+<ul>
+<li><strong>CR</strong>: (landed in 1.13) The CR conversioning (basically from storage version to requested version) could be done via conversioning webhook.</li>
+<li><strong>AA</strong>: Develop any conversion you want.</li>
+</ul>
+<h5 id="subresource">SubResource</h5>
+<ul>
+<li><strong>CR</strong>: Currently only status and scale sub-resource supported.</li>
+<li><strong>AA</strong>: You can customize any sub-resouce you want.</li>
+</ul>
+<h5 id="openapi-schema">OpenAPI Schema</h5>
+<ul>
+<li><strong>CR</strong>: (landed in 1.13) The corresponding CRD's OpenAPI schema will be automatically synced to root-apiserver's openapi doc api.</li>
+<li><strong>AA</strong>: OpenAPI doc has to be manually generated by code-generating tools.</li>
+</ul>
+<h5 id="other">Other</h5>
+<table>
+<thead>
+<tr>
+<th>Functionalities</th>
+<th>AA (Aggregated APIServer)</th>
+<th>CR (Custom Resource)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMP(Strategic Merge Patch)</td>
+<td>Supported</td>
+<td>Not yet. Will be replaced via server-side apply instead</td>
+</tr>
+<tr>
+<td>Informative Kubectl Printing</td>
+<td>Not supported, unless you develop your own with server-side printing.</td>
+<td>By <a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-resources/custom-resource-definitions/#additional-printer-columns">AdditionalPrinterColumns</a></td>
+</tr>
+<tr>
+<td>Websocket/(Other non-HTTP transport)</td>
+<td>Supported</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>metadata.Generation</code>Auto Increment</td>
+<td>Supported</td>
+<td>Nope, and this is designed</td>
+</tr>
+<tr>
+<td>Use Another Backend/Secondary Storage</td>
+<td>Supported</td>
+<td>For now, ETCD3 only</td>
+</tr>
+</tbody>
+</table>
+<p>More Comparision <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#advanced-features-and-flexibility">here</a></p>
+</blockquote>
+<p>总的来看，AA这个方式相对复杂一点，但灵活度很高，基本后续业务上的所有需求都可以满足。最终我们选择使用AA方案来构建API接口服务。</p>
+<h2 id="api">实现API接口服务</h2>
+<h3 id="heading-2">快速实现</h3>
+<p>虽然官方给了一个<a href="https://github.com/kubernetes/sample-apiserver">sample-apiserver</a>，我们可以照着实现自己的Aggregated APIServer。但完全手工编写还是太费劲了，这里使用官方推荐的工具<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/README.md">apiserver-builder</a>帮助快速创建项目骨架。</p>
+<p><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/README.md">apiserver-builder</a>构建AA方案的API接口服务的原理还是比较清晰的，总之就是kubernetes里最常见的控制器模式，这里就不具体介绍了，<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/concepts/api_building_overview.md">官方文档</a>既有文字又有图片讲得还是挺细致的，强烈推荐大家多看看，学习一下。</p>
+<p><code>apiserver-builder</code>的安装就不细说了，照着<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/installing.md">官方文档</a>做就可以了。</p>
+<p>以下参考<code>apiserver-builder</code>的官方文档，得出的一些关键步骤：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 创建项目目录</span>
+mkdir $GOPATH/src/github.com/jeremyxu2010/demo-apiserver
+<span style="color:#75715e"># 在项目目录下新建一个名为boilerplate.go.txt，里面是代码的头部版权声明</span>
+cd $GOPATH/src/github.com/jeremyxu2010/demo-apiserver
+curl -o boilerplate.go.txt https://github.com/kubernetes/kubernetes/blob/master/hack/boilerplate/boilerplate.go.txt
+<span style="color:#75715e"># 初始化项目</span>
+apiserver-boot init repo --domain jeremyxu2010.me
+<span style="color:#75715e"># 创建一个非命名空间范围的api-resource</span>
+apiserver-boot create group version resource --group demo --version v1beta1 --non-namespaced<span style="color:#f92672">=</span>true --kind Foo
+<span style="color:#75715e"># 创建Foo这个api-resource的子资源</span>
+apiserver-boot create subresource --subresource bar --group demo --version v1beta1 --kind Foo
+<span style="color:#75715e"># 生成上述创建的api-resource类型的相关代码，包括deepcopy接口实现代码、versioned/unversioned类型转换代码、api-resource类型注册代码、api-resource类型的Controller代码、api-resource类型的AdmissionController代码</span>
+apiserver-boot build generated
+<span style="color:#75715e"># 直接在本地将etcd, apiserver, controller运行起来</span>
+apiserver-boot run local
+</code></pre></div><p>上述这样操作之后，就可以访问我们的APIServer了，如下面的命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -k https://127.0.0.1:9443/apis/demo.jeremyxu2010.me/v1beta1/foos
+</code></pre></div><p>当然可以新建一个yaml文件，然后用kubectl命令直接对api-resource进行操作：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 创建Foo资源的yaml</span>
+echo <span style="color:#e6db74">&#39;apiVersion: demo.jeremyxu2010.me/v1beta1
+</span><span style="color:#e6db74">kind: Foo
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: foo-example
+</span><span style="color:#e6db74">  namespace: test
+</span><span style="color:#e6db74">spec: {}&#39;</span> &gt; sample/foo.yaml
+
+<span style="color:#75715e"># 查看已经注册的api-resource类型</span>
+kubectl --kubeconfig kubeconfig api-resources
+<span style="color:#75715e"># 列所有foos</span>
+kubectl --kubeconfig kubeconfig get foos
+<span style="color:#75715e"># 创建foo</span>
+kubectl --kubeconfig kubeconfig create -f sample/foo.yaml
+<span style="color:#75715e"># 再列所有foos</span>
+kubectl --kubeconfig kubeconfig get foos
+<span style="color:#75715e"># Get新创建的foo</span>
+kubectl --kubeconfig kubeconfig get foos foo-example
+kubectl --kubeconfig kubeconfig get foos foo-example -o yaml
+<span style="color:#75715e"># Delete新创建的foo</span>
+kubectl --kubeconfig kubeconfig delete foos foo-example
+</code></pre></div><p>如果在apiserver的main方法里补上一些代码，以开启swagger-ui，还能更方便地看到这些API接口：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">version</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;v0&#34;</span>
+	<span style="color:#a6e22e">server</span>.<span style="color:#a6e22e">StartApiServer</span>(<span style="color:#e6db74">&#34;/registry/jeremyxu2010.me&#34;</span>, <span style="color:#a6e22e">apis</span>.<span style="color:#a6e22e">GetAllApiBuilders</span>(), <span style="color:#a6e22e">openapi</span>.<span style="color:#a6e22e">GetOpenAPIDefinitions</span>, <span style="color:#e6db74">&#34;Api&#34;</span>, <span style="color:#a6e22e">version</span>, <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">apiServerConfig</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">apiserver</span>.<span style="color:#a6e22e">Config</span>) <span style="color:#66d9ef">error</span> {
+		<span style="color:#f92672">...</span>
+		<span style="color:#a6e22e">apiServerConfig</span>.<span style="color:#a6e22e">RecommendedConfig</span>.<span style="color:#a6e22e">EnableSwaggerUI</span> = <span style="color:#66d9ef">true</span>
+		<span style="color:#a6e22e">apiServerConfig</span>.<span style="color:#a6e22e">RecommendedConfig</span>.<span style="color:#a6e22e">SwaggerConfig</span> = <span style="color:#a6e22e">genericapiserver</span>.<span style="color:#a6e22e">DefaultSwaggerConfig</span>()
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+	})
+}
+</code></pre></div><p>然后浏览器访问<code>https://127.0.0.1:9443/swagger-ui/</code>就可以在swagger的Web页面上看到创建出来的所有API接口。</p>
+<h3 id="api-1">定制API接口</h3>
+<p>像上面这样创建的API接口，接口是都有了，但接口没有啥意义，一般要根据实际情况定义api-resource的spec、status等结构体。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Foo</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">TypeMeta</span>   <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;,inline&#34;</span><span style="color:#e6db74">`</span>
+	<span style="color:#a6e22e">metav1</span>.<span style="color:#a6e22e">ObjectMeta</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;metadata,omitempty&#34;</span><span style="color:#e6db74">`</span>
+
+	<span style="color:#a6e22e">Spec</span>   <span style="color:#a6e22e">FooSpec</span>   <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;spec,omitempty&#34;</span><span style="color:#e6db74">`</span>
+	<span style="color:#a6e22e">Status</span> <span style="color:#a6e22e">FooStatus</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">json:&#34;status,omitempty&#34;</span><span style="color:#e6db74">`</span>
+}
+
+<span style="color:#75715e">// FooSpec defines the desired state of Foo
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">FooSpec</span> <span style="color:#66d9ef">struct</span> {
+}
+
+<span style="color:#75715e">// FooStatus defines the observed state of Foo
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">FooStatus</span> <span style="color:#66d9ef">struct</span> {
+}
+</code></pre></div><p>可参考<a href="https://github.com/operator-framework/operator-sdk/blob/master/doc/user-guide.md#define-the-spec-and-status">这里</a>。</p>
+<p>有时默认的增删改查操作并不满足业务需求，这时可以自定义api-resource或subresource的REST实现，默认实现是存取到etcd的，通过这种方式甚至可以将自定义资源存入后端数据库。自定义REST实现的方法参考<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_custom_rest.md">adding_custom_rest</a>，<a href="https://github.com/jeremyxu2010/demo-apiserver/blob/master/pkg/apis/demo/foo_rest.go">foo_rest.go</a>，<a href="https://github.com/jeremyxu2010/demo-apiserver/blob/master/pkg/apis/demo/bar_foo_rest.go">bar_foo_rest.go</a>。另外kubernetes的代码里也有大量自定义REST实现可参考，见<a href="https://github.com/kubernetes/kubernetes/tree/master/pkg/registry/core/pod/rest">这里</a>。</p>
+<p>为api-resource类型的默认值设置可参考<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_defaulting.md">这里</a>，添加校验规则可参考<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_validation.md">这里</a>。</p>
+<h3 id="controller">定制Controller</h3>
+<p>默认生成的api-resource的Reconcile逻辑如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Reconcile reads that state of the cluster for a Foo object and makes changes based on the state read
+</span><span style="color:#75715e"></span><span style="color:#75715e">// and what is in the Foo.Spec
+</span><span style="color:#75715e"></span><span style="color:#75715e">// TODO(user): Modify this Reconcile function to implement your Controller logic.  The scaffolding writes
+</span><span style="color:#75715e"></span><span style="color:#75715e">// a Deployment as an example
+</span><span style="color:#75715e"></span><span style="color:#75715e">// +kubebuilder:rbac:groups=demo.jeremyxu2010.me,resources=foos,verbs=get;list;watch;create;update;patch;delete
+</span><span style="color:#75715e"></span><span style="color:#75715e">// +kubebuilder:rbac:groups=demo.jeremyxu2010.me,resources=foos/status,verbs=get;update;patch
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ReconcileFoo</span>) <span style="color:#a6e22e">Reconcile</span>(<span style="color:#a6e22e">request</span> <span style="color:#a6e22e">reconcile</span>.<span style="color:#a6e22e">Request</span>) (<span style="color:#a6e22e">reconcile</span>.<span style="color:#a6e22e">Result</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#75715e">// Fetch the Foo instance
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">instance</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">demov1beta1</span>.<span style="color:#a6e22e">Foo</span>{}
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">r</span>.<span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">context</span>.<span style="color:#a6e22e">TODO</span>(), <span style="color:#a6e22e">request</span>.<span style="color:#a6e22e">NamespacedName</span>, <span style="color:#a6e22e">instance</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">IsNotFound</span>(<span style="color:#a6e22e">err</span>) {
+			<span style="color:#75715e">// Object not found, return.  Created objects are automatically garbage collected.
+</span><span style="color:#75715e"></span>			<span style="color:#75715e">// For additional cleanup logic use finalizers.
+</span><span style="color:#75715e"></span>			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">reconcile</span>.<span style="color:#a6e22e">Result</span>{}, <span style="color:#66d9ef">nil</span>
+		}
+		<span style="color:#75715e">// Error reading the object - requeue the request.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">reconcile</span>.<span style="color:#a6e22e">Result</span>{}, <span style="color:#a6e22e">err</span>
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">reconcile</span>.<span style="color:#a6e22e">Result</span>{}, <span style="color:#66d9ef">nil</span>
+}
+</code></pre></div><p>一般来说要按自己的业务逻辑进行定制，可参考<a href="https://github.com/operator-framework/operator-sdk-samples/blob/master/memcached-operator/pkg/controller/memcached/memcached_controller.go#L84">这里</a>。</p>
+<p>api-resource的admission controller编写可参考<a href="https://github.com/stackrox/admission-controller-webhook-demo/blob/master/cmd/webhook-server/admission_controller.go">这里</a>。</p>
+<h2 id="heading-3">打包部署</h2>
+<p>程序写好后，通过以下命令即可生成容器镜像及kubernetes的部署manifest文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 生成二进制文件</span>
+apiserver-boot build executables
+<span style="color:#75715e"># 生成容器镜像</span>
+apiserver-boot build container --image demo/foo-apiserver:latest
+<span style="color:#75715e"># 生成kubernetes的部署manifest文件，可直接在kubernetes里apply即完成部署</span>
+apiserver-boot build config --name fool-apiserver --namespace default --image demo/foo-apiserver:latest
+</code></pre></div><p>观察生成的kubernetes部署manifest文件<code>config/apiserver.yaml</code>，可以发现最终会创建一个Deployment，一个Service和一个APIService类型的kubernetes资源，同时APIService的caBundle及apiserver的TLS证书也配置妥当了。这个跟<a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/setup-extension-api-server/#setup-an-extension-api-server-to-work-with-the-aggregation-layer">官方文档</a>中所说的第4、5、6、7、8、14点相符。</p>
+<h2 id="heading-4">生成文档</h2>
+<p>最终交付除了部署好的程序，还可以生成相应的API文档，操作如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl -o docs/openapi-spec/swagger.json https://127.0.0.1:9443/openapi/v2
+apiserver-build build docs --build-openapi<span style="color:#f92672">=</span>false --operations<span style="color:#f92672">=</span>true
+</code></pre></div><p>使用浏览器打开<code>docs/build/index.html</code>即可访问生成的API文档，这文档的风格可kubernetes的<a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/">reference文档</a>风格是一致，相当专业！！！</p>
+<h2 id="heading-5">其它</h2>
+<p>在实现过程中还顺带改了<code>apiserver-builder</code>的<a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/pull/381">一个小bug</a>，也算为社区做了点贡献。</p>
+<p><code>apiserver-builder</code>在生成代码时使用了一些kubernetes项目本身使用的code generator，<a href="https://github.com/kubernetes/code-generator/tree/master/cmd">这些code generator</a>也挺有趣的，有时间可以仔细研究下。</p>
+<h2 id="heading-6">总结</h2>
+<p>编写Aggregated APIServer风格的API接口服务这一工作，终于接触到了kubernetes里的一些内部设计，不得不说这套设计还是相当简洁稳定的，难怪kubernetes项目最终能成功。</p>
+<h2 id="heading-7">参考</h2>
+<ol>
+<li><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/">https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/</a></li>
+<li><a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/compare_with_kubebuilder.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/compare_with_kubebuilder.md</a></li>
+<li><a href="https://github.com/kubernetes/sample-apiserver/blob/master/README.md">https://github.com/kubernetes/sample-apiserver/blob/master/README.md</a></li>
+<li><a href="https://github.com/Kubernetes-incubator/apiserver-builder/blob/master/README.md">https://github.com/Kubernetes-incubator/apiserver-builder/blob/master/README.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/installing.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/installing.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/concepts/api_building_overview.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/concepts/api_building_overview.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/tools_user_guide.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/tools_user_guide.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_non_namespaced_resources.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_non_namespaced_resources.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_defaulting.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_defaulting.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_validation.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/adding_validation.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/running_in_cluster.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/running_in_cluster.md</a></li>
+<li><a href="https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/building_docs.md">https://github.com/kubernetes-incubator/apiserver-builder-alpha/blob/master/docs/building_docs.md</a></li>
+<li><a href="https://github.com/kubernetes/code-generator">https://github.com/kubernetes/code-generator</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/setup-extension-api-server/">https://kubernetes.io/docs/tasks/access-kubernetes-api/setup-extension-api-server/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-07-20</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+          <a href="/tags/api/">api</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">限制kubernetes里的系统资源使用</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">彻底解决pvc无法mount的问题</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

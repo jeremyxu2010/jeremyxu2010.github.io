@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rrd on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/rrd/</link>
+    <description>Recent content in rrd on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 29 May 2016 00:17:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/rrd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>处理一个NodeJS程序内存泄露的问题</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 29 May 2016 00:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>这几天使用WebDriver写了个网页黑盒测试脚本，使用的是NodeJS SDK，但脚本运行时间比较长时，感觉node进程的内存占用越来越多，</description>
+    </item>
+    
+  </channel>
+</rss>

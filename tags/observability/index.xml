@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>observability on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/observability/</link>
+    <description>Recent content in observability on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 14 Dec 2019 20:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/observability/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>60秒完成Linux系统的性能分析(译)</title>
+      <link>https://jeremyxu2010.github.io/2019/12/60%E7%A7%92%E5%AE%8C%E6%88%90linux%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E8%AF%91/</link>
+      <pubDate>Sat, 14 Dec 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/12/60%E7%A7%92%E5%AE%8C%E6%88%90linux%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E8%AF%91/</guid>
+      <description>偶然间看到一篇英文文档，觉得还挺有用的，尝试翻译一下以加深记忆。 翻译自https://medium.com/netflix-techblog</description>
+    </item>
+    
+  </channel>
+</rss>

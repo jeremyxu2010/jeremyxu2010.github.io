@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>编译自定义Python二进制程序 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/12/%E7%BC%96%E8%AF%91%E8%87%AA%E5%AE%9A%E4%B9%89python%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="编译自定义Python二进制程序" />
+<meta property="og:description" content="工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/12/%E7%BC%96%E8%AF%91%E8%87%AA%E5%AE%9A%E4%B9%89python%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/" />
+<meta property="article:published_time" content="2018-12-28T18:07:00+08:00" />
+<meta property="article:modified_time" content="2018-12-28T18:07:00+08:00" />
+<meta itemprop="name" content="编译自定义Python二进制程序">
+<meta itemprop="description" content="工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都">
+<meta itemprop="datePublished" content="2018-12-28T18:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-12-28T18:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="1307">
+
+
+
+<meta itemprop="keywords" content="python,gcc,make," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="编译自定义Python二进制程序"/>
+<meta name="twitter:description" content="工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">编译自定义Python二进制程序</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-12-28 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1307 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">过程记录</a></li>
+    <li><a href="#heading-1">总结</a></li>
+    <li><a href="#heading-2">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都不太详尽，经过探索最终还是成功了，这里记录一下过程以备忘。</p>
+<h2 id="heading">过程记录</h2>
+<p>查阅Python27源码中的setup.py文件，发现Python核心仅依赖glibc，c++等标准库，因此按以下默认的编译命令即可编译出依赖较少的Python二进制程序了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 安装必要的编译工具链</span>
+sudo yum install -y gcc make gcc-c++ glibc-static libstdc++-static
+
+curl -O https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz
+tar -xf Python-2.7.13.tgz <span style="color:#f92672">&amp;&amp;</span> cd Python-2.7.13
+
+<span style="color:#75715e"># 注意这里添加了选项静态链接libgcc和libstdc++</span>
+LDFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-static-libgcc -static-libstdc++&#34;</span> ./configure --prefix<span style="color:#f92672">=</span>/usr/local/python27 --with-cxx-main<span style="color:#f92672">=</span>/usr/bin/g++
+make -j4 &gt; make.log
+make install
+</code></pre></div><p>我用<code>ldd</code>命令检查下Python二进制程序依赖的库文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@centos-linux-7 deps<span style="color:#f92672">]</span><span style="color:#75715e"># ldd /usr/local/python27/bin/python</span>
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007fff78de8000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007f8b2253a000<span style="color:#f92672">)</span>
+	libdl.so.2 <span style="color:#f92672">=</span>&gt; /lib64/libdl.so.2 <span style="color:#f92672">(</span>0x00007f8b22336000<span style="color:#f92672">)</span>
+	libutil.so.1 <span style="color:#f92672">=</span>&gt; /lib64/libutil.so.1 <span style="color:#f92672">(</span>0x00007f8b22133000<span style="color:#f92672">)</span>
+	libm.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libm.so.6 <span style="color:#f92672">(</span>0x00007f8b21b2a000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007f8b21547000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007f8b22756000<span style="color:#f92672">)</span>
+</code></pre></div><p>发现依赖的库文件确实都是系统核心库文件，大部分Linux系统上均有这些库文件，因此可以断定将编译好的python程序拷贝到其它Linux系统上是可以执行的。</p>
+<p>但我发现Python程序的执行并不是只使用了<code>python</code>这个二进制程序，在其加载某些python模块是会动态加载该模块对应的动态链接库文件。因此我用ldd命令检查下各python模块的动态库文件的依赖情况：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@centos-linux-7 Python-2.7.13<span style="color:#f92672">]</span><span style="color:#75715e"># find . -name &#39;*.so&#39;|xargs ldd</span>
+./build/lib.linux-x86_64-2.7/_socket.so:
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007ffdba579000<span style="color:#f92672">)</span>
+	libm.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libm.so.6 <span style="color:#f92672">(</span>0x00007ff0d8ded000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007ff0d8bd1000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007ff0d8804000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007ff0d9304000<span style="color:#f92672">)</span>
+......
+./build/lib.linux-x86_64-2.7/_curses.so:
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007ffd61969000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007f6a52b86000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007f6a527b9000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007f6a52fe5000<span style="color:#f92672">)</span>
+</code></pre></div><p>这么一看绝大部分python模块的动态库文件也是仅依赖系统核心库文件，一切都挺美好！</p>
+<p>但在我的场景里，python编译时还需要启用<code>ssl</code>、<code>hashlib</code>、<code>readline</code>等模块，而这些模块编译时会依赖系统非核心库文件，我分析Python源代码目录下的<code>setup.py</code>文件，发现依赖关系如下：</p>
+<ol>
+<li>ssl、hashlib依赖于libssl、libcrypto，而libssl、libcrypto又依赖libz。</li>
+<li>readline依赖libreadline、libncurses。</li>
+</ol>
+<p>于是这里先编译安装这些非核心库文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 注意由于这些库文件后面都需要链接进python模块对应的动态库文件，所以下面编译的非核心库均要使用-fPIC选项，并且都只编译出静态库文件</span>
+mkdir -p deps/src
+cd deps/src
+
+curl -O https://zlib.net/zlib-1.2.11.tar.gz
+tar -xf zlib-1.2.11.tar.gz <span style="color:#f92672">&amp;&amp;</span> cd zlib-1.2.11
+CFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;-fPIC&#39;</span> ./configure --prefix<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../zlib --static
+make -j4 <span style="color:#f92672">&amp;&amp;</span> make install
+cd ..
+
+curl -O https://www.openssl.org/source/openssl-1.0.2q.tar.gz
+tar -xf openssl-1.0.2q.tar.gz <span style="color:#f92672">&amp;&amp;</span> cd openssl-1.0.2q
+./Configure zlib --prefix<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../ssl --openssldir<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../ssl linux-x86_64 --with-zlib-lib<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../zlib/lib --with-zlib-include<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../zlib/include -fPIC
+make -j4 <span style="color:#f92672">&amp;&amp;</span> make install
+cd ..
+
+curl -O http://ftp.ntu.edu.tw/gnu/ncurses/ncurses-5.9.tar.gz
+tar -xf ncurses-5.9.tar.gz <span style="color:#f92672">&amp;&amp;</span> cd ncurses-5.9
+CPPFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-fPIC&#34;</span> ./configure --prefix<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../ncurses
+make -j4 <span style="color:#f92672">&amp;&amp;</span> make install
+cd ..
+
+curl -O http://ftp.ntu.edu.tw/gnu/readline/readline-6.2.tar.gz
+tar -xf readline-6.2.tar.gz <span style="color:#f92672">&amp;&amp;</span> cd readline-6.2
+CPPFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-fPIC&#34;</span> ./configure --prefix<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/../../readline --disable-shared
+make -j4 <span style="color:#f92672">&amp;&amp;</span> make install
+cd ..
+
+cd ../..
+</code></pre></div><p>最后重新编译Python：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 注意这里添加了选项静态链接libgcc和libstdc++，还指定了一些头文件目录及库文件目录</span>
+CPPFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-I`pwd`/deps/zlib/include  -I`pwd`/deps/ssl/include -I`pwd`/deps/readline/include -I`pwd`/deps/ncurses/include -I`pwd`/deps/ncurses/include/ncurses&#34;</span> LDFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-static-libgcc -static-libstdc++ -L`pwd`/deps/zlib/lib -L`pwd`/deps/ssl/lib -L`pwd`/deps/readline/lib -L`pwd`/deps/ncurses/lib&#34;</span> ./configure --prefix<span style="color:#f92672">=</span>/usr/local/python27 --with-cxx-main<span style="color:#f92672">=</span>/usr/bin/g++
+make -j4 <span style="color:#f92672">&amp;&amp;</span> make install
+</code></pre></div><p>最后检查下编译出的python二进制程序文件及各模块的动态库文件，发现仅依赖系统核心库文件，效果很好：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@centos-linux-7 python27<span style="color:#f92672">]</span><span style="color:#75715e"># ldd /usr/local/python27/bin/python</span>
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007ffc54fe8000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007f9774b3d000<span style="color:#f92672">)</span>
+	libdl.so.2 <span style="color:#f92672">=</span>&gt; /lib64/libdl.so.2 <span style="color:#f92672">(</span>0x00007f9774939000<span style="color:#f92672">)</span>
+	libutil.so.1 <span style="color:#f92672">=</span>&gt; /lib64/libutil.so.1 <span style="color:#f92672">(</span>0x00007f9774736000<span style="color:#f92672">)</span>
+	libm.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libm.so.6 <span style="color:#f92672">(</span>0x00007f9774434000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007f9774067000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007f9774d59000<span style="color:#f92672">)</span>
+	
+<span style="color:#f92672">[</span>root@centos-linux-7 python27<span style="color:#f92672">]</span><span style="color:#75715e"># find /usr/local/python27 -name &#39;*.so&#39;|xargs ldd</span>
+/usr/local/python27/lib/python2.7/lib-dynload/nis.so:
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007fff42b14000<span style="color:#f92672">)</span>
+	libnsl.so.1 <span style="color:#f92672">=</span>&gt; /lib64/libnsl.so.1 <span style="color:#f92672">(</span>0x00007fbc2ad4f000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007fbc2ab33000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007fbc2a766000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007fbc2b16d000<span style="color:#f92672">)</span>
+......
+/usr/local/python27/lib/python2.7/lib-dynload/_codecs_cn.so:
+	linux-vdso.so.1 <span style="color:#f92672">=</span>&gt;  <span style="color:#f92672">(</span>0x00007fff695db000<span style="color:#f92672">)</span>
+	libpthread.so.0 <span style="color:#f92672">=</span>&gt; /lib64/libpthread.so.0 <span style="color:#f92672">(</span>0x00007f421bd72000<span style="color:#f92672">)</span>
+	libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007f421b9a5000<span style="color:#f92672">)</span>
+	/lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007f421c1b2000<span style="color:#f92672">)</span>
+</code></pre></div><p>安装其它第三方python模块的方法与上面的过程很类似了，这里就不赘述了。</p>
+<h2 id="heading-1">总结</h2>
+<p>手工编译一个python不难，但如果要尽可能少地依赖系统中库文件，这时要考虑的问题就比较多了。通过本次探索，对GCC的编译过程有了更深刻的认识，也基本掌握了<code>CFLAGS</code>、<code>CPPFLAGS</code>、<code>LDFLAGS</code>等常见编译参数的用法。</p>
+<h2 id="heading-2">参考</h2>
+<ol>
+<li><a href="https://devguide.python.org/setup/#unix">https://devguide.python.org/setup/#unix</a></li>
+<li><a href="https://stackoverflow.com/questions/4156055/static-linking-only-some-libraries">https://stackoverflow.com/questions/4156055/static-linking-only-some-libraries</a></li>
+<li><a href="https://www.cnblogs.com/taskiller/archive/2012/12/14/2817650.html">https://www.cnblogs.com/taskiller/archive/2012/12/14/2817650.html</a></li>
+<li><a href="https://www.oschina.net/question/994701_105246">https://www.oschina.net/question/994701_105246</a></li>
+<li><a href="https://blog.csdn.net/haibosdu/article/details/77094833">https://blog.csdn.net/haibosdu/article/details/77094833</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-12-28</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/gcc/">gcc</a>
+          
+          <a href="/tags/make/">make</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker日志丢失问题分析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/">
+            <span class="next-text nav-default">SSH的三种端口转发</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jstatd on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/jstatd/</link>
+    <description>Recent content in jstatd on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 01 Oct 2017 11:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/jstatd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java VisualVM使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 01 Oct 2017 11:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/java-visualvm%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>Java VisualVM使用备忘 一直觉得JDK带的新版诊断工具VisualVM功能都没有原来的jconsole强大，今天偶然翻到了VisualVM</description>
+    </item>
+    
+  </channel>
+</rss>

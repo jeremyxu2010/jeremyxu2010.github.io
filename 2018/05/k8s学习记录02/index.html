@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>k8s学习记录02 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="k8s学习记录02" />
+<meta property="og:description" content="部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/" />
+<meta property="article:published_time" content="2018-05-21T18:00:00+08:00" />
+<meta property="article:modified_time" content="2018-05-21T18:00:00+08:00" />
+<meta itemprop="name" content="k8s学习记录02">
+<meta itemprop="description" content="部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local">
+<meta itemprop="datePublished" content="2018-05-21T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-05-21T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="670">
+
+
+
+<meta itemprop="keywords" content="k8s,devops," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s学习记录02"/>
+<meta name="twitter:description" content="部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">k8s学习记录02</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-05-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 670 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#harbor">部署镜像仓库harbor</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="harbor">部署镜像仓库harbor</h2>
+<p>官方文档中写得很清楚，这里简单概括一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 克隆git项目</span>
+$ git clone https://github.com/vmware/harbor
+$ cd harbor/contrib/helm/harbor
+
+<span style="color:#75715e"># Download external dependent charts</span>
+$ helm dependency update
+
+<span style="color:#75715e"># 编辑部分配置项</span>
+$ vim values.yml
+......
+externalDomain: harbor.local
+......
+    <span style="color:#75715e"># 因为我本机的traefik ingress未开启TLS的endpoint，这里设置不自动跳转至https</span>
+    ingress.kubernetes.io/ssl-redirect: <span style="color:#e6db74">&#34;false&#34;</span>
+......
+
+<span style="color:#75715e"># 使用helm安装</span>
+$ helm install . --debug --name harbor-release -f values.yaml
+</code></pre></div><p>过一会儿使用命令<code>helm status harbor-release</code>查看下部署的状态：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ helm status harbor-release
+......
+<span style="color:#f92672">=</span><span style="color:#f92672">=</span>&gt; v1/Pod<span style="color:#f92672">(</span>related<span style="color:#f92672">)</span>
+NAME                                                  READY  STATUS   RESTARTS  AGE
+harbor-release-postgresql-66f5477d9c-4wncj            1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-clair-55f6d7899d-hm8cx          1/1    Running  <span style="color:#ae81ff">1</span>         8m
+harbor-release-harbor-jobservice-878896998-glbvw      1/1    Running  <span style="color:#ae81ff">4</span>         8m
+harbor-release-harbor-notary-server-6ccddbcd98-knk2n  1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-notary-signer-5f4df97cd5-2vbb8  1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-ui-5bbf974497-skpnr             1/1    Running  <span style="color:#ae81ff">3</span>         8m
+harbor-release-redis-master-0                         1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-adminserver-0                   1/1    Running  <span style="color:#ae81ff">1</span>         8m
+harbor-release-harbor-mysql-0                         1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-notary-db-0                     1/1    Running  <span style="color:#ae81ff">0</span>         8m
+harbor-release-harbor-registry-0                      1/1    Running  <span style="color:#ae81ff">0</span>         8m
+......
+NOTES:
+
+Please wait <span style="color:#66d9ef">for</span> several minutes <span style="color:#66d9ef">for</span> Harbor deployment to complete.
+Then follow the steps below to use Harbor.
+
+1. Add the Harbor CA certificate to Docker by executing the following command:
+
+  sudo mkdir -p /etc/docker/certs.d/harbor.local
+  kubectl get secret <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --namespace default harbor-release-harbor-ingress <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.data.ca\.crt}&#34;</span> | base64 --decode | <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    sudo tee /etc/docker/certs.d/harbor.local/ca.crt
+
+2. Get Harbor admin password by executing the following command:
+
+  kubectl get secret --namespace default harbor-release-harbor-adminserver -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{.data.HARBOR_ADMIN_PASSWORD}&#34;</span> | base64 --decode; echo
+
+3. Add DNS resolution entry <span style="color:#66d9ef">for</span> Harbor FQDN harbor.local to K8s Ingress Controller IP on DNS Server or in file /etc/hosts.
+   Add DNS resolution entry <span style="color:#66d9ef">for</span> Notary FQDN notary-harbor.local to K8s Ingress Controller IP on DNS Server or in file /etc/hosts.
+
+4. Access Harbor UI via https://harbor.local
+
+5. Login Harbor with Docker CLI:
+
+  docker login harbor.local
+</code></pre></div><p>这里有几个提示：</p>
+<ol>
+<li>从<code>harbor-release-harbor-ingress</code> 中导出<code>data.ca.crt</code>，并导入到docker的证书目录中，这样docker就会信任该镜像仓库</li>
+<li>通过<code>kubectl get secret --namespace default harbor-release-harbor-adminserver -o jsonpath=&quot;{.data.HARBOR_ADMIN_PASSWORD}&quot; | base64 --decode; echo</code> 命令可以得到harbor的管理员密码</li>
+<li>要添加两个域名映射<code>harbor.local</code>、<code>notary-harbor.local</code>，本机开发的话，把这两个域名指向<code>127.0.0.1</code>就可以了</li>
+</ol>
+<p>在<code>/etc/hosts</code>文件中配上两个域名的映射，然后在浏览器中直接访问<code>http://harbor.local</code>，页面很快显示出来了，管理员登录凭证为<code>admin/Harbor12345</code>。</p>
+<p>OVER</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://github.com/vmware/harbor/tree/master/contrib/helm/harbor">https://github.com/vmware/harbor/tree/master/contrib/helm/harbor</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-05-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">docker实战小结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/05/consul%E5%9F%BA%E7%A1%80%E8%BF%90%E7%BB%B4-%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/">
+            <span class="next-text nav-default">consul基础运维-备份还原导入导出</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker排雷记 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="docker排雷记" />
+<meta property="og:description" content="上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/" />
+<meta property="article:published_time" content="2017-02-03T20:20:00+08:00" />
+<meta property="article:modified_time" content="2017-02-03T20:20:00+08:00" />
+<meta itemprop="name" content="docker排雷记">
+<meta itemprop="description" content="上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里">
+<meta itemprop="datePublished" content="2017-02-03T20:20:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-02-03T20:20:00&#43;08:00" />
+<meta itemprop="wordCount" content="1390">
+
+
+
+<meta itemprop="keywords" content="docker," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker排雷记"/>
+<meta name="twitter:description" content="上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker排雷记</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-02-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1390 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">挂载目录用户权限问题</a></li>
+    <li><a href="#depends-on">depends_on失效了</a></li>
+    <li><a href="#docker-p">使用docker的-p选项不监听端口</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里记录一下。</p>
+<h2 id="heading">挂载目录用户权限问题</h2>
+<p>我是将dockerfiles相关文件放在windows系统上的，然后通过virtualbox虚拟机的共享文件夹功能将目录共享给Linux的，这样在Linux下就会看到这些文件的用户组是vboxsf, 这些文件的权限为770。</p>
+<pre><code>[jeremy@centos7-local dockerfiles]$ ls -l
+总用量 1
+-rwxrwx--- 1 root vboxsf 688 2月   3 11:53 docker-compose.yml
+drwxrwx--- 1 root vboxsf   0 2月   2 09:51 initdb
+drwxrwx--- 1 root vboxsf   0 2月   3 11:28 tools
+drwxrwx--- 1 root vboxsf   0 2月   2 18:05 wars
+</code></pre><p>这时使用<code>-v</code>将目录挂载到docker容器</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker run --name<span style="color:#f92672">=</span>test -v <span style="color:#e6db74">`</span>pwd<span style="color:#e6db74">`</span>/wars:/var/lib/jetty/webapps -p 8080:8080 -d jetty:9
+</code></pre></div><p>这时目录挂载过去后权限就很不对了，如下</p>
+<pre><code>root@15ba64dfbe33:/var/lib/jetty# ls -l
+total 0
+drwxr-xr-x 3 jetty jetty  17 Feb  3 01:57 lib
+drwxr-xr-x 2 jetty jetty   6 Jan 18 00:38 resources
+drwxr-xr-x 2 jetty jetty 193 Feb  3 01:57 start.d
+drwxrwx--- 1 root    984   0 Feb  2 10:05 webapps
+</code></pre><p>可以看到webapps目录的用户组为984, 文件权限是770。而jetty是以jetty用户运行的，自然就无法读取webapps目录下的内容。</p>
+<p>查了下，解决这个问题有四种办法：</p>
+<ul>
+<li>在宿主机上创建与容器中需要的用户及用户组，创建的用户及用户组的ID必须与容器中的一致。在运行<code>docker run -v ...</code>命令前，将要挂载的目录权限设置正确。</li>
+<li>将要挂载的目录设置为容器中存在的用户及用户组，比如设置为root用户，在宿主机与容器中都存在root用户与root用户组，而且root用户与root用户组的ID是一致的。</li>
+<li>修改容器中用户及用户组的ID，使宿主机上的用户及用户组ID在容器内可被识别，有网友写了<a href="https://github.com/schmidigital/permission-fix">一个脚本</a>来完成这件事。</li>
+<li>运行<code>docker run -v ...</code>命令时，使用<code>--user</code>及<code>--group</code>更改容器运行进程的用户及用户组。同样要求指定的用户在容器里是存在的，一般来说也就只能使用<code>root</code>了。</li>
+</ul>
+<p>这几种方法都有缺点，还是很麻烦。也在关注是否有其它更好的办法。</p>
+<h2 id="depends-on">depends_on失效了</h2>
+<p>在<code>docker-compose.yml</code>里使用<code>depends_on</code>指定了web服务依赖于db服务，但web服务还没等db服务就绪就启动了，最终web服务启动失败。</p>
+<p>查了下文件，发现官方文档有这么一句话：</p>
+<blockquote>
+<p>Note: depends_on will not wait for db and redis to be “ready” before starting web - only until they have been started. If you need to wait for a service to be ready, see Controlling startup order for more on this problem and strategies for solving it.</p>
+</blockquote>
+<p>最后参考<a href="https://docs.docker.com/compose/startup-order/">这里</a>, 使用<code>wait-for-it</code>方案解决了问题。</p>
+<pre><code>version: '2'
+services:
+  ssm-mysql:
+    image:  'mysql'
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_DATABASE=ssm-db
+      - MYSQL_ROOT_PASSWORD=123456
+  ssm-web:
+    image: 'jetty:9'
+    depends_on:
+      - ssm-mysql
+    links:
+      - ssm-mysql
+    volumes:
+      - ./wars:/var/lib/jetty/webapps
+      - ./tools:/tools
+    entrypoint: [&quot;/tools/wait-for-it.sh&quot;, &quot;ssm-mysql:3306&quot;, &quot;-s&quot;, &quot;-t&quot;, &quot;60&quot;, &quot;--&quot;, &quot;/docker-entrypoint.sh&quot;]
+    ports:
+      - &quot;8080:8080&quot;
+    environment:
+      - MYSQL_PORT_3306_TCP_ADDR=ssm-mysql
+      - MYSQL_PORT_3306_TCP_PORT=3306
+      - MYSQL_ENV_MYSQL_DATABASE=ssm-db
+      - MYSQL_ENV_MYSQL_ROOT_PASSWORD=123456
+</code></pre><h2 id="docker-p">使用docker的-p选项不监听端口</h2>
+<p>直接使用docker的-p选项，发现docker宿主机并不监听指定的端口，在docker宿主机上可以访问该端口，但外部就无法访问该端口了。</p>
+<pre><code>[jeremy@centos7-local dockerfiles]$ docker run --name=test -p 8080:8080 -d jetty:9
+dbb672d6c3bec87bd9048911798f7d3941e6681ebdd60e0bb54332b8a083ae3d
+#宿主机并不监听8080端口
+[jeremy@centos7-local dockerfiles]$ lsof -i :8080
+# 但在docker宿主机上wget可访问8080，外部就无法访问8080了
+[jeremy@centos7-local dockerfiles]$ wget http://127.0.0.1:8080
+--2017-02-03 21:01:43--  http://127.0.0.1:8080/
+正在连接 127.0.0.1:8080... 已连接。
+# 发现原来是docker-proxy这个东东在工作
+[jeremy@centos7-local dockerfiles]$ ps -ef|grep docker
+...
+root      3190  3050  0 20:58 ?        00:00:00 /usr/bin/docker-proxy -proto tcp -host-ip 0.0.0.0 -host-port 8080 -container-ip 172.17.0.2 -container-port 8080
+...
+</code></pre><p>查阅<a href="https://docs.docker.com/engine/reference/commandline/dockerd/">官方文档</a>后，发现<code>dockerd</code>存在<code>--userland-proxy</code>这个选项。</p>
+<blockquote>
+<p>&ndash;userland-proxy	true	Use userland proxy for loopback traffic</p>
+</blockquote>
+<p>于是给<code>dockerd</code>加上<code>--userland-proxy=false</code>选项，然后问题解决了。这个选项应该是为安全性考虑的吧，默认只允许docker宿主机访问<code>-p</code>出来的端口，外部要想访问则需要配置相应的iptables规则。默认如果是这样也太不易用了。</p>
+<h2 id="heading-1">参考</h2>
+<p><code>https://docs.docker.com/engine/installation/linux/centos/</code>
+<code>https://docs.docker.com/engine/installation/linux/linux-postinstall/</code>
+<code>https://docs.docker.com/engine/admin/systemd/</code>
+<code>https://github.com/schmidigital/permission-fix</code>
+<code>https://docs.docker.com/compose/compose-file/</code>
+<code>https://docs.docker.com/compose/startup-order/</code>
+<code>https://github.com/vishnubob/wait-for-it</code>
+<code>https://docs.docker.com/engine/reference/commandline/dockerd/</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-02-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/02/%E4%BD%BF%E7%94%A8go%E5%BC%80%E5%8F%91api%E6%9C%8D%E5%8A%A1/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">使用go开发api服务</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/">
+            <span class="next-text nav-default">boot2docker中安装docker-compose</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker的两个bug - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="docker的两个bug" />
+<meta property="og:description" content="这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/" />
+<meta property="article:published_time" content="2018-10-13T20:50:00+08:00" />
+<meta property="article:modified_time" content="2018-10-13T20:50:00+08:00" />
+<meta itemprop="name" content="docker的两个bug">
+<meta itemprop="description" content="这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock">
+<meta itemprop="datePublished" content="2018-10-13T20:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-10-13T20:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="2750">
+
+
+
+<meta itemprop="keywords" content="docker,zombie,leak," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker的两个bug"/>
+<meta name="twitter:description" content="这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker的两个bug</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-10-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2750 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker">docker容器生成僵尸进程</a>
+      <ul>
+        <li><a href="#heading">现象</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-1">初始进程的责任：“收割”“僵尸进程”</a></li>
+    <li><a href="#heading-2">“僵尸进程”的危害</a></li>
+    <li><a href="#-docker-">对 Docker 的影响</a>
+      <ul>
+        <li><a href="#heading-3">解决方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">容器的目录被其它的进程使用</a>
+      <ul>
+        <li><a href="#heading-5">现象</a></li>
+        <li><a href="#heading-6">快速解决方案</a></li>
+        <li><a href="#heading-7">问题根源</a></li>
+        <li><a href="#heading-8">解决方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-9">感想</a></li>
+    <li><a href="#heading-10">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。</p>
+<h2 id="docker">docker容器生成僵尸进程</h2>
+<h3 id="heading">现象</h3>
+<p>公司开发服务器上使用docker跑了几个容器，这些容器都是长时间运行的。偶然发现服务器上有大量僵尸进程，大约有两三千个。简单跟踪了下，发现这些僵尸进程均是在容器的进程命名空间的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ps aux | grep <span style="color:#e6db74">&#39;Z&#39;</span> | grep -v grep
+ll /proc/<span style="color:#e6db74">${</span>any_zombie_pid<span style="color:#e6db74">}</span>
+</code></pre></div><p>在容器里运行的程序是很正常的web server，怎么会这样呢？在网上搜索了下，终于找到了答案：</p>
+<p><a href="https://gist.github.com/snakevil/0b47072fcb626b87f4bd4ab80f7d8946">Docker 和子进程“僵尸化”问题</a></p>
+<blockquote>
+<h2 id="heading-1">初始进程的责任：“收割”“僵尸进程”</h2>
+<p>Unix 的进程之间是树状结构的关系。每个进程都可以派生出子进程，而除了最顶端的进程之外，也都会有一个父进程。</p>
+<p>这个最顶端的进程就是初始进程，其在启动系统时被内核启动，并负责启动系统的其余功能部分。如：SSH 后台程序、Docker 后台程序、Apache/Nginx 和 GUI 桌面环境等等。这些程序又可能会派生出它们自己的子进程。</p>
+<p><img src="/images/20181013/image-20181013233556912.png" alt="image-20181013233556912"></p>
+<p>这一部分并没有什么问题。但问题在于当一个进程终止时，会发生什么？假设上图中的 bash (5) 进程结束了，那么其会转变为「废弃进程」（defunct process），也被称作为“僵尸进程”（zombie process）。</p>
+<p><img src="/images/20181013/image-20181013233642192.png" alt="image-20181013233642192"></p>
+<p>为什么会这样？因为 Unix 这样设计地目的，在于让父进程能够耐心“等待”子进程结束，从而获得其结束状态（exit status）。只有当父进程调用 <a href="http://linux.die.net/man/2/waitpid">waitpid()</a> 之后，“僵尸进程”才会真正结束。手册里是这样描述地：</p>
+<blockquote>
+<p>一个已经终止但并未被“等待”的进程，就成为了一个“僵尸”。内核会记录这些“僵尸进程”的基本信息（PID、终止状态、资源占用信息），以确保其父进程在之后的时间里可以通过“等待”来获取这个子进程的信息。</p>
+</blockquote>
+<p>通常来说，人们会简单地认为“僵尸进程”就是那些会造成破坏的失控进程。但从 Unix 系统角度来分析，“僵尸进程”有着非常清晰地定义：进程已经终止，但尚未被其父进程“等待”。</p>
+<p>绝大多数情况下，这都不会产生什么问题。在一个子进程上调用 <code>waitpid()</code> 以消除其“僵尸”状态，被称为“收割”。多数应用程序都能够正确地“收割”其子进程。在上例中，操作系统会在 bash 进程终止时发送 SIGCHLD 信号以唤醒 sshd 进程，其在接收到信号后就“收割”掉了此子进程。</p>
+<p><img src="/images/20181013/image-20181013233710983.png" alt="image-20181013233710983"></p>
+<p>但还有一种特殊情况——如果父进程终止了，无论是正常的（程序逻辑正常终止），还是用户操作导致的（比如用户杀死了该进程）——子进程会如何处理？它们不再拥有父进程，变成了「孤儿进程」（orphaned）（这是确切的技术术语）。</p>
+<p>此时初始进程（PID 1）就会因其被赋予地特殊任务而介入——「领养」（adopt）（同样的，这是确切的技术术语）「孤儿进程」。这就意味着初始进程会成为这些子进程的父进程，而无论其是否由初始进程创建。</p>
+<p>以 Nginx 为例，其默认就会作为后台程序运行。工作流程如下：Nginx 创建一个子进程后，自身进程结束，然后该子进程就被初始进程「领养」了。</p>
+<p><img src="/images/20181013/image-20181013233742274.png" alt="image-20181013233742274"></p>
+<p>其中的要点是什么？操作系统内核自动处理了「领养」逻辑，因此内核其实是<strong>希望初始进程也自动完成对这些「孤儿进程」的“收割”逻辑</strong>。</p>
+<p>这在 Unix 操作系统中是一个非常重要的机制，大量的软件都是因而设计和实现。几乎所有的服务（daemon）程序都<a href="http://stackoverflow.com/questions/881388/what-is-the-reason-for-performing-a-double-fork-when-creating-a-daemon">预期初始进程会「领养」和“收割”其守护子进程</a>。</p>
+<p>尽管我们是以服务程序做例子，但系统并没有什么机制对此进行规约。任何一个进程在结束时，都会预期初始进程能够清理（「领养」和“收割”）其子进程。这一点，在<a href="http://www.amazon.com/gp/product/1118063333/">《操作系统概述》</a>和<a href="http://www.amazon.com/dp/0201433079/">《Unix 系统高级编程》</a>两书中描述地非常详细。</p>
+<h2 id="heading-2">“僵尸进程”的危害</h2>
+<p>“僵尸进程”都已经终止了，它们危害在哪里？它们原本占用的内存已经释放了吗？在 <code>ps</code> 中除了多了些条目，还有什么别的吗？</p>
+<p>是的，内存确实已经释放，但能够在 <code>ps</code> 中看到，说明它们还仍然占用着一些内核资源。<a href="http://linux.die.net/man/2/waitpid">对 Linux <code>waitpid</code> 的文档引用</a>如下：</p>
+<blockquote>
+<p>在“僵尸进程”在被父进程“等待”以彻底消除之前，其仍然会被记录在内核进程表中。而当该表被写满后，新的进程将无法被创建。</p>
+</blockquote>
+<h2 id="-docker-">对 Docker 的影响</h2>
+<p>这个问题会如何对 Docker 产生怎样的影响？我们可以看到很多人只在他们的容器中跑一个进程，而且也认为只需要跑这么一个进程就足够了。但显而易见地，这些进程无法承担初始进程在前文中所述的任务逻辑。因此，为了能够正确地“收割”被「领养」的进程，我们需要另外的初始进程来完成这些工作。</p>
+<p>举一个相对复杂地例子，我们的容器是一个 web 服务器，需要去跑一段基于 bash 的 CGI 脚本，而该脚本又会去调用 grep 程序。假定 web 服务器发现了 CGI 脚本执行超时，也中止了其继续执行。但此时 grep 程序并不会受到影响仍然继续执行，当其执行结束时，就变成了一个“僵尸进程”并由初始进程（即 web 服务器）「收养」。但 web 服务器无法正确地“收割”这个 grep 进程，所以该“僵尸进程”就在系统中常驻了。</p>
+<p>这个问题同样也存在于其它场景中。我们能看到人们尝尝为第三方程序创建 Docker 容器——又如 PostgreSQL ——并将其作为容器中的主进程运行。当我们运行别人的代码时，我们如何确保这些程序<em>并不会</em>派生出子进程并因而堆积大量的“僵尸进程”？唯独仅有我们运行着自己的代码，同时还对所有的依赖包和依赖包的依赖包做严格地审查，才能杜绝这种问题。因此，通常来说，我们很有必要来执行一个合适的初始化系统（init system）来避免这些问题地发生。</p>
+</blockquote>
+<h3 id="heading-3">解决方案</h3>
+<ol>
+<li>重新编译容器镜像，像<a href="https://github.com/phusion/baseimage-docker">baseimage-docker</a>一样，往镜像中引入一套轻量的初始化系统<a href="https://github.com/phusion/baseimage-docker/blob/rel-0.9.16/image/bin/my_init">my_init</a>，并将这个<code>my_init</code>程序作为容器运行的初始进程。</li>
+<li>将原来的<code>CMD [&quot;/path-to-your-app&quot;]</code>修改为<code>CMD [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;set -e &amp;&amp; /path-to-your-app&quot;] &amp;&amp; true</code>，这是一个不完善方案，因为没有干净地终止应用进程，可能会造成文件损坏，有风险。</li>
+</ol>
+<h2 id="heading-4">容器的目录被其它的进程使用</h2>
+<h3 id="heading-5">现象</h3>
+<p>在正常停止docker容器后，删除容器报错：</p>
+<pre><code>Error response from daemon: Driver devicemapper failed to remove root filesystem a5144c558eabbe647ee9a25072746935e03bb797f4dcaf44c275e0ea4ada463a: remove /var/lib/docker/devicemapper/mnt/25cb26493fd3c804d96e802a95d6c74d7cae68032bf50fc640f40ffe40cc4188: device or resource busy
+Error response from daemon: Driver devicemapper failed to remove root filesystem bdd60d5104076351611efb4cdb34c50c9d3f2136fdaea74c9752e2df9fd6f40f: remove /var/lib/docker/devicemapper/mnt/d2b5b784495ece1c9365bdea78b95076f035426356e6654c65ee1db87d8c03e7: device or resource busy
+Error response from daemon: Driver devicemapper failed to remove root filesystem 847b5bb74762a7356457cc331d948e5c47335bbd2e0d9d3847361c6f69e9c369: remove /var/lib/docker/devicemapper/mnt/71e7b20dca8fd9e163c3dfe90a3b31577ee202a03cd1bd5620786ebabdc4e52a: device or resource busy
+Error response from daemon: Driver devicemapper failed to remove root filesystem a85e44dfa07c060244163e19a545c76fd25282f2474faa205d462712866aac51: remove /var/lib/docker/devicemapper/mnt/8bcd524cc8bfb1b36506bf100090c52d7fbbf48ea00b87a53d69f32e537737b7: device or resource busy
+</code></pre><h3 id="heading-6">快速解决方案</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 找到使用容器目录的进程</span>
+$ find /proc/*/mounts | xargs grep -E <span style="color:#e6db74">&#34;526c823031c2065c6fb3b92f9aaded4477eccceb65f245391a1d8a6acae13d0e&#34;</span>
+/proc/27837/mounts:shm /var/lib/docker/containers/526c823031c2065c6fb3b92f9aaded4477eccceb65f245391a1d8a6acae13d0e/shm tmpfs rw,nosuid,nodev,noexec,relatime,size<span style="color:#f92672">=</span>65536k <span style="color:#ae81ff">0</span> <span style="color:#ae81ff">0</span>
+$ ps aux|grep <span style="color:#ae81ff">27837</span>
+<span style="color:#75715e"># 先停掉这些进程后，再就可以成功删除容器了</span>
+</code></pre></div><h3 id="heading-7">问题根源</h3>
+<p><a href="https://github.com/moby/moby/issues/27381">https://github.com/moby/moby/issues/27381</a></p>
+<blockquote>
+<p>Core of the issue here is that container is either still running or some of its mount points have leaked into other some mount namespace.</p>
+<p>You docker-pid and host both seem to be sharing same mount namespace. And that means docker daemon is running in host mount namespace. And that probably means that nginx started at some point after container start and it seems to be running in its own mount namespace. And at that time mount points leaked into nginx mount namespace and that's preventing deletion of container.</p>
+</blockquote>
+<p>原来是老的内核存在bug，docker进程共享宿主机的mount命名空间，这样容器的挂载点被泄漏给其它进程的命名空间了。</p>
+<h3 id="heading-8">解决方案</h3>
+<p>升级内核至<code>3.10.0-693.5.2.el7.x86_64</code>以后，另外安装docker仓库里最新的<code>docker-ce</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo yum remove docker <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-client <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-client-latest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-common <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-latest <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-latest-logrotate <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-logrotate <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-selinux <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-engine-selinux <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>                  docker-engine
+sudo yum install -y yum-utils <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  device-mapper-persistent-data <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  lvm2
+sudo yum-config-manager <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --add-repo <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce
+</code></pre></div><h2 id="heading-9">感想</h2>
+<p>没想法docker容器化技术发展了这么多年，容器隔离性、基础镜像等这些还存在问题，真是让人想不到，呵呵。</p>
+<h2 id="heading-10">参考</h2>
+<ol>
+<li><a href="https://gist.github.com/snakevil/0b47072fcb626b87f4bd4ab80f7d8946">https://gist.github.com/snakevil/0b47072fcb626b87f4bd4ab80f7d8946</a></li>
+<li><a href="https://www.lijiaocn.com/%E9%97%AE%E9%A2%98/2017/07/14/docker-unable-to-rm-filesystem.html">https://www.lijiaocn.com/%E9%97%AE%E9%A2%98/2017/07/14/docker-unable-to-rm-filesystem.html</a></li>
+<li><a href="https://github.com/moby/moby/issues/27381">https://github.com/moby/moby/issues/27381</a></li>
+<li><a href="https://docs.docker.com/install/linux/docker-ce/centos/#install-using-the-repository">https://docs.docker.com/install/linux/docker-ce/centos/#install-using-the-repository</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-10-13</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/zombie/">zombie</a>
+          
+          <a href="/tags/leak/">leak</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/10/%E8%BF%BD%E6%9F%A5iptables%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E5%8E%9F%E5%9B%A0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">追查iptables规则失效原因</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/">
+            <span class="next-text nav-default">搭建ELFK日志采集系统</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

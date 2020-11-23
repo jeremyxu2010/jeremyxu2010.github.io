@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>websocket on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/websocket/</link>
+    <description>Recent content in websocket on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 11 Jun 2016 19:41:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/websocket/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>通过WebSocket传输文件</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Sat, 11 Jun 2016 19:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/</guid>
+      <description>工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，</description>
+    </item>
+    
+  </channel>
+</rss>

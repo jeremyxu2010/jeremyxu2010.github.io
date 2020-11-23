@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>TypeScript项目小结 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="TypeScript项目小结" />
+<meta property="og:description" content="最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/11/typescript%E9%A1%B9%E7%9B%AE%E5%B0%8F%E7%BB%93/" />
+<meta property="article:published_time" content="2020-11-22T20:54:00+08:00" />
+<meta property="article:modified_time" content="2020-11-22T20:54:00+08:00" />
+<meta itemprop="name" content="TypeScript项目小结">
+<meta itemprop="description" content="最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为">
+<meta itemprop="datePublished" content="2020-11-22T20:54:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-11-22T20:54:00&#43;08:00" />
+<meta itemprop="wordCount" content="1521">
+
+
+
+<meta itemprop="keywords" content="nodejs,log4js,sourcemap,async_hooks,clinic,jaeger," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="TypeScript项目小结"/>
+<meta name="twitter:description" content="最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造Java MVC框架简单地分了层。编写业务代码的日子较为"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">TypeScript项目小结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-11-22 </span>
+        <div class="post-category">
+            
+              <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1521 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">解决的问题</a>
+      <ul>
+        <li><a href="#heading-1">上报日志</a></li>
+        <li><a href="#heading-2">输出日志的位置信息</a></li>
+        <li><a href="#requestid">同一个请求的所有日志带RequestId</a></li>
+        <li><a href="#heading-3">性能诊断</a></li>
+        <li><a href="#heading-4">调用链跟踪</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近一段时间用TypeScript做了个项目，项目相关的业务代码没有过度封装，就是仿造<code>Java MVC框架</code>简单地分了层。编写业务代码的日子较为枯燥，没什么好说的。不过项目后期处理一些<code>日志上报</code>、<code>监控数据上报</code>、<code>性能调优</code>的通用任务比较有意思，这里记录一下。</p>
+<h2 id="heading">解决的问题</h2>
+<h3 id="heading-1">上报日志</h3>
+<p>前提：</p>
+<p>1）项目用的日志框架是<a href="https://github.com/log4js-node/log4js-node">log4js-node</a>
+2）公司内部有一个特有的日志服务，可以通过API接口将日志上报上去</p>
+<p>前期在业务代码中已经通过<code>log4js</code>的API打印了日志，现在需要尽量不修改业务代码，将打印的日志上报到这个特有日志服务上去。查阅<a href="https://log4js-node.github.io/log4js-node/appenders.html">log4js的文档</a>，发现可以通过自定义Appender的方式解决这个问题，示例代码如下：</p>
+<p><code>reportLogAppenderConfigure.ts</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#75715e">// This is the function that generates an appender function
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">reportLogAppender</span>(<span style="color:#a6e22e">layout</span>) {
+  <span style="color:#75715e">// This is the appender function itself
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> (<span style="color:#a6e22e">loggingEvent</span>) <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> {
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">msg</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">layout</span>(<span style="color:#a6e22e">loggingEvent</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>
+    <span style="color:#75715e">// report to log system
+</span><span style="color:#75715e"></span>    ...
+  };
+}
+
+<span style="color:#75715e">// reportLogAppender configure doesn&#39;t need to use findAppender, or levels
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">configure</span>(<span style="color:#a6e22e">config</span>, <span style="color:#a6e22e">layouts</span>) {
+  <span style="color:#75715e">// the default layout for the appender
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">layout</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">layouts</span>.<span style="color:#a6e22e">colouredLayout</span>;
+  <span style="color:#75715e">// check if there is another layout specified
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">layout</span>) {
+    <span style="color:#75715e">// load the layout
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">layout</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">layouts</span>.<span style="color:#a6e22e">layout</span>(<span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">type</span>, <span style="color:#a6e22e">config</span>.<span style="color:#a6e22e">layout</span>);
+  }
+  <span style="color:#75715e">//create a new appender instance
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">reportLogAppender</span>(<span style="color:#a6e22e">layout</span>);
+}
+</code></pre></div><p><code>logConfig.ts</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">log4js</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;log4js&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">reportLogAppenderConfigure</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;reportLogAppenderConfigure&#39;</span>;
+
+<span style="color:#a6e22e">log4js</span>.<span style="color:#a6e22e">configure</span>({
+  <span style="color:#a6e22e">appenders</span><span style="color:#f92672">:</span> { 
+    <span style="color:#a6e22e">reportLogAppender</span><span style="color:#f92672">:</span> { 
+      <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> { 
+        <span style="color:#a6e22e">configure</span>:  <span style="color:#66d9ef">reportLogAppenderConfigure</span> 
+      }
+    } 
+  },
+  <span style="color:#a6e22e">categories</span><span style="color:#f92672">:</span> { 
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> { 
+      <span style="color:#a6e22e">appenders</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;reportLogAppender&#39;</span>], 
+      <span style="color:#a6e22e">level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;debug&#39;</span> 
+    } 
+  },
+  <span style="color:#a6e22e">disableClustering</span>: <span style="color:#66d9ef">true</span>
+});
+</code></pre></div><h3 id="heading-2">输出日志的位置信息</h3>
+<p>前提：项目是用<code>TypeScript</code>代码写的，在服务器上运行时是提前编译成javascript代码的。而希望打印出的日志中希望能包含输出日志语句的准确代码位置。</p>
+<p>查阅<a href="https://log4js-node.github.io/log4js-node/layouts.html">log4js的文档</a>，发现其本身就支持输出打印日志语句的代码位置。另外要正确输出代码位置，需要使用SourceMap了。使用简述如下：</p>
+<p>在node进程入口处安装<code>source-map-support</code>：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">sourceMapSupport</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;source-map-support&#39;</span>;
+
+<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">process</span>.<span style="color:#a6e22e">env</span>.<span style="color:#a6e22e">NODE_ENV</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;production&#39;</span>) {
+	<span style="color:#a6e22e">sourceMapSupport</span>.<span style="color:#a6e22e">install</span>();
+}
+</code></pre></div><p>用<code>tsc</code>命令编译时带<code>--sourceMap</code>参数：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tsc --sourceMap app_ts.ts
+</code></pre></div><p>配置appender使用的layout, category要开启enableCallStack：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#a6e22e">log4js</span>.<span style="color:#a6e22e">configure</span>({
+  <span style="color:#a6e22e">appenders</span><span style="color:#f92672">:</span> { 
+    <span style="color:#a6e22e">reportLogAppender</span><span style="color:#f92672">:</span> { 
+      <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> { 
+        <span style="color:#a6e22e">configure</span>:  <span style="color:#66d9ef">reportLogAppenderConfigure</span> 
+      }, 
+      <span style="color:#a6e22e">layout</span><span style="color:#f92672">:</span> {
+				<span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;pattern&#39;</span>,
+				<span style="color:#a6e22e">pattern</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;%r %p %c [%f:%l] : %m&#39;</span>,
+  		} 
+    } 
+  },
+  <span style="color:#a6e22e">categories</span><span style="color:#f92672">:</span> { 
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> { 
+      <span style="color:#a6e22e">appenders</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;reportLogAppender&#39;</span>], 
+      <span style="color:#a6e22e">level</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;debug&#39;</span>,
+      <span style="color:#a6e22e">enableCallStack</span>: <span style="color:#66d9ef">true</span>
+    } 
+  },
+  <span style="color:#a6e22e">disableClustering</span>: <span style="color:#66d9ef">true</span>
+});
+</code></pre></div><h3 id="requestid">同一个请求的所有日志带RequestId</h3>
+<p>前提：同一个请求的处理代码调用关系比较复杂，每个函数都会打印日志。希望同一个请求的所有日志都带上相同的RequestId。</p>
+<p>参阅<a href="https://nodejs.org/api/async_hooks.html">Async hooks</a>的文档，发现可以简单使用<code>AsyncLocalStorage</code>完成这个任务，这个相当于Java里的ThreadLocal。示例代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">uuid</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;node-uuid&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">AsyncLocalStorage</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;async_hooks&#39;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">asyncLocalStorage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">AsyncLocalStorage</span>();
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">log</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">requestId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">asyncLocalStorage</span>.<span style="color:#a6e22e">getStore</span>();
+  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">requestId</span>) {
+    <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">info</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">[</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">requestId</span><span style="color:#e6db74">}</span><span style="color:#e6db74">] </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">message</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+  }
+  <span style="color:#66d9ef">else</span> { 
+    <span style="color:#a6e22e">logger</span>.<span style="color:#a6e22e">info</span>(<span style="color:#a6e22e">message</span>);
+  }
+};
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;/&#39;</span>, (<span style="color:#a6e22e">request</span>, <span style="color:#a6e22e">response</span>) <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> {
+  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">requestId</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">uuid</span>();
+  <span style="color:#a6e22e">asyncLocalStorage</span>.<span style="color:#a6e22e">run</span>(<span style="color:#a6e22e">requestId</span>, <span style="color:#a6e22e">async</span> () <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> {    
+    <span style="color:#75715e">// entering asynchronous context
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Start processing&#39;</span>)
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">emailService</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">EmailService</span>();
+    <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">emailService</span>.<span style="color:#a6e22e">notify</span>(<span style="color:#a6e22e">request</span>.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">emails</span>);
+    <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">writeHead</span>(<span style="color:#ae81ff">200</span>);
+  });
+});
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EmailService</span> {
+  <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">notify</span> (<span style="color:#a6e22e">emails</span>) {
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">email</span> <span style="color:#a6e22e">of</span> <span style="color:#a6e22e">emails</span>) {
+      <span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">Send email: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">email</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+      <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">otherService</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">email</span>);
+    }
+  }
+}
+</code></pre></div><h3 id="heading-3">性能诊断</h3>
+<p>node生态中有很多性能诊断工具，但看了一圈还是发现<code>node-clinic</code>强大好用。示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 全局安装 clinic</span>
+$ npm i clinic -g
+
+<span style="color:#75715e"># 使用 clinic doctor 启动并诊断 Node.js 应用</span>
+$ clinic doctor -- node app.js
+
+<span style="color:#75715e"># 使用 ab 压测</span>
+$ ab -c <span style="color:#ae81ff">10</span> -n <span style="color:#ae81ff">200</span> <span style="color:#e6db74">&#34;http://localhost:3000/&#34;</span>
+
+<span style="color:#75715e"># 压测完毕后，CTRL+C 终止测试程序，终端打印出</span>
+Warning: Trace event is an experimental feature and could change at any time.
+^Canalysing data
+generated HTML file is 51485.clinic-doctor.html
+
+<span style="color:#75715e"># 用浏览器打开 51485.clinic-doctor.html即可，这个页面中有CPU、内存等信息的图表，还有猜测的问题原因和解决方案</span>
+
+<span style="color:#75715e"># 还可以使用 clinic flame 生成火焰图</span>
+$ clinic flame -- node app.js
+<span style="color:#75715e"># 或</span>
+$ clinic flame --collect-only -- node app.js <span style="color:#75715e"># 只收集数据</span>
+$ clinic flame --visualize-only PID.flamegraph <span style="color:#75715e"># 将数据生成火焰图</span>
+</code></pre></div><h3 id="heading-4">调用链跟踪</h3>
+<p>可以使用<a href="https://github.com/nswbmw/koa-await-breakpoint-jaeger"> koa-await-breakpoint-jaeger</a>自动完成调用链跟踪。</p>
+<p>首先启动<code>jaeger</code>服务：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 使用 Docker 启动 Jaeger + Jaeger UI（Jaeger 可视化 web 控制台）</span>
+$ docker run -d -p5775:5775/udp <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p 6831:6831/udp <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p 6832:6832/udp <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p 5778:5778 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p 16686:16686 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  -p 14268:14268 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  jaegertracing/all-in-one:latest
+</code></pre></div><p>在koa程序的入口添加配置，使应用自动埋点上报调用链路径数据。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">Koa</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;koa&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">JaegerStore</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;koa-await-breakpoint-jaeger&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">koaAwaitBreakpoint</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;koa-await-breakpoint&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">jaeger</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;jaeger-client&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">UDPSender</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;jaeger-client/dist/src/reporters/udp_sender&#39;</span>;
+<span style="color:#a6e22e">koaAwaitBreakpoint</span>({
+  <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;tracing&#39;</span>,
+  <span style="color:#a6e22e">files</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;./routes/*.js&#39;</span>],
+  <span style="color:#a6e22e">store</span>: <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">JaegerStore</span>({
+    <span style="color:#a6e22e">reporter</span>: <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">jaeger</span>.<span style="color:#a6e22e">RemoteReporter</span>(<span style="color:#66d9ef">new</span> <span style="color:#a6e22e">UDPSender</span>({
+      <span style="color:#a6e22e">host</span>: <span style="color:#66d9ef">127.0.0.1</span>,
+      <span style="color:#a6e22e">port</span>: <span style="color:#66d9ef">6831</span>
+    })),
+    <span style="color:#a6e22e">sampler</span>: <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">jaeger</span>.<span style="color:#a6e22e">ConstSampler</span>(<span style="color:#66d9ef">true</span>)
+  })
+});
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Koa</span>();
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">koaAwaitBreakpoint</span>)
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">route</span>({ <span style="color:#a6e22e">method</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;POST&#39;</span>, <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;/users&#39;</span>, <span style="color:#a6e22e">controller</span>: <span style="color:#66d9ef">require</span>(<span style="color:#e6db74">&#39;./routes/user&#39;</span>).<span style="color:#a6e22e">createUser</span> })
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">listen</span>(<span style="color:#ae81ff">3000</span>)
+</code></pre></div><h2 id="heading-5">总结</h2>
+<p>在做这些工作的过程中，不仅学到了挺多知识，还发掘了一本不错的书&mdash;<a href="https://www.bookstack.cn/books/node-in-debugging">Node.js 调试指南</a>。这本书里讲了Node.js应用的很多开发技巧，很实用。</p>
+<h2 id="heading-6">参考</h2>
+<ol>
+<li><a href="https://log4js-node.github.io/log4js-node/appenders.html">https://log4js-node.github.io/log4js-node/appenders.html</a></li>
+<li><a href="https://log4js-node.github.io/log4js-node/writing-appenders.html">https://log4js-node.github.io/log4js-node/writing-appenders.html</a></li>
+<li><a href="https://www.bookstack.cn/read/node-in-debugging/README.md">https://www.bookstack.cn/read/node-in-debugging/README.md</a></li>
+<li><a href="https://www.bookstack.cn/read/node-in-debugging/SourceMap.md">https://www.bookstack.cn/read/node-in-debugging/SourceMap.md</a></li>
+<li><a href="https://log4js-node.github.io/log4js-node/layouts.html">https://log4js-node.github.io/log4js-node/layouts.html</a></li>
+<li><a href="https://blog.kuzzle.io/nodejs-14-asynclocalstorage-asynchronous-calls">https://blog.kuzzle.io/nodejs-14-asynclocalstorage-asynchronous-calls</a></li>
+<li><a href="https://nodejs.org/api/async_hooks.html#async_hooks_class_asynclocalstorage">https://nodejs.org/api/async_hooks.html#async_hooks_class_asynclocalstorage</a></li>
+<li><a href="https://www.bookstack.cn/read/node-in-debugging/8.1node-clinic.md">https://www.bookstack.cn/read/node-in-debugging/8.1node-clinic.md</a></li>
+<li><a href="https://www.bookstack.cn/read/node-in-debugging/6.4OpenTracingJaeger.md">https://www.bookstack.cn/read/node-in-debugging/6.4OpenTracingJaeger.md</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-11-22</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/log4js/">log4js</a>
+          
+          <a href="/tags/sourcemap/">sourcemap</a>
+          
+          <a href="/tags/async_hooks/">async_hooks</a>
+          
+          <a href="/tags/clinic/">clinic</a>
+          
+          <a href="/tags/jaeger/">jaeger</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/">
+            <span class="next-text nav-default">web浏览器自动化之playwright</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

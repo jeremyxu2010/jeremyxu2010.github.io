@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>prometheus on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/prometheus/</link>
+    <description>Recent content in prometheus on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 18 Nov 2018 15:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/prometheus/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用prometheus监控多k8s集群</title>
+      <link>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sun, 18 Nov 2018 15:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</guid>
+      <description>最近在做k8s相关的开发工作，涉及不少k8s的相关知识，这里记录下。 问题引出 遇到一个需求，要使用prometheus监控多个k8s集群。 调研</description>
+    </item>
+    
+    <item>
+      <title>研究监控系统之prometheus</title>
+      <link>https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/</link>
+      <pubDate>Sun, 05 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/</guid>
+      <description>这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本</description>
+    </item>
+    
+  </channel>
+</rss>

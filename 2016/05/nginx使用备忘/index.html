@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>nginx使用备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="nginx使用备忘" />
+<meta property="og:description" content="工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2016-05-02T01:35:00+08:00" />
+<meta property="article:modified_time" content="2016-05-02T01:35:00+08:00" />
+<meta itemprop="name" content="nginx使用备忘">
+<meta itemprop="description" content="工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般">
+<meta itemprop="datePublished" content="2016-05-02T01:35:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-02T01:35:00&#43;08:00" />
+<meta itemprop="wordCount" content="2472">
+
+
+
+<meta itemprop="keywords" content="nginx,web," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="nginx使用备忘"/>
+<meta name="twitter:description" content="工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">nginx使用备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-02 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2472 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">安装</a></li>
+    <li><a href="#heading-1">查看版本信息、启动、停止、检查配置文件、重加载配置、分割日志文件</a></li>
+    <li><a href="#heading-2">配置</a>
+      <ul>
+        <li><a href="#heading-3">常用指令</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">示例</a></li>
+    <li><a href="#heading-5">更多</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。</p>
+<h2 id="heading">安装</h2>
+<p>在linux或mac下安装nginx还是很简单的，我一般都是直接下载源代码编译安装。这里要注意，configure时它会提示缺少某些开发库，按照它说明的安装上就可以编译了。另外我一般是将nginx的源码目录留下来，以免以后在用的过程中缺少某个module，需要重新编译安装。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir build/
+tar xf nginx-x.y.z.tar.gz -C build/
+cd build/nginx-x.y.z
+./configure --prefix<span style="color:#f92672">=</span>/opt/nginx
+make <span style="color:#f92672">&amp;&amp;</span> make install
+</code></pre></div><h2 id="heading-1">查看版本信息、启动、停止、检查配置文件、重加载配置、分割日志文件</h2>
+<p>查看版本信息</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/opt/nginx/sbin/nginx -V
+</code></pre></div><p>启动</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/opt/nginx/sbin/nginx &gt; /dev/null 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+</code></pre></div><p>停止</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/opt/nginx/sbin/nginx -s stop
+</code></pre></div><p>检查配置文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/opt/nginx/sbin/nginx -t
+</code></pre></div><p>重加载配置</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">/opt/nginx/sbin/nginx -s reload
+</code></pre></div><p>分割日志文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mv /opt/nginx/logs/access.log /opt/nginx/logs/access_20160430.log <span style="color:#f92672">&amp;&amp;</span> mv /opt/nginx/logs/error.log /opt/nginx/logs/error_20160430.log
+/opt/nginx/sbin/nginx -s reopen
+</code></pre></div><p>当然一般也不会像上面这样启停nginx，一般会用initscripts, 可参考<a href="https://www.nginx.com/resources/wiki/start/topics/examples/initscripts/">initscripts</a>。日志的滚动也使用logrotate来完成，可参考<a href="http://linux008.blog.51cto.com/2837805/555829/">使用logrotate管理nginx日志文件</a></p>
+<h2 id="heading-2">配置</h2>
+<p>配置文件的组成，这里摘录一下nginx官方文档的说明</p>
+<p><code>nginx consists of modules which are controlled by directives specified in the configuration file. Directives are divided into simple directives and block directives. A simple directive consists of the name and parameters separated by spaces and ends with a semicolon (;). A block directive has the same structure as a simple directive, but instead of the semicolon it ends with a set of additional instructions surrounded by braces ({ and }). If a block directive can have other directives inside braces, it is called a context (examples: events, http, server, and location). Directives placed in the configuration file outside of any contexts are considered to be in the main context. The events and http directives reside in the main context, server in http, and location in server.</code></p>
+<h3 id="heading-3">常用指令</h3>
+<h4 id="error-log">error_log</h4>
+<p>配置错误日志输出到哪儿及日志的输出级别，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#error_log">这里</a></p>
+<h4 id="events">events</h4>
+<p>配置连接如何被处理，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#events">这里</a>与<a href="http://nginx.org/en/docs/events.html">这里</a></p>
+<h4 id="include">include</h4>
+<p>包含其它配置文件，用于有效地分割配置文件，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#include">这里</a></p>
+<h4 id="pid">pid</h4>
+<p>指定pid文件位置，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#pid">这里</a></p>
+<h4 id="thread-pool">thread_pool</h4>
+<p>设置线程池，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#thread_pool">这里</a></p>
+<h4 id="user">user</h4>
+<p>指定nginx运行时的用户身份，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#user">这里</a></p>
+<h4 id="worker-processes">worker_processes</h4>
+<p>指定worker进程的数目，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#worker_processes">这里</a></p>
+<h4 id="worker-connections">worker_connections</h4>
+<p>指定worker进程最大的连接数，详见<a href="http://nginx.org/en/docs/ngx_core_module.html#worker_connections">这里</a></p>
+<h4 id="client-body-buffer-size">client_body_buffer_size</h4>
+<p>指定读取客户端请求体的buffer大小，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_buffer_size">这里</a></p>
+<h4 id="client-max-body-size">client_max_body_size</h4>
+<p>指定可读取客户端请求体的最大大小，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size">这里</a></p>
+<h4 id="client-body-timeout">client_body_timeout</h4>
+<p>读取客户端请求体时，多久未传输任何数据，则认为请求超时了，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout">这里</a></p>
+<h4 id="client-header-buffer-size">client_header_buffer_size</h4>
+<p>指定读取客户端请求头的buffer大小，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_header_buffer_size">这里</a></p>
+<h4 id="client-header-timeout">client_header_timeout</h4>
+<p>读取客户端请求头时，多久未传输任何数据，则认为请求超时了，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout">这里</a></p>
+<h4 id="alias">alias</h4>
+<p>指定location使用的路径，与root类似，但不改变文件的跟路径，仅适用文件系统的路径，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#alias">这里</a></p>
+<h4 id="default-type">default_type</h4>
+<p>指定默认的MIME type，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#default_type">这里</a></p>
+<h4 id="error-page">error_page</h4>
+<p>为错误响应码指定响应客户端的URI，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#error_page">这里</a></p>
+<h4 id="internal">internal</h4>
+<p>指定某个location仅内部可用，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#internal">这里</a></p>
+<h4 id="limit-except">limit_except</h4>
+<p>限制某个location里允许的HTTP方法，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#limit_except">这里</a></p>
+<h4 id="limit-rate">limit_rate</h4>
+<p>限制响应发回客户端的速度，一般用于限速，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#limit_rate">这里</a></p>
+<h4 id="limit-rate-after">limit_rate_after</h4>
+<p>响应发回客户端传输多大之后开始限速，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#limit_rate_after">这里</a></p>
+<h4 id="listen">listen</h4>
+<p>指定server监听的地址及端口，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#listen">这里</a></p>
+<h4 id="location">location</h4>
+<p>指定相对于某个URI的配置，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#location">这里</a></p>
+<p><code>location</code>的优先级顺序比较复杂，见官方文档的三段话</p>
+<p><code>A location can either be defined by a prefix string, or by a regular expression. Regular expressions are specified with the preceding “~*” modifier (for case-insensitive matching), or the “~” modifier (for case-sensitive matching). To find location matching a given request, nginx first checks locations defined using the prefix strings (prefix locations). Among them, the location with the longest matching prefix is selected and remembered. Then regular expressions are checked, in the order of their appearance in the configuration file. The search of regular expressions terminates on the first match, and the corresponding configuration is used. If no match with a regular expression is found then the configuration of the prefix location remembered earlier is used.</code></p>
+<p><code>If the longest matching prefix location has the “^~” modifier then regular expressions are not checked.</code></p>
+<p><code>Also, using the “=” modifier it is possible to define an exact match of URI and location. If an exact match is found, the search terminates.</code></p>
+<h4 id="resolver">resolver</h4>
+<p>指定用于查找upstream servers的DNS服务器，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver">这里</a></p>
+<h4 id="root">root</h4>
+<p>指定响应请求的根目录，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#root">这里</a></p>
+<h4 id="server">server</h4>
+<p>为某个虚拟主机指定配置，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#server">这里</a></p>
+<h4 id="server-name">server_name</h4>
+<p>为虚拟主机指定主机名，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#server_name">这里</a></p>
+<h4 id="tcp-nodelay">tcp_nodelay</h4>
+<p>是否开启socket的TCP_NODELAY选项，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#tcp_nodelay">这里</a></p>
+<h4 id="try-files">try_files</h4>
+<p>按指定的顺序检查请求的文件是否存在(请求文件的路径是根据root或alias得出的)，如找到，则直接响应请求，否则内部重定向至最后一个参数指定的uri，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#try_files">这里</a></p>
+<h4 id="types">types</h4>
+<p>根据文件名的后缀决定输出的MIME type，详见<a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#types">这里</a></p>
+<h4 id="allow">allow</h4>
+<p>指定允许访问的IP地址或网络，详见<a href="http://nginx.org/en/docs/http/ngx_http_access_module.html#allow">这里</a></p>
+<h4 id="deny">deny</h4>
+<p>指定拒绝访问的IP地址或网络，详见<a href="http://nginx.org/en/docs/http/ngx_http_access_module.html#deny">这里</a></p>
+<h4 id="autoindex">autoindex</h4>
+<p>是否开启列目录输出，详见<a href="http://nginx.org/en/docs/http/ngx_http_autoindex_module.html#autoindex">这里</a></p>
+<h4 id="charset">charset</h4>
+<p>添加指定的编译至响应头的<code>Content-Type</code>属性，详见<a href="http://nginx.org/en/docs/http/ngx_http_charset_module.html#charset">这里</a></p>
+<h4 id="empty-gif">empty_gif</h4>
+<p>输出一个1x1的透明gif图片，一般为占位图片，详见<a href="http://nginx.org/en/docs/http/ngx_http_empty_gif_module.html#empty_gif">这里</a></p>
+<h4 id="gzip">gzip</h4>
+<p>是否开启gzip响应，详见<a href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip">这里</a></p>
+<h4 id="gzip-comp-level">gzip_comp_level</h4>
+<p>设置gzip压缩的级别，级别越高压缩得越小，但越耗cpu，详见<a href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_comp_level">这里</a></p>
+<h4 id="gzip-disable">gzip_disable</h4>
+<p>如果<code>User-Agent</code>请求头匹配指定的正则表达式，则禁用gzip，详见<a href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_disable">这里</a></p>
+<h4 id="gzip-min-length">gzip_min_length</h4>
+<p>当响应体超过这个大小才进行gzip压缩，详见<a href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_min_length">这里</a></p>
+<h4 id="gzip-types">gzip_types</h4>
+<p>针对哪些MIME type才进行gzip压缩，详见<a href="http://nginx.org/en/docs/http/ngx_http_gzip_module.html#gzip_types">这里</a></p>
+<h4 id="index">index</h4>
+<p>指定哪些文件被作为索引页，详见<a href="http://nginx.org/en/docs/http/ngx_http_index_module.html#index">这里</a></p>
+<h4 id="limit-conn-zone">limit_conn_zone</h4>
+<p>定义限制连接数的数据区，详见<a href="http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html#limit_conn_zone">这里</a></p>
+<h4 id="limit-conn">limit_conn</h4>
+<p>定义限制的连接数，详见<a href="http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html#limit_conn">这里</a></p>
+<h4 id="limit-req-zone">limit_req_zone</h4>
+<p>定义限制请求数的数据区，详见<a href="http://nginx.org/en/docs/http/ngx_http_limit_req_module.html#limit_req_zone">这里</a></p>
+<h4 id="limit-req">limit_req</h4>
+<p>定义限制的请求数，详见<a href="http://nginx.org/en/docs/http/ngx_http_limit_req_module.html#limit_req">这里</a></p>
+<p>限制请求数的逻辑比较复杂，参见<a href="http://www.cnblogs.com/php5/archive/2012/12/10/2811732.html">这里</a></p>
+<h4 id="access-log">access_log</h4>
+<p>设置访问日志，详见<a href="http://nginx.org/en/docs/http/ngx_http_log_module.html#access_log">这里</a></p>
+<h4 id="log-format">log_format</h4>
+<p>设置日志的格式，详见<a href="http://nginx.org/en/docs/http/ngx_http_log_module.html#log_format">这里</a></p>
+<h4 id="proxy-pass">proxy_pass</h4>
+<p>设置代理的协议及地址，详见<a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_pass">这里</a></p>
+<h4 id="proxy-redirect">proxy_redirect</h4>
+<p>设置代理服务器<code>Location</code>及<code>Refresh</code>响应头里应作的替换，详见<a href="http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_redirect">这里</a></p>
+<h4 id="valid-referers">valid_referers</h4>
+<p>设置合法的<code>Referer</code>请求头，详见<a href="http://nginx.org/en/docs/http/ngx_http_referer_module.html#valid_referers">这里</a></p>
+<h4 id="return">return</h4>
+<p>停止处理，直接返回响应码至客户端，详见<a href="http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#return">这里</a></p>
+<h4 id="if">if</h4>
+<p>if判断，详见<a href="http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#if">这里</a></p>
+<h4 id="rewrite">rewrite</h4>
+<p>重写URL，详见<a href="http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite">这里</a></p>
+<p>这里注意重写URL时如果加上flag, 意义不一样。</p>
+<p>last相当于重写URL后，该URL重新开始location匹配搜索</p>
+<p>break相当于中断在当前location里的rewrite处理</p>
+<p>redirect是302临时重定向</p>
+<p>permanent是301永久重定向</p>
+<h4 id="ssl">ssl</h4>
+<p>是否为指定的虚拟主机开启HTTPS协议，详见<a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl">这里</a></p>
+<h4 id="ssl-certificate">ssl_certificate</h4>
+<p>ssl的证书，详见<a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate">这里</a></p>
+<h4 id="ssl-certificate-key">ssl_certificate_key</h4>
+<p>ssl的私钥文件，详见<a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate_key">这里</a></p>
+<h4 id="upstream">upstream</h4>
+<p>定义一组upstream servers，详见<a href="http://nginx.org/en/docs/http/ngx_http_upstream_module.html#upstream">这里</a></p>
+<h2 id="heading-4">示例</h2>
+<p>nginx官方有一个完整的<a href="http://nginx.org/en/docs/example.html">示例</a></p>
+<p>其它示例：</p>
+<p>虚拟主机的示例</p>
+<pre><code>http {
+ server {
+ listen          80;
+ server_name     www.domain1.com;
+ access_log      logs/domain1.access.log main;
+ location / {
+ index index.html;
+ root  /var/www/domain1.com/htdocs;
+ }
+ }
+ server {
+ listen          80;
+ server_name     www.domain2.com;
+ access_log      logs/domain2.access.log main;
+ location / {
+ index index.html;
+ root  /var/www/domain2.com/htdocs;
+ }
+ }
+}
+</code></pre><p>负载均衡的示例</p>
+<pre><code>http {
+ upstream myproject {
+ server 127.0.0.1:8000 weight=3;: server 127.0.0.1:8001;
+ server 127.0.0.1:8002;
+ server 127.0.0.1:8003;
+ }
+
+ server {
+ listen 80;
+ server_name www.domain.com;
+ location / {
+ proxy_pass http://myproject;
+ }
+ }
+}
+</code></pre><h2 id="heading-5">更多</h2>
+<p>官方完整的<a href="http://nginx.org/en/docs/dirindex.html">指令列表</a></p>
+<p>官方完整的<a href="http://nginx.org/en/docs/varindex.html">变量列表</a></p>
+<p>官方完整的<a href="http://nginx.org/en/docs/">内置模块列表</a></p>
+<p>使用Nginx的X-Accel-Redirect实现下载的<a href="http://tilt.lib.tsinghua.edu.cn/node/753">示例</a></p>
+<p>使用mod_zip实现打包下载的<a href="https://segmentfault.com/a/1190000000621313">示例</a></p>
+<p>nginx反向代理WebSockets的<a href="http://www.oschina.net/translate/websocket-nginx">示例</a></p>
+<p>nginx反向代理WebSockets的<a href="http://www.oschina.net/translate/websocket-nginx">示例</a></p>
+<p>nginx利用image_filter动态生成缩略图的<a href="http://www.nginx.cn/2160.html">示例</a></p>
+<p>nginx使用tcp代理实现HA的<a href="http://xiaorui.cc/2015/05/05/%E6%96%B0%E7%89%88nginx1-9%E4%BD%BF%E7%94%A8ngx_stream_core_module%E5%81%9Atcp%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">示例</a></p>
+<p>增强nginx ssl安全性的<a href="https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html">教程</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-02</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+          <a href="/tags/web/">web</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">锁定NodeJS项目的依赖库</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_06/">
+            <span class="next-text nav-default">现代Web开发系列教程_06</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

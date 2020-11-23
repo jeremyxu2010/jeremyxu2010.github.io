@@ -1,0 +1,2284 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/</link>
+    <description>Recent content in Tags on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 22 Nov 2020 20:54:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>async_hooks</title>
+      <link>https://jeremyxu2010.github.io/tags/async_hooks/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/async_hooks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>clinic</title>
+      <link>https://jeremyxu2010.github.io/tags/clinic/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/clinic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jaeger</title>
+      <link>https://jeremyxu2010.github.io/tags/jaeger/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/jaeger/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>log4js</title>
+      <link>https://jeremyxu2010.github.io/tags/log4js/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/log4js/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nodejs</title>
+      <link>https://jeremyxu2010.github.io/tags/nodejs/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/nodejs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sourcemap</title>
+      <link>https://jeremyxu2010.github.io/tags/sourcemap/</link>
+      <pubDate>Sun, 22 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sourcemap/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>es6</title>
+      <link>https://jeremyxu2010.github.io/tags/es6/</link>
+      <pubDate>Sun, 01 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/es6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>playwright</title>
+      <link>https://jeremyxu2010.github.io/tags/playwright/</link>
+      <pubDate>Sun, 01 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/playwright/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bison</title>
+      <link>https://jeremyxu2010.github.io/tags/bison/</link>
+      <pubDate>Tue, 06 Oct 2020 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/bison/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>flex</title>
+      <link>https://jeremyxu2010.github.io/tags/flex/</link>
+      <pubDate>Tue, 06 Oct 2020 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/flex/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>llvm</title>
+      <link>https://jeremyxu2010.github.io/tags/llvm/</link>
+      <pubDate>Tue, 06 Oct 2020 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/llvm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>multiprocessing</title>
+      <link>https://jeremyxu2010.github.io/tags/multiprocessing/</link>
+      <pubDate>Sun, 27 Sep 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/multiprocessing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>https://jeremyxu2010.github.io/tags/python/</link>
+      <pubDate>Sun, 27 Sep 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>javascript</title>
+      <link>https://jeremyxu2010.github.io/tags/javascript/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/javascript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>koa2</title>
+      <link>https://jeremyxu2010.github.io/tags/koa2/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/koa2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>swagger</title>
+      <link>https://jeremyxu2010.github.io/tags/swagger/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/swagger/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>typescript</title>
+      <link>https://jeremyxu2010.github.io/tags/typescript/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/typescript/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>VueJS</title>
+      <link>https://jeremyxu2010.github.io/tags/vuejs/</link>
+      <pubDate>Sun, 16 Aug 2020 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/vuejs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>lock</title>
+      <link>https://jeremyxu2010.github.io/tags/lock/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/lock/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>microservice</title>
+      <link>https://jeremyxu2010.github.io/tags/microservice/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/microservice/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redis</title>
+      <link>https://jeremyxu2010.github.io/tags/redis/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/redis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>zk</title>
+      <link>https://jeremyxu2010.github.io/tags/zk/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/zk/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bash</title>
+      <link>https://jeremyxu2010.github.io/tags/bash/</link>
+      <pubDate>Sun, 03 May 2020 14:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/bash/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>markdown</title>
+      <link>https://jeremyxu2010.github.io/tags/markdown/</link>
+      <pubDate>Sun, 03 May 2020 14:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/markdown/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ppt</title>
+      <link>https://jeremyxu2010.github.io/tags/ppt/</link>
+      <pubDate>Sun, 03 May 2020 14:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ppt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>isolation</title>
+      <link>https://jeremyxu2010.github.io/tags/isolation/</link>
+      <pubDate>Sun, 15 Mar 2020 22:36:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/isolation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mysql</title>
+      <link>https://jeremyxu2010.github.io/tags/mysql/</link>
+      <pubDate>Sun, 15 Mar 2020 22:36:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>transaction</title>
+      <link>https://jeremyxu2010.github.io/tags/transaction/</link>
+      <pubDate>Sun, 15 Mar 2020 22:36:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/transaction/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>saga</title>
+      <link>https://jeremyxu2010.github.io/tags/saga/</link>
+      <pubDate>Sun, 01 Mar 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/saga/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tcc</title>
+      <link>https://jeremyxu2010.github.io/tags/tcc/</link>
+      <pubDate>Sun, 01 Mar 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tcc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>graphviz</title>
+      <link>https://jeremyxu2010.github.io/tags/graphviz/</link>
+      <pubDate>Sun, 16 Feb 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/graphviz/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>networkx</title>
+      <link>https://jeremyxu2010.github.io/tags/networkx/</link>
+      <pubDate>Sun, 16 Feb 2020 18:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/networkx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dnscrypt-proxy</title>
+      <link>https://jeremyxu2010.github.io/tags/dnscrypt-proxy/</link>
+      <pubDate>Sun, 16 Feb 2020 12:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dnscrypt-proxy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dnsmasq</title>
+      <link>https://jeremyxu2010.github.io/tags/dnsmasq/</link>
+      <pubDate>Sun, 16 Feb 2020 12:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dnsmasq/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>linux</title>
+      <link>https://jeremyxu2010.github.io/tags/linux/</link>
+      <pubDate>Sun, 16 Feb 2020 12:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>privoxy</title>
+      <link>https://jeremyxu2010.github.io/tags/privoxy/</link>
+      <pubDate>Sun, 16 Feb 2020 12:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/privoxy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>proxychains-ng</title>
+      <link>https://jeremyxu2010.github.io/tags/proxychains-ng/</link>
+      <pubDate>Sun, 16 Feb 2020 12:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/proxychains-ng/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>android</title>
+      <link>https://jeremyxu2010.github.io/tags/android/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://jeremyxu2010.github.io/tags/golang/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hey</title>
+      <link>https://jeremyxu2010.github.io/tags/hey/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/hey/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>http</title>
+      <link>https://jeremyxu2010.github.io/tags/http/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/http/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>django</title>
+      <link>https://jeremyxu2010.github.io/tags/django/</link>
+      <pubDate>Sun, 29 Dec 2019 14:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/django/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>web</title>
+      <link>https://jeremyxu2010.github.io/tags/web/</link>
+      <pubDate>Sun, 29 Dec 2019 14:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/web/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>observability</title>
+      <link>https://jeremyxu2010.github.io/tags/observability/</link>
+      <pubDate>Sat, 14 Dec 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/observability/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>profiling</title>
+      <link>https://jeremyxu2010.github.io/tags/profiling/</link>
+      <pubDate>Sat, 14 Dec 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/profiling/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tracing</title>
+      <link>https://jeremyxu2010.github.io/tags/tracing/</link>
+      <pubDate>Sat, 14 Dec 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tracing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gdb</title>
+      <link>https://jeremyxu2010.github.io/tags/gdb/</link>
+      <pubDate>Sat, 07 Dec 2019 13:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/gdb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>conntrack</title>
+      <link>https://jeremyxu2010.github.io/tags/conntrack/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/conntrack/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>https://jeremyxu2010.github.io/tags/kubernetes/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nginx</title>
+      <link>https://jeremyxu2010.github.io/tags/nginx/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/nginx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tcp</title>
+      <link>https://jeremyxu2010.github.io/tags/tcp/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tcp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>etcd</title>
+      <link>https://jeremyxu2010.github.io/tags/etcd/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/etcd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>harbor</title>
+      <link>https://jeremyxu2010.github.io/tags/harbor/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/harbor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>large-cluster</title>
+      <link>https://jeremyxu2010.github.io/tags/large-cluster/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/large-cluster/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>restic</title>
+      <link>https://jeremyxu2010.github.io/tags/restic/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/restic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>docker</title>
+      <link>https://jeremyxu2010.github.io/tags/docker/</link>
+      <pubDate>Sun, 06 Oct 2019 13:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>java</title>
+      <link>https://jeremyxu2010.github.io/tags/java/</link>
+      <pubDate>Sun, 06 Oct 2019 13:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>arm64</title>
+      <link>https://jeremyxu2010.github.io/tags/arm64/</link>
+      <pubDate>Mon, 30 Sep 2019 20:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/arm64/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>buildx</title>
+      <link>https://jeremyxu2010.github.io/tags/buildx/</link>
+      <pubDate>Mon, 30 Sep 2019 20:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/buildx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>csi</title>
+      <link>https://jeremyxu2010.github.io/tags/csi/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/csi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>devops</title>
+      <link>https://jeremyxu2010.github.io/tags/devops/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/devops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>k8s</title>
+      <link>https://jeremyxu2010.github.io/tags/k8s/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/k8s/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>volume</title>
+      <link>https://jeremyxu2010.github.io/tags/volume/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/volume/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>centos</title>
+      <link>https://jeremyxu2010.github.io/tags/centos/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/centos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>deb</title>
+      <link>https://jeremyxu2010.github.io/tags/deb/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/deb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>debian</title>
+      <link>https://jeremyxu2010.github.io/tags/debian/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/debian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rpm</title>
+      <link>https://jeremyxu2010.github.io/tags/rpm/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rpm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ceph</title>
+      <link>https://jeremyxu2010.github.io/tags/ceph/</link>
+      <pubDate>Sat, 07 Sep 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ceph/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>helm</title>
+      <link>https://jeremyxu2010.github.io/tags/helm/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/helm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>proxysql</title>
+      <link>https://jeremyxu2010.github.io/tags/proxysql/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/proxysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IoT</title>
+      <link>https://jeremyxu2010.github.io/tags/iot/</link>
+      <pubDate>Sat, 24 Aug 2019 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/iot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mqtt</title>
+      <link>https://jeremyxu2010.github.io/tags/mqtt/</link>
+      <pubDate>Sat, 24 Aug 2019 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mqtt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kong</title>
+      <link>https://jeremyxu2010.github.io/tags/kong/</link>
+      <pubDate>Sat, 17 Aug 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/kong/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>casbin</title>
+      <link>https://jeremyxu2010.github.io/tags/casbin/</link>
+      <pubDate>Sat, 10 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/casbin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rbac</title>
+      <link>https://jeremyxu2010.github.io/tags/rbac/</link>
+      <pubDate>Sat, 10 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rbac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dex</title>
+      <link>https://jeremyxu2010.github.io/tags/dex/</link>
+      <pubDate>Sun, 04 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dex/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>idp</title>
+      <link>https://jeremyxu2010.github.io/tags/idp/</link>
+      <pubDate>Sun, 04 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/idp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kuberentes</title>
+      <link>https://jeremyxu2010.github.io/tags/kuberentes/</link>
+      <pubDate>Sun, 28 Jul 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/kuberentes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>api</title>
+      <link>https://jeremyxu2010.github.io/tags/api/</link>
+      <pubDate>Sat, 20 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/api/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cni</title>
+      <link>https://jeremyxu2010.github.io/tags/cni/</link>
+      <pubDate>Sun, 07 Jul 2019 14:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cni/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>macvlan</title>
+      <link>https://jeremyxu2010.github.io/tags/macvlan/</link>
+      <pubDate>Sun, 30 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/macvlan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>underlay</title>
+      <link>https://jeremyxu2010.github.io/tags/underlay/</link>
+      <pubDate>Sun, 30 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/underlay/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>networkpolicy</title>
+      <link>https://jeremyxu2010.github.io/tags/networkpolicy/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/networkpolicy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>operator</title>
+      <link>https://jeremyxu2010.github.io/tags/operator/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/operator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iperf3</title>
+      <link>https://jeremyxu2010.github.io/tags/iperf3/</link>
+      <pubDate>Thu, 30 May 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/iperf3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ansible</title>
+      <link>https://jeremyxu2010.github.io/tags/ansible/</link>
+      <pubDate>Sun, 26 May 2019 20:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ansible/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vagrant</title>
+      <link>https://jeremyxu2010.github.io/tags/vagrant/</link>
+      <pubDate>Sun, 26 May 2019 20:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/vagrant/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sysstat</title>
+      <link>https://jeremyxu2010.github.io/tags/sysstat/</link>
+      <pubDate>Wed, 22 May 2019 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sysstat/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dns</title>
+      <link>https://jeremyxu2010.github.io/tags/dns/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rabbitmq</title>
+      <link>https://jeremyxu2010.github.io/tags/rabbitmq/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rabbitmq/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring boot</title>
+      <link>https://jeremyxu2010.github.io/tags/spring-boot/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/spring-boot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iptables</title>
+      <link>https://jeremyxu2010.github.io/tags/iptables/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/iptables/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>strongswan</title>
+      <link>https://jeremyxu2010.github.io/tags/strongswan/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/strongswan/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vpn</title>
+      <link>https://jeremyxu2010.github.io/tags/vpn/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/vpn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>posgresql</title>
+      <link>https://jeremyxu2010.github.io/tags/posgresql/</link>
+      <pubDate>Fri, 15 Mar 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/posgresql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sentinel</title>
+      <link>https://jeremyxu2010.github.io/tags/sentinel/</link>
+      <pubDate>Tue, 12 Mar 2019 10:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sentinel/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>consul</title>
+      <link>https://jeremyxu2010.github.io/tags/consul/</link>
+      <pubDate>Mon, 11 Mar 2019 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/consul/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>zipkin</title>
+      <link>https://jeremyxu2010.github.io/tags/zipkin/</link>
+      <pubDate>Mon, 11 Mar 2019 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/zipkin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>wget</title>
+      <link>https://jeremyxu2010.github.io/tags/wget/</link>
+      <pubDate>Sun, 10 Mar 2019 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/wget/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>wkhtmltopdf</title>
+      <link>https://jeremyxu2010.github.io/tags/wkhtmltopdf/</link>
+      <pubDate>Sun, 10 Mar 2019 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/wkhtmltopdf/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TravisCI</title>
+      <link>https://jeremyxu2010.github.io/tags/travisci/</link>
+      <pubDate>Sun, 10 Mar 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/travisci/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gcc</title>
+      <link>https://jeremyxu2010.github.io/tags/gcc/</link>
+      <pubDate>Fri, 28 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/gcc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>make</title>
+      <link>https://jeremyxu2010.github.io/tags/make/</link>
+      <pubDate>Fri, 28 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/make/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>port-forward</title>
+      <link>https://jeremyxu2010.github.io/tags/port-forward/</link>
+      <pubDate>Sat, 15 Dec 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/port-forward/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ssh</title>
+      <link>https://jeremyxu2010.github.io/tags/ssh/</link>
+      <pubDate>Sat, 15 Dec 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ssh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>blade</title>
+      <link>https://jeremyxu2010.github.io/tags/blade/</link>
+      <pubDate>Sat, 01 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/blade/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cpp</title>
+      <link>https://jeremyxu2010.github.io/tags/cpp/</link>
+      <pubDate>Sat, 01 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cpp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>prometheus</title>
+      <link>https://jeremyxu2010.github.io/tags/prometheus/</link>
+      <pubDate>Sun, 18 Nov 2018 15:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/prometheus/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>netfilter</title>
+      <link>https://jeremyxu2010.github.io/tags/netfilter/</link>
+      <pubDate>Sat, 13 Oct 2018 22:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/netfilter/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>leak</title>
+      <link>https://jeremyxu2010.github.io/tags/leak/</link>
+      <pubDate>Sat, 13 Oct 2018 20:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/leak/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>zombie</title>
+      <link>https://jeremyxu2010.github.io/tags/zombie/</link>
+      <pubDate>Sat, 13 Oct 2018 20:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/zombie/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>elasticsearch</title>
+      <link>https://jeremyxu2010.github.io/tags/elasticsearch/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/elasticsearch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>filebeat</title>
+      <link>https://jeremyxu2010.github.io/tags/filebeat/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/filebeat/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kibana</title>
+      <link>https://jeremyxu2010.github.io/tags/kibana/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/kibana/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>logstash</title>
+      <link>https://jeremyxu2010.github.io/tags/logstash/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/logstash/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>devop</title>
+      <link>https://jeremyxu2010.github.io/tags/devop/</link>
+      <pubDate>Sat, 13 Oct 2018 12:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/devop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mongodb</title>
+      <link>https://jeremyxu2010.github.io/tags/mongodb/</link>
+      <pubDate>Sat, 13 Oct 2018 12:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mongodb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>go</title>
+      <link>https://jeremyxu2010.github.io/tags/go/</link>
+      <pubDate>Mon, 10 Sep 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tls</title>
+      <link>https://jeremyxu2010.github.io/tags/tls/</link>
+      <pubDate>Sun, 26 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tls/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>transactions</title>
+      <link>https://jeremyxu2010.github.io/tags/transactions/</link>
+      <pubDate>Sun, 19 Aug 2018 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/transactions/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>service mesh</title>
+      <link>https://jeremyxu2010.github.io/tags/service-mesh/</link>
+      <pubDate>Fri, 06 Jul 2018 10:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/service-mesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>automation</title>
+      <link>https://jeremyxu2010.github.io/tags/automation/</link>
+      <pubDate>Mon, 18 Jun 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/automation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>deployment</title>
+      <link>https://jeremyxu2010.github.io/tags/deployment/</link>
+      <pubDate>Mon, 18 Jun 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/deployment/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rpmbuild</title>
+      <link>https://jeremyxu2010.github.io/tags/rpmbuild/</link>
+      <pubDate>Sun, 01 Apr 2018 23:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rpmbuild/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>english</title>
+      <link>https://jeremyxu2010.github.io/tags/english/</link>
+      <pubDate>Sun, 25 Feb 2018 22:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/english/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>study</title>
+      <link>https://jeremyxu2010.github.io/tags/study/</link>
+      <pubDate>Sun, 25 Feb 2018 22:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/study/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>haproxy</title>
+      <link>https://jeremyxu2010.github.io/tags/haproxy/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/haproxy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>keepalived</title>
+      <link>https://jeremyxu2010.github.io/tags/keepalived/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/keepalived/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>lvs</title>
+      <link>https://jeremyxu2010.github.io/tags/lvs/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/lvs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>高可用</title>
+      <link>https://jeremyxu2010.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>database</title>
+      <link>https://jeremyxu2010.github.io/tags/database/</link>
+      <pubDate>Sat, 10 Feb 2018 21:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>galera</title>
+      <link>https://jeremyxu2010.github.io/tags/galera/</link>
+      <pubDate>Sat, 10 Feb 2018 21:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/galera/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mariadb</title>
+      <link>https://jeremyxu2010.github.io/tags/mariadb/</link>
+      <pubDate>Sat, 10 Feb 2018 21:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mariadb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>powershell</title>
+      <link>https://jeremyxu2010.github.io/tags/powershell/</link>
+      <pubDate>Sat, 03 Feb 2018 23:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/powershell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>windows</title>
+      <link>https://jeremyxu2010.github.io/tags/windows/</link>
+      <pubDate>Sat, 03 Feb 2018 23:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/windows/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>concurrent</title>
+      <link>https://jeremyxu2010.github.io/tags/concurrent/</link>
+      <pubDate>Tue, 24 Oct 2017 21:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/concurrent/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>log</title>
+      <link>https://jeremyxu2010.github.io/tags/log/</link>
+      <pubDate>Tue, 24 Oct 2017 21:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/log/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>p3c</title>
+      <link>https://jeremyxu2010.github.io/tags/p3c/</link>
+      <pubDate>Tue, 24 Oct 2017 21:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/p3c/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>decompiler</title>
+      <link>https://jeremyxu2010.github.io/tags/decompiler/</link>
+      <pubDate>Mon, 16 Oct 2017 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/decompiler/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jstatd</title>
+      <link>https://jeremyxu2010.github.io/tags/jstatd/</link>
+      <pubDate>Sun, 01 Oct 2017 11:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/jstatd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>visualvm</title>
+      <link>https://jeremyxu2010.github.io/tags/visualvm/</link>
+      <pubDate>Sun, 01 Oct 2017 11:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/visualvm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>openpyxl</title>
+      <link>https://jeremyxu2010.github.io/tags/openpyxl/</link>
+      <pubDate>Sat, 30 Sep 2017 22:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/openpyxl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pymysql</title>
+      <link>https://jeremyxu2010.github.io/tags/pymysql/</link>
+      <pubDate>Sat, 30 Sep 2017 22:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/pymysql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>unicode</title>
+      <link>https://jeremyxu2010.github.io/tags/unicode/</link>
+      <pubDate>Sat, 30 Sep 2017 22:12:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/unicode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bsdiff</title>
+      <link>https://jeremyxu2010.github.io/tags/bsdiff/</link>
+      <pubDate>Mon, 18 Sep 2017 22:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/bsdiff/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cmake</title>
+      <link>https://jeremyxu2010.github.io/tags/cmake/</link>
+      <pubDate>Mon, 18 Sep 2017 22:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cmake/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring</title>
+      <link>https://jeremyxu2010.github.io/tags/spring/</link>
+      <pubDate>Mon, 18 Sep 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/spring/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gearman</title>
+      <link>https://jeremyxu2010.github.io/tags/gearman/</link>
+      <pubDate>Wed, 06 Sep 2017 03:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/gearman/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>任务分派</title>
+      <link>https://jeremyxu2010.github.io/tags/%E4%BB%BB%E5%8A%A1%E5%88%86%E6%B4%BE/</link>
+      <pubDate>Wed, 06 Sep 2017 03:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E4%BB%BB%E5%8A%A1%E5%88%86%E6%B4%BE/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>guava</title>
+      <link>https://jeremyxu2010.github.io/tags/guava/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/guava/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nio</title>
+      <link>https://jeremyxu2010.github.io/tags/nio/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/nio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring-retry</title>
+      <link>https://jeremyxu2010.github.io/tags/spring-retry/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/spring-retry/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>validate</title>
+      <link>https://jeremyxu2010.github.io/tags/validate/</link>
+      <pubDate>Sun, 03 Sep 2017 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/validate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>andrew ng</title>
+      <link>https://jeremyxu2010.github.io/tags/andrew-ng/</link>
+      <pubDate>Fri, 16 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/andrew-ng/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>机器学习</title>
+      <link>https://jeremyxu2010.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Fri, 16 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>retry</title>
+      <link>https://jeremyxu2010.github.io/tags/retry/</link>
+      <pubDate>Thu, 15 Jun 2017 00:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/retry/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hexo</title>
+      <link>https://jeremyxu2010.github.io/tags/hexo/</link>
+      <pubDate>Sat, 03 Jun 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/hexo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>markdwon</title>
+      <link>https://jeremyxu2010.github.io/tags/markdwon/</link>
+      <pubDate>Sat, 03 Jun 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/markdwon/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mathjax</title>
+      <link>https://jeremyxu2010.github.io/tags/mathjax/</link>
+      <pubDate>Sat, 03 Jun 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mathjax/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>keras</title>
+      <link>https://jeremyxu2010.github.io/tags/keras/</link>
+      <pubDate>Sun, 07 May 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/keras/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tensorflow</title>
+      <link>https://jeremyxu2010.github.io/tags/tensorflow/</link>
+      <pubDate>Sun, 07 May 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tensorflow/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mybatis</title>
+      <link>https://jeremyxu2010.github.io/tags/mybatis/</link>
+      <pubDate>Mon, 20 Mar 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mybatis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mybatis-generator</title>
+      <link>https://jeremyxu2010.github.io/tags/mybatis-generator/</link>
+      <pubDate>Mon, 20 Mar 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mybatis-generator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>matplotlib</title>
+      <link>https://jeremyxu2010.github.io/tags/matplotlib/</link>
+      <pubDate>Thu, 16 Mar 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/matplotlib/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>snownlp</title>
+      <link>https://jeremyxu2010.github.io/tags/snownlp/</link>
+      <pubDate>Thu, 16 Mar 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/snownlp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>reactjs</title>
+      <link>https://jeremyxu2010.github.io/tags/reactjs/</link>
+      <pubDate>Thu, 09 Mar 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/reactjs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tomcat</title>
+      <link>https://jeremyxu2010.github.io/tags/tomcat/</link>
+      <pubDate>Wed, 22 Feb 2017 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tomcat/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hibernate</title>
+      <link>https://jeremyxu2010.github.io/tags/hibernate/</link>
+      <pubDate>Mon, 13 Feb 2017 20:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/hibernate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>react</title>
+      <link>https://jeremyxu2010.github.io/tags/react/</link>
+      <pubDate>Wed, 08 Feb 2017 21:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/react/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>webpack</title>
+      <link>https://jeremyxu2010.github.io/tags/webpack/</link>
+      <pubDate>Thu, 26 Jan 2017 16:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/webpack/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sql</title>
+      <link>https://jeremyxu2010.github.io/tags/sql/</link>
+      <pubDate>Fri, 20 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sql/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>JSP</title>
+      <link>https://jeremyxu2010.github.io/tags/jsp/</link>
+      <pubDate>Sat, 07 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/jsp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gulp</title>
+      <link>https://jeremyxu2010.github.io/tags/gulp/</link>
+      <pubDate>Fri, 16 Dec 2016 17:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/gulp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redux</title>
+      <link>https://jeremyxu2010.github.io/tags/redux/</link>
+      <pubDate>Fri, 16 Dec 2016 17:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/redux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>zookeeper</title>
+      <link>https://jeremyxu2010.github.io/tags/zookeeper/</link>
+      <pubDate>Fri, 09 Dec 2016 12:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/zookeeper/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dubbo</title>
+      <link>https://jeremyxu2010.github.io/tags/dubbo/</link>
+      <pubDate>Fri, 09 Dec 2016 12:02:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dubbo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>netty</title>
+      <link>https://jeremyxu2010.github.io/tags/netty/</link>
+      <pubDate>Fri, 09 Dec 2016 12:02:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/netty/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>dubbox</title>
+      <link>https://jeremyxu2010.github.io/tags/dubbox/</link>
+      <pubDate>Mon, 05 Dec 2016 19:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/dubbox/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rpc</title>
+      <link>https://jeremyxu2010.github.io/tags/rpc/</link>
+      <pubDate>Mon, 05 Dec 2016 19:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rpc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>微服务</title>
+      <link>https://jeremyxu2010.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Mon, 05 Dec 2016 19:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ssl</title>
+      <link>https://jeremyxu2010.github.io/tags/ssl/</link>
+      <pubDate>Mon, 07 Nov 2016 22:31:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ssl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>springmvc</title>
+      <link>https://jeremyxu2010.github.io/tags/springmvc/</link>
+      <pubDate>Sun, 06 Nov 2016 00:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/springmvc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>maven</title>
+      <link>https://jeremyxu2010.github.io/tags/maven/</link>
+      <pubDate>Mon, 31 Oct 2016 02:05:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/maven/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>innoDB</title>
+      <link>https://jeremyxu2010.github.io/tags/innodb/</link>
+      <pubDate>Fri, 28 Oct 2016 23:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/innodb/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MyISAM</title>
+      <link>https://jeremyxu2010.github.io/tags/myisam/</link>
+      <pubDate>Fri, 28 Oct 2016 23:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/myisam/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fuckgfw</title>
+      <link>https://jeremyxu2010.github.io/tags/fuckgfw/</link>
+      <pubDate>Tue, 25 Oct 2016 00:59:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/fuckgfw/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>network</title>
+      <link>https://jeremyxu2010.github.io/tags/network/</link>
+      <pubDate>Tue, 25 Oct 2016 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/network/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>chrome</title>
+      <link>https://jeremyxu2010.github.io/tags/chrome/</link>
+      <pubDate>Thu, 20 Oct 2016 00:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/chrome/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>idea</title>
+      <link>https://jeremyxu2010.github.io/tags/idea/</link>
+      <pubDate>Sun, 25 Sep 2016 23:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/idea/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mvvm</title>
+      <link>https://jeremyxu2010.github.io/tags/mvvm/</link>
+      <pubDate>Sat, 24 Sep 2016 00:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/mvvm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>reactnative</title>
+      <link>https://jeremyxu2010.github.io/tags/reactnative/</link>
+      <pubDate>Sat, 24 Sep 2016 00:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/reactnative/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>weixin</title>
+      <link>https://jeremyxu2010.github.io/tags/weixin/</link>
+      <pubDate>Sat, 24 Sep 2016 00:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/weixin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>html5</title>
+      <link>https://jeremyxu2010.github.io/tags/html5/</link>
+      <pubDate>Thu, 22 Sep 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/html5/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>promise</title>
+      <link>https://jeremyxu2010.github.io/tags/promise/</link>
+      <pubDate>Thu, 22 Sep 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/promise/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kvm</title>
+      <link>https://jeremyxu2010.github.io/tags/kvm/</link>
+      <pubDate>Wed, 21 Sep 2016 23:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/kvm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>libguestfs</title>
+      <link>https://jeremyxu2010.github.io/tags/libguestfs/</link>
+      <pubDate>Wed, 21 Sep 2016 23:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/libguestfs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>libvirt</title>
+      <link>https://jeremyxu2010.github.io/tags/libvirt/</link>
+      <pubDate>Wed, 21 Sep 2016 23:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/libvirt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>qemu</title>
+      <link>https://jeremyxu2010.github.io/tags/qemu/</link>
+      <pubDate>Wed, 21 Sep 2016 23:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/qemu/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tcpdump</title>
+      <link>https://jeremyxu2010.github.io/tags/tcpdump/</link>
+      <pubDate>Mon, 19 Sep 2016 23:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/tcpdump/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>netns</title>
+      <link>https://jeremyxu2010.github.io/tags/netns/</link>
+      <pubDate>Mon, 19 Sep 2016 00:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/netns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Open vSwitch</title>
+      <link>https://jeremyxu2010.github.io/tags/open-vswitch/</link>
+      <pubDate>Fri, 09 Sep 2016 01:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/open-vswitch/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sdn</title>
+      <link>https://jeremyxu2010.github.io/tags/sdn/</link>
+      <pubDate>Fri, 09 Sep 2016 01:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sdn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cache</title>
+      <link>https://jeremyxu2010.github.io/tags/cache/</link>
+      <pubDate>Thu, 01 Sep 2016 23:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cache/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pipework</title>
+      <link>https://jeremyxu2010.github.io/tags/pipework/</link>
+      <pubDate>Thu, 01 Sep 2016 22:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/pipework/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hadoop</title>
+      <link>https://jeremyxu2010.github.io/tags/hadoop/</link>
+      <pubDate>Sun, 28 Aug 2016 22:23:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/hadoop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>denyhosts</title>
+      <link>https://jeremyxu2010.github.io/tags/denyhosts/</link>
+      <pubDate>Wed, 24 Aug 2016 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/denyhosts/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>virtualenv</title>
+      <link>https://jeremyxu2010.github.io/tags/virtualenv/</link>
+      <pubDate>Mon, 22 Aug 2016 22:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/virtualenv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>阿里云API</title>
+      <link>https://jeremyxu2010.github.io/tags/%E9%98%BF%E9%87%8C%E4%BA%91api/</link>
+      <pubDate>Mon, 22 Aug 2016 22:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E9%98%BF%E9%87%8C%E4%BA%91api/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>排序算法</title>
+      <link>https://jeremyxu2010.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Sun, 21 Aug 2016 19:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>shadowsocks</title>
+      <link>https://jeremyxu2010.github.io/tags/shadowsocks/</link>
+      <pubDate>Sun, 21 Aug 2016 14:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/shadowsocks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cloud</title>
+      <link>https://jeremyxu2010.github.io/tags/cloud/</link>
+      <pubDate>Wed, 17 Aug 2016 22:57:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>storage</title>
+      <link>https://jeremyxu2010.github.io/tags/storage/</link>
+      <pubDate>Wed, 17 Aug 2016 22:57:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/storage/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>openstack</title>
+      <link>https://jeremyxu2010.github.io/tags/openstack/</link>
+      <pubDate>Tue, 02 Aug 2016 23:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/openstack/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ntp</title>
+      <link>https://jeremyxu2010.github.io/tags/ntp/</link>
+      <pubDate>Wed, 27 Jul 2016 23:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ntp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>glusterfs</title>
+      <link>https://jeremyxu2010.github.io/tags/glusterfs/</link>
+      <pubDate>Mon, 25 Jul 2016 02:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/glusterfs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>oom</title>
+      <link>https://jeremyxu2010.github.io/tags/oom/</link>
+      <pubDate>Wed, 13 Jul 2016 22:03:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/oom/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>systemd</title>
+      <link>https://jeremyxu2010.github.io/tags/systemd/</link>
+      <pubDate>Mon, 04 Jul 2016 00:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/systemd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cgroup</title>
+      <link>https://jeremyxu2010.github.io/tags/cgroup/</link>
+      <pubDate>Sun, 03 Jul 2016 23:43:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cgroup/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>websocket</title>
+      <link>https://jeremyxu2010.github.io/tags/websocket/</link>
+      <pubDate>Sat, 11 Jun 2016 19:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/websocket/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bluebird</title>
+      <link>https://jeremyxu2010.github.io/tags/bluebird/</link>
+      <pubDate>Sun, 29 May 2016 00:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/bluebird/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rrd</title>
+      <link>https://jeremyxu2010.github.io/tags/rrd/</link>
+      <pubDate>Sun, 29 May 2016 00:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rrd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>webdriver</title>
+      <link>https://jeremyxu2010.github.io/tags/webdriver/</link>
+      <pubDate>Sun, 29 May 2016 00:17:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/webdriver/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ajax</title>
+      <link>https://jeremyxu2010.github.io/tags/ajax/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ajax/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jdeferred</title>
+      <link>https://jeremyxu2010.github.io/tags/jdeferred/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/jdeferred/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>servlet</title>
+      <link>https://jeremyxu2010.github.io/tags/servlet/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/servlet/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>filesystem</title>
+      <link>https://jeremyxu2010.github.io/tags/filesystem/</link>
+      <pubDate>Thu, 12 May 2016 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/filesystem/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cors</title>
+      <link>https://jeremyxu2010.github.io/tags/cors/</link>
+      <pubDate>Wed, 11 May 2016 00:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/cors/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jsonp</title>
+      <link>https://jeremyxu2010.github.io/tags/jsonp/</link>
+      <pubDate>Wed, 11 May 2016 00:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/jsonp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>npm</title>
+      <link>https://jeremyxu2010.github.io/tags/npm/</link>
+      <pubDate>Tue, 03 May 2016 21:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/npm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>webmvc</title>
+      <link>https://jeremyxu2010.github.io/tags/webmvc/</link>
+      <pubDate>Tue, 26 Apr 2016 21:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/webmvc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpenWRT</title>
+      <link>https://jeremyxu2010.github.io/tags/openwrt/</link>
+      <pubDate>Sat, 16 Apr 2016 20:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/openwrt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sed</title>
+      <link>https://jeremyxu2010.github.io/tags/sed/</link>
+      <pubDate>Tue, 12 Apr 2016 23:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/sed/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ffmpeg</title>
+      <link>https://jeremyxu2010.github.io/tags/ffmpeg/</link>
+      <pubDate>Sun, 10 Apr 2016 18:29:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ffmpeg/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>h264</title>
+      <link>https://jeremyxu2010.github.io/tags/h264/</link>
+      <pubDate>Sun, 10 Apr 2016 18:29:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/h264/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>javacv</title>
+      <link>https://jeremyxu2010.github.io/tags/javacv/</link>
+      <pubDate>Sun, 10 Apr 2016 18:29:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/javacv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>blog</title>
+      <link>https://jeremyxu2010.github.io/tags/blog/</link>
+      <pubDate>Sun, 10 Apr 2016 13:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/blog/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>vim</title>
+      <link>https://jeremyxu2010.github.io/tags/vim/</link>
+      <pubDate>Sun, 10 Apr 2016 02:33:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/vim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ddos</title>
+      <link>https://jeremyxu2010.github.io/tags/ddos/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/ddos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>fail2ban</title>
+      <link>https://jeremyxu2010.github.io/tags/fail2ban/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/fail2ban/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>rsync</title>
+      <link>https://jeremyxu2010.github.io/tags/rsync/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/rsync/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>scp</title>
+      <link>https://jeremyxu2010.github.io/tags/scp/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/scp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>logrotate</title>
+      <link>https://jeremyxu2010.github.io/tags/logrotate/</link>
+      <pubDate>Thu, 30 Apr 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/logrotate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>css</title>
+      <link>https://jeremyxu2010.github.io/tags/css/</link>
+      <pubDate>Tue, 31 Mar 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/css/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>grunt</title>
+      <link>https://jeremyxu2010.github.io/tags/grunt/</link>
+      <pubDate>Tue, 31 Mar 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/grunt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>atom-shell</title>
+      <link>https://jeremyxu2010.github.io/tags/atom-shell/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/atom-shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nagios</title>
+      <link>https://jeremyxu2010.github.io/tags/nagios/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/nagios/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>node-webkit</title>
+      <link>https://jeremyxu2010.github.io/tags/node-webkit/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/node-webkit/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>监控</title>
+      <link>https://jeremyxu2010.github.io/tags/%E7%9B%91%E6%8E%A7/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/%E7%9B%91%E6%8E%A7/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bower</title>
+      <link>https://jeremyxu2010.github.io/tags/bower/</link>
+      <pubDate>Fri, 30 May 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/bower/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iproute2</title>
+      <link>https://jeremyxu2010.github.io/tags/iproute2/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/iproute2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>macos</title>
+      <link>https://jeremyxu2010.github.io/tags/macos/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/macos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>video</title>
+      <link>https://jeremyxu2010.github.io/tags/video/</link>
+      <pubDate>Thu, 31 Oct 2013 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/tags/video/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

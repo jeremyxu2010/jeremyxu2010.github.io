@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>go on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/go/</link>
+    <description>Recent content in go on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 10 Sep 2018 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>harbor源码解读</title>
+      <link>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 10 Sep 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来</description>
+    </item>
+    
+  </channel>
+</rss>

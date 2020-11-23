@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>decompiler on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/decompiler/</link>
+    <description>Recent content in decompiler on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 16 Oct 2017 11:16:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/decompiler/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>apk反编译步骤</title>
+      <link>https://jeremyxu2010.github.io/2017/10/apk%E5%8F%8D%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4/</link>
+      <pubDate>Mon, 16 Oct 2017 11:16:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/apk%E5%8F%8D%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4/</guid>
+      <description>最近的工作中需要反编译第三方的apk，以也了解对方的签名逻辑，这里将用到的反编译技巧记录一下。 apk文件转成jar文件 首先需要使用工具将ap</description>
+    </item>
+    
+  </channel>
+</rss>

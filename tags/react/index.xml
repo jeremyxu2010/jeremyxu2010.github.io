@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>react on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/react/</link>
+    <description>Recent content in react on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Wed, 08 Feb 2017 21:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/react/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>记录解决几个前端小问题的过程</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E8%AE%B0%E5%BD%95%E8%A7%A3%E5%86%B3%E5%87%A0%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B0%8F%E9%97%AE%E9%A2%98%E7%9A%84%E8%BF%87%E7%A8%8B/</link>
+      <pubDate>Wed, 08 Feb 2017 21:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E8%AE%B0%E5%BD%95%E8%A7%A3%E5%86%B3%E5%87%A0%E4%B8%AA%E5%89%8D%E7%AB%AF%E5%B0%8F%E9%97%AE%E9%A2%98%E7%9A%84%E8%BF%87%E7%A8%8B/</guid>
+      <description>今天的主要工作都在用react.js写一些前端界面，中间遇到了一些问题，这里解决这些问题的过程记录一下。 使用echarts图表组件 由于项目比</description>
+    </item>
+    
+    <item>
+      <title>使用create-react-app简化前端项目的建立</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/</link>
+      <pubDate>Wed, 25 Jan 2017 18:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E4%BD%BF%E7%94%A8create-react-app%E7%AE%80%E5%8C%96%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%BB%BA%E7%AB%8B/</guid>
+      <description>以往启动一个Web项目，总要从一个现存的项目将gulpfile.js, package.json拷贝至新项目，然后根据需要修改这两个文件，确实</description>
+    </item>
+    
+    <item>
+      <title>免编译在JSP中直接写react代码</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E5%85%8D%E7%BC%96%E8%AF%91%E5%9C%A8jsp%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%86%99react%E4%BB%A3%E7%A0%81/</link>
+      <pubDate>Sat, 07 Jan 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E5%85%8D%E7%BC%96%E8%AF%91%E5%9C%A8jsp%E4%B8%AD%E7%9B%B4%E6%8E%A5%E5%86%99react%E4%BB%A3%E7%A0%81/</guid>
+      <description>最近参与了一个历时4-5年的项目，项目是一个后台管理系统，访问量并不高，但经常根据业务方的一些特殊需求，在原有代码添加功能。项目所采用的技术</description>
+    </item>
+    
+    <item>
+      <title>gulp替换webpack</title>
+      <link>https://jeremyxu2010.github.io/2016/12/gulp%E6%9B%BF%E6%8D%A2webpack/</link>
+      <pubDate>Fri, 16 Dec 2016 17:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/12/gulp%E6%9B%BF%E6%8D%A2webpack/</guid>
+      <description>之前项目中使用的webpack进行前端代码的编译，但一直不太喜欢webpack的那种玩法。使用webpack编写编译脚本时就是按webpac</description>
+    </item>
+    
+    <item>
+      <title>React0.13在Chrome54上抽风问题总结</title>
+      <link>https://jeremyxu2010.github.io/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Thu, 20 Oct 2016 00:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</guid>
+      <description>这几天产品处在发版阶段，工作比较忙，很久没有更新博客了。不过今天在工作中遇到一个最新版Chrome浏览器的坑，分析解决的过程还比较有意思，在</description>
+    </item>
+    
+  </channel>
+</rss>

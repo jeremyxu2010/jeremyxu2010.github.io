@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记03 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记03" />
+<meta property="og:description" content="局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/" />
+<meta property="article:published_time" content="2017-06-04T04:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-04T04:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记03">
+<meta itemprop="description" content="局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下">
+<meta itemprop="datePublished" content="2017-06-04T04:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-04T04:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="977">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记03"/>
+<meta name="twitter:description" content="局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记03</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 977 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">局部加权回归</a>
+      <ul>
+        <li><a href="#heading-1">算法示意</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">线性回归的概率解释</a></li>
+    <li><a href="#logistic">logistic回归</a>
+      <ul>
+        <li><a href="#heading-3">推导过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">感知器算法</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">局部加权回归</h2>
+<p>线性回归算法里的成本函数：</p>
+<p><code>$J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$</code></p>
+<p>正规方程解出的参数解析表达式：</p>
+<p><code>$\Theta = (X^TX)^{-1}X^Ty$</code></p>
+<p>由于使用了过小的特征集合使得模型过于简单，在这种情形下数据中的某些非常明显的模式没有被成功地拟合出来，我们将其称之为:欠拟合(underfitting)。</p>
+<p>由于使用了过大的特征集合使得模型过于复杂，算法拟合出的结果仅仅反映了所给的特定数据的特质，我们可以称之为过拟合。</p>
+<p>在特征选择中存在上述两类问题。</p>
+<p>这里讲到一类非参数学习算法，可以缓解对于选取特征的需求，就是局部加权回归算法。</p>
+<p>这个算法可以让我们不必太担心对于特征的选择。</p>
+<h3 id="heading-1">算法示意</h3>
+<p><code>$$ Fit \quad \Theta \quad To \quad Minimize \\ \sum_i w^{(i)}(y{(i)} - \Theta^TX{(i)})^2  \quad where  \quad w^{(i)} = exp(- \frac {(X^{(i)} - x)^2} {2 \tau^2}) \\ Then \quad Return \quad \Theta^Tx \\ If  \quad |X^{(i) - x}| \quad small, \quad then \quad w^{(i)} \approx 1 \\ If  \quad |X^{(i) - x}| \quad large, \quad then \quad w^{(i)} \approx 0 $$</code>
+<code>$\tau$</code>称为波长函数， <code>$\tau$</code>较小，则权值随距离下降得快， <code>$\tau$</code>较大，则权值随距离下降得慢。</p>
+<h2 id="heading-2">线性回归的概率解释</h2>
+<p><code>$$ Assume \quad y^{(i)} = \Theta^TX^{(i)} + \varepsilon^{(i)} \\ \varepsilon^{(i)} = error \\ \varepsilon^{(i)} \sim N(0, \sigma^2) \\ P(\varepsilon^{(i)}) = \frac 1 {\sqrt {2\pi} \sigma} exp(- \frac {( \varepsilon^{(i)} )^2} {2\sigma^2}) $$</code>
+其中<code>$\varepsilon^{(i)}$</code>代表误差项，它表示了一种我们没有捕获到的特征，或者你也可以把它看成一种随机的噪声。</p>
+<p>然后可以得到</p>
+<p><code>$$ P(y^{(i)} | X^{(i)}; \Theta) \\ = \frac 1 {\sqrt {2\pi} \sigma} exp(- \frac {(y^{(i)} - \Theta^TX^{(i)})^2} {2\sigma^2}) \\ \sim N(\Theta^TX^{(i)}, \sigma^2) $$</code>
+<code>$\varepsilon^{(i)}$</code>s 是独立同分布的。</p>
+<p>然后定义</p>
+<p><code>$$ L(\Theta) = P(\overrightarrow y|X; \Theta) \\ = \Pi_{i=1}^m P(y^{(i)} | X^{(i)}; \Theta)  \\ = \Pi_{i=1}^m \frac 1 {\sqrt {2\pi} \sigma} exp(- \frac {(y^{(i)} - \Theta^TX^{(i)})^2} {2\sigma^2}) $$</code>
+这个就是参数<code>$\Theta$</code>的似然性。</p>
+<p>算法的目标也就变为：</p>
+<p><code>$$ Choose \quad \Theta \quad To \quad Maximize \quad L(\Theta) = P(\overrightarrow y|X; \Theta) $$</code>
+再定义</p>
+<p><code>$$ \ell(\Theta) = logL(\Theta) = log\Pi_{i=1}^m \frac 1 {\sqrt {2\pi} \sigma} exp(- \frac {(y^{(i)} - \Theta^TX^{(i)})^2} {2\sigma^2}) \\ = mlog\frac 1 {\sqrt {2\pi} \sigma}  + \sum_{i=1}^m - \frac {(y^{(i) - \Theta^TX^{(i)}})^2} {2\sigma^2} $$</code>
+然后最大化<code>$\ell(\Theta)$</code>就变成了最小化<code>$ \frac {\sum_{i=1}^m(y^{(i) - \Theta^TX^{(i)}})^2} 2=J(\Theta)$</code></p>
+<p>于是推导出了线性回归算法里的成本函数。</p>
+<h2 id="logistic">logistic回归</h2>
+<h3 id="heading-3">推导过程</h3>
+<p><code>$$ y \in \{0, 1\} \\ h_\Theta(X) \in [0, 1] \\ Choose \quad h_\Theta(X) = g(\Theta^TX) = \frac 1 {1 + e ^{-\Theta^TX}} \\ g(Z) = \frac 1 {1 + e^{-Z}} $$</code>
+上述<code>$g(Z)$</code>公式就叫做<code>sigmoid</code>函数，也叫<code>logistic</code>函数。</p>
+<p>同样使用概率解释下logistic回归函数。</p>
+<p><code>$$ P(y|X;\Theta） = h_\Theta(X)^y(1-h_\Theta(X))^{1-y} \\ L(\Theta) = P(\overrightarrow y|X;\Theta）= \Pi_i P(y^{(i)}|X^{(i)};\Theta）\\ = \Pi_i h_\Theta(X^{(i)})^{y^{(i)}}(1-h_\Theta(X^{(i)}))^{1-y^{(i)}} \\ \ell(\Theta) = logL(\Theta) = \sum_{i=1}^m y^{(i)} logh(X_\Theta^{(i)}) + (1-y^{(i)})log(1-h_\Theta(X^{(i)})) $$</code>
+采用梯度上升算法来最大化<code>$\ell(\Theta)$</code></p>
+<p><code>$$ \Theta := \Theta + \alpha \nabla_\Theta \ell(\Theta) \\ \frac \partial {\partial \Theta_j} = \sum_{i=1}^m(y^{(i)} - h_\Theta(X^{(i)}))X_j^{(i)} $$</code>
+最后得到logistic回归的更新<code>$\Theta​$</code>的过程为</p>
+<p><code>$$ \Theta_j := \Theta_j - \alpha \sum_{i=1}^m(h_\Theta(X^{(i)}))X_j^{(i)} $$</code></p>
+<h2 id="heading-4">感知器算法</h2>
+<p>这个跟logistic算法很相似，更新$\Theta$的过程为</p>
+<p><code>$$ \Theta_j := \Theta_j - \alpha \sum_{i=1}^m(h_\Theta(X^{(i)}))X_j^{(i)} $$</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-04</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记04</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/">
+            <span class="next-text nav-default">机器学习课程_笔记02</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

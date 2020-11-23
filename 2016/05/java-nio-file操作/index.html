@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Java NIO File操作 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Java NIO File操作" />
+<meta property="og:description" content="今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/" />
+<meta property="article:published_time" content="2016-05-09T23:58:00+08:00" />
+<meta property="article:modified_time" content="2016-05-09T23:58:00+08:00" />
+<meta itemprop="name" content="Java NIO File操作">
+<meta itemprop="description" content="今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事">
+<meta itemprop="datePublished" content="2016-05-09T23:58:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-09T23:58:00&#43;08:00" />
+<meta itemprop="wordCount" content="1077">
+
+
+
+<meta itemprop="keywords" content="java,nio," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java NIO File操作"/>
+<meta name="twitter:description" content="今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了FileNotFoundException，代码如下 //但事"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Java NIO File操作</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-09 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1077 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#path">Path接口</a></li>
+    <li><a href="#files">Files接口</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天在工作中遇到一个很奇怪的问题。使用java.io.File进行文件操作抛出了<code>FileNotFoundException</code>，代码如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">//但事实上在`/somewhere`目录下存在文件`测试.txt`
+</span><span style="color:#75715e"></span>FileInputStream fin <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileInputStream<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> File<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/somewhere/测试.txt&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>在网络找了下，发现一个可能是由于路径中包括非ASCII字符，详见<a href="http://stackoverflow.com/questions/16977251/java-on-mac-os-filenotfound-if-path-contatins-non-latin-characters/17481204#17481204">这里</a></p>
+<p>最后找到了解决方案</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">InputStream fin <span style="color:#f92672">=</span> Files<span style="color:#f92672">.</span><span style="color:#a6e22e">newInputStream</span><span style="color:#f92672">(</span>Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/somewhere/测试.txt&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>看来Java老的那一套File操作接口确实问题多多啊。这里将Java 7引入的新File操作接口复习一下以备忘。</p>
+<h2 id="path">Path接口</h2>
+<p>这个接口表示一个文件在文件系统中的定位器。常见与文件路径相关的操作都可以在这个接口里找到。详细文档参见<a href="https://docs.oracle.com/javase/7/docs/api/java/nio/file/Path.html">这里</a></p>
+<p>注意以下两点</p>
+<ul>
+<li><code>Path</code>对象一般由<code>java.nio.file.Paths</code>的两个<code>get</code>静态方法得来，并不是new出来的</li>
+<li>如果与已有的库交互要用到<code>java.io.File</code>，可以使用它的<code>toFile</code>方法得到一个File对象</li>
+</ul>
+<h2 id="files">Files接口</h2>
+<p>Files接口里基本上都是静态方法，所有与文件相关的操作都可以在这个接口里找到。详细文档参见<a href="https://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html">这里</a></p>
+<p>为了便于更好地使用Files进行文件操作，这里列举经常用到的静态方法，并与使用<code>java.io.File</code>作个参照。</p>
+<ul>
+<li><code>Files.exists(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs  <code>(new File(&quot;/somewhere/somefile.txt&quot;)).exists()</code></li>
+<li><code>Files.newInputStream(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>new FileInputStream(new File(&quot;/somewhere/somefile.txt&quot;))</code></li>
+<li><code>Files.newOutputStream(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>new FileOutputStream(new File(&quot;/somewhere/somefile.txt&quot;))</code></li>
+<li><code>Files.newByteChannel(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new FileInputStream(new File(&quot;xxx&quot;)).getChannel()</code></li>
+<li><code>Files.newDirectoryStream(Paths.get(&quot;/somewhere&quot;))</code> vs <code>(new File(&quot;/somewhere&quot;)).listFiles() </code></li>
+<li><code>Files.createFile(Paths.get(&quot;/somewhere/somefile.txt&quot;)</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).createNewFile()</code></li>
+<li><code>Files.createDirectory(Paths.get(&quot;/somewhere&quot;))</code> vs <code>(new File(&quot;/somewhere&quot;)).mkdir()</code></li>
+<li><code>Files.createDirectories(Paths.get(&quot;/somewhere&quot;))</code> vs <code>(new File(&quot;/somewhere&quot;)).mkdirs()</code></li>
+<li><code>Files.createAndCheckIsDirectory(Paths.get(&quot;/somewhere&quot;))</code> vs <code>(new File(&quot;/somewhere&quot;)).mkdirs(); boolean success = (new File(&quot;/somewhere&quot;)).exists() &amp;&amp; (new File(&quot;/somewhere&quot;)).isDirectory()</code></li>
+<li><code>Files.createTempFile(Paths.get(&quot;/somewhere&quot;), &quot;XXXX&quot;, null)</code> vs <code>File.createTempFile(&quot;XXXX&quot;, null, new File(&quot;/somewhere&quot;))</code></li>
+<li><code>Files.createTempFile(&quot;XXXX&quot;, null)</code> vs <code>File.createTempFile(&quot;XXXX&quot;, null)</code></li>
+<li><code>Files.createTempDirectory(Paths.get(&quot;/somewhere&quot;), &quot;XXXX&quot;)</code> vs -</li>
+<li><code>Files.createTempDirectory(&quot;XXXX&quot;)</code> vs -</li>
+<li><code>Files.createSymbolicLink(Paths.get(&quot;/somewhere/link.txt&quot;), Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.createLink(Paths.get(&quot;/somewhere/link.txt&quot;), Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.delete(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).delete()</code></li>
+<li><code>Files.deleteIfExists(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.copy(Paths.get(&quot;/somewhere/somefile.txt&quot;), Paths.get(&quot;/somewhere/somefile2.txt&quot;))</code> vs -</li>
+<li><code>Files.move(Paths.get(&quot;/somewhere/somefile.txt&quot;), Paths.get(&quot;/somewhere/somefile2.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).renameTo(new File(&quot;/somewhere/somefile2.txt&quot;))</code></li>
+<li><code>Files.readSymbolicLink(Paths.get(&quot;/somewhere/link.txt&quot;))</code> | -</li>
+<li><code>Files.isSameFile(Paths.get(&quot;/somewhere/somefile.txt&quot;), Paths.get(&quot;/somewhere/somefile2.txt&quot;))</code> | -</li>
+<li><code>Files.isHidden(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).isHidden()</code></li>
+<li><code>Files.getFileAttributeView(Paths.get(&quot;/somewhere/somefile.txt&quot;), AclFileAttributeView.class)</code> vs -</li>
+<li><code>Files.readAttributes(Paths.get(&quot;/somewhere/somefile.txt&quot;), PosixFileAttributes.class)</code> vs -</li>
+<li><code>Files.setAttribute(Paths.get(&quot;/somewhere/somefile.txt&quot;), &quot;dos:hidden&quot;, true)</code> vs -</li>
+<li><code>Files.getAttribute(Paths.get(&quot;/somewhere/somefile.txt&quot;), &quot;unix:uid&quot;)</code> | -</li>
+<li><code>Files.readAttributes(Paths.get(&quot;/somewhere/somefile.txt&quot;), &quot;posix:permissions,owner,size&quot;)</code> vs -</li>
+<li><code>Files.getPosixFilePermissions(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.setPosixFilePermissions(Paths.get(&quot;/somewhere/somefile.txt&quot;), new HashSet(){ {this.add(PosixFilePermission.OWNER_READ);this.add(PosixFilePermission.OWNER_WRITE);this.add(PosixFilePermission.OWNER_EXECUTE);} })</code> vs -</li>
+<li><code>Files.getOwner(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>UserPrincipal joe = lookupService.lookupPrincipalByName(&quot;joe&quot;);Files.setOwner(Paths.get(&quot;/somewhere/somefile.txt&quot;), joe)</code> vs -</li>
+<li><code>Files.isSymbolicLink(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.isDirectory(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).isDirectory()</code></li>
+<li><code>Files.isRegularFile(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).isFile()</code></li>
+<li><code>Files.getLastModifiedTime(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).lastModified()</code></li>
+<li><code>Files.setLastModifiedTime(Paths.get(&quot;/somewhere/somefile.txt&quot;), FileTime.fromMillis(System.currentTimeMillis()))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).setLastModified(System.currentTimeMillis())</code></li>
+<li><code>Files.size(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).length()</code></li>
+<li><code>Files.notExists(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>!(new File(&quot;/somewhere/somefile.txt&quot;)).exists()</code></li>
+<li><code>Files.isAccessible(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs -</li>
+<li><code>Files.isReadable(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).canRead()</code></li>
+<li><code>Files.isWritable(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).canWrite()</code></li>
+<li><code>Files.isExecutable(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>(new File(&quot;/somewhere/somefile.txt&quot;)).canExecute()</code></li>
+<li><code>Files.walkFileTree(Paths.get(&quot;/somewhere&quot;), new FileVisitor&lt;Path&gt;(){…})</code> vs -</li>
+<li><code>Files.newBufferedReader(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>new InputStreamReader(new FileInputStream(new File(&quot;/somewhere/somefile.txt&quot;)))</code></li>
+<li><code>Files.newBufferedWriter(Paths.get(&quot;/somewhere/somefile.txt&quot;))</code> vs <code>new OutputStreamWriter(new FileOutputStream(new File(&quot;/somewhere/somefile.txt&quot;)))</code></li>
+<li><code>Files.list(Paths.get(&quot;/somewhere&quot;))</code> vs <code>(new File(&quot;/somewhere&quot;)).listFiles()</code></li>
+</ul>
+<p>有一些Stream与Path相互copy、一些重载的方法没有列在上面。</p>
+<p>官方为什么又发明一个新的文件操作API呢？我想了下，感觉大概是以下原因</p>
+<ul>
+<li>静态方法比对象方法更易用</li>
+<li>Files的静态方法实现得更跨平台</li>
+<li>对于文件属和权限的操作更方便易用</li>
+<li>Files的静态方法在文件操作出错时能更好地给予外界信息供诊断</li>
+<li>Files的静态方法处理比较大的目录时，因为使用了Visitor模式，比老的方式效率更高</li>
+<li>Files的move方法操作更原子性</li>
+<li>老的API已被广泛使用，不好直接对其作大幅修改</li>
+</ul>
+<p>另外原来的<code>deleteOnExit</code>建议换成下面的写法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">OutputStream out <span style="color:#f92672">=</span> Files<span style="color:#f92672">.</span><span style="color:#a6e22e">newOutputStream</span><span style="color:#f92672">(</span>Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;test.tmp&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> StandardOpenOption<span style="color:#f92672">.</span><span style="color:#a6e22e">DELETE_ON_CLOSE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+out<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Web跨域总结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/">
+            <span class="next-text nav-default">Web应用程序限速方法</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

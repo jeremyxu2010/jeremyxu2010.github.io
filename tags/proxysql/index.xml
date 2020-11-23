@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>proxysql on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/proxysql/</link>
+    <description>Recent content in proxysql on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 31 Aug 2019 18:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/proxysql/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes中部署mysql高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服</description>
+    </item>
+    
+  </channel>
+</rss>

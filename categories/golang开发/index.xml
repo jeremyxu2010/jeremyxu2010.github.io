@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>golang开发 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/golang%E5%BC%80%E5%8F%91/</link>
+    <description>Recent content in golang开发 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 06 Jan 2020 11:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/golang%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>分析APP访问后台服务的网络故障</title>
+      <link>https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/</link>
+      <pubDate>Mon, 06 Jan 2020 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/01/%E5%88%86%E6%9E%90app%E8%AE%BF%E9%97%AE%E5%90%8E%E5%8F%B0%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%BD%91%E7%BB%9C%E6%95%85%E9%9A%9C/</guid>
+      <description>工作中一个小问题，Android手机上的APP访问后台服务频繁出现网络超时。以下为分析此问题的简要步骤，记录一下以备忘。 了解网络链路 首先大致</description>
+    </item>
+    
+    <item>
+      <title>MQTT协议学习</title>
+      <link>https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sat, 24 Aug 2019 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</guid>
+      <description>偶然在github上看到paho.mqtt.golang项目，这是一个MQTT客户端库，进而花了些时间学习下时下十分火热的MQTT协议。 MQ</description>
+    </item>
+    
+    <item>
+      <title>使用casbin完成验证授权</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/</link>
+      <pubDate>Sat, 10 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8casbin%E5%AE%8C%E6%88%90%E9%AA%8C%E8%AF%81%E6%8E%88%E6%9D%83/</guid>
+      <description>上一篇讲了搭建一个身份认证系统，可以看到借助dex搭建一个安全可靠的身份认证系统并不是太难。本篇再讲一下用casbin完成验证授权。 什么是验</description>
+    </item>
+    
+    <item>
+      <title>使用dex搭建一个身份认证系统</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Sun, 04 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/</guid>
+      <description>一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方</description>
+    </item>
+    
+    <item>
+      <title>编写Kubernetes Operator</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</link>
+      <pubDate>Sun, 12 May 2019 10:31:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E7%BC%96%E5%86%99kubernetes-operator/</guid>
+      <description>这周的工作主要是验证几个Kubernetes Operator： mysql-operator redis-operator Redis-Operator percona-server-mongodb-operator 这些operator基本上都是用来部署、管理、维护一些基础服务的。在验</description>
+    </item>
+    
+    <item>
+      <title>mongodb4.0多文档事务尝鲜</title>
+      <link>https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/</link>
+      <pubDate>Sun, 19 Aug 2018 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/</guid>
+      <description>mongodb4.0也出来一段时间了，这个版本最为大众期待的特性就是支持了多文档事务（multi-document transaction），</description>
+    </item>
+    
+    <item>
+      <title>采用go编写小工具</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/</link>
+      <pubDate>Wed, 22 Feb 2017 11:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E9%87%87%E7%94%A8go%E7%BC%96%E5%86%99%E5%B0%8F%E5%B7%A5%E5%85%B7/</guid>
+      <description>前段时间换了个环境写代码，但公司由于信息安全限制，要求大部分人员使用windows系统，于是我只能硬着头皮用windows。用windows</description>
+    </item>
+    
+    <item>
+      <title>使用go开发api服务</title>
+      <link>https://jeremyxu2010.github.io/2017/02/%E4%BD%BF%E7%94%A8go%E5%BC%80%E5%8F%91api%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Sat, 04 Feb 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/%E4%BD%BF%E7%94%A8go%E5%BC%80%E5%8F%91api%E6%9C%8D%E5%8A%A1/</guid>
+      <description>看到有人用go语言开发api服务，分发打包的程序只需要分发一个可执行文件就可以了，真的好方便，于是我也来试一试。 依赖管理 go语言的第三方包依</description>
+    </item>
+    
+    <item>
+      <title>《Network Programming with Go》阅读重点备忘（二）</title>
+      <link>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%BA%8C/</link>
+      <pubDate>Tue, 25 Oct 2016 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%BA%8C/</guid>
+      <description>接上一篇博文，这里是我阅读电子书《Network Programming with Go》后，书中一些重点的第二部分。 HTTP 第8章主要讲到了golang中对HTTP的支持。 首先</description>
+    </item>
+    
+    <item>
+      <title>《Network Programming with Go》阅读重点备忘（一）</title>
+      <link>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/</link>
+      <pubDate>Mon, 24 Oct 2016 00:42:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/network-programming-with-go%E9%98%85%E8%AF%BB%E9%87%8D%E7%82%B9%E5%A4%87%E5%BF%98%E4%B8%80/</guid>
+      <description>最近读了一本老外写的电子书《Network Programming with Go》，感觉写得还可以，在这里将书中一些重点记录一下以备忘。 架构 跟其它书不同，这本书的第一章主</description>
+    </item>
+    
+    <item>
+      <title>golang语言常见范式</title>
+      <link>https://jeremyxu2010.github.io/2016/10/golang%E8%AF%AD%E8%A8%80%E5%B8%B8%E8%A7%81%E8%8C%83%E5%BC%8F/</link>
+      <pubDate>Sun, 02 Oct 2016 18:47:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/golang%E8%AF%AD%E8%A8%80%E5%B8%B8%E8%A7%81%E8%8C%83%E5%BC%8F/</guid>
+      <description>最近花了一个星期的时间看完了《Go语言程序设计》这本书，这本书不愧是大师的作品，写得很好。看过之后对golang语言的理解更深刻了。下面将书</description>
+    </item>
+    
+    <item>
+      <title>golang开发环境搭建</title>
+      <link>https://jeremyxu2010.github.io/2016/09/golang%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</link>
+      <pubDate>Sun, 25 Sep 2016 23:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/golang%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</guid>
+      <description>之前项目中使用go写过不少命令行工具，这些命令行工具主要进行网络扫描任务。很可惜当时并没有留下任何记录，今天突然想起这个事，觉得还是有必要将</description>
+    </item>
+    
+  </channel>
+</rss>

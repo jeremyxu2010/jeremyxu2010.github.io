@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>python图算法实战 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。 纯手工写 最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/02/python%E5%9B%BE%E7%AE%97%E6%B3%95%E5%AE%9E%E6%88%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="python图算法实战" />
+<meta property="og:description" content="复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。 纯手工写 最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/02/python%E5%9B%BE%E7%AE%97%E6%B3%95%E5%AE%9E%E6%88%98/" />
+<meta property="article:published_time" content="2020-02-16T18:12:00+08:00" />
+<meta property="article:modified_time" content="2020-02-16T18:12:00+08:00" />
+<meta itemprop="name" content="python图算法实战">
+<meta itemprop="description" content="复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。 纯手工写 最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也">
+<meta itemprop="datePublished" content="2020-02-16T18:12:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-02-16T18:12:00&#43;08:00" />
+<meta itemprop="wordCount" content="1309">
+
+
+
+<meta itemprop="keywords" content="python,networkx,graphviz," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="python图算法实战"/>
+<meta name="twitter:description" content="复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。 纯手工写 最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">python图算法实战</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-02-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1309 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">纯手工写</a></li>
+    <li><a href="#networkx">使用networkx库实现</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>复工后第一周的工作是用python写一个图遍历的算法，周末稍微总结一下。</p>
+<h2 id="heading">纯手工写</h2>
+<p>最开始想挑战一下，于是不借助任何第三方库，纯手工编写，其实也不太难。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 用一个字典表示有向图中各节点到其它节点的边</span>
+graph <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">B</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">D</span><span style="color:#e6db74">&#39;</span>],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">B</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">D</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">F</span><span style="color:#e6db74">&#39;</span>],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">D</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">B</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">G</span><span style="color:#e6db74">&#39;</span>],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>: [],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">F</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">D</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">G</span><span style="color:#e6db74">&#39;</span>],
+         <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">G</span><span style="color:#e6db74">&#39;</span>: [<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>]}
+
+<span style="color:#75715e"># 查找从一个节点到另一个节点的路径</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findPath</span>(graph, start, end, path<span style="color:#f92672">=</span>[]):
+    path <span style="color:#f92672">=</span> path <span style="color:#f92672">+</span> [start]
+    <span style="color:#66d9ef">if</span> start <span style="color:#f92672">==</span> end:
+        <span style="color:#66d9ef">return</span> path
+    <span style="color:#66d9ef">for</span> node <span style="color:#f92672">in</span> graph[start]:
+        <span style="color:#66d9ef">if</span> node <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> path:
+            newpath <span style="color:#f92672">=</span> findPath(graph, node, end, path)
+            <span style="color:#66d9ef">if</span> newpath:
+                <span style="color:#66d9ef">return</span> newpath
+    <span style="color:#66d9ef">return</span> None
+
+
+<span style="color:#75715e"># 找到所有从start到end的路径</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findAllPath</span>(graph, start, end, path<span style="color:#f92672">=</span>[]):
+    path <span style="color:#f92672">=</span> path <span style="color:#f92672">+</span> [start]
+    <span style="color:#66d9ef">if</span> start <span style="color:#f92672">==</span> end:
+        <span style="color:#66d9ef">return</span> [path]
+
+    paths <span style="color:#f92672">=</span> []  <span style="color:#75715e"># 存储所有路径</span>
+    <span style="color:#66d9ef">for</span> node <span style="color:#f92672">in</span> graph[start]:
+        <span style="color:#66d9ef">if</span> node <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> path:
+            newpaths <span style="color:#f92672">=</span> findAllPath(graph, node, end, path)
+            <span style="color:#66d9ef">for</span> newpath <span style="color:#f92672">in</span> newpaths:
+                paths<span style="color:#f92672">.</span>append(newpath)
+    <span style="color:#66d9ef">return</span> paths
+
+
+<span style="color:#75715e"># 查找最短路径</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findShortestPath</span>(graph, start, end, path<span style="color:#f92672">=</span>[]):
+    path <span style="color:#f92672">=</span> path <span style="color:#f92672">+</span> [start]
+    <span style="color:#66d9ef">if</span> start <span style="color:#f92672">==</span> end:
+        <span style="color:#66d9ef">return</span> path
+
+    shortestPath <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> node <span style="color:#f92672">in</span> graph[start]:
+        <span style="color:#66d9ef">if</span> node <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> path:
+            newpath <span style="color:#f92672">=</span> findShortestPath(graph, node, end, path)
+            <span style="color:#66d9ef">if</span> newpath:
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> shortestPath <span style="color:#f92672">or</span> len(newpath) <span style="color:#f92672">&lt;</span> len(shortestPath):
+                    shortestPath <span style="color:#f92672">=</span> newpath
+    <span style="color:#66d9ef">return</span> shortestPath
+
+<span style="color:#75715e"># 查找最短路径</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">findLongestPath</span>(graph, start, end, path<span style="color:#f92672">=</span>[]):
+    path <span style="color:#f92672">=</span> path <span style="color:#f92672">+</span> [start]
+    <span style="color:#66d9ef">if</span> start <span style="color:#f92672">==</span> end:
+        <span style="color:#66d9ef">return</span> path
+
+    longestPath <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> node <span style="color:#f92672">in</span> graph[start]:
+        <span style="color:#66d9ef">if</span> node <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> path:
+            newpath <span style="color:#f92672">=</span> findLongestPath(graph, node, end, path)
+            <span style="color:#66d9ef">if</span> newpath:
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> longestPath <span style="color:#f92672">or</span> len(newpath) <span style="color:#f92672">&gt;</span> len(longestPath):
+                    longestPath <span style="color:#f92672">=</span> newpath
+    <span style="color:#66d9ef">return</span> longestPath
+</code></pre></div><p>代码不太难，可以看到上述方法均使用了递归。</p>
+<p>然后测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">onepath <span style="color:#f92672">=</span> findPath(graph, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">一条路径:</span><span style="color:#e6db74">&#39;</span>, onepath)
+
+allpath <span style="color:#f92672">=</span> findAllPath(graph, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">所有路径：</span><span style="color:#e6db74">&#39;</span>, allpath)
+
+shortpath <span style="color:#f92672">=</span> findShortestPath(graph, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">最短路径：</span><span style="color:#e6db74">&#39;</span>, shortpath)
+
+longpath <span style="color:#f92672">=</span> findLongestPath(graph, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">最长路径：</span><span style="color:#e6db74">&#39;</span>, longpath)
+</code></pre></div><p>为了便于观看这个有向图到底长成什么样子了，这里用<code>graphviz</code>画一下这个有向图：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> tempfile
+<span style="color:#f92672">from</span> graphviz <span style="color:#f92672">import</span> Digraph
+
+g <span style="color:#f92672">=</span> Digraph(name<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">G</span><span style="color:#e6db74">&#39;</span>)
+g<span style="color:#f92672">.</span>node_attr<span style="color:#f92672">.</span>update(shape<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">circle</span><span style="color:#e6db74">&#39;</span>)
+g<span style="color:#f92672">.</span>node(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">A</span><span style="color:#e6db74">&#39;</span>, shape<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">doublecircle</span><span style="color:#e6db74">&#39;</span>)
+g<span style="color:#f92672">.</span>node(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>, shape<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">doublecircle</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">for</span> tail, v <span style="color:#f92672">in</span> graph<span style="color:#f92672">.</span>items():
+    <span style="color:#66d9ef">for</span> head <span style="color:#f92672">in</span> v:
+        g<span style="color:#f92672">.</span>edge(tail, head)
+
+g<span style="color:#f92672">.</span>view(tempfile<span style="color:#f92672">.</span>mktemp(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.gv</span><span style="color:#e6db74">&#39;</span>))
+</code></pre></div><h2 id="networkx">使用networkx库实现</h2>
+<p>纯手工写可以锻炼下动手能力，但真正在生产实践中，面对时刻变化的需求，还是找一个成熟的图算法库好一点，这里我找到了<a href="https://networkx.github.io/">networkx</a>这个python库。</p>
+<p><code>networkx</code>这个库支持多种类型的图：无向图、有向图、允许平行边的无向图、允许平行边的有向图。</p>
+<table>
+<thead>
+<tr>
+<th>Networkx Class</th>
+<th>Type</th>
+<th>Self-loops allowed</th>
+<th>Parallel edges allowed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Graph</td>
+<td>undirected</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DiGraph</td>
+<td>directed</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>MultiGraph</td>
+<td>undirected</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>MultiDiGraph</td>
+<td>directed</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>如果对排序一致性有要求的话，还可以用<code>**OrderedGraph**</code>、<code>**OrderedDiGraph**</code>、<code>**OrderedMultiGraph**</code>、<code>**OrderedMultiDiGraph**</code>这四个变种。</p>
+<p>选择合适的图类型即可创建图，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> networkx <span style="color:#f92672">as</span> nx
+
+g <span style="color:#f92672">=</span> nx<span style="color:#f92672">.</span>OrderedDiGraph()
+</code></pre></div><p>接下来就可以向图中添加节点和边了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># 只要对象是hashable的，即可添加进图</span>
+g<span style="color:#f92672">.</span>add_node(<span style="color:#ae81ff">1</span>)
+g<span style="color:#f92672">.</span>add_node(<span style="color:#ae81ff">2</span>)
+g<span style="color:#f92672">.</span>add_nodes_from([<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>])
+
+g<span style="color:#f92672">.</span>add_edge(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)
+g<span style="color:#f92672">.</span>add_edges_from([(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>), (<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>)])
+</code></pre></div><p>可以访问图的节点或边：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">.</span>nodes()
+
+g<span style="color:#f92672">.</span>edges()
+</code></pre></div><p>访问图中节点的邻居：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">.</span>adj[<span style="color:#ae81ff">1</span>]
+</code></pre></div><p>访问图中某些节点相关的度量：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">.</span>degree([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>])
+</code></pre></div><p>图、节点、边上都可以添加属性：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">g<span style="color:#f92672">.</span>graph[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">desc</span><span style="color:#e6db74">&#39;</span>]<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">This is a demo graph</span><span style="color:#e6db74">&#39;</span>
+
+g<span style="color:#f92672">.</span>nodes[<span style="color:#ae81ff">1</span>][<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">node1</span><span style="color:#e6db74">&#39;</span>
+
+g<span style="color:#f92672">.</span>edges[(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>)][<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">desc</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">from 1 to 2</span><span style="color:#e6db74">&#39;</span>
+</code></pre></div><p>用相关的API构造出图后，即可采用一定的算法处理这个图，<code>networkx</code>提供了很多相关的算法<a href="https://networkx.github.io/documentation/stable/reference/algorithms/index.html#">
+Algorithms</a>，这个就是这个库的关键所在了，思考下业务场景找到对应的算法调用即可。</p>
+<p>比如想搜索一下图中出现的环，使用这个包<a href="https://networkx.github.io/documentation/stable/reference/algorithms/cycles.html">Cycles</a>下的方法就可以了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> networkx.algorithms.cycles <span style="color:#f92672">import</span> simple_cycles
+
+cycles <span style="color:#f92672">=</span> simple_cycles(g)
+</code></pre></div><p>探索从某节点到某节点的路径列表，使用这个包<a href="https://networkx.github.io/documentation/stable/reference/algorithms/simple_paths.html">Simple Paths</a>下的方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> networkx.algorithms.simple_paths <span style="color:#f92672">import</span> all_simple_paths, shortest_simple_paths
+
+all_paths <span style="color:#f92672">=</span> all_simple_paths(g, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">S</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+
+shortest_paths <span style="color:#f92672">=</span> shortest_simple_paths(g, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">S</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">E</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>除此以外，这个库还提供一些生成器方法，用来生成一些业界很知名的图，这个可以很方便地用来进行测试，如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">petersen <span style="color:#f92672">=</span> nx<span style="color:#f92672">.</span>petersen_graph()
+tutte <span style="color:#f92672">=</span> nx<span style="color:#f92672">.</span>tutte_graph()
+maze <span style="color:#f92672">=</span> nx<span style="color:#f92672">.</span>sedgewick_maze_graph()
+tet <span style="color:#f92672">=</span> nx<span style="color:#f92672">.</span>tetrahedral_graph()
+</code></pre></div><p>最后为了让开发人员可以直观地看图，<code>networkx</code>也提供将图画出来的能力，不过我还是习惯用<code>graphviz</code>来画，这个样式调整起来更方便，见上面<code>graphviz</code>的小例子。</p>
+<p>DONE！</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://networkx.github.io/">https://networkx.github.io/</a></li>
+<li><a href="https://graphviz.readthedocs.io/">https://graphviz.readthedocs.io/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-02-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/networkx/">networkx</a>
+          
+          <a href="/tags/graphviz/">graphviz</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/03/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%96%B9%E6%A1%88/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">微服务中的分布式事务方案</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/02/%E4%BA%AB%E5%8F%97%E8%87%AA%E7%94%B1%E7%9A%84%E7%BD%91%E7%BB%9C/">
+            <span class="next-text nav-default">享受自由的网络</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

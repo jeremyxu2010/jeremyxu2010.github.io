@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mathjax on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mathjax/</link>
+    <description>Recent content in mathjax on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 03 Jun 2017 18:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mathjax/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用mathjax</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/</link>
+      <pubDate>Sat, 03 Jun 2017 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/</guid>
+      <description>为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax</description>
+    </item>
+    
+  </channel>
+</rss>

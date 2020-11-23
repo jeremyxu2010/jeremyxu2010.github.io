@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>leak on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/leak/</link>
+    <description>Recent content in leak on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 13 Oct 2018 20:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/leak/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>docker的两个bug</title>
+      <link>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</link>
+      <pubDate>Sat, 13 Oct 2018 20:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</guid>
+      <description>这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock</description>
+    </item>
+    
+  </channel>
+</rss>

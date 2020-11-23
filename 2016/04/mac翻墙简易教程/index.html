@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>MAC翻墙简易教程 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="买一个国外的VPS主机 我是在digitalocean.com上买的，选的操作系统为CentOS 7 服务端操作 启用TCP BBR yum upgrade -y wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh &amp;amp;&amp;amp; chmod &#43;x bbr.sh &amp;amp;&amp;amp;" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/04/mac%E7%BF%BB%E5%A2%99%E7%AE%80%E6%98%93%E6%95%99%E7%A8%8B/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="MAC翻墙简易教程" />
+<meta property="og:description" content="买一个国外的VPS主机 我是在digitalocean.com上买的，选的操作系统为CentOS 7 服务端操作 启用TCP BBR yum upgrade -y wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh &amp;&amp; chmod &#43;x bbr.sh &amp;&amp;" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/04/mac%E7%BF%BB%E5%A2%99%E7%AE%80%E6%98%93%E6%95%99%E7%A8%8B/" />
+<meta property="article:published_time" content="2016-04-10T13:26:00+08:00" />
+<meta property="article:modified_time" content="2016-04-10T13:26:00+08:00" />
+<meta itemprop="name" content="MAC翻墙简易教程">
+<meta itemprop="description" content="买一个国外的VPS主机 我是在digitalocean.com上买的，选的操作系统为CentOS 7 服务端操作 启用TCP BBR yum upgrade -y wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh &amp;&amp; chmod &#43;x bbr.sh &amp;&amp;">
+<meta itemprop="datePublished" content="2016-04-10T13:26:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-04-10T13:26:00&#43;08:00" />
+<meta itemprop="wordCount" content="1175">
+
+
+
+<meta itemprop="keywords" content="linux,fuckgfw," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="MAC翻墙简易教程"/>
+<meta name="twitter:description" content="买一个国外的VPS主机 我是在digitalocean.com上买的，选的操作系统为CentOS 7 服务端操作 启用TCP BBR yum upgrade -y wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh &amp;&amp; chmod &#43;x bbr.sh &amp;&amp;"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">MAC翻墙简易教程</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-04-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E5%85%B7/"> 工具 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1175 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#vps">买一个国外的VPS主机</a></li>
+    <li><a href="#heading">服务端操作</a>
+      <ul>
+        <li><a href="#tcp-bbr">启用TCP BBR</a></li>
+        <li><a href="#heading-1">系统参数优化</a></li>
+        <li><a href="#shadowsocks-libev">安装shadowsocks-libev服务端并启动</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">客户端操作</a>
+      <ul>
+        <li><a href="#macshadowsocks">在MAC上安装shadowsocks客户端并启动</a></li>
+        <li><a href="#privoxy">安装privoxy</a></li>
+        <li><a href="#machttp">MAC系统全局使用HTTP代理</a></li>
+        <li><a href="#heading-3">命令行中翻墙</a></li>
+        <li><a href="#dns">避免DNS污染</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="vps">买一个国外的VPS主机</h2>
+<p>我是在<a href="https://www.digitalocean.com/">digitalocean.com</a>上买的，选的操作系统为CentOS 7</p>
+<h2 id="heading">服务端操作</h2>
+<h3 id="tcp-bbr">启用TCP BBR</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum upgrade -y
+wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh <span style="color:#f92672">&amp;&amp;</span> chmod +x bbr.sh <span style="color:#f92672">&amp;&amp;</span> ./bbr.sh <span style="color:#75715e"># 这里会重启服务器</span>
+</code></pre></div><h3 id="heading-1">系统参数优化</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tee /etc/sysctl.conf <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74"># max open files
+</span><span style="color:#e6db74">fs.file-max = 1024000
+</span><span style="color:#e6db74"># max read buffer
+</span><span style="color:#e6db74">net.core.rmem_max = 67108864
+</span><span style="color:#e6db74"># max write buffer
+</span><span style="color:#e6db74">net.core.wmem_max = 67108864
+</span><span style="color:#e6db74"># default read buffer
+</span><span style="color:#e6db74">net.core.rmem_default = 65536
+</span><span style="color:#e6db74"># default write buffer
+</span><span style="color:#e6db74">net.core.wmem_default = 65536
+</span><span style="color:#e6db74"># max processor input queue
+</span><span style="color:#e6db74">net.core.netdev_max_backlog = 4096
+</span><span style="color:#e6db74"># max backlog
+</span><span style="color:#e6db74">net.core.somaxconn = 4096
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"># resist SYN flood attacks
+</span><span style="color:#e6db74">net.ipv4.tcp_syncookies = 1
+</span><span style="color:#e6db74"># reuse timewait sockets when safe
+</span><span style="color:#e6db74">net.ipv4.tcp_tw_reuse = 1
+</span><span style="color:#e6db74"># turn off fast timewait sockets recycling
+</span><span style="color:#e6db74">net.ipv4.tcp_tw_recycle = 0
+</span><span style="color:#e6db74"># short FIN timeout
+</span><span style="color:#e6db74">net.ipv4.tcp_fin_timeout = 30
+</span><span style="color:#e6db74"># short keepalive time
+</span><span style="color:#e6db74">net.ipv4.tcp_keepalive_time = 1200
+</span><span style="color:#e6db74"># outbound port range
+</span><span style="color:#e6db74">net.ipv4.ip_local_port_range = 10000 65000
+</span><span style="color:#e6db74"># max SYN backlog
+</span><span style="color:#e6db74">net.ipv4.tcp_max_syn_backlog = 4096
+</span><span style="color:#e6db74"># max timewait sockets held by system simultaneously
+</span><span style="color:#e6db74">net.ipv4.tcp_max_tw_buckets = 5000
+</span><span style="color:#e6db74"># TCP receive buffer
+</span><span style="color:#e6db74">net.ipv4.tcp_rmem = 4096 87380 67108864
+</span><span style="color:#e6db74"># TCP write buffer
+</span><span style="color:#e6db74">net.ipv4.tcp_wmem = 4096 65536 67108864
+</span><span style="color:#e6db74"># turn on path MTU discovery
+</span><span style="color:#e6db74">net.ipv4.tcp_mtu_probing = 1
+</span><span style="color:#e6db74">EOF</span>
+sysctl -p
+
+ulimit -SHn <span style="color:#ae81ff">1024000</span>
+tee -a /etc/security/limits.conf <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">*               soft    nofile           512000
+</span><span style="color:#e6db74">*               hard    nofile          1024000
+</span><span style="color:#e6db74">EOF</span>
+tee -a /etc/profile <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">ulimit -SHn 1024000
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><h3 id="shadowsocks-libev">安装shadowsocks-libev服务端并启动</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget -q -O /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo https://copr.fedorainfracloud.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
+yum install -y mbedtls libsodium mbedtls-devel libsodium-devel gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel
+wget -q -O shadowsocks-libev-3.1.3.tar.gz https://github.com/shadowsocks/shadowsocks-libev/releases/download/v3.1.3/shadowsocks-libev-3.1.3.tar.gz
+tar xf shadowsocks-libev-3.1.3.tar.gz
+pushd shadowsocks-libev-3.1.3 &amp;&gt; /dev/null
+./configure <span style="color:#f92672">&amp;&amp;</span> make <span style="color:#f92672">&amp;&amp;</span> make install
+popd  &amp;&gt; /dev/null
+tee /etc/shadowsocks-libev/config.json <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">{
+</span><span style="color:#e6db74">    &#34;server&#34;:&#34;0.0.0.0&#34;,
+</span><span style="color:#e6db74">    &#34;server_port&#34;:443,
+</span><span style="color:#e6db74">    &#34;password&#34;:&#34;yourpassword&#34;,
+</span><span style="color:#e6db74">    &#34;timeout&#34;:600,
+</span><span style="color:#e6db74">    &#34;method&#34;:&#34;chacha20&#34;
+</span><span style="color:#e6db74">}
+</span><span style="color:#e6db74">EOF</span>
+tee /etc/systemd/system/shadowsocks-libev.service <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">[Unit]
+</span><span style="color:#e6db74">Description=shadowsocks-libev
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Service]
+</span><span style="color:#e6db74">TimeoutStartSec=0
+</span><span style="color:#e6db74">ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks-libev/config.json
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[Install]
+</span><span style="color:#e6db74">WantedBy=multi-user.target
+</span><span style="color:#e6db74">EOF</span>
+systemctl enable shadowsocks-libev
+systemctl restart shadowsocks-libev
+</code></pre></div><h2 id="heading-2">客户端操作</h2>
+<h3 id="macshadowsocks">在MAC上安装shadowsocks客户端并启动</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install shadowsocks-libev
+tee /usr/local/etc/shadowsocks-libev.json <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">{
+</span><span style="color:#e6db74">    &#34;server&#34;:&#34;yourserverip&#34;,
+</span><span style="color:#e6db74">    &#34;server_port&#34;:443,
+</span><span style="color:#e6db74">    &#34;local_address&#34;: &#34;0.0.0.0&#34;,
+</span><span style="color:#e6db74">    &#34;local_port&#34;:1080,
+</span><span style="color:#e6db74">    &#34;password&#34;:&#34;yourpassword&#34;,
+</span><span style="color:#e6db74">    &#34;timeout&#34;:600,
+</span><span style="color:#e6db74">    &#34;method&#34;:&#34;chacha20&#34;
+</span><span style="color:#e6db74">}
+</span><span style="color:#e6db74">EOF</span>
+brew services restart shadowsocks-libev <span style="color:#75715e">#启动客户端</span>
+</code></pre></div><p>现在本机上就有翻墙的SOCKS5代理，地址为<code>127.0.0.1:1080</code></p>
+<h3 id="privoxy">安装privoxy</h3>
+<p>有很多程序本身不支持SOCKS5代理，但支持HTTP代理，这里使用privoxy将SOCKS5代理转成HTTP代理，并根据actionsfile规则自动决定是否使用SOCKS5代理</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install privoxy python@2
+tee -a /usr/local/etc/privoxy/config <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">listen-address  0.0.0.0:8118
+</span><span style="color:#e6db74">actionsfile gfwlist.action
+</span><span style="color:#e6db74">EOF</span>
+pip2 install gfwlist2privoxy <span style="color:#75715e"># 安装gfwlist2privoxy</span>
+<span style="color:#75715e"># 下面两个网站虽然不在gfwlist.txt列表里，但希望走SOCKS5代理</span>
+tee user_rule.txt <span style="color:#e6db74">&lt;&lt; EOF
+</span><span style="color:#e6db74">!this is a user defined rule
+</span><span style="color:#e6db74">.google.com.hk
+</span><span style="color:#e6db74">.privoxy.org
+</span><span style="color:#e6db74">EOF</span>
+SOCKS_PROXY<span style="color:#f92672">=</span>127.0.0.1:1080
+curl -s --socks5 $SOCKS_PROXY -o gfwlist.txt <span style="color:#e6db74">&#39;https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt&#39;</span>
+python2 -m gfwlist2privoxy.main -i gfwlist.txt -f /usr/local/etc/privoxy/gfwlist.action -p $SOCKS_PROXY -t socks5 --user-rule user_rule.txt <span style="color:#75715e"># 使用gfwlist2privoxy生成gfwlist.action文件，gfwlist.action文件很好理解，里面全部是需要走SOCKS5代理的域名列表，可根据需求自行编辑，编辑完毕之后重启privoxy即可生效</span>
+brew services restart privoxy <span style="color:#75715e">#启动privoxy</span>
+</code></pre></div><p>现在本机上就有自动翻墙的HTTP代理，地址为127.0.0.1:8118</p>
+<h3 id="machttp">MAC系统全局使用HTTP代理</h3>
+<p>接下来在”系统偏好设置“-”网络“-”高级“-”代理“里设置，将<code>Web Proxy</code>和<code>Secure Web Proxy</code>都设置为<code>127.0.0.1:8118</code></p>
+<h3 id="heading-3">命令行中翻墙</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">echo <span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">alias proxy_on=&#34;export http_proxy=http://127.0.0.1:8118;export https_proxy=http://127.0.0.1:8118;&#34;
+</span><span style="color:#e6db74">alias proxy_off=&#34;unset http_proxy;unset https_proxy;&#34;
+</span><span style="color:#e6db74">&#39;</span> &gt;&gt; ~/.zshrc
+</code></pre></div><p>以后执行命令如果需要用翻墙，则在执行前执行proxy_on, 执行命令结束后执行proxy_off</p>
+<h3 id="dns">避免DNS污染</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install pcap_dnsproxy
+vim /usr/local/etc/pcap_DNSproxy/Config.ini
+<span style="color:#f92672">[</span>Listen<span style="color:#f92672">]</span>
+Operation Mode <span style="color:#f92672">=</span> Proxy
+<span style="color:#f92672">[</span>Local DNS<span style="color:#f92672">]</span>
+Local Main <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+Local Routing <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">[</span>Proxy<span style="color:#f92672">]</span>
+SOCKS Proxy <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+SOCKS IPv4 Address <span style="color:#f92672">=</span> 127.0.0.1:1080
+</code></pre></div><p>修改 Operation Mode 为Proxy以确保其只为本机提供代理域名解析请求服务，修改 Local Main、Local Routing 为1以确保国内网站获得更好的 DNS 解析结果。修改SOCKS Proxy为以SocksV5代理进行DNS请求。</p>
+<p>设置pcap_DNSproxy开机自启</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo cp -fv /usr/local/opt/pcap_dnsproxy/*.plist /Library/LaunchDaemons
+sudo chown root /Library/LaunchDaemons/homebrew.mxcl.pcap_dnsproxy.plist
+sudo  launchctl load /Library/LaunchDaemons/homebrew.mxcl.pcap_dnsproxy.plist
+</code></pre></div><p>进入系统偏好设置 - 网络 - 高级 - DNS，将 DNS 服务器设置为 127.0.0.1 即可</p>
+<h2 id="heading-4">参考</h2>
+<ol>
+<li><a href="https://teddysun.com/489.html">https://teddysun.com/489.html</a></li>
+<li><a href="https://github.com/iMeiji/shadowsocks_install/wiki/shadowsocks-optimize">https://github.com/iMeiji/shadowsocks_install/wiki/shadowsocks-optimize</a></li>
+<li><a href="https://github.com/snachx/gfwlist2privoxy">https://github.com/snachx/gfwlist2privoxy</a></li>
+<li><a href="http://cckpg.blogspot.com/2011/06/privoxy.html">http://cckpg.blogspot.com/2011/06/privoxy.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-04-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/fuckgfw/">fuckgfw</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">开发者的博客写作环境</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/%E6%88%91%E7%9A%84vim%E9%85%8D%E7%BD%AE/">
+            <span class="next-text nav-default">我的VIM配置</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

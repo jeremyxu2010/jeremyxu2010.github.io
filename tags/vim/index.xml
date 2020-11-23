@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vim on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/vim/</link>
+    <description>Recent content in vim on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Apr 2016 02:33:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/vim/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>我的VIM配置</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E6%88%91%E7%9A%84vim%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Sun, 10 Apr 2016 02:33:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E6%88%91%E7%9A%84vim%E9%85%8D%E7%BD%AE/</guid>
+      <description>这个我自己的vim配置，以备我在一台全新的MAC电脑上恢复原来的vim配置 安装vim brew install vim --with-lua 安装vundle mkdir -p ~/.vim/bundle git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle 克隆vim-con</description>
+    </item>
+    
+  </channel>
+</rss>

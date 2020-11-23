@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>锁定NodeJS项目的依赖库 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="锁定NodeJS项目的依赖库" />
+<meta property="og:description" content="今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/%E9%94%81%E5%AE%9Anodejs%E9%A1%B9%E7%9B%AE%E7%9A%84%E4%BE%9D%E8%B5%96%E5%BA%93/" />
+<meta property="article:published_time" content="2016-05-03T21:58:00+08:00" />
+<meta property="article:modified_time" content="2016-05-03T21:58:00+08:00" />
+<meta itemprop="name" content="锁定NodeJS项目的依赖库">
+<meta itemprop="description" content="今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t">
+<meta itemprop="datePublished" content="2016-05-03T21:58:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-03T21:58:00&#43;08:00" />
+<meta itemprop="wordCount" content="1010">
+
+
+
+<meta itemprop="keywords" content="nodejs,npm," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="锁定NodeJS项目的依赖库"/>
+<meta name="twitter:description" content="今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。 undefined is not iterable! 搜遍互联网才在babel的t"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">锁定NodeJS项目的依赖库</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1010 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天一上班，顺手点了一次构建整个项目，结果发现项目中的javascript编译报错，而且报的错莫名其秒。</p>
+<pre><code>undefined is not iterable!
+</code></pre><p>搜遍互联网才在babel的twitter上找到了这个问题的说明。</p>
+<p><code>If you are getting an </code>undefined is not iterable!<code>error, please</code>npm install babel-types<code> (to use v6.8.1). If necessary, clear node_modules</code></p>
+<p>看情况应该是babel相关的依赖自动升级导致的错误，这里鄙视一下NodeJS生态里的npmjs.com上的库，质量真的是参差不齐，明明安装的是兼容的版本，可实际上很有可能由于某个依赖的升级导致整个项目编译失败。</p>
+<p>实际上我之前已发现了这个问题，当时的方案是在package.json里将所有依赖的包指定一个确定的版本号，如下如示：</p>
+<pre><code>  &quot;dependencies&quot;: {
+    &quot;babel-polyfill&quot;: &quot;6.3.14&quot;,
+    &quot;before-unload&quot;: &quot;2.0.0&quot;,
+    &quot;bootstrap&quot;: &quot;3.3.4&quot;,
+    &quot;bowser&quot;: &quot;1.0.0&quot;,
+    &quot;browser-audio&quot;: &quot;1.0.2&quot;,
+    &quot;classnames&quot;: &quot;2.1.2&quot;,
+    &quot;cropper&quot;: &quot;0.11.0&quot;,
+    &quot;extend&quot;: &quot;3.0.0&quot;,
+    &quot;fancybox&quot;: &quot;3.0.0&quot;,
+    &quot;favicon-notification&quot;: &quot;0.1.4&quot;,
+    &quot;flux&quot;: &quot;2.0.3&quot;,
+    &quot;fullscreen&quot;: &quot;1.0.0&quot;,
+    &quot;immutable&quot;: &quot;3.7.5&quot;,
+    &quot;inherits&quot;: &quot;2.0.1&quot;,
+    &quot;jquery&quot;: &quot;1.11.3&quot;,
+    &quot;jquery-textrange&quot;: &quot;1.3.3&quot;,
+    &quot;jwt-decode&quot;: &quot;1.4.0&quot;,
+    &quot;keymirror&quot;: &quot;0.1.1&quot;,
+    ...
+  }
+</code></pre><p>原以为这样依赖的版本号就固定了。但实际上在NodeJS生态里大量第三方库其package.json文件是这样的：</p>
+<pre><code>&quot;dependencies&quot;: {
+    &quot;acorn&quot;: &quot;^3.0.0&quot;,
+    &quot;async&quot;: &quot;^1.3.0&quot;,
+    &quot;clone&quot;: &quot;^1.0.2&quot;,
+    &quot;enhanced-resolve&quot;: &quot;^2.2.0&quot;,
+    &quot;interpret&quot;: &quot;^1.0.0&quot;,
+    &quot;loader-runner&quot;: &quot;^2.1.0&quot;,
+    &quot;loader-utils&quot;: &quot;^0.2.11&quot;,
+    &quot;memory-fs&quot;: &quot;~0.3.0&quot;,
+    &quot;mkdirp&quot;: &quot;~0.5.0&quot;,
+    &quot;node-libs-browser&quot;: &quot;^1.0.0&quot;,
+    &quot;object-assign&quot;: &quot;^4.0.1&quot;,
+    &quot;source-map&quot;: &quot;^0.5.3&quot;,
+    &quot;supports-color&quot;: &quot;^3.1.0&quot;,
+    &quot;tapable&quot;: &quot;~0.2.3&quot;,
+    &quot;uglify-js&quot;: &quot;~2.6.0&quot;,
+    &quot;watchpack&quot;: &quot;^1.0.0&quot;,
+    &quot;webpack-sources&quot;: &quot;^0.1.0&quot;,
+    &quot;yargs&quot;: &quot;^3.31.0&quot;
+  }
+</code></pre><p>可以看到<code>~</code>表示该依赖可能会自动更新至最近的minor版本，<code>^</code>表示该依赖可能会自动更新至最近的major版本。</p>
+<p>这样就存在问题了，这里我用示例简单说明一下。</p>
+<p>最开始项目是这样的，其中A使用<code>^</code>依赖于B</p>
+<pre><code>proj 1.0.0
+   A 1.1.0
+      B 1.2.0
+</code></pre><p>某一天B的维护者发布了一个新的版本<code>1.3.0</code>，但他并没有经过完备的测试来保证一定是与<code>1.2.0</code>版本是兼容的。项目的维护者又手贱地执行了下<code>npm install</code>或<code>npm install C</code>，执行后，依赖树就变成下面这样了。</p>
+<pre><code>proj 1.0.0
+   A 1.1.0
+      B 1.3.0
+</code></pre><p>然后项目编译时就失败了，或者编译成功，但在浏览器中运行出错了，悲剧。</p>
+<p>怎么办？还好查到了npmjs.com官方针对这个问题的说明，详见<a href="https://docs.npmjs.com/cli/shrinkwrap">这里</a></p>
+<p><code>npm shrinkwrap</code>的作用就是以项目为根，将项目依赖树上所有第三方库版本固定。 使用上还是比较简单的，就是执行<code>npm shrinkwrap</code>命令，就会在package.json旁边上一个<code>npm-shrinkwrap.json</code>，以后再执行<code>npm install</code>，就会安装<code>npm-shrinkwrap.json</code>里描述的确切版本。</p>
+<p>不过这里还有一个小坑，官方文档里说明如下：</p>
+<pre><code>Since npm shrinkwrap is intended to lock down your dependencies for production use, devDependencies will not be included unless you explicitly set the --dev flag when you run npm shrinkwrap.
+</code></pre><p>也就是默认不会锁定<code>devDependencies</code>的版本，除非执行<code>npm shrinkwrap</code>带上<code>--dev</code>参数。我建议执行<code>npm shrinkwrap</code>还是带上<code>--dev</code>参数，否则很有可能某天一个开发依赖库版本小升个版本号，你的项目又悲剧了。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/npm/">npm</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/java-nio%E4%B8%ADbuffer%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Java NIO中Buffer使用备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/">
+            <span class="next-text nav-default">nginx使用备忘</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>hibernate查询的一些优化写法 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="hibernate查询的一些优化写法" />
+<meta property="og:description" content="项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/02/hibernate%E6%9F%A5%E8%AF%A2%E7%9A%84%E4%B8%80%E4%BA%9B%E4%BC%98%E5%8C%96%E5%86%99%E6%B3%95/" />
+<meta property="article:published_time" content="2017-02-13T20:30:00+08:00" />
+<meta property="article:modified_time" content="2017-02-13T20:30:00+08:00" />
+<meta itemprop="name" content="hibernate查询的一些优化写法">
+<meta itemprop="description" content="项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出">
+<meta itemprop="datePublished" content="2017-02-13T20:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-02-13T20:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="406">
+
+
+
+<meta itemprop="keywords" content="java,hibernate,spring," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="hibernate查询的一些优化写法"/>
+<meta name="twitter:description" content="项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">hibernate查询的一些优化写法</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-02-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 406 字 </span>
+        <span class="more-meta"> 预计阅读 1 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>项目中使用hibernate进行数据库查询，但由于项目历时较长，经手的人较多，DAO层的代码风格很不致，这里将一些常见的场景进行归纳，并给出推荐的写法。</p>
+<ul>
+<li>根据ID查询实体</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>Demo demo <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;from Demo where id=?&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> id<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">uniqueResult</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>Demo demo <span style="color:#f92672">=</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>Demo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> id<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>根据某些条件查询</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">list</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">find</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">,</span> param1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>根据某个条件查询唯一的返回值</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>Demo demo <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">uniqueResult</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>Demo demo <span style="color:#f92672">=</span> DataAccessUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">uniqueResult</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span>List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span><span style="color:#f92672">)</span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">find</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">,</span> param1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>删除、保存、更新实体</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">delete</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">save</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">saveOrUpdate</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">update</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">delete</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">save</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">saveOrUpdate</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">update</span><span style="color:#f92672">(</span>demo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>执行更新操作</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">bulkUpdate</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">,</span> param1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>执行SQL</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLQuery</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HibernateCallback<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Void <span style="color:#a6e22e">doInHibernate</span><span style="color:#f92672">(</span>Session session<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> HibernateException<span style="color:#f92672">,</span> SQLException <span style="color:#f92672">{</span>
+        session<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLQuery</span><span style="color:#f92672">(</span>sql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeUpdate</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>查询数目</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>Long count <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Long<span style="color:#f92672">)</span>getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;select count(*) from Demo where param1=? and param2=?&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">uniqueResult</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">long</span> count <span style="color:#f92672">=</span> DataAccessUtils<span style="color:#f92672">.</span><span style="color:#a6e22e">longResult</span><span style="color:#f92672">(</span>getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">find</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;select count(*) from Demo where param1=? and param2=?&#34;</span><span style="color:#f92672">,</span> param1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>分页查询</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>Query query <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createQuery</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+query<span style="color:#f92672">.</span><span style="color:#a6e22e">setFirstResult</span><span style="color:#f92672">(</span>offset<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+query<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxResults</span><span style="color:#f92672">(</span>limit<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> query<span style="color:#f92672">.</span><span style="color:#a6e22e">list</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executeFind</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HibernateCallback<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">doInHibernate</span><span style="color:#f92672">(</span>Session session<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> HibernateException<span style="color:#f92672">,</span> SQLException <span style="color:#f92672">{</span>
+        Query query <span style="color:#f92672">=</span> session<span style="color:#f92672">.</span><span style="color:#a6e22e">createSQLQuery</span><span style="color:#f92672">(</span>hql<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setLong</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">setParameter</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> param2<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        query<span style="color:#f92672">.</span><span style="color:#a6e22e">setFirstResult</span><span style="color:#f92672">(</span>offset<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        query<span style="color:#f92672">.</span><span style="color:#a6e22e">setMaxResults</span><span style="color:#f92672">(</span>limit<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> query<span style="color:#f92672">.</span><span style="color:#a6e22e">list</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>使用Criteria</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 不推荐
+</span><span style="color:#75715e"></span>Criteria criteria <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createCriteria</span><span style="color:#f92672">(</span>Demo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+criteria<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Restrictions<span style="color:#f92672">.</span><span style="color:#a6e22e">eq</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;param1&#34;</span><span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> criteria<span style="color:#f92672">.</span><span style="color:#a6e22e">list</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>DetachedCriteria criteria <span style="color:#f92672">=</span> DetachedCriteria<span style="color:#f92672">.</span><span style="color:#a6e22e">forClass</span><span style="color:#f92672">(</span>Demo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+    <span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Restrictions<span style="color:#f92672">.</span><span style="color:#a6e22e">eq</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;param1&#34;</span><span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">findByCriteria</span><span style="color:#f92672">(</span>criteria<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><ul>
+<li>使用Criteria加分页功能</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Criteria criteria <span style="color:#f92672">=</span> getSession<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">createCriteria</span><span style="color:#f92672">(</span>Demo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+criteria<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Restrictions<span style="color:#f92672">.</span><span style="color:#a6e22e">eq</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;param1&#34;</span><span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> criteria<span style="color:#f92672">.</span><span style="color:#a6e22e">list</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#75715e">// 推荐
+</span><span style="color:#75715e"></span>DetachedCriteria criteria <span style="color:#f92672">=</span> DetachedCriteria<span style="color:#f92672">.</span><span style="color:#a6e22e">forClass</span><span style="color:#f92672">(</span>Demo<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+    <span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Restrictions<span style="color:#f92672">.</span><span style="color:#a6e22e">eq</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;param1&#34;</span><span style="color:#f92672">,</span> param1<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+List<span style="color:#f92672">&lt;</span>Demo<span style="color:#f92672">&gt;</span> demos <span style="color:#f92672">=</span> getHibernateTemplate<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">findByCriteria</span><span style="color:#f92672">(</span>criteria<span style="color:#f92672">,</span> offset<span style="color:#f92672">,</span> pageSize<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-02-13</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/hibernate/">hibernate</a>
+          
+          <a href="/tags/spring/">spring</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/02/%E4%BF%AE%E5%A4%8Dhexo%E6%B6%89%E5%8F%8A%E4%B8%AD%E6%96%87%E7%9A%84302%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">修复hexo涉及中文的302问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/02/%E4%B8%A4%E7%A7%8D%E8%8E%B7%E5%8F%96hibernate%E4%BC%9A%E8%AF%9D%E7%9A%84%E5%8C%BA%E5%88%AB/">
+            <span class="next-text nav-default">两种获取hibernate会话的区别</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

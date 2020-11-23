@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>微服务中的分布式事务方案 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 问题引出 在微服务架构中，随" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/03/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%96%B9%E6%A1%88/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="微服务中的分布式事务方案" />
+<meta property="og:description" content="最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 问题引出 在微服务架构中，随" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/03/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%96%B9%E6%A1%88/" />
+<meta property="article:published_time" content="2020-03-01T17:50:00+08:00" />
+<meta property="article:modified_time" content="2020-03-01T17:50:00+08:00" />
+<meta itemprop="name" content="微服务中的分布式事务方案">
+<meta itemprop="description" content="最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 问题引出 在微服务架构中，随">
+<meta itemprop="datePublished" content="2020-03-01T17:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-03-01T17:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="8353">
+
+
+
+<meta itemprop="keywords" content="microservice,transaction,tcc,saga," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="微服务中的分布式事务方案"/>
+<meta name="twitter:description" content="最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 问题引出 在微服务架构中，随"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">微服务中的分布式事务方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-01 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+            
+          </div>
+        <span class="more-meta"> 约 8353 字 </span>
+        <span class="more-meta"> 预计阅读 17 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">问题引出</a></li>
+    <li><a href="#heading-1">各模式分析</a>
+      <ul>
+        <li><a href="#heading-2">本地事务</a></li>
+        <li><a href="#heading-3">强一致分布式事务方案</a></li>
+        <li><a href="#heading-7">最终一致分布式事务方案</a></li>
+        <li><a href="#heading-13">最终一致分布式方案对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-14">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。</p>
+<h2 id="heading">问题引出</h2>
+<p>在微服务架构中，随着服务的逐步拆分，数据库私有已经成为共识，这也导致所面临的分布式事务问题成为微服务落地过程中一个非常难以逾越的障碍，但是目前尚没有一个完整通用的解决方案。为了保证分布式事务一致性目前业内成熟的解决方案有</p>
+<ul>
+<li>强一致分布式事务方案：其中包括两段式提交协议2PC、三段式提交协议3PC。</li>
+<li>最终一致分布式事务方案：其中包括事件通知模式（本地异步事件服务模式、外部事件服务模式、事务消息模式、最大努力通知模式）、事务补偿模式（Saga、TCC）。</li>
+</ul>
+<h2 id="heading-1">各模式分析</h2>
+<h3 id="heading-2">本地事务</h3>
+<p>在分析各模式之前，先回顾一下传统的单机本机事务。</p>
+<p>传统单机应用使用一个RDBMS作为数据源。应用开启事务，进行CRUD，提交或回滚事务，统统发生在本地事务中，由资源管理器（RM）直接提供事务支持。数据的一致性在一个本地事务中得到保证。</p>
+<p><img src="/images/20200301/640.png" alt="img"></p>
+<h3 id="heading-3">强一致分布式事务方案</h3>
+<h4 id="2pc">两阶段提交协议（2PC）</h4>
+<p>显然随着服务的逐步拆分，各个服务均有自己的数据库，这个时候本地事务已经无法满足数据一致性的要求。由于多个数据源的同时访问，事务需要跨多个数据源管理。于是参考设计本地事务的思想，前人很自然研究出了两阶段提交（2PC）这种分布式事务模式。两阶段提交分为准备阶段和提交阶段。</p>
+<p><code>两阶段提交-commit</code></p>
+<p><img src="/images/20200301/640-20200301221259095.png" alt="img"></p>
+<p><code>两阶段提交-rollback</code></p>
+<p><img src="/images/20200301/640-20200301221351888.png" alt="img"></p>
+<p>2PC看着挺美好，但其实是存在缺陷的：</p>
+<blockquote>
+<p>2PC在执行过程中可能发生协调者或者参与者突然宕机的情况，在不同时期宕机可能有不同的现象。</p>
+<hr>
+<h4 id="heading-4">情况一：协调者挂了，参与者没挂</h4>
+<p>这种情况其实比较好解决，只要找一个协调者的替代者。当他成为新的协调者的时候，询问所有参与者的最后那条事务的执行情况，他就可以知道是应该做什么样的操作了。所以，这种情况不会导致数据不一致。</p>
+<hr>
+<h4 id="heading-5">情况二：参与者挂了，协调者没挂</h4>
+<p>这种情况其实也比较好解决。如果协调者挂了。那么之后的事情有两种情况：</p>
+<ul>
+<li>第一个是挂了就挂了，没有再恢复。那就挂了呗，反正不会导致数据一致性问题。</li>
+<li>第二个是挂了之后又恢复了，这时如果他有未执行完的事务操作，直接取消掉，然后询问协调者目前我应该怎么做，协调者就会比对自己的事务执行记录和该参与者的事务执行记录，告诉他应该怎么做来保持数据的一致性。</li>
+</ul>
+<hr>
+<h4 id="heading-6">情况三：参与者挂了，协调者也挂了</h4>
+<p>这种情况比较复杂，我们分情况讨论。</p>
+<ul>
+<li>协调者和参与者在第一阶段挂了。
+<ul>
+<li>由于这时还没有执行commit操作，新选出来的协调者可以询问各个参与者的情况，再决定是进行commit还是roolback。因为还没有commit，所以不会导致数据一致性问题。</li>
+</ul>
+</li>
+<li>第二阶段协调者和参与者挂了，挂了的这个参与者在挂之前并没有接收到协调者的指令，或者接收到指令之后还没来的及做commit或者roolback操作。
+<ul>
+<li>这种情况下，当新的协调者被选出来之后，他同样是询问所有的参与者的情况。只要有机器执行了abort（roolback）操作或者第一阶段返回的信息是No的话，那就直接执行roolback操作。如果没有人执行abort操作，但是有机器执行了commit操作，那么就直接执行commit操作。这样，当挂掉的参与者恢复之后，只要按照协调者的指示进行事务的commit还是roolback操作就可以了。因为挂掉的机器并没有做commit或者roolback操作，而没有挂掉的机器们和新的协调者又执行了同样的操作，那么这种情况不会导致数据不一致现象。</li>
+</ul>
+</li>
+<li>第二阶段协调者和参与者挂了，挂了的这个参与者在挂之前已经执行了操作。但是由于他挂了，没有人知道他执行了什么操作。
+<ul>
+<li>这种情况下，新的协调者被选出来之后，如果他想负起协调者的责任的话他就只能按照之前那种情况来执行commit或者roolback操作。这样新的协调者和所有没挂掉的参与者就保持了数据的一致性，我们假定他们执行了commit。但是，这个时候，那个挂掉的参与者恢复了怎么办，因为他之前已经执行完了之前的事务，如果他执行的是commit那还好，和其他的机器保持一致了，万一他执行的是roolback操作那？这不就导致数据的不一致性了么？虽然这个时候可以再通过手段让他和协调者通信，再想办法把数据搞成一致的，但是，这段时间内他的数据状态已经是不一致的了！</li>
+</ul>
+</li>
+</ul>
+<p><strong>所以，2PC协议中，如果出现协调者和参与者都挂了的情况，有可能导致数据不一致。</strong></p>
+</blockquote>
+<h4 id="3pc">三段式提交协议（3PC）</h4>
+<p>为了解决上述问题，前人在2PC基础上又研究出3PC的方案。</p>
+<p>3PC最关键要解决的就是协调者和参与者同时挂掉的问题，所以3PC把2PC的准备阶段再次一分为二，这样三阶段提交就有<code>CanCommit</code>、<code>PreCommit</code>、<code>DoCommit</code>三个阶段。在第一阶段，只是询问所有参与者是否可可以执行事务操作，并不在本阶段执行事务操作。当协调者收到所有的参与者都返回YES时，在第二阶段才执行事务操作，然后在第三阶段在执行commit或者rollback。</p>
+<p><img src="/images/20200301/640-20200301221732838.png" alt="img"></p>
+<p>3PC相对2PC的优点：</p>
+<blockquote>
+<p>直接分析协调者和参与者都挂的情况。</p>
+<ul>
+<li>第二阶段协调者和参与者挂了，挂了的这个参与者在挂之前已经执行了操作。但是由于他挂了，没有人知道他执行了什么操作。
+<ul>
+<li>这种情况下，当新的协调者被选出来之后，他同样是询问所有的参与者的情况来觉得是commit还是roolback。这看上去和二阶段提交一样啊？他是怎么解决一致性问题的呢？</li>
+<li>看上去和二阶段提交的那种数据不一致的情况的现象是一样的，但仔细分析所有参与者的状态的话就会发现其实并不一样。我们假设挂掉的那台参与者执行的操作是commit。那么其他没挂的操作者的状态应该是什么？他们的状态要么是prepare-commit要么是commit。因为3PC的第三阶段一旦有机器执行了commit，那必然第一阶段大家都是同意commit。所以，这时，新选举出来的协调者一旦发现未挂掉的参与者中有人处于commit状态或者是prepare-commit的话，那就执行commit操作。否则就执行rollback操作。这样挂掉的参与者恢复之后就能和其他机器保持数据一致性了。（为了简单的让大家理解，笔者这里简化了新选举出来的协调者执行操作的具体细节，真实情况比我描述的要复杂）</li>
+</ul>
+</li>
+</ul>
+<p><strong>简单概括一下就是，如果挂掉的那台机器已经执行了commit，那么协调者可以从所有未挂掉的参与者的状态中分析出来，并执行commit。如果挂掉的那个参与者执行了rollback，那么协调者和其他的参与者执行的肯定也是rollback操作。</strong></p>
+<p>所以，再多引入一个阶段之后，3PC解决了2PC中存在的那种由于协调者和参与者同时挂掉有可能导致的数据一致性问题。</p>
+</blockquote>
+<p>3PC也不是完美的，同样存在问题：</p>
+<blockquote>
+<p>在doCommit阶段，如果参与者无法及时接收到来自协调者的doCommit或者rebort请求时，会在等待超时之后，会继续进行事务的提交。</p>
+<p>所以，由于网络原因，协调者发送的abort响应没有及时被参与者接收到，那么参与者在等待超时之后执行了commit操作。这样就和其他接到abort命令并执行回滚的参与者之间存在数据不一致的情况。</p>
+</blockquote>
+<h3 id="heading-7">最终一致分布式事务方案</h3>
+<p>尽管2PC/3PC存在一些问题，但其实是通过提升服务运营能力部分克服问题，那是不是2PC/3PC就可以满足微服务场景下分布式事务的需求了呢？答案是否定的，原因有三点：</p>
+<blockquote>
+<ul>
+<li>由于微服务间无法直接进行数据访问，微服务间互相调用通常通过RPC（Dubbo）或Http API（Spring Cloud）进行，所以已经无法使用TM统一管理微服务的RM。</li>
+<li>不同的微服务使用的数据源类型可能完全不同，如果微服务使用了NoSQL之类不支持事务的数据库，则事务根本无从谈起。</li>
+<li>即使微服务使用的数据源都支持事务，那么如果使用一个大事务将许多微服务的事务管理起来，这个大事务维持的时间，将比本地事务长几个数量级。如此长时间的事务及跨服务的事务，将为产生很多锁及数据不可用，严重影响系统性能。</li>
+</ul>
+</blockquote>
+<p>由此可见，传统的分布式事务已经无法满足微服务架构下的事务管理需求。那么，既然无法满足传统的ACID事务，在微服务下的事务管理必然要遵循新的法则－－BASE理论。</p>
+<blockquote>
+<p>BASE理论由eBay的架构师Dan Pritchett提出，BASE理论是对CAP理论的延伸，核心思想是即使无法做到强一致性，应用应该可以采用合适的方式达到最终一致性。BASE是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency）。</p>
+<ul>
+<li>基本可用：指分布式系统在出现故障的时候，允许损失部分可用性，即保证核心可用。</li>
+<li>软状态：允许系统存在中间状态，而该中间状态不会影响系统整体可用性。分布式存储中一般一份数据至少会有三个副本，允许不同节点间副本同步的延时就是软状态的体现。</li>
+<li>最终一致性：最终一致性是指系统中的所有数据副本经过一定时间后，最终能够达到一致的状态。弱一致性和强一致性相反，最终一致性是弱一致性的一种特殊情况。</li>
+</ul>
+</blockquote>
+<p>BASE中的最终一致性是对于微服务下的事务管理的根本要求，即虽然基于微服务的事务管理无法达到强一致性，但必须保证最终一致性，这就是所说的柔性事务。</p>
+<p>实现事务最终一致性的方案主要有事件通知模式、事务补偿模式两种。</p>
+<h4 id="heading-8">事件通知方案</h4>
+<p>事件通知模式的设计理念比较容易理解，即是主服务完成后将结果通过事件（常常是消息队列）传递给从服务，从服务在接受到消息后进行消费，完成业务，从而达到主服务与从服务间的消息一致性。</p>
+<p>设计理念很简单，那是不是真的很简单呢？小白可能很简单地想到以下方案：</p>
+<p><img src="/images/20200301//image-20200301223959782.png" alt="image-20200301223959782"></p>
+<p><img src="/images/20200301/640.jpeg" alt="img"></p>
+<p>上面的逻辑看上去天衣无缝，如果数据库操作失败则直接退出，不发送消息；如果发送消息失败，则数据库回滚；如果数据库操作成功且消息发送成功，则业务成功，消息发送给下游消费。然后仔细思考后，这种同步消息通知有两个问题：</p>
+<blockquote>
+<ol>
+<li>
+<p>在微服务的架构下，有可能出现网络IO问题或者服务器宕机的问题，如果这些问题出现在时序图的第7步，使得消息投递后无法正常通知主服务（网络问题），或无法继续提交事务（宕机），那么主服务将会认为消息投递失败，会滚主服务业务，然而实际上消息已经被从服务消费，那么就会造成主服务和从服务的数据不一致。具体场景可见下面两张时序图。</p>
+<p><img src="/images/20200301/640-20200302003128385.jpeg" alt="img"><img src="/images/20200301/640-20200302003140038.jpeg" alt="img"></p>
+</li>
+<li>
+<p>事件服务（在这里就是消息服务）与业务过于耦合，如果消息服务不可用，会导致业务不可用。应该将事件服务与业务解耦，独立出来异步执行，或者在业务执行后先尝试发送一次消息，如果消息发送失败，则降级为异步发送。</p>
+</li>
+</ol>
+</blockquote>
+<h5 id="heading-9">本地异步事件服务模式</h5>
+<p>为了解决上述同步事件中描述的同步事件的问题，异步事件通知模式被发展了出来，既业务服务和事件服务解耦，事件异步进行，由单独的事件服务保证事件的可靠投递。</p>
+<p><img src="/images/20200301/640-20200301224355066.jpeg" alt="img"></p>
+<p>当业务执行时，在同一个本地事务中将事件写入本地事件表，同时投递该事件，如果事件投递成功，则将该事件从事件表中删除。如果投递失败，则由定时任务异步统一地处理投递失败的事件，进行重新投递，直到事件被正确投递，并将事件从事件表中删除。这个在本服务内部的定时任务一般叫它本地事件服务。这种方式最大可能地保证了事件投递的实效性，并且当第一次投递失败后，也能使用本地事件服务保证事件至少被投递一次。</p>
+<h5 id="heading-10">外部异步事件服务模式</h5>
+<p>上述使用本地事件服务保证可靠事件通知的方式也有它的不足之处，那便是业务仍旧与事件服务有一定耦合（第一次同步投递时），更为严重的是，本地事务需要负责额外的事件表的操作，为数据库带来了压力，在高并发的场景，由于每一个业务操作就要产生相应的事件表操作，几乎将数据库的可用吞吐量砍了一半，这无疑是无法接受的。正是因为这样的原因，可靠事件通知模式进一步地发展－外部事件服务出现在了人们的眼中。</p>
+<p>外部事件服务在本地事件服务的基础上更进了一步，将事件服务独立出主业务服务，主业务服务不在对事件服务有任何强依赖。</p>
+<p><img src="/images/20200301/640-20200301224916823.jpeg" alt="img"></p>
+<blockquote>
+<p>业务服务在提交前，向事件服务发送事件，事件服务只记录事件，并不发送。业务服务在提交或回滚后通知事件服务，事件服务发送事件或者删除事件。不用担心业务系统在提交或者会滚后宕机而无法发送确认事件给事件服务，因为事件服务会定时获取所有仍未发送的事件并且向业务系统查询，根据业务系统的返回来决定发送或者删除该事件。</p>
+<p>外部事件虽然能够将业务系统和事件系统解耦，但是也带来了额外的工作量：外部事件服务比起本地事件服务来说多了两次网络通信开销（提交前、提交／回滚后），同时也需要业务系统提供单独的查询接口给事件系统用来判断未发送事件的状态。</p>
+</blockquote>
+<h5 id="mq">MQ事务消息模式</h5>
+<p>上述外部事件服务虽然解耦得比较成功，但其实还是需要自行开发一个独立的事件服务系统的，比较麻烦。其实还有更优雅地方案：事务消息模式。假如使用的MQ本身支持事务消息，这样业务应用就能以某种方式确保消息正确投递到MQ。这个方案的代表是RocketMQ。</p>
+<p><img src="/images/20200301//image-20200301225834356.png" alt="image-20200301225834356"></p>
+<p>在RocketMQ这个方案里，事务消息作为一种异步确保型事务， 将两个事务分支通过 MQ 进行异步解耦，RocketMQ 事务消息的设计流程同样借鉴了两阶段提交理论，整体交互流程如下图所示：</p>
+<blockquote>
+<ol>
+<li>事务发起方首先发送 prepare 消息到 MQ。</li>
+<li>在发送 prepare 消息成功后执行本地事务。</li>
+<li>根据本地事务执行结果返回 commit 或者是 rollback。</li>
+<li>如果消息是 rollback，MQ 将删除该 prepare 消息不进行下发，如果是 commit 消息，MQ 将会把这个消息发送给 consumer 端。</li>
+<li>如果执行本地事务过程中，执行端挂掉，或者超时，MQ 将会不停的询问其同组的其他 producer 来获取状态。</li>
+<li>Consumer 端的消费成功机制有 MQ 保证。</li>
+</ol>
+</blockquote>
+<p>这里浏览下RocketMQ这种方案的代码：</p>
+<p><code>TransactionProducer</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TransactionProducer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> MQClientException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
+        TransactionListener transactionListener <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TransactionListenerImpl<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        TransactionMQProducer producer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TransactionMQProducer<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;please_rename_unique_group_name&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        ExecutorService executorService <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ThreadPoolExecutor<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> 5<span style="color:#f92672">,</span> 100<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ArrayBlockingQueue<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span>2000<span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ThreadFactory<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#a6e22e">@Override</span>
+            <span style="color:#66d9ef">public</span> Thread <span style="color:#a6e22e">newThread</span><span style="color:#f92672">(</span>Runnable r<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                Thread thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>r<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                thread<span style="color:#f92672">.</span><span style="color:#a6e22e">setName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;client-transaction-msg-check-thread&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">return</span> thread<span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">setNamesrvAddr</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;10.10.15.246:9876;10.10.15.247:9876&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">setExecutorService</span><span style="color:#f92672">(</span>executorService<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">setTransactionListener</span><span style="color:#f92672">(</span>transactionListener<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> tags <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;TagA&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TagB&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TagC&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TagD&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;TagE&#34;</span><span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                Message msg <span style="color:#f92672">=</span>
+                    <span style="color:#66d9ef">new</span> Message<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;TranTest&#34;</span><span style="color:#f92672">,</span> tags<span style="color:#f92672">[</span>i <span style="color:#f92672">%</span> tags<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">]</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;KEY&#34;</span> <span style="color:#f92672">+</span> i<span style="color:#f92672">,</span>
+                        <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Hello RocketMQ &#34;</span> <span style="color:#f92672">+</span> i<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span>RemotingHelper<span style="color:#f92672">.</span><span style="color:#a6e22e">DEFAULT_CHARSET</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                SendResult sendResult <span style="color:#f92672">=</span> producer<span style="color:#f92672">.</span><span style="color:#a6e22e">sendMessageInTransaction</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;%s%n&#34;</span><span style="color:#f92672">,</span> sendResult<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>10<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>MQClientException <span style="color:#f92672">|</span> UnsupportedEncodingException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 100000<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>TransactionListener</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TransactionListenerImpl</span> <span style="color:#66d9ef">implements</span> TransactionListener <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> AtomicInteger transactionIndex <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger<span style="color:#f92672">(</span>0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> localTrans <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> LocalTransactionState <span style="color:#a6e22e">executeLocalTransaction</span><span style="color:#f92672">(</span>Message msg<span style="color:#f92672">,</span> Object arg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">int</span> value <span style="color:#f92672">=</span> transactionIndex<span style="color:#f92672">.</span><span style="color:#a6e22e">getAndIncrement</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">int</span> status <span style="color:#f92672">=</span> value <span style="color:#f92672">%</span> 3<span style="color:#f92672">;</span>
+        localTrans<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">getTransactionId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> status<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> LocalTransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">UNKNOW</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> LocalTransactionState <span style="color:#a6e22e">checkLocalTransaction</span><span style="color:#f92672">(</span>MessageExt msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Integer status <span style="color:#f92672">=</span> localTrans<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">getTransactionId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">null</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> status<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>status<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">case</span> 0<span style="color:#f92672">:</span>
+                    <span style="color:#66d9ef">return</span> LocalTransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">UNKNOW</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">case</span> 1<span style="color:#f92672">:</span>
+                    <span style="color:#66d9ef">return</span> LocalTransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">COMMIT_MESSAGE</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">case</span> 2<span style="color:#f92672">:</span>
+                    <span style="color:#66d9ef">return</span> LocalTransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">ROLLBACK_MESSAGE</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">return</span> LocalTransactionState<span style="color:#f92672">.</span><span style="color:#a6e22e">COMMIT_MESSAGE</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如果从代码的角度，可以看到在RocketMQ这个方案里，生产者<code>TransactionProducer</code>涉及到2个角色：本地事务执行器（代码中的<code>TransactionListenerImpl</code>的<code>executeLocalTransaction</code>方法）、服务器回查客户端Listener（代码中<code>TransactionListenerImpl</code>的<code>checkLocalTransaction</code>方法）。</p>
+<p>如果事务消息发送到MQ上后，会回调本地事务执行器；但是此时事务消息是<code>prepare</code>状态，对消费者还不可见，需要本地事务执行器返回RMQ一个确认消息。只有当确认完之后，才会将消息的状态由消费端不可见的<code>prepare</code>状态更新为消费者端可见的<code>commied</code>状态，如果本地事务执行器返回的是<code>rollbak</code>，则RMQ直接删除该<code>prepare</code>状态的消息。</p>
+<p>为了处理由于异常情况导致RMQ收不到本地事务执行器的确认消息的问题，RMQ会通过服务器回查客户端Listener接口反查<code>prepare</code>状态事务消息最终应该的状态，从而将消息由消费端不可见的<code>prepare</code>状态更新为消费者端可见的<code>commied</code>状态或直接删除prepare状态的消息。</p>
+<p>RocketMQ的实现代码也挺有意思，可以看看<a href="https://itzones.cn/2019/07/09/RocketMQ%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF/">这篇文章</a>。</p>
+<p>这里想到一个问题，为啥只有RocketMQ实现了事务消息的功能，其它MQ基本都没有实现这个功能。对于分布事务场景来说，这个功能不香吗？</p>
+<p>其实业界各种MQ均有各自的适用场景，很多通用性MQ关注点是消息的高效流转，如果加上事务消息这一特性会导致MQ的性能打一些折扣。而解决消息的可靠投递并不一定需要使用事务消息方案，采用上面介绍的两种方法也可以。一句话，技术上并不是一定要追求架构的最优，还是要考虑综合效能。</p>
+<h5 id="heading-11">事件最大努力通知</h5>
+<p>上面说到的3种模式，均可以保证事件消息可靠地投递到下游服务那儿去。但有些场景是允许一定程度地丢消息的。于是就发展出事件最大努力通知模式。最大努力通知型的特点是，业务服务在提交事务后，进行有限次数（设置最大次数限制）的消息发送，比如发送三次消息，若三次消息发送都失败，则不予继续发送。所以有可能导致消息的丢失。同时，主业务方需要提供查询接口给从业务服务，用来恢复丢失消息。最大努力通知型对于时效性保证比较差（既可能会出现较长时间的软状态），所以对于数据一致性的时效性要求比较高的系统无法使用。这种模式通常使用在不同业务平台服务或者对于第三方业务服务的通知，如银行通知、商户通知等。</p>
+<p><strong>事件通知模式要注意的点：</strong></p>
+<p>通过上面的描述，我们知道只要是使用事件通知模式，那么消费端收到的消息就有可能是重复的。那么就需要消费端保证同一条事件不会重复被消费，简而言之就是保证事件消费的幂等性。</p>
+<p>如果事件本身是具备幂等性的状态型事件，如订单状态的通知（已下单、已支付、已发货等），则需要判断事件的顺序。一般通过时间戳来判断，既消费过了新的消息后，当接受到老的消息直接丢弃不予消费。如果无法提供全局时间戳，则应考虑使用全局统一的序列号。</p>
+<p>对于不具备幂等性的事件，一般是动作行为事件，如扣款100，存款200，则应该将事件ID及事件结果持久化，在消费事件前查询事件ID，若已经消费则直接返回执行结果；若是新消息，则执行，并存储执行结果。</p>
+<h4 id="heading-12">事务补偿方案</h4>
+<p>除了事件通知模式外，事务补偿模式也可以实现事务的最终一致性。</p>
+<p>补偿模式比起事件通知模式最大的不同是，补偿模式的上游服务依赖于下游服务的运行结果，而事件通知模式上游服务不依赖于下游服务的运行结果。</p>
+<h5 id="saga">Saga模式</h5>
+<p>Saga是一种纯业务补偿模式，其设计理念为，业务在调用的时候正常提交，当一个服务失败的时候，所有其依赖的上游服务都进行业务补偿操作。</p>
+<p>业务补偿模式要求每个服务都提供补偿接口，且这种补偿一般来说是不完全补偿，既即使进行了补偿操作，那条取消的火车票记录还是一直存在数据库中可以被追踪（一般是有相信的状态字段“已取消”作为标记），毕竟已经提交的线上数据一般是不能进行物理删除的。</p>
+<p>业务补偿模式最大的缺点是软状态的时间比较长，既数据一致性的时效性很低，多个服务常常可能处于数据不一致的情况。</p>
+<p>这种方案我以前在项目中深入实践中，可以看看这些文章：<a href="https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">servicecomb-saga开发实战</a>、<a href="https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">servicecomb-saga源码解读</a>。</p>
+<h5 id="tcc">TCC模式</h5>
+<p>TCC模式是一种优化了的业务补偿模式，它可以做到完全补偿，既进行补偿后不留下补偿的纪录，就好像什么事情都没有发生过一样。同时，TCC的软状态时间很短，原因是因为TCC是一种两阶段型模式，只有在所有的服务的第一阶段（try）都成功的时候才进行第二阶段确认（Confirm）操作，否则进行补偿(Cancel)操作，而在try阶段是不会进行真正的业务处理的。</p>
+<p><img src="/images/20200301//image-20200301233857440.png" alt="image-20200301233857440"></p>
+<p>TCC模式的具体流程为两个阶段：</p>
+<ol>
+<li>Try，业务服务完成所有的业务检查，预留必需的业务资源</li>
+<li>如果Try在所有服务中都成功，那么执行Confirm操作，Confirm操作不做任何的业务检查（因为try中已经做过），只是用Try阶段预留的业务资源进行业务处理；否则进行Cancel操作，Cancel操作释放Try阶段预留的业务资源。</li>
+</ol>
+<p>TCC模式跟纯业务补偿模式相比，需要每个服务都需要实现Confirm和Cancel两个接口，因此落地实施上比纯业务补偿模式复杂一些，但好处是数据一致的实时性高，因此其在很多金融、电商场景中大量采用。</p>
+<p>在事务补偿方案中，由于上游服务依赖于下游服务的结果，考虑到上下游服务间网络有可能是不稳定的，因此业务接口、补偿接口（Saga模式中）和Try接口、Confirm接口、Cancel接口（TCC模式中）均有可能会被多次调用，因此这些接口在实现时需要考虑幂等性。幂等性的实现方式可以是：</p>
+<p>1、通过唯一键值做处理，即每次调用的时候传入唯一键值，通过唯一键值判断业务是否被操作，如果已被操作，则不再重复操作</p>
+<p>2、通过状态机处理，给业务数据设置状态，通过业务状态判断是否需要重复执行</p>
+<h3 id="heading-13">最终一致分布式方案对比</h3>
+<p>最终一致分布式方案如此之多，如何选择呢？其实还是要根据具体的业务场景。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>模式</th>
+<th>数据一致性的实时性</th>
+<th>开发成本</th>
+<th>上游服务是否依赖下游服务结果</th>
+<th>事件消息发送链路</th>
+<th>业务耦合事件发送</th>
+<th>绑定MQ特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>事件通知</td>
+<td>本地异步事件服务模式</td>
+<td>高</td>
+<td>高</td>
+<td>不依赖</td>
+<td>短</td>
+<td>高</td>
+<td>否</td>
+</tr>
+<tr>
+<td>事件通知</td>
+<td>外部异步事件服务模式</td>
+<td>高</td>
+<td>高</td>
+<td>不依赖</td>
+<td>长</td>
+<td>低</td>
+<td>否</td>
+</tr>
+<tr>
+<td>事件通知</td>
+<td>MQ事务消息模式</td>
+<td>高</td>
+<td>低</td>
+<td>不依赖</td>
+<td>中</td>
+<td>低</td>
+<td>是</td>
+</tr>
+<tr>
+<td>事件通知</td>
+<td>事件最大努力通知模式</td>
+<td>低</td>
+<td>低</td>
+<td>不依赖</td>
+<td>短</td>
+<td>高</td>
+<td>否</td>
+</tr>
+<tr>
+<td>事务补偿</td>
+<td>Saga纯业务补偿模式</td>
+<td>低</td>
+<td>低</td>
+<td>依赖</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>事务补偿</td>
+<td>TCC业务补偿模式</td>
+<td>高</td>
+<td>高</td>
+<td>依赖</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>各个方案均有优缺点，按照业务场景及开发团队的能力水平选择一种合适的方案即可。</p>
+<p>DONE！</p>
+<h2 id="heading-14">参考</h2>
+<ol>
+<li><a href="https://mp.weixin.qq.com/s/7AGxzyy05PBT857_NNdr-Q">https://mp.weixin.qq.com/s/7AGxzyy05PBT857_NNdr-Q</a></li>
+<li><a href="http://www.hollischuang.com/archives/1580">http://www.hollischuang.com/archives/1580</a></li>
+<li><a href="https://itzones.cn/2019/07/09/RocketMQ%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF/">https://itzones.cn/2019/07/09/RocketMQ%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF/</a></li>
+<li><a href="https://www.zhihu.com/question/48627764">https://www.zhihu.com/question/48627764</a></li>
+<li><a href="https://blog.roncoo.com/article/124243">https://blog.roncoo.com/article/124243</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-03-01</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/microservice/">microservice</a>
+          
+          <a href="/tags/transaction/">transaction</a>
+          
+          <a href="/tags/tcc/">tcc</a>
+          
+          <a href="/tags/saga/">saga</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/03/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">数据库基础知识</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/02/python%E5%9B%BE%E7%AE%97%E6%B3%95%E5%AE%9E%E6%88%98/">
+            <span class="next-text nav-default">python图算法实战</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

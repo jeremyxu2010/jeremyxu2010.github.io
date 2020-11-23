@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>完善cni的ipam方案 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="上两周，为了优化k8s的网络性能，最终选择了macvlan&#43;ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="完善cni的ipam方案" />
+<meta property="og:description" content="上两周，为了优化k8s的网络性能，最终选择了macvlan&#43;ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/" />
+<meta property="article:published_time" content="2019-07-07T14:00:00+08:00" />
+<meta property="article:modified_time" content="2019-07-07T14:00:00+08:00" />
+<meta itemprop="name" content="完善cni的ipam方案">
+<meta itemprop="description" content="上两周，为了优化k8s的网络性能，最终选择了macvlan&#43;ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I">
+<meta itemprop="datePublished" content="2019-07-07T14:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-07T14:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1327">
+
+
+
+<meta itemprop="keywords" content="k8s,devops,cni," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="完善cni的ipam方案"/>
+<meta name="twitter:description" content="上两周，为了优化k8s的网络性能，最终选择了macvlan&#43;ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">完善cni的ipam方案</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1327 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#ip">原来ip分配的问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#ip-1">集中式的ip分配</a></li>
+    <li><a href="#heading">快速开发</a></li>
+    <li><a href="#heading-1">简化部署</a></li>
+    <li><a href="#heading-2">总结</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>上两周，为了优化k8s的网络性能，最终选择了<code>macvlan+ptp</code>方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的IP其实不太好分配。</p>
+<h3 id="ip">原来ip分配的问题</h3>
+<p>原来的方案直接使用官方的<code>host-local</code>进行IP分配，虽然很稳定，但不同的node节点需要配置一个不重叠的网段，最终需要底层网络预先分配一个比较大的网段作为macvlan的地址范围。而在很多私有部署场景，一般只会给一个24位前缀的网段，如果采用<code>host-local</code>进行IP分配，每个node节点将得不到足够大的cidr。</p>
+<h2 id="ip-1">集中式的ip分配</h2>
+<p>比较理想的方案是使用一个集中式的ip分配策略，各node节点从一个网段范围内按需申请pod的ip。集中式的ip分配方案比较多，官方本身就是<code>dhcp</code>的cni插件，另外也可以找一个集中存储（如consul, etcd），基于这个做集中式的cni插件。</p>
+<p>本以为这个方案很简单，理论上业界上应该已经有现成方案了，但实际上在网上找了一圈，只找到<a href="https://github.com/logingood/cni-ipam-consul">cni-ipam-consul</a>，而且代码都是3年前的，连编译都不成功。看来只能自行开发。</p>
+<h2 id="heading">快速开发</h2>
+<p>为了减少依赖，最终计划开发一个<code>cni-ipam-etcd</code>，其直接采用kubernetes底层使用的etcd作为集中存储，存储ipam的ip分配信息。</p>
+<p>其实<code>host-local</code>这个cni插件源代码架构比较好，它默认是使用本地文件存储ip分配信息的，只需要将这些逻辑修改为读写etcd就可以了。</p>
+<p>参考上述思路，我快速完成了此cni插件的开发，源代码地址为<a href="https://github.com/jeremyxu2010/cni-ipam-etcd">cni-ipam-etcd</a>。这里对etcd的读写代码参考<a href="https://enpsl.top/2019/01/05/2019-01-05-golang-etcd/">这里</a>。</p>
+<p>这个cni插件使用也比较简单，可配合常用的underlay网络cni插件使用，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+	<span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;mymacvlan&#34;</span>,
+	<span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;macvlan&#34;</span>,
+	<span style="color:#f92672">&#34;master&#34;</span>: <span style="color:#e6db74">&#34;enp5s0f0&#34;</span>,
+	<span style="color:#f92672">&#34;ipam&#34;</span>: {
+		<span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;myetcd-ipam&#34;</span>,
+		<span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;etcd&#34;</span>,
+		<span style="color:#f92672">&#34;etcdConfig&#34;</span>: {
+			<span style="color:#f92672">&#34;etcdURL&#34;</span>: <span style="color:#e6db74">&#34;https://10.10.20.152:2379&#34;</span>,
+			<span style="color:#f92672">&#34;etcdCertFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/etcd/ssl/etcd.pem&#34;</span>,
+			<span style="color:#f92672">&#34;etcdKeyFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/etcd/ssl/etcd-key.pem&#34;</span>,
+			<span style="color:#f92672">&#34;etcdTrustedCAFileFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/kubernetes/ssl/ca.pem&#34;</span>
+		},
+		<span style="color:#f92672">&#34;subnet&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.0/24&#34;</span>,
+		<span style="color:#f92672">&#34;rangeStart&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.50&#34;</span>,
+		<span style="color:#f92672">&#34;rangeEnd&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.70&#34;</span>,
+		<span style="color:#f92672">&#34;gateway&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.254&#34;</span>,
+		<span style="color:#f92672">&#34;routes&#34;</span>: [{
+			<span style="color:#f92672">&#34;dst&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0/0&#34;</span>
+		}]
+	}
+}
+</code></pre></div><h2 id="heading-1">简化部署</h2>
+<p>当然手工登录到每个node节点部署上述配置很是简单的，但在k8s里我们可以使用daemonset快速完成cni插件的部署，deamonset的配置可参考如下yaml：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kube-macvlan-cfg
+  namespace: kube-system
+  labels:
+    tier: node
+    app: macvlan
+data:
+  etcd.pem: <span style="color:#e6db74">|
+</span><span style="color:#e6db74">   </span><span style="color:#e6db74"> </span><span style="color:#e6db74">-----BEGIN CERTIFICATE-----</span>
+    MIID5DCCAsygAwIBAgIUB9cmzTIGNK2SINBAl9Cx284K6TowDQYJKoZIhvcNAQEL
+    BQAwYjELMAkGA1UEBhMCQ04xEjAQBgNVBAgTCUd1YW5nRG9uZzELMAkGA1UEBxMC
+    U1oxDDAKBgNVBAoTA2s4czEPMA0GA1UECxMGU3lzdGVtMRMwEQYDVQQDEwprdWJl
+    cm5ldGVzMB4XDTE5MDQxNjIzMjYwMFoXDTI5MDQxMzIzMjYwMFowXDELMAkGA1UE
+    BhMCQ04xEjAQBgNVBAgTCUd1YW5nRG9uZzELMAkGA1UEBxMCU1oxDDAKBgNVBAoT
+    A2s4czEPMA0GA1UECxMGU3lzdGVtMQ0wCwYDVQQDEwRldGNkMIIBIjANBgkqhkiG
+    9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz0avwoL3gTbLIjGURQi/8r+Np1A4ALLSR+KS
+    ig4MA8nUYwO5WoU6+71nF83kpO9KnSr0YrsgXIYgI2u57AxR7WFMvPphGy9C+9Z0
+    BHDk6LCciiYiZphoE6792WfUchHrRjBbiAJDvvpb2qEu6qY53c1KQkX7jLVjkHt5
+    bMOBhY/Y33J4uCsokmPmFZ1GxtwV8wsXq/flWCbQ7dC9sMMO3JpNrG7/tiv+lQmv
+    uPojcMUt/ZVnbRU+OXnlqljJDYLu2OqY0PPxXR9t9WpSpdesNQblwopTH+MzH0Ga
+    yXY8BhvwuRkFHTpVIeYUraTFSokopL0XSSF9DDBUJ8E+QS1MEQIDAQABo4GXMIGU
+    MA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIw
+    DAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUJ9k4rVtGuz+bip/YgGpAftPH2I8wHwYD
+    VR0jBBgwFoAUUHIr7PnnjCO6GEc0+wln7Pr2HnowFQYDVR0RBA4wDIcEfwAAAYcE
+    CU0L7DANBgkqhkiG9w0BAQsFAAOCAQEAhSjef8eG8X6z8xZEPNHEACKRgsPP8Hmv
+    AzxJ2TLAYjGQaM7TklRseHSxn7cAx4bwvHZtVPRrIgK5ylkm4QHGQfMYejWQnUzJ
+    m0F5/3oXfDTA10muw4tGQu7njUKMsfHnvgokxMjk3xdPpy+WrBsFtmO/TRgypzle
+    3MTXbWIFDPaxVRx1oBtIuTkYZjc1CHUMyuXQhWU8mZCoGqFpcYwfRjUtA6hWe8xJ
+    7aDEnxpXkA4/ehuWTrl3QCSrg4NBXqufSy7V0Y+mErxC9996rYP80bR8gdGKUo65
+    bWmgDT/c49TA96MGbepsZPbDdFVnr1g5jiJnXQSYDw1pdCxb5MsggQ==
+    -----END CERTIFICATE----<span style="color:#e6db74">-
+</span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">etcd-key.pem: |</span>
+    -----BEGIN RSA PRIVATE KEY----<span style="color:#e6db74">-
+</span><span style="color:#e6db74">   </span><span style="color:#e6db74"> </span><span style="color:#e6db74">MIIEpAIBAAKCAQEAz0avwoL3gTbLIjGURQi/8r+Np1A4ALLSR+KSig4MA8nUYwO5</span>
+    WoU6+71nF83kpO9KnSr0YrsgXIYgI2u57AxR7WFMvPphGy9C+9Z0BHDk6LCciiYi
+    ZphoE6792WfUchHrRjBbiAJDvvpb2qEu6qY53c1KQkX7jLVjkHt5bMOBhY/Y33J4
+    uCsokmPmFZ1GxtwV8wsXq/flWCbQ7dC9sMMO3JpNrG7/tiv+lQmvuPojcMUt/ZVn
+    bRU+OXnlqljJDYLu2OqY0PPxXR9t9WpSpdesNQblwopTH+MzH0GayXY8BhvwuRkF
+    HTpVIeYUraTFSokopL0XSSF9DDBUJ8E+QS1MEQIDAQABAoIBAQDEuAqhadjrGozJ
+    xBI7PqWmBqSzMZAlIZIvRVrciZ5fjhLzchpdTer/9u88CV3CJ5VB+v18IqsBBQ7F
+    bz1CSSMMTvcct+ine0BwcUUk3dxy9wNqneyyQF0uqTslNcTMCjOoJscIG1Yej8/T
+    fHxhmSd8WZTrty2ZiqGXA4jnb9miXoEtpHW65kWq50qK/ElxRhqHrMn3TO06nr+w
+    tB7kSnT2E6Bx5eXCzvKL+2DlUWlBjme9dSessg566i+3Ua5Zmc2/SY3aS69Wp+9a
+    DHsdLAtpVh/sfO3GXLEzoGo0wcPEjtbeV9snSGfQDluzt2rf1lht9vPHpbOpKZIj
+    F61E6H0tAoGBAOUPQURoW37W22S8rH3u6iO53CgfWfiyIOoOk3hVWmmjuGx53i5d
+    v8+dHNNSc94kj7EH5EIcksKpdc6fh9mRrHwnsTs3Pa6OgvcqR2LUe0UlECJ714HX
+    SSQGNnYwZ+NKyOk9BkRt6PdAyvS/om3VSn7w6tXqb9SJBjBSbyo8C/czAoGBAOen
+    jdd7Zt8yREE/GRfYLGANBfwbNcFAz5vXxRg+943OGmiJMr5q/o+rg+ubB119maZI
+    fHzFryN77ZLo8gcudaiu6fNE0AxP68N3m0dUcOSSoX15MjWX3MQRtv7kYklg3lCr
+    5FpcXo/IIWTk5W8MgBUxrntPWjIeADkkbGGEwB+rAoGAajlA0zBx/cg1xemZNG1v
+    N1IhvpmLZ8FzcheAW/V5EDRUejmpx2bCZM0/aOB7yzC5UieOuvn1NUDQ2RkyLrtX
+    edwOXJ+pgyGjqmt432QaJl6htNwpfJUR3hrjdrvL8aPkuAUMuv8dYkwx0n5sHPMk
+    sOmYfctSQQWqUQ5pbvSZt/ECgYEAydJPoGFxkZkQoCuh6AU9O/18rlTic1jMx0Co
+    BWSudowOs+58GCvNVkwepcCuHQSVPaq/UlFEMc0BgVGTszAF8A1b48aa328tv2FQ
+    Fkf6Bxm8uj1BwjFpdCTe4pkFDFrptSzcyODavbelaGqHfUVNvalIE0RiF3HNzfru
+    tdNbMvsCgYACKftFa4UkHZjO8wEaTLpUOotJYRRaWcDxkuHSc+zOr2/X+Q6GI3k/
+    r1hi51otQSHissiNcTBskpsVO8JJUye77q5igNI/6rnmT5lmqbZrYQK5J322jYxt
+    IVlXiSSyuY6ZL8k4yc27XG5Petk0SZiEdItRLh2AC5z/8Pg8gHFlsQ==
+    -----END RSA PRIVATE KEY----<span style="color:#e6db74">-
+</span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">etcd-ca.pem: |</span>
+    -----BEGIN CERTIFICATE----<span style="color:#e6db74">-
+</span><span style="color:#e6db74">   </span><span style="color:#e6db74"> </span><span style="color:#e6db74">MIIDuDCCAqCgAwIBAgIUK4+VweLZgPFnIBGYCxBAzDJ17pwwDQYJKoZIhvcNAQEL</span>
+    BQAwYjELMAkGA1UEBhMCQ04xEjAQBgNVBAgTCUd1YW5nRG9uZzELMAkGA1UEBxMC
+    U1oxDDAKBgNVBAoTA2s4czEPMA0GA1UECxMGU3lzdGVtMRMwEQYDVQQDEwprdWJl
+    cm5ldGVzMB4XDTE5MDIyMDA2NDEwMFoXDTI0MDIxOTA2NDEwMFowYjELMAkGA1UE
+    BhMCQ04xEjAQBgNVBAgTCUd1YW5nRG9uZzELMAkGA1UEBxMCU1oxDDAKBgNVBAoT
+    A2s4czEPMA0GA1UECxMGU3lzdGVtMRMwEQYDVQQDEwprdWJlcm5ldGVzMIIBIjAN
+    BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAttiDwQyPK41fI8NgRjdF3AIr9P1U
+    hBS0JFlEJ2UVDhQDfS+ns42r4IHGayWaydldlcFX7Xhg0qQAONLK+2p6fXojCDM6
+    ZEARNnOuQGFaOfrihsukQsj6Zn3VSi8PgwcMJUzjiY932cOTcQM49J9LOz0QCp8E
+    tQ+so6qE7Bl0om+ifRuq1+O5bGmCBb2EEQfgHeuluZ8LoyHhQEbI3qq9e3XtdyKm
+    KO1BRk7Z/m24amoC72gxljKP2KV1oiCZj+VcpFwEPpmYaNp1We0jk7WgDXZUXBkE
+    NqhC2/Y2sUQ5VWm0dOnCA6pE3Fq2C7krVxhOelKIxFzuV56AeCVxe8qKMQIDAQAB
+    o2YwZDAOBgNVHQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBAjAdBgNVHQ4E
+    FgQUUHIr7PnnjCO6GEc0+wln7Pr2HnowHwYDVR0jBBgwFoAUUHIr7PnnjCO6GEc0
+    +wln7Pr2HnowDQYJKoZIhvcNAQELBQADggEBAEwf+/Cy62uvp3DJIGubFP4AzKQL
+    pbxJwjn+dsSJFJkIwSCJJJPVwtU8qPdwBS2UKJ1evFBvk+2uLyCKW1F6I5Ryc658
+    E/dOXAPUP0cpA1vwdkNv7yFqBY9S7pm9q2BZEOfwbS5sTkRztwqP75DKEf8t9eq/
+    9JnTEhs3tCUtv2uSKLbwGrT/lmPwT32Xn90tYbrasfr9bzS8qhAml8KnHyIs0/DB
+    h+p5N0gSRODK+u/JwSdnlwwDiYzeKfo87RypNCJt7UsX6J3RK8GNJwSMy5s70XhS
+    1C0s4RRsDT7dhRssPBCvsH6HHjrLUAM7hd1XBAdkjMDA4B8qDnjb+2fAKhs=
+    -----END CERTIFICATE----<span style="color:#e6db74">-
+</span><span style="color:#e6db74"> </span><span style="color:#e6db74"> </span><span style="color:#e6db74">cni-conf.json: |</span>
+    {
+        <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;cni0&#34;</span>,
+        <span style="color:#e6db74">&#34;cniVersion&#34;</span>: <span style="color:#e6db74">&#34;0.3.1&#34;</span>,
+        <span style="color:#e6db74">&#34;plugins&#34;</span>: [
+            {
+                <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;mymacvlan&#34;</span>,
+                <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;macvlan&#34;</span>,
+                <span style="color:#e6db74">&#34;master&#34;</span>: <span style="color:#e6db74">&#34;enp5s0f0&#34;</span>,
+                <span style="color:#e6db74">&#34;ipam&#34;</span>: {
+                    <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;myetcd-ipam&#34;</span>,
+                    <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;ipam-etcd&#34;</span>,
+                    <span style="color:#e6db74">&#34;etcdConfig&#34;</span>: {
+                        <span style="color:#e6db74">&#34;etcdURL&#34;</span>: <span style="color:#e6db74">&#34;https://10.10.20.152:2379&#34;</span>,
+                        <span style="color:#e6db74">&#34;etcdCertFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/cni/net.d/etcd.pem&#34;</span>,
+                        <span style="color:#e6db74">&#34;etcdKeyFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/cni/net.d/etcd-key.pem&#34;</span>,
+                        <span style="color:#e6db74">&#34;etcdTrustedCAFileFile&#34;</span>: <span style="color:#e6db74">&#34;/etc/cni/net.d/etcd-ca.pem&#34;</span>
+                    },
+                    <span style="color:#e6db74">&#34;subnet&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.0/24&#34;</span>,
+                    <span style="color:#e6db74">&#34;rangeStart&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.50&#34;</span>,
+                    <span style="color:#e6db74">&#34;rangeEnd&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.70&#34;</span>,
+                    <span style="color:#e6db74">&#34;gateway&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.254&#34;</span>,
+                    <span style="color:#e6db74">&#34;routes&#34;</span>: [{
+                        <span style="color:#e6db74">&#34;dst&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0/0&#34;</span>
+                    }]
+                }
+            },
+            {
+                <span style="color:#e6db74">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;ptp&#34;</span>,
+                <span style="color:#e6db74">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;veth-to-host&#34;</span>,
+                <span style="color:#e6db74">&#34;hostInterface&#34;</span>: <span style="color:#e6db74">&#34;enp5s0f0&#34;</span>,
+                <span style="color:#e6db74">&#34;containerInterface&#34;</span>: <span style="color:#e6db74">&#34;veth0&#34;</span>,
+                <span style="color:#e6db74">&#34;ipMasq&#34;</span>: <span style="color:#66d9ef">true</span>
+            }
+        ]
+    }
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: kube-macvlan-ds
+  namespace: kube-system
+  labels:
+    tier: node
+    app: macvlan
+spec:
+  template:
+    metadata:
+      labels:
+        tier: node
+        app: macvlan
+    spec:
+      hostNetwork: <span style="color:#66d9ef">true</span>
+      nodeSelector:
+        beta.kubernetes.io/arch: amd64
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      initContainers:
+        - name: install-cni-binaries
+          image: k8s-network:v1<span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>
+          command:
+            - sh
+          args:
+            - -c
+            - cp -r /opt/cni/bin/* /host/opt/cni/bin/
+          volumeMounts:
+            - name: host-cni-bin
+              mountPath: /host/opt/cni/bin
+        - name: install-cni-cfg
+          image: k8s-network:v1<span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>
+          command:
+            - cp
+          args:
+            - -f
+            - /etc/kube-macvlan/cni-conf.json
+            - /etc/cni/net.d/<span style="color:#ae81ff">00</span>-macvlan.conflist
+          volumeMounts:
+            - name: host-cni-cfg
+              mountPath: /etc/cni/net.d
+            - name: macvlan-cfg
+              mountPath: /etc/kube-macvlan/
+        - name: install-etcd-certs
+          image: k8s-network:v1<span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>
+          command:
+            - sh
+          args:
+            - -c
+            - cp -f /etc/kube-macvlan/etcd<span style="color:#75715e">*.pem</span> /etc/cni/net.d/
+          volumeMounts:
+            - name: host-cni-cfg
+              mountPath: /etc/cni/net.d
+            - name: macvlan-cfg
+              mountPath: /etc/kube-macvlan/
+      containers:
+        - name: kube-macvlan
+          image: k8s-network:v1<span style="color:#ae81ff">.0</span><span style="color:#ae81ff">.0</span>
+          resources:
+            requests:
+              cpu: <span style="color:#e6db74">&#34;100m&#34;</span>
+              memory: <span style="color:#e6db74">&#34;50Mi&#34;</span>
+            limits:
+              cpu: <span style="color:#e6db74">&#34;100m&#34;</span>
+              memory: <span style="color:#e6db74">&#34;100Mi&#34;</span>
+          securityContext:
+            privileged: <span style="color:#66d9ef">true</span>
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: run
+              mountPath: /run
+            - name: macvlan-cfg
+              mountPath: /etc/kube-macvlan/
+      volumes:
+        - name: run
+          hostPath:
+            path: /run
+        - name: host-cni-cfg
+          hostPath:
+            path: /etc/cni/net.d
+        - name: macvlan-cfg
+          configMap:
+            name: kube-macvlan-cfg
+        - name: host-cni-bin
+          hostPath:
+            path: /opt/cni/bin
+</code></pre></div><p>假设提前将名为<code>macvlan</code>、<code>ipam-etcd</code>的cni插件二进制文件放入了<code>k8s-network:v1.0.0</code> 这个docker镜像中。</p>
+<p>这样部署就很方便了，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl apply -f macvlan-dpl.yaml
+</code></pre></div><h2 id="heading-2">总结</h2>
+<p>通过这两周的实践，基本完成了开发cni网络插件的一整套流程，算是又开启了一门技能。</p>
+<h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://github.com/logingood/cni-ipam-consul">https://github.com/logingood/cni-ipam-consul</a></li>
+<li><a href="https://github.com/containernetworking/plugins/tree/master/plugins/ipam/host-local">https://github.com/containernetworking/plugins/tree/master/plugins/ipam/host-local</a></li>
+<li><a href="https://enpsl.top/2019/01/05/2019-01-05-golang-etcd/">https://enpsl.top/2019/01/05/2019-01-05-golang-etcd/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-07-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+          <a href="/tags/devops/">devops</a>
+          
+          <a href="/tags/cni/">cni</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">解决pvc无法mount的问题</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/">
+            <span class="next-text nav-default">清除k8s使用underlay网络的障碍</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

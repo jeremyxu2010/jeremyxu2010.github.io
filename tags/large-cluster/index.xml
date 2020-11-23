@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>large-cluster on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/large-cluster/</link>
+    <description>Recent content in large-cluster on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 02 Nov 2019 18:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/large-cluster/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes集群部署运营实践总结</title>
+      <link>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</guid>
+      <description>最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cache on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/cache/</link>
+    <description>Recent content in cache on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 01 Sep 2016 23:46:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/cache/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>java中用好cache</title>
+      <link>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</link>
+      <pubDate>Thu, 01 Sep 2016 23:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/java%E4%B8%AD%E7%94%A8%E5%A5%BDcache/</guid>
+      <description>在java开发中经常会遇到下面的代码： Graph get(Key key) { Graph result = get( key ); if( null == result ) { result = createNewGraph( key ); put( key, result ); } return result; } 即根据某个Key值，到缓存里查找是否有对应的</description>
+    </item>
+    
+  </channel>
+</rss>

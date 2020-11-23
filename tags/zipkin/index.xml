@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>zipkin on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/zipkin/</link>
+    <description>Recent content in zipkin on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 11 Mar 2019 00:14:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/zipkin/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>运行docker容器遇到的坑</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</link>
+      <pubDate>Mon, 11 Mar 2019 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</guid>
+      <description>今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Gearman使用范例 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="Gearman使用范例 Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Gearman使用范例" />
+<meta property="og:description" content="Gearman使用范例 Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/09/gearman%E4%BD%BF%E7%94%A8%E8%8C%83%E4%BE%8B/" />
+<meta property="article:published_time" content="2017-09-06T03:14:00+08:00" />
+<meta property="article:modified_time" content="2017-09-06T03:14:00+08:00" />
+<meta itemprop="name" content="Gearman使用范例">
+<meta itemprop="description" content="Gearman使用范例 Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的">
+<meta itemprop="datePublished" content="2017-09-06T03:14:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-09-06T03:14:00&#43;08:00" />
+<meta itemprop="wordCount" content="1678">
+
+
+
+<meta itemprop="keywords" content="java,gearman,任务分派," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Gearman使用范例"/>
+<meta name="twitter:description" content="Gearman使用范例 Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Gearman使用范例</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-09-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1678 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">工程依赖配置</a></li>
+    <li><a href="#gearman-1">Gearman服务端</a></li>
+    <li><a href="#gearmanworker">Gearman客户端与Worker端</a>
+      <ul>
+        <li><a href="#backgroud">非backgroud提交方式</a></li>
+        <li><a href="#backgroud-1">backgroud提交方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h1 id="gearman">Gearman使用范例</h1>
+<p>Gearman是一个分发任务的程序框架，可以用在各种场合，与Hadoop相比，Gearman更偏向于任务分发功能。它的任务分布非常简单，简单得可以只需要用脚本即可完成。Gearman最初用于LiveJournal的图片resize功能，由于图片resize需要消耗大量计算资源，因此需要调度到后端多台服务器执行，完成任务之后返回前端再呈现到界面。</p>
+<h2 id="heading">工程依赖配置</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependencies</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>org.gearman.jgs<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>java-gearman-service<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>0.7.0-SNAPSHOT<span style="color:#f92672">&lt;/version&gt;</span>
+  <span style="color:#f92672">&lt;/dependency&gt;</span>
+  <span style="color:#f92672">&lt;dependency</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;groupId</span><span style="color:#f92672">&gt;</span>net.sf.json-lib<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId</span><span style="color:#f92672">&gt;</span>json-lib<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version</span><span style="color:#f92672">&gt;</span>2.4<span style="color:#f92672">&lt;/version&gt;</span>
+    <span style="color:#f92672">&lt;classifier</span><span style="color:#f92672">&gt;</span>jdk15<span style="color:#f92672">&lt;/classifier&gt;</span>
+  <span style="color:#f92672">&lt;/dependency&gt;</span>
+<span style="color:#f92672">&lt;/dependencies&gt;</span>
+<span style="color:#f92672">&lt;repositories</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#f92672">&lt;repository</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;id</span><span style="color:#f92672">&gt;</span>aliyun<span style="color:#f92672">&lt;/id&gt;</span>
+    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>aliyun private nexus<span style="color:#f92672">&lt;/name&gt;</span>
+    <span style="color:#f92672">&lt;url</span><span style="color:#f92672">&gt;</span>http://maven.aliyun.com/nexus/content/groups/public/<span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;releases</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;enabled</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/enabled&gt;</span>
+    <span style="color:#f92672">&lt;/releases&gt;</span>
+    <span style="color:#f92672">&lt;snapshots</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;enabled</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/enabled&gt;</span>
+    <span style="color:#f92672">&lt;/snapshots&gt;</span>
+  <span style="color:#f92672">&lt;/repository&gt;</span>
+  <span style="color:#f92672">&lt;repository</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;id</span><span style="color:#f92672">&gt;</span>jfrog<span style="color:#f92672">&lt;/id&gt;</span>
+    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>jfrog private maven library<span style="color:#f92672">&lt;/name&gt;</span>
+    <span style="color:#f92672">&lt;url</span><span style="color:#f92672">&gt;</span>https://oss.jfrog.org/libs-snapshot/<span style="color:#f92672">&lt;/url&gt;</span>
+    <span style="color:#f92672">&lt;releases</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;enabled</span><span style="color:#f92672">&gt;</span>false<span style="color:#f92672">&lt;/enabled&gt;</span>
+    <span style="color:#f92672">&lt;/releases&gt;</span>
+    <span style="color:#f92672">&lt;snapshots</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;enabled</span><span style="color:#f92672">&gt;</span>true<span style="color:#f92672">&lt;/enabled&gt;</span>
+    <span style="color:#f92672">&lt;/snapshots&gt;</span>
+  <span style="color:#f92672">&lt;/repository&gt;</span>
+<span style="color:#f92672">&lt;/repositories&gt;</span>
+</code></pre></div><h2 id="gearman-1">Gearman服务端</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a Gearman instance
+</span><span style="color:#75715e">         */</span>
+        Gearman gearman <span style="color:#f92672">=</span> Gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearman</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">/*
+</span><span style="color:#75715e">             * Start a new job server. The resulting server will be running in
+</span><span style="color:#75715e">             * the local address space.
+</span><span style="color:#75715e">             *
+</span><span style="color:#75715e">             * Parameter 1: The port number to listen on
+</span><span style="color:#75715e">             *
+</span><span style="color:#75715e">             * throws IOException
+</span><span style="color:#75715e">             */</span>
+            GearmanServer server <span style="color:#f92672">=</span> gearman
+                    <span style="color:#f92672">.</span><span style="color:#a6e22e">startGearmanServer</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_PORT</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            <span style="color:#75715e">/*
+</span><span style="color:#75715e">             * Create a gearman worker. The worker poll jobs from the server and
+</span><span style="color:#75715e">             * executes the corresponding GearmanFunction
+</span><span style="color:#75715e">             */</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException ioe<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">/*
+</span><span style="color:#75715e">             * If an exception occurs, make sure the gearman service is shutdown
+</span><span style="color:#75715e">             */</span>
+            gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">// forward exception
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">throw</span> ioe<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+</code></pre></div><p>这里注意有一个重载的<code>public GearmanServer startGearmanServer(int port, GearmanPersistence persistence)</code>，通过它可以将提交的任务持久化，即使Gearman服务端重启，提交的任务还是可以还原的</p>
+<h2 id="gearmanworker">Gearman客户端与Worker端</h2>
+<p>Gearman里提交任务有两种方式：非backgroud提交方式、background提交方式。简单来说<code>非backgroud提交方式</code>是一种同步提交方式，客户端提交任务后保持一个长连接，通过这个长连接可以从执行的Function中获得中间任务数据；而<code>background提交方式</code>是一种异步提交方式，客户端提交任务后获得一个<code>jobHandle</code>, 后面都通过<code>jobHandle</code>获取执行Function的任务状态。</p>
+<h3 id="backgroud">非backgroud提交方式</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a Gearman instance
+</span><span style="color:#75715e">         */</span>
+        Gearman gearman <span style="color:#f92672">=</span> Gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearman</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a new gearman client.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * The client is used to submit requests the job server.
+</span><span style="color:#75715e">         */</span>
+        GearmanClient client <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanClient</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create the job server object. This call creates an object represents
+</span><span style="color:#75715e">         * a remote job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the host address of the job server.
+</span><span style="color:#75715e">         * Parameter 2: the port number the job server is listening on.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * A job server receives jobs from clients and distributes them to
+</span><span style="color:#75715e">         * registered workers.
+</span><span style="color:#75715e">         */</span>
+        GearmanServer server <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanServer</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_HOST</span><span style="color:#f92672">,</span> EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_PORT</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Tell the client that it may connect to this server when submitting
+</span><span style="color:#75715e">         * jobs.
+</span><span style="color:#75715e">         */</span>
+        client<span style="color:#f92672">.</span><span style="color:#a6e22e">addServer</span><span style="color:#f92672">(</span>server<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Submit a job to a job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the gearman function name
+</span><span style="color:#75715e">         * Parameter 2: the data passed to the server and worker
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * The GearmanJobReturn is used to poll the job&#39;s result
+</span><span style="color:#75715e">         */</span>
+        JSONObject json <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> JSONObject<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        json<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;admin&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        GearmanJobReturn jobReturn <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">submitJob</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">,</span>json<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Iterate through the job events until we hit the end-of-file
+</span><span style="color:#75715e">         */</span>
+        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> jobHandle <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>jobReturn<span style="color:#f92672">.</span><span style="color:#a6e22e">isEOF</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+            <span style="color:#75715e">// Poll the next job event (blocking operation)
+</span><span style="color:#75715e"></span>            GearmanJobEvent event <span style="color:#f92672">=</span> jobReturn<span style="color:#f92672">.</span><span style="color:#a6e22e">poll</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getEventType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">// success
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">case</span> GEARMAN_JOB_SUCCESS<span style="color:#f92672">:</span> <span style="color:#75715e">// Job completed successfully
+</span><span style="color:#75715e"></span>                    <span style="color:#75715e">// print the result
+</span><span style="color:#75715e"></span>                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">case</span> GEARMAN_SUBMIT_SUCCESS<span style="color:#f92672">:</span>
+                    <span style="color:#75715e">// get job handle
+</span><span style="color:#75715e"></span>                    jobHandle <span style="color:#f92672">=</span> event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">case</span> GEARMAN_JOB_DATA<span style="color:#f92672">:</span>
+                    <span style="color:#75715e">// print job data
+</span><span style="color:#75715e"></span>                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">// failure
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">case</span> GEARMAN_SUBMIT_FAIL<span style="color:#f92672">:</span> <span style="color:#75715e">// The job submit operation failed
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">case</span> GEARMAN_JOB_FAIL<span style="color:#f92672">:</span> <span style="color:#75715e">// The job&#39;s execution failed
+</span><span style="color:#75715e"></span>                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getEventType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;: &#34;</span>
+                            <span style="color:#f92672">+</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Close the gearman service after it&#39;s no longer needed. (closes all
+</span><span style="color:#75715e">         * sub-services, such as the client)
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * It&#39;s suggested that you reuse Gearman and GearmanClient instances
+</span><span style="color:#75715e">         * rather recreating and closing new ones between submissions
+</span><span style="color:#75715e">         */</span>
+        gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        registWorker<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">registWorker</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a Gearman instance
+</span><span style="color:#75715e">         */</span>
+        Gearman gearman <span style="color:#f92672">=</span> Gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearman</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create the job server object. This call creates an object represents
+</span><span style="color:#75715e">         * a remote job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the host address of the job server.
+</span><span style="color:#75715e">         * Parameter 2: the port number the job server is listening on.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * A job server receives jobs from clients and distributes them to
+</span><span style="color:#75715e">         * registered workers.
+</span><span style="color:#75715e">         */</span>
+        GearmanServer server <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanServer</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_HOST</span><span style="color:#f92672">,</span> EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_PORT</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a gearman worker. The worker poll jobs from the server and
+</span><span style="color:#75715e">         * executes the corresponding GearmanFunction
+</span><span style="color:#75715e">         */</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>server<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        GearmanWorker worker <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanWorker</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         *  Tell the worker how to perform the echo function
+</span><span style="color:#75715e">         */</span>
+        worker<span style="color:#f92672">.</span><span style="color:#a6e22e">addFunction</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> EchoWorker<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         *  Tell the worker that it may communicate with the this job server
+</span><span style="color:#75715e">         */</span>
+        <span style="color:#66d9ef">boolean</span> success <span style="color:#f92672">=</span> worker<span style="color:#f92672">.</span><span style="color:#a6e22e">addServer</span><span style="color:#f92672">(</span>server<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>success<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">work</span><span style="color:#f92672">(</span>String function<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> data<span style="color:#f92672">,</span>
+                       GearmanFunctionCallback callback<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * The work method performs the gearman function. In this case, the echo
+</span><span style="color:#75715e">         * function simply returns the data it received
+</span><span style="color:#75715e">         */</span>
+
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>data<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;begin work&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        callback<span style="color:#f92672">.</span><span style="color:#a6e22e">sendData</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;some data&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end work&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;job result&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><h3 id="backgroud-1">backgroud提交方式</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a Gearman instance
+</span><span style="color:#75715e">         */</span>
+        Gearman gearman <span style="color:#f92672">=</span> Gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearman</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a new gearman client.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * The client is used to submit requests the job server.
+</span><span style="color:#75715e">         */</span>
+        GearmanClient client <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanClient</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create the job server object. This call creates an object represents
+</span><span style="color:#75715e">         * a remote job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the host address of the job server.
+</span><span style="color:#75715e">         * Parameter 2: the port number the job server is listening on.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * A job server receives jobs from clients and distributes them to
+</span><span style="color:#75715e">         * registered workers.
+</span><span style="color:#75715e">         */</span>
+        GearmanServer server <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanServer</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_HOST</span><span style="color:#f92672">,</span> EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_PORT</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Tell the client that it may connect to this server when submitting
+</span><span style="color:#75715e">         * jobs.
+</span><span style="color:#75715e">         */</span>
+        client<span style="color:#f92672">.</span><span style="color:#a6e22e">addServer</span><span style="color:#f92672">(</span>server<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Submit a job to a job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the gearman function name
+</span><span style="color:#75715e">         * Parameter 2: the data passed to the server and worker
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * The GearmanJobReturn is used to poll the job&#39;s result
+</span><span style="color:#75715e">         */</span>
+        JSONObject json <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> JSONObject<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        json<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;name&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;admin&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        GearmanJobReturn jobReturn <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">submitBackgroundJob</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">,</span>json<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Iterate through the job events until we hit the end-of-file
+</span><span style="color:#75715e">         */</span>
+        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> jobHandle <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>jobReturn<span style="color:#f92672">.</span><span style="color:#a6e22e">isEOF</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Poll the next job event (blocking operation)
+</span><span style="color:#75715e"></span>            GearmanJobEvent event <span style="color:#f92672">=</span> jobReturn<span style="color:#f92672">.</span><span style="color:#a6e22e">poll</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getEventType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">case</span> GEARMAN_SUBMIT_SUCCESS<span style="color:#f92672">:</span>
+                    jobHandle <span style="color:#f92672">=</span> event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">// failure
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">case</span> GEARMAN_SUBMIT_FAIL<span style="color:#f92672">:</span> <span style="color:#75715e">// The job submit operation failed
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">case</span> GEARMAN_JOB_FAIL<span style="color:#f92672">:</span> <span style="color:#75715e">// The job&#39;s execution failed
+</span><span style="color:#75715e"></span>                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">err</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getEventType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;: &#34;</span>
+                            <span style="color:#f92672">+</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>event<span style="color:#f92672">.</span><span style="color:#a6e22e">getData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            GearmanJobStatus status <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span><span style="color:#a6e22e">getStatus</span><span style="color:#f92672">(</span>jobHandle<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#a6e22e">format</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;known: %b, running: %b, denominator: %d, numerator: %d&#34;</span><span style="color:#f92672">,</span> status<span style="color:#f92672">.</span><span style="color:#a6e22e">isKnown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> status<span style="color:#f92672">.</span><span style="color:#a6e22e">isRunning</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> status<span style="color:#f92672">.</span><span style="color:#a6e22e">getDenominator</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> status<span style="color:#f92672">.</span><span style="color:#a6e22e">getNumerator</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>2000L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Close the gearman service after it&#39;s no longer needed. (closes all
+</span><span style="color:#75715e">         * sub-services, such as the client)
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * It&#39;s suggested that you reuse Gearman and GearmanClient instances
+</span><span style="color:#75715e">         * rather recreating and closing new ones between submissions
+</span><span style="color:#75715e">         */</span>
+        gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        registWorker<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">registWorker</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a Gearman instance
+</span><span style="color:#75715e">         */</span>
+        Gearman gearman <span style="color:#f92672">=</span> Gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearman</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create the job server object. This call creates an object represents
+</span><span style="color:#75715e">         * a remote job server.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * Parameter 1: the host address of the job server.
+</span><span style="color:#75715e">         * Parameter 2: the port number the job server is listening on.
+</span><span style="color:#75715e">         *
+</span><span style="color:#75715e">         * A job server receives jobs from clients and distributes them to
+</span><span style="color:#75715e">         * registered workers.
+</span><span style="color:#75715e">         */</span>
+        GearmanServer server <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanServer</span><span style="color:#f92672">(</span>
+                EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_HOST</span><span style="color:#f92672">,</span> EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_PORT</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * Create a gearman worker. The worker poll jobs from the server and
+</span><span style="color:#75715e">         * executes the corresponding GearmanFunction
+</span><span style="color:#75715e">         */</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>server<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        GearmanWorker worker <span style="color:#f92672">=</span> gearman<span style="color:#f92672">.</span><span style="color:#a6e22e">createGearmanWorker</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         *  Tell the worker how to perform the echo function
+</span><span style="color:#75715e">         */</span>
+        worker<span style="color:#f92672">.</span><span style="color:#a6e22e">addFunction</span><span style="color:#f92672">(</span>EchoWorker<span style="color:#f92672">.</span><span style="color:#a6e22e">ECHO_FUNCTION_NAME</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> EchoWorker<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         *  Tell the worker that it may communicate with the this job server
+</span><span style="color:#75715e">         */</span>
+        <span style="color:#66d9ef">boolean</span> success <span style="color:#f92672">=</span> worker<span style="color:#f92672">.</span><span style="color:#a6e22e">addServer</span><span style="color:#f92672">(</span>server<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>success<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">work</span><span style="color:#f92672">(</span>String function<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> data<span style="color:#f92672">,</span>
+                       GearmanFunctionCallback callback<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">         * The work method performs the gearman function. In this case, the echo
+</span><span style="color:#75715e">         * function simply returns the data it received
+</span><span style="color:#75715e">         */</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>data<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;begin work&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 10<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            callback<span style="color:#f92672">.</span><span style="color:#a6e22e">sendStatus</span><span style="color:#f92672">(</span>i<span style="color:#f92672">,</span> i<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>2000L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;end work&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-1">参考</h2>
+<p><code>http://www.blogdaren.com/m/?post=1497</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-09-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/gearman/">gearman</a>
+          
+          <a href="/tags/%E4%BB%BB%E5%8A%A1%E5%88%86%E6%B4%BE/">任务分派</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/09/spring-boot%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Spring Boot学习备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/09/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/">
+            <span class="next-text nav-default">Java开发小技巧</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

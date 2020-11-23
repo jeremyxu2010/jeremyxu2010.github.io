@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>openstack on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/openstack/</link>
+    <description>Recent content in openstack on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 02 Aug 2016 23:37:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/openstack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>试用openstack</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E8%AF%95%E7%94%A8openstack/</link>
+      <pubDate>Tue, 02 Aug 2016 23:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E8%AF%95%E7%94%A8openstack/</guid>
+      <description>公司有八九台服务器一直由我负责运维，这些服务器的配置参次不齐，主要部署了研发的持续集成环境、测试环境、性能压测环境、maven私服等一系列支</description>
+    </item>
+    
+  </channel>
+</rss>

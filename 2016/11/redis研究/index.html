@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>redis研究 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="redis研究" />
+<meta property="og:description" content="最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/11/redis%E7%A0%94%E7%A9%B6/" />
+<meta property="article:published_time" content="2016-11-13T01:18:00+08:00" />
+<meta property="article:modified_time" content="2016-11-13T01:18:00+08:00" />
+<meta itemprop="name" content="redis研究">
+<meta itemprop="description" content="最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不">
+<meta itemprop="datePublished" content="2016-11-13T01:18:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-11-13T01:18:00&#43;08:00" />
+<meta itemprop="wordCount" content="5415">
+
+
+
+<meta itemprop="keywords" content="redis,java," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="redis研究"/>
+<meta name="twitter:description" content="最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。 相关概念 键空间通知 这个用得比较少，暂时不"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">redis研究</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-11-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5415 字 </span>
+        <span class="more-meta"> 预计阅读 11 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">相关概念</a>
+      <ul>
+        <li><a href="#heading-1">键空间通知</a></li>
+        <li><a href="#heading-2">事务</a></li>
+        <li><a href="#heading-3">发布与订阅</a></li>
+        <li><a href="#heading-4">复制</a></li>
+        <li><a href="#heading-5">通信协议</a></li>
+        <li><a href="#heading-6">持久化</a></li>
+        <li><a href="#sentinel">Sentinel哨兵</a></li>
+        <li><a href="#heading-7">集群</a></li>
+      </ul>
+    </li>
+    <li><a href="#redis">Redis命令</a>
+      <ul>
+        <li><a href="#heading-8">键的通用命令</a></li>
+        <li><a href="#string">String相关命令</a></li>
+        <li><a href="#list">List相关命令</a></li>
+        <li><a href="#hash">Hash相关命令</a></li>
+        <li><a href="#set">Set相关命令</a></li>
+        <li><a href="#sortedset">SortedSet相关命令</a></li>
+        <li><a href="#heading-9">发布订阅相关命令</a></li>
+        <li><a href="#heading-10">事务相关命令</a></li>
+        <li><a href="#script">Script相关命令</a></li>
+        <li><a href="#connection">Connection相关命令</a></li>
+        <li><a href="#server">Server相关命令</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-11">实际运用场景</a>
+      <ul>
+        <li><a href="#heading-12">显示最新的项目列表</a></li>
+        <li><a href="#heading-13">过滤</a></li>
+        <li><a href="#heading-14">排行榜相关</a></li>
+        <li><a href="#heading-15">计数</a></li>
+        <li><a href="#heading-16">限速</a></li>
+        <li><a href="#heading-17">特定时间内的特定项目</a></li>
+        <li><a href="#heading-18">订阅与发布</a></li>
+        <li><a href="#heading-19">队列</a></li>
+        <li><a href="#heading-20">缓存</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-21">总结</a></li>
+    <li><a href="#heading-22">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近看了本书《Redis中文文档》，这本书写得挺好，讲了Redis的方方面面，在这里记录一下以备忘。</p>
+<h2 id="heading">相关概念</h2>
+<h3 id="heading-1">键空间通知</h3>
+<p>这个用得比较少，暂时不记录了。</p>
+<h3 id="heading-2">事务</h3>
+<p>大多数NOSQL数据库并不支持事务，可Redis提供有限的事务支持。之所以说是有限的事务支持，是因为客户端成功在开启事务之后执行 EXEC，在执行EXEC的过程中如果 Redis 服务器因为某些原因被管理员杀死，或者遇上某种硬件故障，那么可能只有部分事务命令会被成功写入到磁盘中。这时Redis 在重新启动时发现 AOF 文件出了这样的问题，那么它会退出，并汇报一个错误。使用<code>redis-check-aof</code>  程序可以修复这一问题：它会移除 AOF 文件中不完整事务的信息，确保服务器可以顺利启动。</p>
+<p><code>MULTI</code> 、 <code>EXEC</code> 、 <code>DISCARD</code> 和 <code>WATCH</code> 是 Redis 事务的基础。</p>
+<p>事务使用范例：</p>
+<pre><code>&gt; MULTI
+OK
+
+&gt; INCR foo
+QUEUED
+
+&gt; INCR bar
+QUEUED
+
+&gt; EXEC
+1) (integer) 1
+2) (integer) 1
+</code></pre><h3 id="heading-3">发布与订阅</h3>
+<p>SUBSCRIBE 、 UNSUBSCRIBE 和 PUBLISH 三个命令实现了发布与订阅信息泛型（Publish/Subscribe messaging paradigm）， 在这个实现中， 发送者（发送信息的客户端）不是将信息直接发送给特定的接收者（接收信息的客户端）， 而是将信息发送给频道（channel）， 然后由频道将信息转发给所有对这个频道感兴趣的订阅者。</p>
+<p>发送者无须知道任何关于订阅者的信息， 而订阅者也无须知道是那个客户端给它发送信息， 它只要关注自己感兴趣的频道即可。</p>
+<p>发布与订阅使用范例：</p>
+<pre><code>&gt; SUBSCRIBE first second
+1) &quot;subscribe&quot;
+2) &quot;first&quot;
+3) (integer) 1
+
+1) &quot;subscribe&quot;
+2) &quot;second&quot;
+3) (integer) 2
+
+#另一个客户端执行PUBLISH命令
+&gt; PUBLISH second Hello
+
+#前一个客户端则会收到消息
+1) &quot;message&quot;
+2) &quot;second&quot;
+3) &quot;hello&quot;
+
+</code></pre><h3 id="heading-4">复制</h3>
+<p>Redis 支持简单且易用的主从复制（master-slave replication）功能， 该功能可以让从服务器(slave server)成为主服务器(master server)的精确复制品。</p>
+<p>复制功能可以单纯地用于数据冗余（data redundancy）， 也可以通过让多个从服务器处理只读命令请求来提升扩展性（scalability）。另外由于从服务器是主服务器的精确复制品，于是在Redis集群里，从服务器可以很方便地接管主服务器，以达到自动故障迁移的目的。</p>
+<p>配置一个从服务器非常简单， 只要在配置文件中增加以下的这一行就可以了：</p>
+<pre><code>&gt; slaveof 192.168.1.1 6379
+OK
+</code></pre><h3 id="heading-5">通信协议</h3>
+<p>通信协议一般实现Redis客户端时会用到，日常使用倒是不会用到它，这里暂时不记录它了。</p>
+<h3 id="heading-6">持久化</h3>
+<p>相对于memcache来说，Redis一大优势是存在它里的数据是可以持久化的，即使重启Redis，数据依旧还在。</p>
+<p>Redis 提供了多种不同级别的持久化方式：</p>
+<ul>
+<li>RDB 持久化可以在指定的时间间隔内生成数据集的时间点快照（point-in-time snapshot）。</li>
+<li>AOF 持久化记录服务器执行的所有写操作命令，并在服务器启动时，通过重新执行这些命令来还原数据集。 AOF 文件中的命令全部以 Redis 协议的格式来保存，新命令会被追加到文件的末尾。 Redis 还可以在后台对 AOF 文件进行重写（rewrite），使得 AOF 文件的体积不会超出保存数据集状态所需的实际大小。</li>
+<li>Redis 还可以同时使用 AOF 持久化和 RDB 持久化。 在这种情况下， 当 Redis 重启时， 它会优先使用 AOF 文件来还原数据集， 因为 AOF 文件保存的数据集通常比 RDB 文件所保存的数据集更完整。</li>
+<li>你甚至可以关闭持久化功能，让数据只在服务器运行时存在。</li>
+</ul>
+<pre><code># 手动让Redis进行数据集RDB持久化
+&gt; BGSAVE
+
+# 开启AOF持久化
+&gt; CONFIG SET appendonly yes
+
+# 手动让Redis对AOF文件进行重建
+&gt; BGREWRITEAOF
+</code></pre><h3 id="sentinel">Sentinel哨兵</h3>
+<p>Redis 的 Sentinel 系统用于管理多个 Redis 服务器（instance）， 该系统执行以下三个任务：</p>
+<ul>
+<li>监控（Monitoring）： Sentinel 会不断地检查你的主服务器和从服务器是否运作正常。</li>
+<li>提醒（Notification）： 当被监控的某个 Redis 服务器出现问题时， Sentinel 可以通过 API 向管理员或者其他应用程序发送通知。</li>
+<li>自动故障迁移（Automatic failover）： 当一个主服务器不能正常工作时， Sentinel 会开始一次自动故障迁移操作， 它会将失效主服务器的其中一个从服务器升级为新的主服务器， 并让失效主服务器的其他从服务器改为复制新的主服务器； 当客户端试图连接失效的主服务器时， 集群也会向客户端返回新主服务器的地址， 使得集群可以使用新主服务器代替失效服务器。</li>
+</ul>
+<p>Redis Sentinel 是一个分布式系统， 你可以在一个架构中运行多个 Sentinel 进程（progress）， 这些进程使用流言协议（gossip protocols)来接收关于主服务器是否下线的信息， 并使用投票协议（agreement protocols）来决定是否执行自动故障迁移， 以及选择哪个从服务器作为新的主服务器。</p>
+<h3 id="heading-7">集群</h3>
+<p>Redis 集群是一个可以在多个 Redis 节点之间进行数据共享的设施。
+Redis 集群不支持那些需要同时处理多个键的 Redis 命令， 因为执行这些命令需要在多个 Redis 节点之间移动数据， 并且在高负载的情况下， 这些命令将降低 Redis 集群的性能， 并导致不可预测的行为。
+Redis 集群通过分区（partition）来提供一定程度的可用性（availability）： 即使集群中有一部分节点失效或者无法进行通讯， 集群也可以继续处理命令请求。
+Redis 集群提供了以下两个好处：</p>
+<ul>
+<li>将数据自动切分（split）到多个节点的能力。</li>
+<li>当集群中的一部分节点失效或者无法进行通讯时， 仍然可以继续处理命令请求的能力。</li>
+</ul>
+<p>Redis 集群使用数据分片（sharding）而非一致性哈希（consistency hashing）来实现： 一个 Redis 集群包含  16384  个哈希槽（hash slot）， 数据库中的每个键都属于这  16384  个哈希槽的其中一个， 集群使用公式  CRC16(key) % 16384  来计算键  key  属于哪个槽， 其中  CRC16(key)  语句用于计算键  key  的 CRC16 校验和 。集群中的每个节点负责处理一部分哈希槽。</p>
+<pre><code>#创建集群
+./redis-trib.rb create --replicas 1 127.0.0.1:7000 127.0.0.1:7001 \
+127.0.0.1:7002 127.0.0.1:7003 127.0.0.1:7004 127.0.0.1:7005
+
+#对集群进行重新分片
+./redis-trib.rb reshard 127.0.0.1:7000
+#接着回答几个问题，包括要移动的哈希槽的数量、目标节点的 ID、源节点信息，最后yes回车后，Redis集群就会开始重新分片操作
+
+#检查集群是否正常
+./redis-trib.rb check 127.0.0.1:7000
+
+#列出集群节点信息
+./redis-cli -p 7000 cluster nodes
+</code></pre><h2 id="redis">Redis命令</h2>
+<p>上一节主要是概括Redis的一些核心概念，Redis的部署运维时需了解这些概念。Redis与memcache最大的不同在于Redis拥有更多的数据结构和并支持更丰富的数据操作，而这些数据结构是通过一系列命令来完成的。</p>
+<h3 id="heading-8">键的通用命令</h3>
+<p>DEL、DUMP、RESTORE、EXISTS、EXPIRE、EXPIREAT、TTL、PERSIST、PEXPIRE、PEXPIREAT、PTTL、MIGRAGE、MOVE、OBJECT、RANDOMKEY、KEYS、RENAME、RENAMENX、SORT、TYPE、SCAN</p>
+<h3 id="string">String相关命令</h3>
+<p>APPEND、BITCOUNT、BITOP、DECR、DECRBY、GET、GETBIT、GETRANGE、GETSET、INCR、INCRBY、INCRBYFLOAT、MGET、MSET、MSETNX、PSETEX、SET、SETBIT、SETEX、SETNX、SETRANGE、STRLEN</p>
+<h3 id="list">List相关命令</h3>
+<p>BLPOP、BRPOP、BRPOPLPUSH、LINDEX、LINSERT、LLEN、LPOP、LPUSH、LRANGE、LREM、LSET、LTRIM、RPOP、RPOPLPUSH、RPUSH、RPUSHX</p>
+<h3 id="hash">Hash相关命令</h3>
+<p>HDEL、HEXISTS、HGET、HGETALL、HINCRBY、HINCRBYFLOAT、HKEYS、HLEN、HMGET、HMSET、HSET、HSETNX、HVALS、HSCAN</p>
+<h3 id="set">Set相关命令</h3>
+<p>SADD、SCARD、SDIFF、SDIFFSTORE、SINTER、SINTERSTORE、SISMEMBER、SMEMBERS、SMOVE、SPOP、SRANDMEMBER、SREM、SUNION、SUNIONSTORE、SSCAN</p>
+<h3 id="sortedset">SortedSet相关命令</h3>
+<p>ZADD、ZCARD、ZCOUNT、ZINCRBY、ZRANGE、ZRANGEBYSCORE、ZRANK、ZREM、ZREMRANGEBYRANK、ZREMRANGEBYSCORE、ZREVRANGE、ZREVRANGEBYSCORE、ZREVRANK、ZSCORE、ZUNIONSTORE、ZINTERSTORE、ZSCAN</p>
+<h3 id="heading-9">发布订阅相关命令</h3>
+<p>PSUBSCRIBE、PUBLISH、PUBSUB、PUNSUBSCRIBE、SUBSCRIBE、UNSUBSCRIBE</p>
+<h3 id="heading-10">事务相关命令</h3>
+<p>DISCARD、EXEC、MULTI、UNWATCH、WATCH</p>
+<h3 id="script">Script相关命令</h3>
+<p>EVAL、EVALSHA、SCRIPT EXISTS、SCRIPT FLUSH、SCRIPT KILL、SCRIPT LOAD</p>
+<h3 id="connection">Connection相关命令</h3>
+<p>AUTH、ECHO、PING、QUIT、SELECT</p>
+<h3 id="server">Server相关命令</h3>
+<p>BGREWRITEAOF、BGSAVE、CLIENT GETNAME、CLIENT KILL、CLIENT LIST、CLIENT SETNAME、CONFIG GET、CONFIG RESETSTAT、CONFIG REWRITE、CONFIG SET、DBSIZE、DEBUG OBJECT、DEBUG SEGFAULT、FLUSHALL、FLUSHDB、INFO、LASTSAVE、MONITOR、SAVE、SHUTDOWN、SLAVEOF、SLOWLOG、TIME</p>
+<p>虽然这里的命令看着很多，可大部分命令的方式很一致，实在不太清楚也可以查看<a href="http://www.redis.cn/commands.html">在线文档</a>。</p>
+<h2 id="heading-11">实际运用场景</h2>
+<h3 id="heading-12">显示最新的项目列表</h3>
+<p>直接用DB的实现方法可能是这样的：</p>
+<pre><code>SELECT * FROM foo WHERE ... ORDER BY time DESC LIMIT 10
+</code></pre><p>可随着表里的数据越来越多，这个方案性能越来越差。</p>
+<p>使用Redis可以这样设计：</p>
+<p>假设我们的一个Web应用想要列出用户贴出的最新20条评论。在最新的评论边上我们有一个“显示全部”的链接，点击后就可以获得更多的评论。数据库中的每条评论都有一个唯一的递增的ID字段。我们可以使用分页来制作主页和评论页，使用Redis的模板，每次新评论发表时，我们会将它的ID添加到一个Redis列表：</p>
+<pre><code>#将ID添加到一个Redis列表
+LPUSH latest.comments &lt;ID&gt;
+#Redis只需要保存最新的5000条评论
+LTRIM latest.comments 0 5000
+</code></pre><p>每次我们需要获取最新评论的项目范围时，我们调用一个函数来完成（使用伪代码）：</p>
+<pre><code>FUNCTION get_latest_comments(start, num_items):
+    id_list = redis.lrange(&quot;latest.comments&quot;,start,start+num_items - 1)
+    IF id_list.length &lt; num_items
+        RETURN SQL_DB(&quot;SELECT ... ORDER BY time DESC LIMIT num_items OFFSET start&quot;)
+    END
+    RETURN SQL_DB(&quot;SELECT ... where id in id_list&quot;)
+END
+</code></pre><h3 id="heading-13">过滤</h3>
+<p>有些时候你想要给不同的列表附加上不同的过滤器。如果过滤器的数量受到限制，你可以简单的为每个不同的过滤器使用不同的Redis列表。毕竟每个列表只有5000条项目，但Redis却能够使用非常少的内存来处理几百万条项目。</p>
+<p>使用Redis可以这样设计：</p>
+<p>假设每次往DB插入新记录后，我们根据过滤条件将记录的ID插入多个Redis列表里：</p>
+<pre><code>#将ID添加到一个Redis列表
+LPUSH keyword1.posts &lt;ID&gt;
+#Redis只需要保存最新的5000条评论
+LTRIM keyword1.posts 0 5000
+
+#将ID添加到一个Redis列表
+LPUSH keyword2.posts &lt;ID&gt;
+#Redis只需要保存最新的5000条评论
+LTRIM keyword2.posts 0 5000
+
+#将ID添加到一个Redis列表
+LPUSH keyword3.posts &lt;ID&gt;
+#Redis只需要保存最新的5000条评论
+LTRIM keyword4.posts 0 5000
+</code></pre><p>以后要查询某个过滤条件的记录就很方便了：</p>
+<pre><code>FUNCTION get_posts_filter_by_keyword(keyword):
+    id_list = redis.lrange(keyword + &quot;.posts&quot;,0,-1)
+    RETURN SQL_DB(&quot;SELECT ... where id in id_list&quot;)
+END
+</code></pre><h3 id="heading-14">排行榜相关</h3>
+<p>一个很普遍的需求是各种数据库的数据并非存储在内存中，因此在按得分排序以及实时更新这些几乎每秒钟都需要更新的功能上数据库的性能不够理想。</p>
+<p>在某个用户获得新得分时，则执行下面的命令：</p>
+<pre><code>ZINCRBY sorceboard &lt;score&gt;  &lt;userID&gt;
+</code></pre><p>要获取前100名高分用户就很简单：</p>
+<pre><code>ZREVRANGE sorceboard 0 99。
+</code></pre><p>获取某个用户的排名也很简单：</p>
+<pre><code>ZRANK sorceboard &lt;userID&gt;
+</code></pre><h3 id="heading-15">计数</h3>
+<p>记录某用户在单位时间内登录失败的次数，以后可根据失败的次数决定某些业务逻辑：</p>
+<pre><code>INCR loginFailed:&lt;userID&gt;
+EXPIRE loginFailed:&lt;userID&gt; 60
+</code></pre><h3 id="heading-16">限速</h3>
+<p>限制某API被请求的频率：</p>
+<pre><code>FUNCTION LIMIT_API_CALL(ip):
+current = GET(ip)
+IF current != NULL AND current &gt; 10 THEN
+    ERROR &quot;too many requests per second&quot;
+ELSE
+    value = INCR(ip)
+    IF value == 1 THEN
+        EXPIRE(value,1)
+    END
+    PERFORM_API_CALL()
+END
+</code></pre><h3 id="heading-17">特定时间内的特定项目</h3>
+<p>另一项对于其他数据库很难，但Redis做起来却轻而易举的事就是统计在某段特点时间里有多少特定用户访问了某个特定资源。比如我想要知道某些特定的注册用户或IP地址，他们到底有多少访问了某篇文章。</p>
+<p>每次我获得一次新的页面浏览时我只需要这样做：</p>
+<pre><code>SADD page:day_20161112:&lt;pageID&gt; &lt;userID&gt;
+</code></pre><p>想知道特定用户的数量吗？只需要使用</p>
+<pre><code>SCARD page:day_20161112:&lt;pageID&gt;
+</code></pre><p>需要测试某个特定用户是否访问了这个页面？只需要使用</p>
+<pre><code>SISMEMBER page:day_20161112:&lt;pageID&gt; &lt;userID&gt;
+</code></pre><h3 id="heading-18">订阅与发布</h3>
+<p>Redis的Pub/Sub非常非常简单，运行稳定并且快速。支持模式匹配，能够实时订阅与取消频道。一些可靠性要求没那么高的事件订阅与发布是可以用Redis的Pub/Sub代替MQ方案的。</p>
+<h3 id="heading-19">队列</h3>
+<p>现代的互联网应用大量地使用了消息队列（Messaging）。消息队列不仅被用于系统内部组件之间的通信，同时也被用于系统跟其它服务之间的交互。消息队列的使用可以增加系统的可扩展性、灵活性和用户体验。非基于消息队列的系统，其运行速度取决于系统中最慢的组件的速度（注：短板效应）。而基于消息队列可以将系统中各组件解除耦合，这样系统就不再受最慢组件的束缚，各组件可以异步运行从而得以更快的速度完成各自的工作。</p>
+<p>list push和list pop这样的Redis命令能够很方便的执行队列操作了，但能做的可不止这些：比如Redis还有list pop的变体命令，能够在列表为空时阻塞队列。</p>
+<p>一些可靠性要求没那么高的事件订阅与发布是可以用Redis的List方案代替MQ方案的。</p>
+<h3 id="heading-20">缓存</h3>
+<p>基本上memcache可以搞定的事儿，redis都可以搞定，而且redis重启后，数据还是持久的。因此memcache可以退休了。</p>
+<h2 id="heading-21">总结</h2>
+<p>Redis作为传统关系型数据库的补充，在某些特定场景确实极大地提升了数据查询效率。下一篇研究一下在Java里如何访问Redis。</p>
+<h2 id="heading-22">参考</h2>
+<p>《Redis中文文档》
+<code>http://www.redis.cn/documentation.html</code>
+<code>http://www.redis.cn/commands.html</code>
+<code>http://blog.csdn.net/hguisu/article/details/8836819</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-11-13</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/redis/">redis</a>
+          
+          <a href="/tags/java/">java</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/12/dubbo%E8%B5%B7%E6%AD%A5/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">dubbo起步</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/">
+            <span class="next-text nav-default">给tomcat7配置SSL证书</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

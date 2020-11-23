@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tls on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/tls/</link>
+    <description>Recent content in tls on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 26 Aug 2018 12:30:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/tls/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>k8s中使用cert-manager玩转证书</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</link>
+      <pubDate>Sun, 26 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</guid>
+      <description>前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很</description>
+    </item>
+    
+    <item>
+      <title>k8s加入TLS安全访问</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</link>
+      <pubDate>Sun, 12 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</guid>
+      <description>以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服</description>
+    </item>
+    
+  </channel>
+</rss>

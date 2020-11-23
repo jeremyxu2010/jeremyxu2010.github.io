@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>搭建k8s的开发调试环境 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="搭建k8s的开发调试环境" />
+<meta property="og:description" content="最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/" />
+<meta property="article:published_time" content="2018-08-21T18:07:00+08:00" />
+<meta property="article:modified_time" content="2018-08-21T18:07:00+08:00" />
+<meta itemprop="name" content="搭建k8s的开发调试环境">
+<meta itemprop="description" content="最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机">
+<meta itemprop="datePublished" content="2018-08-21T18:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-21T18:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="4550">
+
+
+
+<meta itemprop="keywords" content="docker,k8s," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="搭建k8s的开发调试环境"/>
+<meta name="twitter:description" content="最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">搭建k8s的开发调试环境</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4550 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">准备虚拟机</a>
+      <ul>
+        <li><a href="#yum">修改yum源</a></li>
+        <li><a href="#heading-1">安装必要软件</a></li>
+        <li><a href="#delve">安装delve调试工具</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">准备源码及编译出调试版本</a>
+      <ul>
+        <li><a href="#clone">clone代码</a></li>
+        <li><a href="#heading-3">修改单机集群启动脚本</a></li>
+        <li><a href="#heading-4">启动单机集群</a></li>
+      </ul>
+    </li>
+    <li><a href="#k8s">调试k8s代码</a></li>
+    <li><a href="#heading-5">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。</p>
+<h2 id="heading">准备虚拟机</h2>
+<p>虽然本机有k8s环境，但不建议直接在此环境做实验，还是创建一个CentOS7的虚拟机，为其分配1核CPU和4G内存（编译k8s要使用大量内存）。</p>
+<h3 id="yum">修改yum源</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp -f /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak
+sed -i -e <span style="color:#e6db74">&#39;s/^mirrorlist=/#mirrorlist=/g&#39;</span> /etc/yum.repos.d/CentOS-Base.repo
+sed -i -e <span style="color:#e6db74">&#39;s/^#baseurl=http:\/\/[^\/]*\/$/baseurl=http:\/\/mirror-sng.oa.com\//g&#39;</span> /etc/yum.repos.d/CentOS-Base.repo
+
+yum install -y http://mirror-sng.oa.com/epel/epel-release-latest-7.noarch.rpm
+cp -f /etc/yum.repos.d/epel.repo /etc/yum.repos.d/epel.repo.bak
+sed -i -e <span style="color:#e6db74">&#39;s/^metalink/#metalink/g&#39;</span> /etc/yum.repos.d/epel.repo
+sed -i -e <span style="color:#e6db74">&#39;s/^#baseurl=http:\/\/[^\/]*\/pub\//baseurl=http:\/\/mirror-sng.oa.com\//g&#39;</span> /etc/yum.repos.d/epel.repo
+</code></pre></div><h3 id="heading-1">安装必要软件</h3>
+<p>参考<a href="https://github.com/kubernetes/community/blob/master/contributors/devel/running-locally.md">这里</a>，在虚拟机中安装必要的软件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">yum install -y docker wget curl vim golang etcd openssl git
+systemctl enable docker <span style="color:#f92672">&amp;&amp;</span> systemctl start docker
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">export GOPATH=</span>$HOME<span style="color:#e6db74">/go
+</span><span style="color:#e6db74">export PATH=</span>$GOPATH<span style="color:#e6db74">/bin:</span>$PATH<span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt;&gt; ~/.bashrc
+source ~/.bashrc
+go get -u -v github.com/cloudflare/cfssl/cmd/...
+</code></pre></div><h3 id="delve">安装delve调试工具</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -u -v github.com/derekparker/delve/cmd/dlv
+</code></pre></div><h2 id="heading-2">准备源码及编译出调试版本</h2>
+<h3 id="clone">clone代码</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/kubernetes/kubernetes.git $GOPATH/src/k8s.io/kubernetes
+cd $GOPATH/src/k8s.io/kubernetes
+git checkout -b v1.10.3 v1.10.3  <span style="color:#75715e"># 切换到v1.10.3分支</span>
+</code></pre></div><p>参考<a href="https://github.com/kubernetes/community/blob/master/contributors/devel/running-locally.md">这里</a>，直接执行<code>hack/local-up-cluster.sh</code>脚本即可启动一个轻量的k8s集群，但由于 <code>local-up-cluster.sh</code> 默认使用的是 <code>hyperkube</code> 镜像在容器中启动 k8s 服务，这样不方便使用dlv调试代码，这里修改<code>local-up-cluster.sh</code>脚本，直接编译出带调试信息的可执行文件，并在主机中启动k8s相关进程。</p>
+<h3 id="heading-3">修改单机集群启动脚本</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cp hack/local-up-cluster.sh hack/local-up-cluster.sh.bak
+touch hack/local-up-cluster.sh <span style="color:#f92672">&amp;&amp;</span> chmod +x hack/local-up-cluster.sh
+</code></pre></div><p><code>hack/local-up-cluster.sh</code>的内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e"># Copyright 2014 The Kubernetes Authors.</span>
+#
+<span style="color:#75715e"># Licensed under the Apache License, Version 2.0 (the &#34;License&#34;);</span>
+<span style="color:#75715e"># you may not use this file except in compliance with the License.</span>
+<span style="color:#75715e"># You may obtain a copy of the License at</span>
+#
+<span style="color:#75715e">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+#
+<span style="color:#75715e"># Unless required by applicable law or agreed to in writing, software</span>
+<span style="color:#75715e"># distributed under the License is distributed on an &#34;AS IS&#34; BASIS,</span>
+<span style="color:#75715e"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span style="color:#75715e"># See the License for the specific language governing permissions and</span>
+<span style="color:#75715e"># limitations under the License.</span>
+
+KUBE_ROOT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>BASH_SOURCE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span>/..
+
+<span style="color:#75715e"># This command builds and runs a local kubernetes cluster.</span>
+<span style="color:#75715e"># You may need to run this as root to allow kubelet to open docker&#39;s socket,</span>
+<span style="color:#75715e"># and to write the test CA in /var/run/kubernetes.</span>
+DOCKER_OPTS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DOCKER_OPTS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+DOCKER<span style="color:#f92672">=</span><span style="color:#f92672">(</span>docker <span style="color:#e6db74">${</span>DOCKER_OPTS<span style="color:#e6db74">}</span><span style="color:#f92672">)</span>
+DOCKERIZE_KUBELET<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DOCKERIZE_KUBELET<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+ALLOW_PRIVILEGED<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ALLOW_PRIVILEGED<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+DENY_SECURITY_CONTEXT_ADMISSION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DENY_SECURITY_CONTEXT_ADMISSION<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+PSP_ADMISSION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>PSP_ADMISSION<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+NODE_ADMISSION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>NODE_ADMISSION<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+RUNTIME_CONFIG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+KUBELET_AUTHORIZATION_WEBHOOK<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBELET_AUTHORIZATION_WEBHOOK<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+KUBELET_AUTHENTICATION_WEBHOOK<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBELET_AUTHENTICATION_WEBHOOK<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+POD_MANIFEST_PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>POD_MANIFEST_PATH<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;/var/run/kubernetes/static-pods&#34;</span><span style="color:#e6db74">}</span>
+KUBELET_FLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBELET_FLAGS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># many dev environments run with swap on, so we don&#39;t fail in this env</span>
+FAIL_SWAP_ON<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>FAIL_SWAP_ON<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># Name of the network plugin, eg: &#34;kubenet&#34;</span>
+NET_PLUGIN<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>NET_PLUGIN<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># Place the config files and binaries required by NET_PLUGIN in these directory,</span>
+<span style="color:#75715e"># eg: &#34;/etc/cni/net.d&#34; for config files, and &#34;/opt/cni/bin&#34; for binaries.</span>
+CNI_CONF_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CNI_CONF_DIR<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+CNI_BIN_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CNI_BIN_DIR<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+SERVICE_CLUSTER_IP_RANGE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SERVICE_CLUSTER_IP_RANGE<span style="color:#66d9ef">:-</span>10.0.0.0/24<span style="color:#e6db74">}</span>
+FIRST_SERVICE_CLUSTER_IP<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>FIRST_SERVICE_CLUSTER_IP<span style="color:#66d9ef">:-</span>10.0.0.1<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># if enabled, must set CGROUP_ROOT</span>
+CGROUPS_PER_QOS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CGROUPS_PER_QOS<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># name of the cgroup driver, i.e. cgroupfs or systemd</span>
+CGROUP_DRIVER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CGROUP_DRIVER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># owner of client certs, default to current user if not specified</span>
+USER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>USER<span style="color:#66d9ef">:-</span><span style="color:#66d9ef">$(</span>whoami<span style="color:#66d9ef">)</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># enables testing eviction scenarios locally.</span>
+EVICTION_HARD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_HARD<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;memory.available&lt;100Mi,nodefs.available&lt;10%,nodefs.inodesFree&lt;5%&#34;</span><span style="color:#e6db74">}</span>
+EVICTION_SOFT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_SOFT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+EVICTION_PRESSURE_TRANSITION_PERIOD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_PRESSURE_TRANSITION_PERIOD<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;1m&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># This script uses docker0 (or whatever container bridge docker is currently using)</span>
+<span style="color:#75715e"># and we don&#39;t know the IP of the DNS pod to pass in as --cluster-dns.</span>
+<span style="color:#75715e"># To set this up by hand, set this flag and change DNS_SERVER_IP.</span>
+<span style="color:#75715e"># Note also that you need API_HOST (defined above) for correct DNS.</span>
+KUBE_PROXY_MODE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_PROXY_MODE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+ENABLE_CLUSTER_DNS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_ENABLE_CLUSTER_DNS<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span>
+DNS_SERVER_IP<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_DNS_SERVER_IP<span style="color:#66d9ef">:-</span>10.0.0.10<span style="color:#e6db74">}</span>
+DNS_DOMAIN<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_DNS_NAME<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;cluster.local&#34;</span><span style="color:#e6db74">}</span>
+KUBECTL<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBECTL<span style="color:#66d9ef">:-</span>cluster/kubectl.sh<span style="color:#e6db74">}</span>
+WAIT_FOR_URL_API_SERVER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>WAIT_FOR_URL_API_SERVER<span style="color:#66d9ef">:-</span>60<span style="color:#e6db74">}</span>
+ENABLE_DAEMON<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_DAEMON<span style="color:#66d9ef">:-</span>false<span style="color:#e6db74">}</span>
+HOSTNAME_OVERRIDE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>HOSTNAME_OVERRIDE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#e6db74">}</span>
+EXTERNAL_CLOUD_PROVIDER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER<span style="color:#66d9ef">:-</span>false<span style="color:#e6db74">}</span>
+EXTERNAL_CLOUD_PROVIDER_BINARY<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER_BINARY<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+CLOUD_PROVIDER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+CLOUD_CONFIG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+FEATURE_GATES<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;AllAlpha=false&#34;</span><span style="color:#e6db74">}</span>
+STORAGE_BACKEND<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>STORAGE_BACKEND<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;etcd3&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># enable swagger ui</span>
+ENABLE_SWAGGER_UI<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_SWAGGER_UI<span style="color:#66d9ef">:-</span>false<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># enable Pod priority and preemption</span>
+ENABLE_POD_PRIORITY_PREEMPTION<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_POD_PRIORITY_PREEMPTION<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># enable kubernetes dashboard</span>
+ENABLE_CLUSTER_DASHBOARD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_ENABLE_CLUSTER_DASHBOARD<span style="color:#66d9ef">:-</span>false<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># enable audit log</span>
+ENABLE_APISERVER_BASIC_AUDIT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_APISERVER_BASIC_AUDIT<span style="color:#66d9ef">:-</span>false<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># RBAC Mode options</span>
+AUTHORIZATION_MODE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>AUTHORIZATION_MODE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;Node,RBAC&#34;</span><span style="color:#e6db74">}</span>
+KUBECONFIG_TOKEN<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBECONFIG_TOKEN<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+AUTH_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>AUTH_ARGS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># Install a default storage class (enabled by default)</span>
+DEFAULT_STORAGE_CLASS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_DEFAULT_STORAGE_CLASS<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># start the cache mutation detector by default so that cache mutators will be found</span>
+KUBE_CACHE_MUTATION_DETECTOR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_CACHE_MUTATION_DETECTOR<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+export KUBE_CACHE_MUTATION_DETECTOR
+
+<span style="color:#75715e"># panic the server on watch decode errors since they are considered coder mistakes</span>
+KUBE_PANIC_WATCH_DECODE_ERROR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_PANIC_WATCH_DECODE_ERROR<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+export KUBE_PANIC_WATCH_DECODE_ERROR
+
+ENABLE_ADMISSION_PLUGINS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_ADMISSION_PLUGINS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+DISABLE_ADMISSION_PLUGINS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>DISABLE_ADMISSION_PLUGINS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+ADMISSION_CONTROL_CONFIG_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ADMISSION_CONTROL_CONFIG_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># START_MODE can be &#39;all&#39;, &#39;kubeletonly&#39;, or &#39;nokubelet&#39;</span>
+START_MODE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;all&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># A list of controllers to enable</span>
+KUBE_CONTROLLERS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_CONTROLLERS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;*&#34;</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># sanity check for OpenStack provider</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;openstack&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;Missing CLOUD_CONFIG env for OpenStack provider!&#34;</span>
+        exit 1
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Cloud config </span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74"> doesn&#39;t exist</span><span style="color:#e6db74">&#34;</span>
+        exit 1
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># set feature gates if using ipvs mode</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_PROXY_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ipvs&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#75715e"># If required kernel modules are not available, fall back to iptables.</span>
+    sudo modprobe -a ip_vs ip_vs_rr ip_vs_wrr ip_vs_sh nf_conntrack_ipv4
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      FEATURE_GATES<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">,SupportIPVSProxyMode=true</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">else</span>
+      echo <span style="color:#e6db74">&#34;Required kernel modules for ipvs not found. Falling back to iptables mode.&#34;</span>
+      KUBE_PROXY_MODE<span style="color:#f92672">=</span>iptables
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># set feature gates if enable Pod priority and preemption</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_POD_PRIORITY_PREEMPTION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> true <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    FEATURE_GATES<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$FEATURE_GATES<span style="color:#e6db74">,PodPriority=true</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># warn if users are running with swap allowed</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FAIL_SWAP_ON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    echo <span style="color:#e6db74">&#34;WARNING : The kubelet is configured to not fail if swap is enabled; production deployments should disable swap.&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>id -u<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    echo <span style="color:#e6db74">&#34;WARNING : This script MAY be run as root for docker socket / iptables functionality; if failures occur, retry as root.&#34;</span> 2&gt;&amp;1
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># Stop right away if the build fails</span>
+set -e
+
+source <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span><span style="color:#e6db74">/hack/lib/init.sh</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#66d9ef">function</span> usage <span style="color:#f92672">{</span>
+            echo <span style="color:#e6db74">&#34;This script starts a local kube cluster. &#34;</span>
+            echo <span style="color:#e6db74">&#34;Example 0: hack/local-up-cluster.sh -h  (this &#39;help&#39; usage description)&#34;</span>
+            echo <span style="color:#e6db74">&#34;Example 1: hack/local-up-cluster.sh -o _output/dockerized/bin/linux/amd64/ (run from docker output)&#34;</span>
+            echo <span style="color:#e6db74">&#34;Example 2: hack/local-up-cluster.sh -O (auto-guess the bin path for your platform)&#34;</span>
+            echo <span style="color:#e6db74">&#34;Example 3: hack/local-up-cluster.sh (build a local copy of the source)&#34;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># This function guesses where the existing cached binary build is for the `-O`</span>
+<span style="color:#75715e"># flag</span>
+<span style="color:#66d9ef">function</span> guess_built_binary_path <span style="color:#f92672">{</span>
+  <span style="color:#75715e">#local hyperkube_path=$(kube::util::find-binary &#34;hyperkube&#34;)</span>
+  local hyperkube_path<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kube::util::find-binary <span style="color:#e6db74">&#34;kube-apiserver&#34;</span><span style="color:#66d9ef">)</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>hyperkube_path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#66d9ef">return</span>
+  <span style="color:#66d9ef">fi</span>
+  echo -n <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>hyperkube_path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">### Allow user to supply the source directory.</span>
+GO_OUT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span>
+<span style="color:#66d9ef">while</span> getopts <span style="color:#e6db74">&#34;ho:O&#34;</span> OPTION
+<span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">case</span> $OPTION in
+        o<span style="color:#f92672">)</span>
+            echo <span style="color:#e6db74">&#34;skipping build&#34;</span>
+            GO_OUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$OPTARG<span style="color:#e6db74">&#34;</span>
+            echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">using source </span>$GO_OUT<span style="color:#e6db74">&#34;</span>
+            ;;
+        O<span style="color:#f92672">)</span>
+            GO_OUT<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>guess_built_binary_path<span style="color:#66d9ef">)</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$GO_OUT<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+                echo <span style="color:#e6db74">&#34;Could not guess the correct output directory to use.&#34;</span>
+                exit 1
+            <span style="color:#66d9ef">fi</span>
+            ;;
+        h<span style="color:#f92672">)</span>
+            usage
+            exit
+            ;;
+        ?<span style="color:#f92672">)</span>
+            usage
+            exit
+            ;;
+    <span style="color:#66d9ef">esac</span>
+<span style="color:#66d9ef">done</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">x</span>$GO_OUT<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;x&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#75715e">#make -C &#34;${KUBE_ROOT}&#34; WHAT=&#34;cmd/kubectl cmd/hyperkube&#34;</span>
+    make -C <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> GOGCFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-N -l&#34;</span> WHAT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cmd/kubectl cmd/kube-proxy cmd/kube-apiserver cmd/kube-controller-manager cmd/cloud-controller-manager cmd/kube-scheduler cmd/kubelet&#34;</span>
+<span style="color:#66d9ef">else</span>
+    echo <span style="color:#e6db74">&#34;skipped the build.&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">function</span> test_rkt <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RKT_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      <span style="color:#e6db74">${</span>RKT_PATH<span style="color:#e6db74">}</span> list 2&gt; /dev/null 1&gt; /dev/null
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$?<span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Failed to successfully run &#39;rkt list&#39;, please verify that </span><span style="color:#e6db74">${</span>RKT_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74"> is the path of rkt binary.</span><span style="color:#e6db74">&#34;</span>
+        exit 1
+      <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">else</span>
+      rkt list 2&gt; /dev/null 1&gt; /dev/null
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$?<span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;Failed to successfully run &#39;rkt list&#39;, please verify that rkt is in \$PATH.&#34;</span>
+        exit 1
+      <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+
+<span style="color:#75715e"># Shut down anyway if there&#39;s an error.</span>
+set +e
+
+API_PORT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_PORT<span style="color:#66d9ef">:-</span>8080<span style="color:#e6db74">}</span>
+API_SECURE_PORT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#66d9ef">:-</span>6443<span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># WARNING: For DNS to work on most setups you should export API_HOST as the docker0 ip address,</span>
+API_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#66d9ef">:-</span>localhost<span style="color:#e6db74">}</span>
+API_HOST_IP<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#e6db74">}</span>
+ADVERTISE_ADDRESS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ADVERTISE_ADDRESS<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+API_BIND_ADDR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_BIND_ADDR<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;0.0.0.0&#34;</span><span style="color:#e6db74">}</span>
+EXTERNAL_HOSTNAME<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EXTERNAL_HOSTNAME<span style="color:#66d9ef">:-</span>localhost<span style="color:#e6db74">}</span>
+
+KUBELET_HOST<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBELET_HOST<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># By default only allow CORS for requests on localhost</span>
+API_CORS_ALLOWED_ORIGINS<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>API_CORS_ALLOWED_ORIGINS<span style="color:#66d9ef">:-</span>/127.0.0.1(:[0-9]+)?$,/localhost(:[0-9]+)?$<span style="color:#e6db74">}</span>
+KUBELET_PORT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBELET_PORT<span style="color:#66d9ef">:-</span>10250<span style="color:#e6db74">}</span>
+LOG_LEVEL<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#66d9ef">:-</span>3<span style="color:#e6db74">}</span>
+<span style="color:#75715e"># Use to increase verbosity on particular files, e.g. LOG_SPEC=token_controller*=5,other_controller*=4</span>
+LOG_SPEC<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_SPEC<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+LOG_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;/tmp&#34;</span><span style="color:#e6db74">}</span>
+CONTAINER_RUNTIME<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;docker&#34;</span><span style="color:#e6db74">}</span>
+CONTAINER_RUNTIME_ENDPOINT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME_ENDPOINT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+IMAGE_SERVICE_ENDPOINT<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>IMAGE_SERVICE_ENDPOINT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+RKT_PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RKT_PATH<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+RKT_STAGE1_IMAGE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>RKT_STAGE1_IMAGE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#e6db74">}</span>
+CHAOS_CHANCE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CHAOS_CHANCE<span style="color:#66d9ef">:-</span>0.0<span style="color:#e6db74">}</span>
+CPU_CFS_QUOTA<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CPU_CFS_QUOTA<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span>
+ENABLE_HOSTPATH_PROVISIONER<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_HOSTPATH_PROVISIONER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#e6db74">}</span>
+CLAIM_BINDER_SYNC_PERIOD<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLAIM_BINDER_SYNC_PERIOD<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;15s&#34;</span><span style="color:#e6db74">}</span> <span style="color:#75715e"># current k8s default</span>
+ENABLE_CONTROLLER_ATTACH_DETACH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>ENABLE_CONTROLLER_ATTACH_DETACH<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#e6db74">}</span> <span style="color:#75715e"># current default</span>
+KEEP_TERMINATED_POD_VOLUMES<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KEEP_TERMINATED_POD_VOLUMES<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#e6db74">}</span>
+<span style="color:#75715e"># This is the default dir and filename where the apiserver will generate a self-signed cert</span>
+<span style="color:#75715e"># which should be able to be used as the CA to verify itself</span>
+CERT_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;/var/run/kubernetes&#34;</span><span style="color:#e6db74">}</span>
+ROOT_CA_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span>/server-ca.crt
+ROOT_CA_KEY<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span>/server-ca.key
+CLUSTER_SIGNING_CERT_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLUSTER_SIGNING_CERT_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">}</span>
+CLUSTER_SIGNING_KEY_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLUSTER_SIGNING_KEY_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_KEY<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">}</span>
+
+<span style="color:#75715e"># name of the cgroup driver, i.e. cgroupfs or systemd</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">${</span>CONTAINER_RUNTIME<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;docker&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  <span style="color:#75715e"># default cgroup driver to match what is reported by docker to simplify local development</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -z <span style="color:#e6db74">${</span>CGROUP_DRIVER<span style="color:#e6db74">}</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    <span style="color:#75715e"># match driver with docker runtime reported value (they must match)</span>
+    CGROUP_DRIVER<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>docker info | grep <span style="color:#e6db74">&#34;Cgroup Driver:&#34;</span> | cut -f3- -d<span style="color:#e6db74">&#39; &#39;</span><span style="color:#66d9ef">)</span>
+    echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Kubelet cgroup driver defaulted to use: </span><span style="color:#e6db74">${</span>CGROUP_DRIVER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+  <span style="color:#66d9ef">fi</span>
+<span style="color:#66d9ef">fi</span>
+
+
+
+<span style="color:#75715e"># Ensure CERT_DIR is created for auto-generated crt/key and kubeconfig</span>
+mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &amp;&gt;/dev/null <span style="color:#f92672">||</span> sudo mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+CONTROLPLANE_SUDO<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>test -w <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">||</span> echo <span style="color:#e6db74">&#34;sudo -E&#34;</span><span style="color:#66d9ef">)</span>
+
+<span style="color:#66d9ef">function</span> test_apiserver_off <span style="color:#f92672">{</span>
+    <span style="color:#75715e"># For the common local scenario, fail fast if server is already running.</span>
+    <span style="color:#75715e"># this can happen if you run local-up-cluster.sh twice and kill etcd in between.</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -gt <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        curl --silent -g $API_HOST:$API_PORT
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+            echo <span style="color:#e6db74">&#34;API SERVER insecure port is free, proceeding...&#34;</span>
+        <span style="color:#66d9ef">else</span>
+            echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ERROR starting API SERVER, exiting. Some process on </span>$API_HOST<span style="color:#e6db74"> is serving already on </span>$API_PORT<span style="color:#e6db74">&#34;</span>
+            exit 1
+        <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">fi</span>
+
+    curl --silent -k -g $API_HOST:$API_SECURE_PORT
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! $? -eq <span style="color:#ae81ff">0</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;API SERVER secure port is free, proceeding...&#34;</span>
+    <span style="color:#66d9ef">else</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ERROR starting API SERVER, exiting. Some process on </span>$API_HOST<span style="color:#e6db74"> is serving already on </span>$API_SECURE_PORT<span style="color:#e6db74">&#34;</span>
+        exit 1
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> detect_binary <span style="color:#f92672">{</span>
+    <span style="color:#75715e"># Detect the OS name/arch so that we can find our binary</span>
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>uname -s<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> in
+      Darwin<span style="color:#f92672">)</span>
+        host_os<span style="color:#f92672">=</span>darwin
+        ;;
+      Linux<span style="color:#f92672">)</span>
+        host_os<span style="color:#f92672">=</span>linux
+        ;;
+      *<span style="color:#f92672">)</span>
+        echo <span style="color:#e6db74">&#34;Unsupported host OS.  Must be Linux or Mac OS X.&#34;</span> &gt;&amp;2
+        exit 1
+        ;;
+    <span style="color:#66d9ef">esac</span>
+
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>uname -m<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> in
+      x86_64*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>amd64
+        ;;
+      i?86_64*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>amd64
+        ;;
+      amd64*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>amd64
+        ;;
+      aarch64*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>arm64
+        ;;
+      arm64*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>arm64
+        ;;
+      arm*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>arm
+        ;;
+      i?86*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>x86
+        ;;
+      s390x*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>s390x
+        ;;
+      ppc64le*<span style="color:#f92672">)</span>
+        host_arch<span style="color:#f92672">=</span>ppc64le
+        ;;
+      *<span style="color:#f92672">)</span>
+        echo <span style="color:#e6db74">&#34;Unsupported host arch. Must be x86_64, 386, arm, arm64, s390x or ppc64le.&#34;</span> &gt;&amp;2
+        exit 1
+        ;;
+    <span style="color:#66d9ef">esac</span>
+
+   GO_OUT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span><span style="color:#e6db74">/_output/local/bin/</span><span style="color:#e6db74">${</span>host_os<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">${</span>host_arch<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#f92672">}</span>
+
+cleanup_dockerized_kubelet<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -e $KUBELET_CIDFILE <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    docker kill <span style="color:#66d9ef">$(</span>&lt;$KUBELET_CIDFILE<span style="color:#66d9ef">)</span> &gt; /dev/null
+    rm -f $KUBELET_CIDFILE
+  <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+cleanup<span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">{</span>
+  echo <span style="color:#e6db74">&#34;Cleaning up...&#34;</span>
+  <span style="color:#75715e"># delete running images</span>
+  <span style="color:#75715e"># if [[ &#34;${ENABLE_CLUSTER_DNS}&#34; == true ]]; then</span>
+  <span style="color:#75715e"># Still need to figure why this commands throw an error: Error from server: client: etcd cluster is unavailable or misconfigured</span>
+  <span style="color:#75715e">#     ${KUBECTL} --namespace=kube-system delete service kube-dns</span>
+  <span style="color:#75715e"># And this one hang forever:</span>
+  <span style="color:#75715e">#     ${KUBECTL} --namespace=kube-system delete rc kube-dns-v10</span>
+  <span style="color:#75715e"># fi</span>
+
+  <span style="color:#75715e"># Check if the API server is still running</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>APISERVER_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> APISERVER_PIDS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>pgrep -P <span style="color:#e6db74">${</span>APISERVER_PID<span style="color:#e6db74">}</span> ; ps -o pid<span style="color:#f92672">=</span> -p <span style="color:#e6db74">${</span>APISERVER_PID<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>APISERVER_PIDS-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> sudo kill <span style="color:#e6db74">${</span>APISERVER_PIDS<span style="color:#e6db74">}</span>
+
+  <span style="color:#75715e"># Check if the controller-manager is still running</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CTLRMGR_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> CTLRMGR_PIDS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>pgrep -P <span style="color:#e6db74">${</span>CTLRMGR_PID<span style="color:#e6db74">}</span> ; ps -o pid<span style="color:#f92672">=</span> -p <span style="color:#e6db74">${</span>CTLRMGR_PID<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CTLRMGR_PIDS-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> sudo kill <span style="color:#e6db74">${</span>CTLRMGR_PIDS<span style="color:#e6db74">}</span>
+
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span>$DOCKERIZE_KUBELET<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    cleanup_dockerized_kubelet
+  <span style="color:#66d9ef">else</span>
+    <span style="color:#75715e"># Check if the kubelet is still running</span>
+    <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> KUBELET_PIDS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>pgrep -P <span style="color:#e6db74">${</span>KUBELET_PID<span style="color:#e6db74">}</span> ; ps -o pid<span style="color:#f92672">=</span> -p <span style="color:#e6db74">${</span>KUBELET_PID<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+    <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_PIDS-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> sudo kill <span style="color:#e6db74">${</span>KUBELET_PIDS<span style="color:#e6db74">}</span>
+  <span style="color:#66d9ef">fi</span>
+
+  <span style="color:#75715e"># Check if the proxy is still running</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PROXY_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> PROXY_PIDS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>pgrep -P <span style="color:#e6db74">${</span>PROXY_PID<span style="color:#e6db74">}</span> ; ps -o pid<span style="color:#f92672">=</span> -p <span style="color:#e6db74">${</span>PROXY_PID<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PROXY_PIDS-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> sudo kill <span style="color:#e6db74">${</span>PROXY_PIDS<span style="color:#e6db74">}</span>
+
+  <span style="color:#75715e"># Check if the scheduler is still running</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCHEDULER_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> SCHEDULER_PIDS<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>pgrep -P <span style="color:#e6db74">${</span>SCHEDULER_PID<span style="color:#e6db74">}</span> ; ps -o pid<span style="color:#f92672">=</span> -p <span style="color:#e6db74">${</span>SCHEDULER_PID<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCHEDULER_PIDS-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> sudo kill <span style="color:#e6db74">${</span>SCHEDULER_PIDS<span style="color:#e6db74">}</span>
+
+  <span style="color:#75715e"># Check if the etcd is still running</span>
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ETCD_PID-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> kube::etcd::stop
+  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ETCD_DIR-<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> kube::etcd::clean_etcd_dir
+
+  exit 0
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> warning <span style="color:#f92672">{</span>
+  message<span style="color:#f92672">=</span>$1
+
+  echo <span style="color:#66d9ef">$(</span>tput bold<span style="color:#66d9ef">)</span><span style="color:#66d9ef">$(</span>tput setaf 1<span style="color:#66d9ef">)</span>
+  echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">WARNING: </span><span style="color:#e6db74">${</span>message<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+  echo <span style="color:#66d9ef">$(</span>tput sgr0<span style="color:#66d9ef">)</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_etcd <span style="color:#f92672">{</span>
+    echo <span style="color:#e6db74">&#34;Starting etcd&#34;</span>
+    kube::etcd::start
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> set_service_accounts <span style="color:#f92672">{</span>
+    SERVICE_ACCOUNT_LOOKUP<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_LOOKUP<span style="color:#66d9ef">:-</span>true<span style="color:#e6db74">}</span>
+    SERVICE_ACCOUNT_KEY<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#66d9ef">:-</span>/tmp/kube-serviceaccount.key<span style="color:#e6db74">}</span>
+    <span style="color:#75715e"># Generate ServiceAccount key if needed</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>dirname <span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+      openssl genrsa -out <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">2048</span> 2&gt;/dev/null
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_apiserver <span style="color:#f92672">{</span>
+    security_admission<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DENY_SECURITY_CONTEXT_ADMISSION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      security_admission<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;,SecurityContextDeny&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PSP_ADMISSION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      security_admission<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;,PodSecurityPolicy&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>NODE_ADMISSION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      security_admission<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;,NodeRestriction&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_POD_PRIORITY_PREEMPTION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> true <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      security_admission<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;,Priority&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;,&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;scheduling.k8s.io/v1alpha1=true&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+
+    <span style="color:#75715e"># Admission Controllers to invoke prior to persisting objects in cluster</span>
+    #
+    <span style="color:#75715e"># The order defined here dose not matter.</span>
+    ENABLE_ADMISSION_PLUGINS<span style="color:#f92672">=</span>Initializers,LimitRanger,ServiceAccount<span style="color:#e6db74">${</span>security_admission<span style="color:#e6db74">}</span>,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset,StorageObjectInUseProtection
+
+    audit_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    APISERVER_BASIC_AUDIT_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_APISERVER_BASIC_AUDIT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        <span style="color:#75715e"># We currently only support enabling with a fixed path and with built-in log</span>
+        <span style="color:#75715e"># rotation &#34;disabled&#34; (large value) so it behaves like kube-apiserver.log.</span>
+        <span style="color:#75715e"># External log rotation should be set up the same as for kube-apiserver.log.</span>
+        APISERVER_BASIC_AUDIT_LOG<span style="color:#f92672">=</span>/tmp/kube-apiserver-audit.log
+        audit_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> --audit-log-path=</span><span style="color:#e6db74">${</span>APISERVER_BASIC_AUDIT_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+        audit_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34; --audit-log-maxage=0&#34;</span>
+        audit_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34; --audit-log-maxbackup=0&#34;</span>
+        <span style="color:#75715e"># Lumberjack doesn&#39;t offer any way to disable size-based rotation. It also</span>
+        <span style="color:#75715e"># has an in-memory counter that doesn&#39;t notice if you truncate the file.</span>
+        <span style="color:#75715e"># 2000000000 (in MiB) is a large number that fits in 31 bits. If the log</span>
+        <span style="color:#75715e"># grows at 10MiB/s (~30K QPS), it will rotate after ~6 years if apiserver</span>
+        <span style="color:#75715e"># never restarts. Please manually restart apiserver before this time.</span>
+        audit_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34; --audit-log-maxsize=2000000000&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    swagger_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_SWAGGER_UI<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      swagger_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--enable-swagger-ui=true &#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    authorizer_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>AUTHORIZATION_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      authorizer_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--authorization-mode=</span><span style="color:#e6db74">${</span>AUTHORIZATION_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+    priv_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ALLOW_PRIVILEGED<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      priv_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--allow-privileged &#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">${</span>ENABLE_ADMISSION_PLUGINS<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> *<span style="color:#e6db74">&#34;Initializers&#34;</span>* <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;,&#34;</span>
+        <span style="color:#66d9ef">fi</span>
+        RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;admissionregistration.k8s.io/v1alpha1&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">${</span>ENABLE_ADMISSION_PLUGINS<span style="color:#e6db74">}</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> *<span style="color:#e6db74">&#34;PodPreset&#34;</span>* <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+            RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;,&#34;</span>
+        <span style="color:#66d9ef">fi</span>
+        RUNTIME_CONFIG<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;settings.k8s.io/v1alpha1&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    runtime_config<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      runtime_config<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--runtime-config=</span><span style="color:#e6db74">${</span>RUNTIME_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#75715e"># Let the API server pick a default address when API_HOST_IP</span>
+    <span style="color:#75715e"># is set to 127.0.0.1</span>
+    advertise_address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        advertise_address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--advertise-address=</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ADVERTISE_ADDRESS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span> ; <span style="color:#66d9ef">then</span>
+        advertise_address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--advertise-address=</span><span style="color:#e6db74">${</span>ADVERTISE_ADDRESS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#75715e"># Create CA signers</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_SINGLE_CA_SIGNER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        kube::util::create_signing_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> server <span style="color:#e6db74">&#39;&#34;client auth&#34;,&#34;server auth&#34;&#39;</span>
+        sudo cp <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/server-ca.key</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-ca.key</span><span style="color:#e6db74">&#34;</span>
+        sudo cp <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/server-ca.crt</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-ca.crt</span><span style="color:#e6db74">&#34;</span>
+        sudo cp <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/server-ca-config.json</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-ca-config.json</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">else</span>
+        kube::util::create_signing_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> server <span style="color:#e6db74">&#39;&#34;server auth&#34;&#39;</span>
+        kube::util::create_signing_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> client <span style="color:#e6db74">&#39;&#34;client auth&#34;&#39;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#75715e"># Create auth proxy client ca</span>
+    kube::util::create_signing_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> request-header <span style="color:#e6db74">&#39;&#34;client auth&#34;&#39;</span>
+
+    <span style="color:#75715e"># serving cert for kube-apiserver</span>
+    kube::util::create_serving_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;server-ca&#34;</span> kube-apiserver kubernetes.default kubernetes.default.svc <span style="color:#e6db74">&#34;localhost&#34;</span> <span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>FIRST_SERVICE_CLUSTER_IP<span style="color:#e6db74">}</span>
+
+    <span style="color:#75715e"># Create client certs signed with client-ca, given id, given CN and a number of groups</span>
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> kubelet system:node:<span style="color:#e6db74">${</span>HOSTNAME_OVERRIDE<span style="color:#e6db74">}</span> system:nodes
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> kube-proxy system:kube-proxy system:nodes
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> controller system:kube-controller-manager
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> scheduler  system:kube-scheduler
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> admin system:admin system:masters
+
+    <span style="color:#75715e"># Create matching certificates for kube-aggregator</span>
+    kube::util::create_serving_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;server-ca&#34;</span> kube-aggregator api.kube-public.svc <span style="color:#e6db74">&#34;localhost&#34;</span> <span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span>
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> request-header-ca auth-proxy system:auth-proxy
+    <span style="color:#75715e"># TODO remove masters and add rolebinding</span>
+    kube::util::create_client_certkey <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#39;client-ca&#39;</span> kube-aggregator system:kube-aggregator system:masters
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> kube-aggregator
+
+    cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cloud-provider=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74"> --cloud-config=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--cloud-provider=external&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    APISERVER_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/kube-apiserver.log
+    <span style="color:#75715e">#${CONTROLPLANE_SUDO} &#34;${GO_OUT}/hyperkube&#34; apiserver ${swagger_arg} ${audit_arg} ${authorizer_arg} ${priv_arg} ${runtime_config} \</span>
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/kube-apiserver</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">${</span>swagger_arg<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>audit_arg<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>authorizer_arg<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>priv_arg<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>runtime_config<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      <span style="color:#e6db74">${</span>cloud_config_arg<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      <span style="color:#e6db74">${</span>advertise_address<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --vmodule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LOG_SPEC<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --cert-dir<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --client-ca-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-ca.crt</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --service-account-key-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --service-account-lookup<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_LOOKUP<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --enable-admission-plugins<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_ADMISSION_PLUGINS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --disable-admission-plugins<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DISABLE_ADMISSION_PLUGINS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --admission-control-config-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ADMISSION_CONTROL_CONFIG_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --bind-address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_BIND_ADDR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --secure-port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --tls-cert-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/serving-kube-apiserver.crt</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --tls-private-key-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/serving-kube-apiserver.key</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --insecure-bind-address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --insecure-port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --storage-backend<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>STORAGE_BACKEND<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --etcd-servers<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">http://</span><span style="color:#e6db74">${</span>ETCD_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>ETCD_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --service-cluster-ip-range<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_CLUSTER_IP_RANGE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --external-hostname<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>EXTERNAL_HOSTNAME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --requestheader-username-headers<span style="color:#f92672">=</span>X-Remote-User <span style="color:#ae81ff">\</span>
+      --requestheader-group-headers<span style="color:#f92672">=</span>X-Remote-Group <span style="color:#ae81ff">\</span>
+      --requestheader-extra-headers-prefix<span style="color:#f92672">=</span>X-Remote-Extra- <span style="color:#ae81ff">\</span>
+      --requestheader-client-ca-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/request-header-ca.crt</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --requestheader-allowed-names<span style="color:#f92672">=</span>system:auth-proxy <span style="color:#ae81ff">\</span>
+      --proxy-client-cert-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-auth-proxy.crt</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --proxy-client-key-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-auth-proxy.key</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --cors-allowed-origins<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_CORS_ALLOWED_ORIGINS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>APISERVER_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+    APISERVER_PID<span style="color:#f92672">=</span>$!
+
+    <span style="color:#75715e"># Wait for kube-apiserver to come up before launching the rest of the components.</span>
+    echo <span style="color:#e6db74">&#34;Waiting for apiserver to come up&#34;</span>
+    <span style="color:#75715e"># this uses the API port because if you don&#39;t have any authenticator, you can&#39;t seem to use the secure port at all.</span>
+    <span style="color:#75715e"># this matches what happened with the combination in 1.4.</span>
+    <span style="color:#75715e"># TODO change this conditionally based on whether API_PORT is on or off</span>
+    kube::util::wait_for_url <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">/healthz</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;apiserver: &#34;</span> <span style="color:#ae81ff">1</span> <span style="color:#e6db74">${</span>WAIT_FOR_URL_API_SERVER<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#f92672">||</span> <span style="color:#f92672">{</span> echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">check apiserver logs: </span><span style="color:#e6db74">${</span>APISERVER_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> ; exit <span style="color:#ae81ff">1</span> ; <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e"># Create kubeconfigs for all components, using client certs</span>
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> admin
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> chown <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>USER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-admin.key</span><span style="color:#e6db74">&#34;</span> <span style="color:#75715e"># make readable for kubectl</span>
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> kubelet
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> kube-proxy
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> controller
+    kube::util::write_client_kubeconfig <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> scheduler
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>AUTH_ARGS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        AUTH_ARGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--client-key=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-admin.key --client-certificate=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/client-admin.crt</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> cp <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin-kube-aggregator.kubeconfig</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> chown <span style="color:#66d9ef">$(</span>whoami<span style="color:#66d9ef">)</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin-kube-aggregator.kubeconfig</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> config set-cluster local-up-cluster --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin-kube-aggregator.kubeconfig</span><span style="color:#e6db74">&#34;</span> --server<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">:31090</span><span style="color:#e6db74">&#34;</span>
+    echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">use &#39;kubectl --kubeconfig=</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin-kube-aggregator.kubeconfig&#39; to use the aggregated API server</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_controller_manager <span style="color:#f92672">{</span>
+    node_cidr_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>NET_PLUGIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubenet&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      node_cidr_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--allocate-node-cidrs=true --cluster-cidr=10.1.0.0/16 &#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cloud-provider=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74"> --cloud-config=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--cloud-provider=external&#34;</span>
+      cloud_config_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> --external-cloud-volume-plugin=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      cloud_config_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> --cloud-config=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    CTLRMGR_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/kube-controller-manager.log
+    <span style="color:#75715e">#${CONTROLPLANE_SUDO} &#34;${GO_OUT}/hyperkube&#34; controller-manager \</span>
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/kube-controller-manager</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --vmodule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LOG_SPEC<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --service-account-private-key-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SERVICE_ACCOUNT_KEY<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --root-ca-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ROOT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --cluster-signing-cert-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLUSTER_SIGNING_CERT_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --cluster-signing-key-file<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLUSTER_SIGNING_KEY_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --enable-hostpath-provisioner<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_HOSTPATH_PROVISIONER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      <span style="color:#e6db74">${</span>node_cidr_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --pvclaimbinder-sync-period<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLAIM_BINDER_SYNC_PERIOD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      <span style="color:#e6db74">${</span>cloud_config_arg<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --kubeconfig <span style="color:#e6db74">&#34;</span>$CERT_DIR<span style="color:#e6db74">&#34;</span>/controller.kubeconfig <span style="color:#ae81ff">\</span>
+      --use-service-account-credentials <span style="color:#ae81ff">\</span>
+      --controllers<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_CONTROLLERS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --master<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CTLRMGR_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+    CTLRMGR_PID<span style="color:#f92672">=</span>$!
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_cloud_controller_manager <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      echo <span style="color:#e6db74">&#34;CLOUD_CONFIG cannot be empty!&#34;</span>
+      exit 1
+    <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> ! -f <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Cloud config </span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74"> doesn&#39;t exist</span><span style="color:#e6db74">&#34;</span>
+      exit 1
+    <span style="color:#66d9ef">fi</span>
+
+    node_cidr_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>NET_PLUGIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubenet&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      node_cidr_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--allocate-node-cidrs=true --cluster-cidr=10.1.0.0/16 &#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    CLOUD_CTLRMGR_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/cloud-controller-manager.log
+    <span style="color:#75715e">#${CONTROLPLANE_SUDO} ${EXTERNAL_CLOUD_PROVIDER_BINARY:-&#34;${GO_OUT}/hyperkube&#34; cloud-controller-manager} \</span>
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER_BINARY<span style="color:#66d9ef">:-</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/cloud-controller-manager</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --vmodule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LOG_SPEC<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      <span style="color:#e6db74">${</span>node_cidr_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --cloud-provider<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --cloud-config<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --kubeconfig <span style="color:#e6db74">&#34;</span>$CERT_DIR<span style="color:#e6db74">&#34;</span>/controller.kubeconfig <span style="color:#ae81ff">\</span>
+      --use-service-account-credentials <span style="color:#ae81ff">\</span>
+      --master<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CTLRMGR_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+    CLOUD_CTLRMGR_PID<span style="color:#f92672">=</span>$!
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_kubelet <span style="color:#f92672">{</span>
+    KUBELET_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/kubelet.log
+    mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>POD_MANIFEST_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &amp;&gt;/dev/null <span style="color:#f92672">||</span> sudo mkdir -p <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>POD_MANIFEST_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+    priv_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ALLOW_PRIVILEGED<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      priv_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--allow-privileged &#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cloud-provider=</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74"> --cloud-config=</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+       cloud_config_arg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--cloud-provider=external&#34;</span>
+       cloud_config_arg<span style="color:#f92672">+=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> --provider-id=</span><span style="color:#66d9ef">$(</span>hostname<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+
+    mkdir -p <span style="color:#e6db74">&#34;/var/lib/kubelet&#34;</span> &amp;&gt;/dev/null <span style="color:#f92672">||</span> sudo mkdir -p <span style="color:#e6db74">&#34;/var/lib/kubelet&#34;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>DOCKERIZE_KUBELET<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+      <span style="color:#75715e"># Enable dns</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_CLUSTER_DNS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+         dns_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cluster-dns=</span><span style="color:#e6db74">${</span>DNS_SERVER_IP<span style="color:#e6db74">}</span><span style="color:#e6db74"> --cluster-domain=</span><span style="color:#e6db74">${</span>DNS_DOMAIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">else</span>
+         <span style="color:#75715e"># To start a private DNS server set ENABLE_CLUSTER_DNS and</span>
+         <span style="color:#75715e"># DNS_SERVER_IP/DOMAIN. This will at least provide a working</span>
+         <span style="color:#75715e"># DNS server for real world hostnames.</span>
+         dns_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;--cluster-dns=8.8.8.8&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      net_plugin_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>NET_PLUGIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        net_plugin_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--network-plugin=</span><span style="color:#e6db74">${</span>NET_PLUGIN<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      auth_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_AUTHORIZATION_WEBHOOK<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        auth_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>auth_args<span style="color:#e6db74">}</span><span style="color:#e6db74"> --authorization-mode=Webhook</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_AUTHENTICATION_WEBHOOK<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        auth_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>auth_args<span style="color:#e6db74">}</span><span style="color:#e6db74"> --authentication-token-webhook</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLIENT_CA_FILE<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        auth_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>auth_args<span style="color:#e6db74">}</span><span style="color:#e6db74"> --client-ca-file=</span><span style="color:#e6db74">${</span>CLIENT_CA_FILE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      cni_conf_dir_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CNI_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        cni_conf_dir_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cni-conf-dir=</span><span style="color:#e6db74">${</span>CNI_CONF_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      cni_bin_dir_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CNI_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        cni_bin_dir_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--cni-bin-dir=</span><span style="color:#e6db74">${</span>CNI_BIN_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      container_runtime_endpoint_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        container_runtime_endpoint_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--container-runtime-endpoint=</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      image_service_endpoint_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>IMAGE_SERVICE_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        image_service_endpoint_args<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--image-service-endpoint=</span><span style="color:#e6db74">${</span>IMAGE_SERVICE_ENDPOINT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      <span style="color:#75715e">#sudo -E &#34;${GO_OUT}/hyperkube&#34; kubelet ${priv_arg}\</span>
+      sudo -E <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/kubelet</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">${</span>priv_arg<span style="color:#e6db74">}</span><span style="color:#ae81ff">\</span>
+        --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --vmodule<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>LOG_SPEC<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --chaos-chance<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CHAOS_CHANCE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --container-runtime<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --rkt-path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RKT_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --rkt-stage1-image<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RKT_STAGE1_IMAGE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --hostname-override<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOSTNAME_OVERRIDE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>cloud_config_arg<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --kubeconfig <span style="color:#e6db74">&#34;</span>$CERT_DIR<span style="color:#e6db74">&#34;</span>/kubelet.kubeconfig <span style="color:#ae81ff">\</span>
+        --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --cpu-cfs-quota<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CPU_CFS_QUOTA<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --enable-controller-attach-detach<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_CONTROLLER_ATTACH_DETACH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --cgroups-per-qos<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CGROUPS_PER_QOS<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --cgroup-driver<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>CGROUP_DRIVER<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --keep-terminated-pod-volumes<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KEEP_TERMINATED_POD_VOLUMES<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --eviction-hard<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_HARD<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --eviction-soft<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_SOFT<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --eviction-pressure-transition-period<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>EVICTION_PRESSURE_TRANSITION_PERIOD<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --pod-manifest-path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>POD_MANIFEST_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        --fail-swap-on<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FAIL_SWAP_ON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>auth_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>dns_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>cni_conf_dir_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>cni_bin_dir_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>net_plugin_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>container_runtime_endpoint_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>image_service_endpoint_args<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$KUBELET_PORT<span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+	<span style="color:#e6db74">${</span>KUBELET_FLAGS<span style="color:#e6db74">}</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBELET_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+      KUBELET_PID<span style="color:#f92672">=</span>$!
+      <span style="color:#75715e"># Quick check that kubelet is running.</span>
+      <span style="color:#66d9ef">if</span> ps -p $KUBELET_PID &gt; /dev/null ; <span style="color:#66d9ef">then</span>
+	echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">kubelet ( </span>$KUBELET_PID<span style="color:#e6db74"> ) is running.</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">else</span>
+	cat <span style="color:#e6db74">${</span>KUBELET_LOG<span style="color:#e6db74">}</span> ; exit 1
+      <span style="color:#66d9ef">fi</span>
+    <span style="color:#66d9ef">else</span>
+      <span style="color:#75715e"># Docker won&#39;t run a container with a cidfile (container id file)</span>
+      <span style="color:#75715e"># unless that file does not already exist; clean up an existing</span>
+      <span style="color:#75715e"># dockerized kubelet that might be running.</span>
+      cleanup_dockerized_kubelet
+      cred_bind<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#75715e"># path to cloud credentials.</span>
+      cloud_cred<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;aws&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          cloud_cred<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/.aws/credentials</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;gce&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          cloud_cred<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/.config/gcloud</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;openstack&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          cloud_cred<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CLOUD_CONFIG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+      <span style="color:#66d9ef">if</span>  <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>cloud_cred<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+          cred_bind<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">--volume=</span><span style="color:#e6db74">${</span>cloud_cred<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>cloud_cred<span style="color:#e6db74">}</span><span style="color:#e6db74">:ro</span><span style="color:#e6db74">&#34;</span>
+      <span style="color:#66d9ef">fi</span>
+
+      docker run <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/:/rootfs:ro <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/var/run:/var/run:rw <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/sys:/sys:ro <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/var/lib/docker/:/var/lib/docker:ro <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/var/lib/kubelet/:/var/lib/kubelet:rw <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/dev:/dev <span style="color:#ae81ff">\</span>
+        --volume<span style="color:#f92672">=</span>/run/xtables.lock:/run/xtables.lock:rw <span style="color:#ae81ff">\</span>
+        <span style="color:#e6db74">${</span>cred_bind<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+        --net<span style="color:#f92672">=</span>host <span style="color:#ae81ff">\</span>
+        --privileged<span style="color:#f92672">=</span>true <span style="color:#ae81ff">\</span>
+        -i <span style="color:#ae81ff">\</span>
+        --cidfile<span style="color:#f92672">=</span>$KUBELET_CIDFILE <span style="color:#ae81ff">\</span>
+        k8s.gcr.io/kubelet <span style="color:#ae81ff">\</span>
+        /kubelet --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> --containerized <span style="color:#e6db74">${</span>priv_arg<span style="color:#e6db74">}</span>--chaos-chance<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CHAOS_CHANCE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> --pod-manifest-path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>POD_MANIFEST_PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> --hostname-override<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>HOSTNAME_OVERRIDE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">${</span>cloud_config_arg<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\ </span>--address<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span> --kubeconfig <span style="color:#e6db74">&#34;</span>$CERT_DIR<span style="color:#e6db74">&#34;</span>/kubelet.kubeconfig --port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$KUBELET_PORT<span style="color:#e6db74">&#34;</span>  --enable-controller-attach-detach<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_CONTROLLER_ATTACH_DETACH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &amp;&gt; $KUBELET_LOG &amp;
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_kubeproxy <span style="color:#f92672">{</span>
+    PROXY_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/kube-proxy.log
+
+    cat <span style="color:#e6db74">&lt;&lt;EOF &gt; /tmp/kube-proxy.yaml
+</span><span style="color:#e6db74">apiVersion: kubeproxy.config.k8s.io/v1alpha1
+</span><span style="color:#e6db74">kind: KubeProxyConfiguration
+</span><span style="color:#e6db74">clientConnection:
+</span><span style="color:#e6db74">  kubeconfig: ${CERT_DIR}/kube-proxy.kubeconfig
+</span><span style="color:#e6db74">hostnameOverride: ${HOSTNAME_OVERRIDE}
+</span><span style="color:#e6db74">mode: ${KUBE_PROXY_MODE}
+</span><span style="color:#e6db74">EOF</span>
+
+    <span style="color:#75715e">#sudo &#34;${GO_OUT}/hyperkube&#34; proxy \</span>
+    sudo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/kube-proxy</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --config<span style="color:#f92672">=</span>/tmp/kube-proxy.yaml <span style="color:#ae81ff">\</span>
+      --master<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PROXY_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+    PROXY_PID<span style="color:#f92672">=</span>$!
+
+    SCHEDULER_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_DIR<span style="color:#e6db74">}</span>/kube-scheduler.log
+    <span style="color:#75715e">#${CONTROLPLANE_SUDO} &#34;${GO_OUT}/hyperkube&#34; scheduler \</span>
+    <span style="color:#e6db74">${</span>CONTROLPLANE_SUDO<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>GO_OUT<span style="color:#e6db74">}</span><span style="color:#e6db74">/kube-scheduler</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --v<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>LOG_LEVEL<span style="color:#e6db74">}</span> <span style="color:#ae81ff">\</span>
+      --kubeconfig <span style="color:#e6db74">&#34;</span>$CERT_DIR<span style="color:#e6db74">&#34;</span>/scheduler.kubeconfig <span style="color:#ae81ff">\</span>
+      --feature-gates<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>FEATURE_GATES<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#ae81ff">\</span>
+      --master<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>API_HOST<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>API_SECURE_PORT<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>SCHEDULER_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> 2&gt;&amp;<span style="color:#ae81ff">1</span> &amp;
+    SCHEDULER_PID<span style="color:#f92672">=</span>$!
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_kubedns <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_CLUSTER_DNS<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        cp <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span><span style="color:#e6db74">/cluster/addons/dns/kube-dns.yaml.in</span><span style="color:#e6db74">&#34;</span> kube-dns.yaml
+        sed -i -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">s/{{ pillar\[&#39;dns_domain&#39;\] }}/</span><span style="color:#e6db74">${</span>DNS_DOMAIN<span style="color:#e6db74">}</span><span style="color:#e6db74">/g</span><span style="color:#e6db74">&#34;</span> kube-dns.yaml
+        sed -i -e <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">s/{{ pillar\[&#39;dns_server&#39;\] }}/</span><span style="color:#e6db74">${</span>DNS_SERVER_IP<span style="color:#e6db74">}</span><span style="color:#e6db74">/g</span><span style="color:#e6db74">&#34;</span> kube-dns.yaml
+
+        <span style="color:#75715e"># TODO update to dns role once we have one.</span>
+        <span style="color:#75715e"># use kubectl to create kubedns addon</span>
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> --namespace<span style="color:#f92672">=</span>kube-system create -f kube-dns.yaml
+        echo <span style="color:#e6db74">&#34;Kube-dns addon successfully deployed.&#34;</span>
+        rm kube-dns.yaml
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> start_kubedashboard <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_CLUSTER_DASHBOARD<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;Creating kubernetes-dashboard&#34;</span>
+        <span style="color:#75715e"># use kubectl to create the dashboard</span>
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> apply -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/dashboard/dashboard-secret.yaml
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> apply -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/dashboard/dashboard-configmap.yaml
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> apply -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/dashboard/dashboard-rbac.yaml
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> apply -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/dashboard/dashboard-controller.yaml
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> apply -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/dashboard/dashboard-service.yaml
+        echo <span style="color:#e6db74">&#34;kubernetes-dashboard deployment and service successfully deployed.&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> create_psp_policy <span style="color:#f92672">{</span>
+    echo <span style="color:#e6db74">&#34;Create podsecuritypolicy policies for RBAC.&#34;</span>
+    <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> create -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/examples/podsecuritypolicy/rbac/policies.yaml
+    <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> create -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/examples/podsecuritypolicy/rbac/roles.yaml
+    <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> create -f <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/examples/podsecuritypolicy/rbac/bindings.yaml
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> create_storage_class <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$CLOUD_PROVIDER<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        CLASS_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/storage-class/local/default.yaml
+    <span style="color:#66d9ef">else</span>
+        CLASS_FILE<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/cluster/addons/storage-class/<span style="color:#e6db74">${</span>CLOUD_PROVIDER<span style="color:#e6db74">}</span>/default.yaml
+    <span style="color:#66d9ef">fi</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -e $CLASS_FILE <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Create default storage class for </span>$CLOUD_PROVIDER<span style="color:#e6db74">&#34;</span>
+        <span style="color:#e6db74">${</span>KUBECTL<span style="color:#e6db74">}</span> --kubeconfig<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CERT_DIR<span style="color:#e6db74">}</span><span style="color:#e6db74">/admin.kubeconfig</span><span style="color:#e6db74">&#34;</span> create -f $CLASS_FILE
+    <span style="color:#66d9ef">else</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">No storage class available for </span>$CLOUD_PROVIDER<span style="color:#e6db74">.</span><span style="color:#e6db74">&#34;</span>
+    <span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">function</span> print_success <span style="color:#f92672">{</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubeletonly&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> false <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    echo <span style="color:#e6db74">&#34;Local Kubernetes cluster is running. Press Ctrl-C to shut it down.&#34;</span>
+  <span style="color:#66d9ef">else</span>
+    echo <span style="color:#e6db74">&#34;Local Kubernetes cluster is running.&#34;</span>
+  <span style="color:#66d9ef">fi</span>
+  cat <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Logs:
+</span><span style="color:#e6db74">  ${APISERVER_LOG:-}
+</span><span style="color:#e6db74">  ${CTLRMGR_LOG:-}
+</span><span style="color:#e6db74">  ${CLOUD_CTLRMGR_LOG:-}
+</span><span style="color:#e6db74">  ${PROXY_LOG:-}
+</span><span style="color:#e6db74">  ${SCHEDULER_LOG:-}
+</span><span style="color:#e6db74">EOF</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_APISERVER_BASIC_AUDIT<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> true <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">  </span><span style="color:#e6db74">${</span>APISERVER_BASIC_AUDIT_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;all&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">  </span><span style="color:#e6db74">${</span>KUBELET_LOG<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">elif</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nokubelet&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  echo
+  echo <span style="color:#e6db74">&#34;No kubelet was started because you set START_MODE=nokubelet&#34;</span>
+  echo <span style="color:#e6db74">&#34;Run this script again with START_MODE=kubeletonly to run a kubelet&#34;</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubeletonly&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  echo
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> false <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    echo <span style="color:#e6db74">&#34;To start using your cluster, you can open up another terminal/tab and run:&#34;</span>
+  <span style="color:#66d9ef">else</span>
+    echo <span style="color:#e6db74">&#34;To start using your cluster, run:&#34;</span>
+  <span style="color:#66d9ef">fi</span>
+  cat <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">  export KUBECONFIG=${CERT_DIR}/admin.kubeconfig
+</span><span style="color:#e6db74">  cluster/kubectl.sh
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Alternatively, you can write to the default kubeconfig:
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">  export KUBERNETES_PROVIDER=local
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">  cluster/kubectl.sh config set-cluster local --server=https://${API_HOST}:${API_SECURE_PORT} --certificate-authority=${ROOT_CA_FILE}
+</span><span style="color:#e6db74">  cluster/kubectl.sh config set-credentials myself ${AUTH_ARGS}
+</span><span style="color:#e6db74">  cluster/kubectl.sh config set-context local --cluster=local --user=myself
+</span><span style="color:#e6db74">  cluster/kubectl.sh config use-context local
+</span><span style="color:#e6db74">  cluster/kubectl.sh
+</span><span style="color:#e6db74">EOF</span>
+<span style="color:#66d9ef">else</span>
+  cat <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">The kubelet was started.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">Logs:
+</span><span style="color:#e6db74">  ${KUBELET_LOG}
+</span><span style="color:#e6db74">EOF</span>
+<span style="color:#66d9ef">fi</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e"># If we are running in the CI, we need a few more things before we can start</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBETEST_IN_DOCKER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  echo <span style="color:#e6db74">&#34;Preparing to test ...&#34;</span>
+  <span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span>/hack/install-etcd.sh
+  export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBE_ROOT<span style="color:#e6db74">}</span><span style="color:#e6db74">/third_party/etcd:</span><span style="color:#e6db74">${</span>PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+  KUBE_FASTBUILD<span style="color:#f92672">=</span>true make ginkgo cross
+  apt install -y sudo
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#75715e"># validate that etcd is: not running, in path, and has minimum required version.</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubeletonly&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  kube::etcd::validate
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;docker&#34;</span> <span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span> ! kube::util::ensure_docker_daemon_connectivity; <span style="color:#66d9ef">then</span>
+  exit 1
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>CONTAINER_RUNTIME<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;rkt&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  test_rkt
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubeletonly&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  test_apiserver_off
+<span style="color:#66d9ef">fi</span>
+
+kube::util::test_openssl_installed
+kube::util::ensure-cfssl
+
+<span style="color:#75715e">### IF the user didn&#39;t supply an output/ for the build... Then we detect.</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$GO_OUT<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  detect_binary
+<span style="color:#66d9ef">fi</span>
+echo <span style="color:#e6db74">&#34;Detected host and ready to start services.  Doing some housekeeping first...&#34;</span>
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Using GO_OUT </span>$GO_OUT<span style="color:#e6db74">&#34;</span>
+KUBELET_CIDFILE<span style="color:#f92672">=</span>/tmp/kubelet.cid
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> false <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  trap cleanup EXIT
+<span style="color:#66d9ef">fi</span>
+
+echo <span style="color:#e6db74">&#34;Starting services now!&#34;</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;kubeletonly&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  start_etcd
+  set_service_accounts
+  start_apiserver
+  start_controller_manager
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>EXTERNAL_CLOUD_PROVIDER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+    start_cloud_controller_manager
+  <span style="color:#66d9ef">fi</span>
+  start_kubeproxy
+  start_kubedns
+  start_kubedashboard
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>START_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> !<span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;nokubelet&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  <span style="color:#75715e">## TODO remove this check if/when kubelet is supported on darwin</span>
+  <span style="color:#75715e"># Detect the OS name/arch and display appropriate error.</span>
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>uname -s<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> in
+      Darwin<span style="color:#f92672">)</span>
+        warning <span style="color:#e6db74">&#34;kubelet is not currently supported in darwin, kubelet aborted.&#34;</span>
+        KUBELET_LOG<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+        ;;
+      Linux<span style="color:#f92672">)</span>
+        start_kubelet
+        ;;
+      *<span style="color:#f92672">)</span>
+        warning <span style="color:#e6db74">&#34;Unsupported host OS.  Must be Linux or Mac OS X, kubelet aborted.&#34;</span>
+        ;;
+    <span style="color:#66d9ef">esac</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PSP_ADMISSION<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>AUTHORIZATION_MODE<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> *RBAC* <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  create_psp_policy
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$DEFAULT_STORAGE_CLASS<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  create_storage_class
+<span style="color:#66d9ef">fi</span>
+
+print_success
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>ENABLE_DAEMON<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> false <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  <span style="color:#66d9ef">while</span> true; <span style="color:#66d9ef">do</span> sleep 1; <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">fi</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>KUBETEST_IN_DOCKER<span style="color:#66d9ef">:-</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#f92672">]</span><span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+  cluster/kubectl.sh config set-cluster local --server<span style="color:#f92672">=</span>https://localhost:6443 --certificate-authority<span style="color:#f92672">=</span>/var/run/kubernetes/server-ca.crt
+  cluster/kubectl.sh config set-credentials myself --client-key<span style="color:#f92672">=</span>/var/run/kubernetes/client-admin.key --client-certificate<span style="color:#f92672">=</span>/var/run/kubernetes/client-admin.crt
+  cluster/kubectl.sh config set-context local --cluster<span style="color:#f92672">=</span>local --user<span style="color:#f92672">=</span>myself
+  cluster/kubectl.sh config use-context local
+<span style="color:#66d9ef">fi</span>
+
+
+</code></pre></div><h3 id="heading-4">启动单机集群</h3>
+<p>第一次执行下面的命令编译并启动集群</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./hack/local-up-cluster.sh
+</code></pre></div><p>后面修改了某个模块的代码，执行以下代码即可单独编译该模块：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make GOGCFLAGS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;-N -l&#34;</span> WHAT<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;cmd/kube-apiserver&#34;</span> <span style="color:#75715e"># 假设只编译kube-apiserver这一个模块</span>
+</code></pre></div><p>执行下面的命令直接启动集群（跳过编译）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./hack/local-up-cluster.sh -O
+</code></pre></div><h2 id="k8s">调试k8s代码</h2>
+<p>正常启动k8s单机集群后，ps看一下，可以到启动了7个进程：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ps -ef|grep kube|grep -v grep
+</code></pre></div><p>假设要调试kube-apiserver这个进程，则先查出kube-apiserver启动时的运行参数：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ps -ef|grep kube-apiserver|grep -v grep
+root      <span style="color:#ae81ff">5228</span>  <span style="color:#ae81ff">4983</span>  <span style="color:#ae81ff">4</span> 05:06 pts/0    00:00:47 /root/go/src/k8s.io/kubernetes/_output/bin/kube-apiserver --authorization-mode<span style="color:#f92672">=</span>Node,RBAC --runtime-config<span style="color:#f92672">=</span>admissionregistration.k8s.io/v1alpha1,settings.k8s.io/v1alpha1 --cloud-provider<span style="color:#f92672">=</span> --cloud-config<span style="color:#f92672">=</span> --v<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> --vmodule<span style="color:#f92672">=</span> --cert-dir<span style="color:#f92672">=</span>/var/run/kubernetes --client-ca-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-ca.crt --service-account-key-file<span style="color:#f92672">=</span>/tmp/kube-serviceaccount.key --service-account-lookup<span style="color:#f92672">=</span>true --enable-admission-plugins<span style="color:#f92672">=</span>Initializers,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset,StorageObjectInUseProtection --disable-admission-plugins<span style="color:#f92672">=</span> --admission-control-config-file<span style="color:#f92672">=</span> --bind-address<span style="color:#f92672">=</span>0.0.0.0 --secure-port<span style="color:#f92672">=</span><span style="color:#ae81ff">6443</span> --tls-cert-file<span style="color:#f92672">=</span>/var/run/kubernetes/serving-kube-apiserver.crt --tls-private-key-file<span style="color:#f92672">=</span>/var/run/kubernetes/serving-kube-apiserver.key --insecure-bind-address<span style="color:#f92672">=</span>127.0.0.1 --insecure-port<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span> --storage-backend<span style="color:#f92672">=</span>etcd3 --etcd-servers<span style="color:#f92672">=</span>http://127.0.0.1:2379 --service-cluster-ip-range<span style="color:#f92672">=</span>10.0.0.0/24 --feature-gates<span style="color:#f92672">=</span>AllAlpha<span style="color:#f92672">=</span>false --external-hostname<span style="color:#f92672">=</span>localhost --requestheader-username-headers<span style="color:#f92672">=</span>X-Remote-User --requestheader-group-headers<span style="color:#f92672">=</span>X-Remote-Group --requestheader-extra-headers-prefix<span style="color:#f92672">=</span>X-Remote-Extra- --requestheader-client-ca-file<span style="color:#f92672">=</span>/var/run/kubernetes/request-header-ca.crt --requestheader-allowed-names<span style="color:#f92672">=</span>system:auth-proxy --proxy-client-cert-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-auth-proxy.crt --proxy-client-key-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-auth-proxy.key --cors-allowed-origins<span style="color:#f92672">=</span>/127.0.0.1<span style="color:#f92672">(</span>:<span style="color:#f92672">[</span>0-9<span style="color:#f92672">]</span>+<span style="color:#f92672">)</span>?$,/localhost<span style="color:#f92672">(</span>:<span style="color:#f92672">[</span>0-9<span style="color:#f92672">]</span>+<span style="color:#f92672">)</span>?$
+</code></pre></div><p>可以看到该进程的PID是5228，于是停掉该进程，并用dlv启动：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kill -15 5228
+dlv --listen<span style="color:#f92672">=</span>:39999 --headless<span style="color:#f92672">=</span>true --api-version<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> exec /root/go/src/k8s.io/kubernetes/_output/bin/kube-apiserver -- --authorization-mode<span style="color:#f92672">=</span>Node,RBAC --runtime-config<span style="color:#f92672">=</span>admissionregistration.k8s.io/v1alpha1,settings.k8s.io/v1alpha1 --cloud-provider<span style="color:#f92672">=</span> --cloud-config<span style="color:#f92672">=</span> --v<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> --vmodule<span style="color:#f92672">=</span> --cert-dir<span style="color:#f92672">=</span>/var/run/kubernetes --client-ca-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-ca.crt --service-account-key-file<span style="color:#f92672">=</span>/tmp/kube-serviceaccount.key --service-account-lookup<span style="color:#f92672">=</span>true --enable-admission-plugins<span style="color:#f92672">=</span>Initializers,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset,StorageObjectInUseProtection --disable-admission-plugins<span style="color:#f92672">=</span> --admission-control-config-file<span style="color:#f92672">=</span> --bind-address<span style="color:#f92672">=</span>0.0.0.0 --secure-port<span style="color:#f92672">=</span><span style="color:#ae81ff">6443</span> --tls-cert-file<span style="color:#f92672">=</span>/var/run/kubernetes/serving-kube-apiserver.crt --tls-private-key-file<span style="color:#f92672">=</span>/var/run/kubernetes/serving-kube-apiserver.key --insecure-bind-address<span style="color:#f92672">=</span>127.0.0.1 --insecure-port<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span> --storage-backend<span style="color:#f92672">=</span>etcd3 --etcd-servers<span style="color:#f92672">=</span>http://127.0.0.1:2379 --service-cluster-ip-range<span style="color:#f92672">=</span>10.0.0.0/24 --feature-gates<span style="color:#f92672">=</span>AllAlpha<span style="color:#f92672">=</span>false --external-hostname<span style="color:#f92672">=</span>localhost --requestheader-username-headers<span style="color:#f92672">=</span>X-Remote-User --requestheader-group-headers<span style="color:#f92672">=</span>X-Remote-Group --requestheader-extra-headers-prefix<span style="color:#f92672">=</span>X-Remote-Extra- --requestheader-client-ca-file<span style="color:#f92672">=</span>/var/run/kubernetes/request-header-ca.crt --requestheader-allowed-names<span style="color:#f92672">=</span>system:auth-proxy --proxy-client-cert-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-auth-proxy.crt --proxy-client-key-file<span style="color:#f92672">=</span>/var/run/kubernetes/client-auth-proxy.key --cors-allowed-origins<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/127.0.0.1(:[0-9]+)?$,/localhost(:[0-9]+)?$&#39;</span>
+</code></pre></div><p>允许防火墙允许39999端口接入：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">firewall-cmd --zone<span style="color:#f92672">=</span>public --add-port<span style="color:#f92672">=</span>39999/tcp --permanent
+firewall-cmd --reload
+</code></pre></div><p>最后在goland里新建一个远程调试任务，这里的<code>10.211.55.3</code>为虚拟机的IP，<code>39999</code>为dlv的远程调试端口。在<code>kubernetes/cmd/kube-apiserver/apiserver.go</code>的main方法处打上断点后，启动该远程调试任务，即可正常进行断点调试了。</p>
+<p><img src="/images/20180821/image-20180821174438757.png" alt="image-20180821174438757"></p>
+<p>OVER</p>
+<h2 id="heading-5">参考</h2>
+<ol>
+<li><a href="https://github.com/kubernetes/kubernetes">https://github.com/kubernetes/kubernetes</a></li>
+<li><a href="https://github.com/kubernetes/community/blob/master/contributors/devel/running-locally.md">https://github.com/kubernetes/community/blob/master/contributors/devel/running-locally.md</a></li>
+<li><a href="https://github.com/derekparker/delve/blob/master/Documentation/usage/dlv_exec.md">https://github.com/derekparker/delve/blob/master/Documentation/usage/dlv_exec.md</a></li>
+<li><a href="https://segmentfault.com/a/1190000015807702">https://segmentfault.com/a/1190000015807702</a></li>
+<li><a href="https://blog.csdn.net/u011846257/article/details/54707864">https://blog.csdn.net/u011846257/article/details/54707864</a></li>
+<li><a href="https://github.com/derekparker/delve/issues/178">https://github.com/derekparker/delve/issues/178</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">k8s中使用cert-manager玩转证书</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/">
+            <span class="next-text nav-default">mongodb4.0多文档事务尝鲜</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

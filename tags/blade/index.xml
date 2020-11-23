@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blade on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/blade/</link>
+    <description>Recent content in blade on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 01 Dec 2018 18:07:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/blade/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>arm64硬件架构支持总结</title>
+      <link>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 01 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</guid>
+      <description>自从中兴事件后，国家开始在政策上大力支持国产硬软件，甚至在某些项目投标要求上都加上了隐性条件，软件系统必须能在国产硬软件基础上运行。而国产硬</description>
+    </item>
+    
+  </channel>
+</rss>

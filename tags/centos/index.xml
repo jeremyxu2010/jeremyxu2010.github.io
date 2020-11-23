@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>centos on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/centos/</link>
+    <description>Recent content in centos on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 20 Sep 2019 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/centos/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>编译arm64平台的软件包</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</guid>
+      <description>本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片</description>
+    </item>
+    
+    <item>
+      <title>centos下无污染地打rpm包</title>
+      <link>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</link>
+      <pubDate>Sun, 01 Apr 2018 23:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</guid>
+      <description>工作中要经常要给centos6, centos7打某应用程序的rpm包。原来安装了两个虚拟机专门干这个工作，但经常会因为打包给系统装上许多没用</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门之playbook</title>
+      <link>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</link>
+      <pubDate>Tue, 20 Mar 2018 22:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</guid>
+      <description>Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门</title>
+      <link>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Mon, 26 Feb 2018 02:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</guid>
+      <description>工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的</description>
+    </item>
+    
+    <item>
+      <title>CentOS6下rpm打包实战</title>
+      <link>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Tue, 06 Feb 2018 20:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</guid>
+      <description>最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sentinel on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/sentinel/</link>
+    <description>Recent content in sentinel on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 12 Mar 2019 10:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/sentinel/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用哨兵模式部署redis高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Tue, 12 Mar 2019 10:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很早以前就听说过redis社区推崇一种哨兵模式的高可用集群部署模式，今天花时间研究了一下，正好记录下来。 哨兵模式 哨兵简介 哨兵模式是在Redi</description>
+    </item>
+    
+  </channel>
+</rss>

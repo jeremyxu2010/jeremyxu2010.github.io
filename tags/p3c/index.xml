@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>p3c on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/p3c/</link>
+    <description>Recent content in p3c on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Tue, 24 Oct 2017 21:10:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/p3c/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java开发小技巧_02</title>
+      <link>https://jeremyxu2010.github.io/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/</link>
+      <pubDate>Tue, 24 Oct 2017 21:10:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/java%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7_02/</guid>
+      <description>最近阿里发布了一个插件p3c，用于进行Java开发规约的检查扫描。由于插件的代码是开源，于是第一时间也翻查了代码，发现目前实现的检查规则主要</description>
+    </item>
+    
+  </channel>
+</rss>

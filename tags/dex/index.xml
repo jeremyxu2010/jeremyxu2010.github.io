@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dex on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/dex/</link>
+    <description>Recent content in dex on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 04 Aug 2019 15:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/dex/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用dex搭建一个身份认证系统</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Sun, 04 Aug 2019 15:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E4%BD%BF%E7%94%A8dex%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81%E7%B3%BB%E7%BB%9F/</guid>
+      <description>一个成熟的软件系统一般必须有一个可靠的身份认证与权限验证功能。这一块要自研快速实现还是需要花费挺多精力的，幸好开源领域目前已经有不错的解决方</description>
+    </item>
+    
+  </channel>
+</rss>

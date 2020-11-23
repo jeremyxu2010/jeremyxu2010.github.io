@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes集群部署运营实践总结 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="kubernetes集群部署运营实践总结" />
+<meta property="og:description" content="最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/" />
+<meta property="article:published_time" content="2019-11-02T18:40:00+08:00" />
+<meta property="article:modified_time" content="2019-11-02T18:40:00+08:00" />
+<meta itemprop="name" content="kubernetes集群部署运营实践总结">
+<meta itemprop="description" content="最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku">
+<meta itemprop="datePublished" content="2019-11-02T18:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-11-02T18:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="3214">
+
+
+
+<meta itemprop="keywords" content="kubernetes,large-cluster,etcd,harbor,restic," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes集群部署运营实践总结"/>
+<meta name="twitter:description" content="最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes集群部署运营实践总结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-11-02 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 3214 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#kubernetes">kubernetes大规模集群优化</a>
+      <ul>
+        <li><a href="#heading">内核参数调化</a></li>
+        <li><a href="#etcd">etcd性能优化</a></li>
+        <li><a href="#docker">docker优化</a></li>
+        <li><a href="#kubelet">kubelet优化</a></li>
+        <li><a href="#kube-apiserver">kube-apiserver优化</a></li>
+        <li><a href="#kube-controller-manager">kube-controller-manager优化</a></li>
+        <li><a href="#kube-scheduler">kube-scheduler优化</a></li>
+        <li><a href="#pod">pod优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#kubernetes-1">kubernetes集群数据备份与还原</a>
+      <ul>
+        <li><a href="#etcd-1">etcd数据</a></li>
+        <li><a href="#harbor">harbor</a></li>
+        <li><a href="#pvc">pvc对应的存储卷</a></li>
+        <li><a href="#heading-7">备份数据管理</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。</p>
+<h2 id="kubernetes">kubernetes大规模集群优化</h2>
+<h3 id="heading">内核参数调化</h3>
+<p>增大部分内核选项，在<code>/etc/sysctl.conf</code>文件中添加下面片断：</p>
+<pre><code>fs.file-max=1000000
+# max-file 表示系统级别的能够打开的文件句柄的数量， 一般如果遇到文件句柄达到上限时，会碰到
+# &quot;Too many open files&quot;或者Socket/File: Can’t open so many files等错误。
+# 配置arp cache 大小
+net.ipv4.neigh.default.gc_thresh1=1024
+# 存在于ARP高速缓存中的最少层数，如果少于这个数，垃圾收集器将不会运行。缺省值是128。
+net.ipv4.neigh.default.gc_thresh2=4096
+# 保存在 ARP 高速缓存中的最多的记录软限制。垃圾收集器在开始收集前，允许记录数超过这个数字 5 秒。缺省值是 512。
+net.ipv4.neigh.default.gc_thresh3=8192
+# 保存在 ARP 高速缓存中的最多记录的硬限制，一旦高速缓存中的数目高于此，垃圾收集器将马上运行。缺省值是1024。
+# 以上三个参数，当内核维护的arp表过于庞大时候，可以考虑优化
+net.netfilter.nf_conntrack_max=10485760
+# 允许的最大跟踪连接条目，是在内核内存中netfilter可以同时处理的“任务”（连接跟踪条目）
+net.netfilter.nf_conntrack_tcp_timeout_established=300
+net.netfilter.nf_conntrack_buckets=655360
+# 哈希表大小（只读）（64位系统、8G内存默认 65536，16G翻倍，如此类推）
+net.core.netdev_max_backlog=10000
+# 每个网络接口接收数据包的速率比内核处理这些包的速率快时，允许送到队列的数据包的最大数目。
+fs.inotify.max_user_instances=524288
+# 默认值: 128 指定了每一个real user ID可创建的inotify instatnces的数量上限
+fs.inotify.max_user_watches=524288
+# 默认值: 8192 指定了每个inotify instance相关联的watches的上限
+</code></pre><h3 id="etcd">etcd性能优化</h3>
+<ol>
+<li>Etcd对磁盘写入延迟非常敏感，因此对于负载较重的集群，etcd一定要使用local SSD或者高性能云盘。可以使用<code>fio</code>测量磁盘实际顺序 IOPS。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">fio -filename<span style="color:#f92672">=</span>/dev/sda1 -direct<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> -iodepth <span style="color:#ae81ff">1</span> -thread -rw<span style="color:#f92672">=</span>write -ioengine<span style="color:#f92672">=</span>psync -bs<span style="color:#f92672">=</span>4k -size<span style="color:#f92672">=</span>60G -numjobs<span style="color:#f92672">=</span><span style="color:#ae81ff">64</span> -runtime<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> -group_reporting -name<span style="color:#f92672">=</span>file
+</code></pre></div><ol start="2">
+<li>由于etcd必须将数据持久保存到磁盘日志文件中，因此来自其他进程的磁盘活动可能会导致增加写入时间，结果导致etcd请求超时和临时leader丢失。因此可以给etcd进程更高的磁盘优先级，使etcd服务可以稳定地与这些进程一起运行。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ionice -c2 -n0 -p <span style="color:#66d9ef">$(</span>pgrep etcd<span style="color:#66d9ef">)</span>
+</code></pre></div><ol start="3">
+<li>默认etcd空间配额大小为 2G，超过 2G 将不再写入数据。通过给etcd配置 <code>--quota-backend-bytes</code> 参数增大空间配额，最大支持 8G。</li>
+</ol>
+<pre><code>--quota-backend-bytes 8589934592
+</code></pre><ol start="4">
+<li>如果etcd leader处理大量并发客户端请求，可能由于网络拥塞而延迟处理follower对等请求。在follower 节点上可能会产生如下的发送缓冲区错误的消息：</li>
+</ol>
+<pre><code>dropped MsgProp to 247ae21ff9436b2d since streamMsg's sending buffer is full
+dropped MsgAppResp to 247ae21ff9436b2d since streamMsg's sending buffer is full
+</code></pre><p>可以通过提高etcd对于对等网络流量优先级来解决这些错误。在 Linux 上，可以使用 tc 对对等流量进行优先级排序：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tc qdisc add dev eth0 root handle 1: prio bands <span style="color:#ae81ff">3</span>
+tc filter add dev eth0 parent 1: protocol ip prio <span style="color:#ae81ff">1</span> u32 match ip sport <span style="color:#ae81ff">2380</span> 0xffff flowid 1:1
+tc filter add dev eth0 parent 1: protocol ip prio <span style="color:#ae81ff">1</span> u32 match ip dport <span style="color:#ae81ff">2380</span> 0xffff flowid 1:1
+tc filter add dev eth0 parent 1: protocol ip prio <span style="color:#ae81ff">2</span> u32 match ip sport <span style="color:#ae81ff">2379</span> 0xffff flowid 1:1
+tc filter add dev eth0 parent 1: protocol ip prio <span style="color:#ae81ff">2</span> u32 match ip dport <span style="color:#ae81ff">2379</span> 0xffff flowid 1:1
+</code></pre></div><ol start="5">
+<li>为了在大规模集群下提高性能，可以将events存储在单独的 ETCD 实例中，可以配置kube-apiserver参数：</li>
+</ol>
+<pre><code>--etcd-servers=&quot;http://etcd1:2379,http://etcd2:2379,http://etcd3:2379&quot; \
+--etcd-servers-overrides=&quot;/events#http://etcd4:2379,http://etcd5:2379,http://etcd6:2379&quot;
+</code></pre><h3 id="docker">docker优化</h3>
+<ol>
+<li>配置docker daemon并行拉取镜像，以提高镜像拉取效率，在<code>/etc/docker/daemon.json</code>中添加以下配置：</li>
+</ol>
+<pre><code>&quot;max-concurrent-downloads&quot;: 10
+</code></pre><ol start="2">
+<li>可以使用local SSD或者高性能云盘作为docker容器的持久数据目录，在<code>/etc/docker/daemon.json</code>中添加以下配置：</li>
+</ol>
+<pre><code>&quot;data-root&quot;: &quot;/ssd_mount_dir&quot;
+</code></pre><ol start="3">
+<li>启动pod时都会拉取pause镜像，为了减小拉取pause镜像网络带宽，可以每个node预加载pause镜像，在每个node节点上执行以下命令：</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker load -i /tmp/preloaded_pause_image.tar
+</code></pre></div><h3 id="kubelet">kubelet优化</h3>
+<ol>
+<li>
+<p>设置 <code>--serialize-image-pulls=false</code>， 该选项配置串行拉取镜像，默认值时true，配置为false可以增加并发度。但是如果docker daemon 版本小于 1.9，且使用 aufs 存储则不能改动该选项。</p>
+</li>
+<li>
+<p>设置<code>--image-pull-progress-deadline=30</code>， 配置镜像拉取超时。默认值时1分，对于大镜像拉取需要适量增大超时时间。</p>
+</li>
+<li>
+<p>kubelet 单节点允许运行的最大 Pod 数：<code>--max-pods=110</code>（默认是 110，可以根据实际需要设置）</p>
+</li>
+</ol>
+<h3 id="kube-apiserver">kube-apiserver优化</h3>
+<ol>
+<li>
+<p>设置 <code>--apiserver-count</code> 和 <code>--endpoint-reconciler-type</code>，可使得多个 kube-apiserver 实例加入到 Kubernetes Service 的 endpoints 中，从而实现高可用。</p>
+</li>
+<li>
+<p>设置 <code>--max-requests-inflight</code> 和 <code>--max-mutating-requests-inflight</code>，默认是 200 和 400。
+节点数量在 1000 - 3000 之间时，推荐：</p>
+</li>
+</ol>
+<pre><code>--max-requests-inflight=1500
+--max-mutating-requests-inflight=500
+</code></pre><p>节点数量大于 3000 时，推荐：</p>
+<pre><code>--max-requests-inflight=3000
+--max-mutating-requests-inflight=1000
+</code></pre><ol start="3">
+<li>使用<code>--target-ram-mb</code>配置kube-apiserver的内存，按以下公式得到一个合理的值：</li>
+</ol>
+<pre><code>--target-ram-mb=node_nums * 60
+</code></pre><h3 id="kube-controller-manager">kube-controller-manager优化</h3>
+<ol>
+<li>kube-controller-manager可以通过 leader election 实现高可用，添加以下命令行参数：</li>
+</ol>
+<pre><code>--leader-elect=true
+--leader-elect-lease-duration=15s
+--leader-elect-renew-deadline=10s
+--leader-elect-resource-lock=endpoints
+--leader-elect-retry-period=2s
+</code></pre><ol start="2">
+<li>限制与kube-apiserver通信的qps，添加以下命令行参数：</li>
+</ol>
+<pre><code>--kube-api-qps=100
+--kube-api-burst=150
+</code></pre><h3 id="kube-scheduler">kube-scheduler优化</h3>
+<ol>
+<li>kube-scheduler可以通过 leader election 实现高可用，添加以下命令行参数：</li>
+</ol>
+<pre><code>--leader-elect=true
+--leader-elect-lease-duration=15s
+--leader-elect-renew-deadline=10s
+--leader-elect-resource-lock=endpoints
+--leader-elect-retry-period=2s
+</code></pre><ol start="2">
+<li>限制与kube-apiserver通信的qps，添加以下命令行参数：</li>
+</ol>
+<pre><code>--kube-api-qps=100
+--kube-api-burst=150
+</code></pre><h3 id="pod">pod优化</h3>
+<p>在运行Pod的时候也需要注意遵循一些最佳实践。</p>
+<ol>
+<li>为容器设置资源请求和限制，尤其是一些基础插件服务</li>
+</ol>
+<pre><code>spec.containers[].resources.limits.cpu
+spec.containers[].resources.limits.memory
+spec.containers[].resources.requests.cpu
+spec.containers[].resources.requests.memory
+spec.containers[].resources.limits.ephemeral-storage
+spec.containers[].resources.requests.ephemeral-storage
+</code></pre><p>在k8s中，会根据pod的limit 和 requests的配置将pod划分为不同的qos类别：</p>
+<pre><code>* Guaranteed
+* Burstable
+* BestEffort
+</code></pre><p>当机器可用资源不够时，kubelet会根据qos级别划分迁移驱逐pod。被驱逐的优先级：<code>BestEffort &gt; Burstable &gt; Guaranteed</code>。</p>
+<ol start="2">
+<li>
+<p>对关键应用使用 nodeAffinity、podAffinity 和 podAntiAffinity 等保护，使其调度分散到不同的node上。比如kube-dns 配置：</p>
+</li>
+<li>
+<p>尽量使用控制器来管理容器（如 Deployment、StatefulSet、DaemonSet、Job 等）</p>
+</li>
+</ol>
+<h2 id="kubernetes-1">kubernetes集群数据备份与还原</h2>
+<h3 id="etcd-1">etcd数据</h3>
+<h4 id="heading-1">备份</h4>
+<p>备份数据前先找到etcd集群当前的leader：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ETCDCTL_API<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> etcdctl --endpoints<span style="color:#f92672">=</span>127.0.0.1:2379 --cert<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/server.crt --key<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/server.key --cacert<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/ca.crt endpoint --cluster status | grep -v <span style="color:#e6db74">&#39;false&#39;</span> | awk -F <span style="color:#e6db74">&#39;[/ :]&#39;</span> <span style="color:#e6db74">&#39;{print $4}&#39;</span>
+</code></pre></div><p>然后登录到leader节点，备份snapshot db文件：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -avp /var/lib/etcd/member/snap/db /tmp/etcd_db.bak
+</code></pre></div><h4 id="heading-2">还原</h4>
+<p>将备份的snaphost db文件上传到各个etcd节点，使用以下命令还原数据：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ETCDCTL_API<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> etcdctl snapshot restore <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            /tmp/etcd_db.bak <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --endpoints<span style="color:#f92672">=</span>192.168.0.11:2379 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --name<span style="color:#f92672">=</span>192.168.0.11 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --cert<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/server.crt <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --key<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/server.key <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --cacert<span style="color:#f92672">=</span>/etc/kubernetes/pki/etcd/ca.crt <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --initial-advertise-peer-urls<span style="color:#f92672">=</span>https://192.168.0.11:2380 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --initial-cluster-token<span style="color:#f92672">=</span>etcd-cluster-0 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --initial-cluster<span style="color:#f92672">=</span>192.168.0.11<span style="color:#f92672">=</span>https://192.168.0.11:2380,192.168.0.12<span style="color:#f92672">=</span>https://192.168.0.12:2380,192.168.0.13<span style="color:#f92672">=</span>https://192.168.0.13:2380 <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --data-dir<span style="color:#f92672">=</span>/var/lib/etcd/ <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>            --skip-hash-check<span style="color:#f92672">=</span>true
+</code></pre></div><h3 id="harbor">harbor</h3>
+<p>如果使用harbor作为镜像仓库与chart仓库，可使用脚本将harbor中所有的镜像和chart导入导出。</p>
+<h4 id="heading-3">备份</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+harborUsername<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;admin&#39;</span>
+harborPassword<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Harbor12345&#39;</span>
+harborRegistry<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;registry.test.com&#39;</span>
+harborBasicAuthToken<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>harborUsername<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>harborPassword<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | base64<span style="color:#66d9ef">)</span>
+
+docker login --username <span style="color:#e6db74">${</span>harborUsername<span style="color:#e6db74">}</span> --password <span style="color:#e6db74">${</span>harborPassword<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>
+
+rm -f dist/images.list
+rm -f dist/charts.list
+
+<span style="color:#75715e"># list projects</span>
+projs<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/api/projects?page=1&amp;page_size=1000&#39;</span> | jq -r <span style="color:#e6db74">&#39;.[] | &#34;\(.project_id)=\(.name)&#34;&#39;</span><span style="color:#e6db74">`</span>
+<span style="color:#66d9ef">for</span> proj in <span style="color:#e6db74">${</span>projs[*]<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">do</span>
+  projId<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $proj|cut -d <span style="color:#e6db74">&#39;=&#39;</span> -f 1<span style="color:#e6db74">`</span>
+  projName<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $proj|cut -d <span style="color:#e6db74">&#39;=&#39;</span> -f 2<span style="color:#e6db74">`</span>
+
+  <span style="color:#75715e"># list repos in one project</span>
+  repos<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/api/repositories?page=1&amp;page_size=1000&amp;project_id=&#39;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>projId<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | jq -r <span style="color:#e6db74">&#39;.[] | &#34;\(.id)=\(.name)&#34;&#39;</span><span style="color:#e6db74">`</span>
+  <span style="color:#66d9ef">for</span> repo in <span style="color:#e6db74">${</span>repos[*]<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">do</span>
+    repoId<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $repo|cut -d <span style="color:#e6db74">&#39;=&#39;</span> -f 1<span style="color:#e6db74">`</span>
+    repoName<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $repo|cut -d <span style="color:#e6db74">&#39;=&#39;</span> -f 2<span style="color:#e6db74">`</span>
+
+    <span style="color:#75715e"># list tags in one repo</span>
+    tags<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/api/repositories/&#39;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/tags?detail=1&#39;</span> | jq -r <span style="color:#e6db74">&#39;.[].name&#39;</span><span style="color:#e6db74">`</span>
+    <span style="color:#66d9ef">for</span> tag in <span style="color:#e6db74">${</span>tags[*]<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">do</span>
+      <span style="color:#75715e">#echo ${tag};</span>
+
+      <span style="color:#75715e"># pull image</span>
+      docker pull <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span>
+
+      <span style="color:#75715e"># tag image</span>
+      docker tag <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span>
+
+      <span style="color:#75715e"># save image</span>
+      mkdir -p <span style="color:#66d9ef">$(</span>dirname dist/<span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+      docker save -o dist/<span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span>.tar  <span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span>
+
+      <span style="color:#75715e"># record image to list file</span>
+      echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>repoName<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>tag<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;&gt; dist/images.list
+    <span style="color:#66d9ef">done</span>
+  <span style="color:#66d9ef">done</span>
+
+  <span style="color:#75715e"># list charts in one project</span>
+  charts<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/api/chartrepo/&#39;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/charts&#39;</span> | jq -r <span style="color:#e6db74">&#39;.[].name&#39;</span><span style="color:#e6db74">`</span>
+  <span style="color:#66d9ef">for</span> chart in <span style="color:#e6db74">${</span>charts[*]<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">do</span>
+    <span style="color:#75715e">#echo ${chart}</span>
+
+    <span style="color:#75715e"># list download urls in one chart</span>
+    durls<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/api/chartrepo/&#39;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;/charts/&#39;</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>chart<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | jq -r <span style="color:#e6db74">&#39;.[].urls[0]&#39;</span><span style="color:#e6db74">`</span>
+    <span style="color:#75715e">#echo ${durl[*]}</span>
+    <span style="color:#66d9ef">for</span> durl in <span style="color:#e6db74">${</span>durls[*]<span style="color:#e6db74">}</span>; <span style="color:#66d9ef">do</span>
+        <span style="color:#75715e">#echo ${durl};</span>
+
+        <span style="color:#75715e"># download chart</span>
+        mkdir -p <span style="color:#66d9ef">$(</span>dirname dist/<span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>durl<span style="color:#e6db74">}</span><span style="color:#66d9ef">)</span>
+        curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -o dist/<span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>durl<span style="color:#e6db74">}</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">/chartrepo/</span><span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">${</span>durl<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+
+        <span style="color:#75715e"># record chart to list file</span>
+        echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">${</span>durl<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> &gt;&gt; dist/charts.list
+        
+    <span style="color:#66d9ef">done</span>
+  <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">done</span>
+</code></pre></div><h4 id="heading-4">还原</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+harborUsername<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;admin&#39;</span>
+harborPassword<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Harbor12345&#39;</span>
+harborRegistry<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;registry.test.com&#39;</span>
+
+harborBasicAuthToken<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>echo -n <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>harborUsername<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>harborPassword<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> | base64<span style="color:#66d9ef">)</span>
+
+docker login --username <span style="color:#e6db74">${</span>harborUsername<span style="color:#e6db74">}</span> --password <span style="color:#e6db74">${</span>harborPassword<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>
+
+<span style="color:#66d9ef">while</span> IFS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> read -r image <span style="color:#f92672">||</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span>$image<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>
+<span style="color:#66d9ef">do</span>
+  projName<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>image%%/*<span style="color:#e6db74">}</span>
+  <span style="color:#75715e"># echo ${projName}</span>
+
+  <span style="color:#75715e"># create harbor project</span>
+  curl -k -X POST -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/projects</span><span style="color:#e6db74">&#34;</span> -H <span style="color:#e6db74">&#34;accept: application/json&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#e6db74">&#39;{ &#34;project_name&#34;: &#34;&#39;</span><span style="color:#e6db74">&#34;</span>$projName<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;&#34;, &#34;metadata&#34;: { &#34;public&#34;: &#34;true&#34; }}&#39;</span>
+
+  <span style="color:#75715e"># load image</span>
+  docker load -i dist/<span style="color:#e6db74">${</span>image<span style="color:#e6db74">}</span>.tar
+
+  <span style="color:#75715e"># tag image</span>
+  docker tag <span style="color:#e6db74">${</span>image<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>image<span style="color:#e6db74">}</span>
+
+  <span style="color:#75715e"># push image</span>
+  docker push <span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span>/<span style="color:#e6db74">${</span>image<span style="color:#e6db74">}</span>
+
+<span style="color:#66d9ef">done</span> &lt; dist/images.list
+
+<span style="color:#66d9ef">while</span> IFS<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> read -r chart <span style="color:#f92672">||</span> <span style="color:#f92672">[</span> -n <span style="color:#e6db74">&#34;</span>$chart<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>
+<span style="color:#66d9ef">do</span>
+  projName<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>chart%%/*<span style="color:#e6db74">}</span>
+  <span style="color:#75715e"># echo ${projName}</span>
+
+  <span style="color:#75715e"># create harbor project</span>
+  curl -k -X POST -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/projects</span><span style="color:#e6db74">&#34;</span> -H <span style="color:#e6db74">&#34;accept: application/json&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> -d <span style="color:#e6db74">&#39;{ &#34;project_name&#34;: &#34;&#39;</span><span style="color:#e6db74">&#34;</span>$projName<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#39;&#34;, &#34;metadata&#34;: { &#34;public&#34;: &#34;true&#34; }}&#39;</span>
+
+  <span style="color:#75715e"># upload chart</span>
+  curl -s -k -H <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Authorization: Basic </span><span style="color:#e6db74">${</span>harborBasicAuthToken<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> -X POST <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">https://</span><span style="color:#e6db74">${</span>harborRegistry<span style="color:#e6db74">}</span><span style="color:#e6db74">/api/chartrepo/</span><span style="color:#e6db74">${</span>projName<span style="color:#e6db74">}</span><span style="color:#e6db74">/charts</span><span style="color:#e6db74">&#34;</span> -H <span style="color:#e6db74">&#34;accept: application/json&#34;</span> -H <span style="color:#e6db74">&#34;Content-Type: multipart/form-data&#34;</span> -F <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">chart=@dist/</span><span style="color:#e6db74">${</span>chart<span style="color:#e6db74">}</span><span style="color:#e6db74">;type=application/gzip</span><span style="color:#e6db74">&#34;</span>
+
+<span style="color:#66d9ef">done</span> &lt; dist/charts.list
+</code></pre></div><h3 id="pvc">pvc对应的存储卷</h3>
+<p>集群中其它应用数据一般是保存在pvc对应的存储卷中的。</p>
+<h4 id="heading-5">备份</h4>
+<p>首先根据pvc找到对应的pv：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl -n test get pvc demo-pvc -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.spec.volumeName}&#39;</span>
+</code></pre></div><p>找到pv的挂载目录：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount | grep pvc-xxxxxxxxxxxxxxxxxxx
+</code></pre></div><p>使用rsync命令备份数据：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -avp --delete /var/lib/kubelet/pods/xxxxxx/volumes/xxxxxxx/   /tmp/pvc-data-bak/test/demo-pvc/
+</code></pre></div><h4 id="heading-6">还原</h4>
+<p>首先根据pvc找到对应的pv：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl -n test get pvc demo-pvc -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.spec.volumeName}&#39;</span>
+</code></pre></div><p>找到pv的挂载目录：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mount | grep pvc-xxxxxxxxxxxxxxxxxxx
+</code></pre></div><p>使用rsync命令备份数据：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">rsync -avp --delete /tmp/pvc-data-bak/test/demo-pvc/ /var/lib/kubelet/pods/xxxxxx/volumes/xxxxxxx/   
+</code></pre></div><h3 id="heading-7">备份数据管理</h3>
+<p>所有备份出的数据可以存放在一个目录下，并使用<a href="https://github.com/restic/restic">restic</a>工具保存到多个后端存储系统上，如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 初始化备份仓库</span>
+restic --repo sftp:user@host:/srv/restic-repo init
+
+<span style="color:#75715e"># 将目录备份到备份仓库</span>
+restic --repo sftp:user@host:/srv/restic-repo backup /data/k8s-all-data
+</code></pre></div><p>DONE.</p>
+<h2 id="heading-8">参考</h2>
+<ol>
+<li><a href="https://www.flftuu.com/2019/03/12/%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96/">https://www.flftuu.com/2019/03/12/%E5%A4%A7%E8%A7%84%E6%A8%A1%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96/</a></li>
+<li><a href="https://testerhome.com/topics/7509">https://testerhome.com/topics/7509</a></li>
+<li><a href="https://etcd.io/docs/v3.4.0/tuning/">https://etcd.io/docs/v3.4.0/tuning/</a></li>
+<li><a href="https://docs.docker.com/engine/reference/commandline/dockerd/">https://docs.docker.com/engine/reference/commandline/dockerd/</a></li>
+<li><a href="https://kubernetes.io/docs/setup/best-practices/cluster-large/">https://kubernetes.io/docs/setup/best-practices/cluster-large/</a></li>
+<li><a href="https://www.jianshu.com/p/904a3f2b6579">https://www.jianshu.com/p/904a3f2b6579</a></li>
+<li><a href="https://github.com/restic/restic">https://github.com/restic/restic</a></li>
+<li><a href="https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#sftp">https://restic.readthedocs.io/en/latest/030_preparing_a_new_repo.html#sftp</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-11-02</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/large-cluster/">large-cluster</a>
+          
+          <a href="/tags/etcd/">etcd</a>
+          
+          <a href="/tags/harbor/">harbor</a>
+          
+          <a href="/tags/restic/">restic</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">优化nginx-ingress-controller并发性能</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/">
+            <span class="next-text nav-default">避免容器中运行的Java应用被杀掉</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>oom on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/oom/</link>
+    <description>Recent content in oom on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Wed, 13 Jul 2016 22:03:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/oom/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>JVM的Finalization Delay引起的OOM</title>
+      <link>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</link>
+      <pubDate>Wed, 13 Jul 2016 22:03:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/jvm%E7%9A%84finalization-delay%E5%BC%95%E8%B5%B7%E7%9A%84oom/</guid>
+      <description>今天在压力测试环境某一个服务出现crash了，经过一番检查，终于发现是由于JVM的Finalization Delay引起的，这个问题比较特殊</description>
+    </item>
+    
+  </channel>
+</rss>

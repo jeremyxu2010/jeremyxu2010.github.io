@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/" />
+
+  
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="alternate" type="application/rss+xml" title="jeremy的技术点滴" />
+  <link href="https://jeremyxu2010.github.io/index.xml" rel="feed" type="application/rss+xml" title="jeremy的技术点滴" />
+  
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="jeremy的技术点滴" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/" />
+<meta property="og:updated_time" content="2020-11-22T20:54:00+08:00" />
+<meta itemprop="name" content="jeremy的技术点滴">
+<meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="jeremy的技术点滴"/>
+<meta name="twitter:description" content=""/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          
+  <section id="posts" class="posts">
+    
+    
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/">使用fail2ban进行DDOS防护</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-06-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 1037 字 </span>
+      <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2015/04/%E4%BD%BF%E7%94%A8logrotate%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%88%86%E5%89%B2%E5%8F%8A%E6%BB%9A%E5%8A%A8%E5%A4%84%E7%90%86/">使用logrotate进行日志分割及滚动处理</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-04-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 260 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      linux server上服务一般持续长久运行，以致服务的日志文件随着时间越来越大，如果日志处理得不好甚至有可能占满磁盘。幸好找到了logrotate
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2015/04/%E4%BD%BF%E7%94%A8logrotate%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%88%86%E5%89%B2%E5%8F%8A%E6%BB%9A%E5%8A%A8%E5%A4%84%E7%90%86/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/">使用grunt对css中的background图片自动生成雪碧图</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2015-03-31 </span>
+      <div class="post-category">
+          
+            <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 923 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      公司研发的系统为B/S架构，用户使用浏览器访问系统时，使用浏览器自带工具查看，对图片的请求数极多，多为小图片。 今天想对这个现状进行改善，网上
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2015/03/%E4%BD%BF%E7%94%A8grunt%E5%AF%B9css%E4%B8%AD%E7%9A%84background%E5%9B%BE%E7%89%87%E8%87%AA%E5%8A%A8%E7%94%9F%E6%88%90%E9%9B%AA%E7%A2%A7%E5%9B%BE/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/06/atom-shell%E5%B0%8F%E4%BE%8B%E5%AD%90/">atom-shell小例子</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-06-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 565 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      今天一个朋友问我一个问题，他想做一个win32的桌面应用程序，而且还希望程序能做出web页面那种漂亮的效果，可目前项目组的成员全是以前做前端
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/06/atom-shell%E5%B0%8F%E4%BE%8B%E5%AD%90/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/">nagios安装配置</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-06-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 1089 字 </span>
+      <span class="more-meta"> 预计阅读 3 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/05/%E5%88%9D%E8%AF%86grunt/">初识grunt</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-05-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 926 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/05/%E5%88%9D%E8%AF%86grunt/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/">linux下进行端口映射</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-04-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 324 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      工作需要将某个具有外网IP的server的某个端口映射到某个内网IP的server的相同端口上。 首先想到使用NAT，命令如下 echo &#34;1&#34; &gt; /proc/sys/net/ipv4/ip_forward iptables -t nat -I
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/">atom-shell_mac版应用打包</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-03-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 550 字 </span>
+      <span class="more-meta"> 预计阅读 2 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      上一篇文章写了一个简单的PingDemo应用，今天参照atom-shell的文档将那个应用打包到mac应用，试了多久终于成功了，记录一下。 a
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/03/atom-shell_mac%E7%89%88%E5%BA%94%E7%94%A8%E6%89%93%E5%8C%85/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/">linux下设置电信网通双线路IP地址</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-03-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/devops/"> devops </a>
+          
+        </div>
+      <span class="more-meta"> 约 222 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      工作上遇到需要在linux下设置电信网通双线路IP地址，操作系统为Suse Linux Enterprise Linux 11 SP2，简要记录下步骤： 编辑/etc/sysconfig/
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+      <article class="post">
+  <header class="post-header">
+    <h1 class="post-title"><a class="post-link" href="https://jeremyxu2010.github.io/2014/03/%E7%89%B9%E5%88%AB%E8%A6%81%E6%A3%80%E6%9F%A5java%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/">特别要检查Java文件操作相关方法的返回值</a></h1>
+    <div class="post-meta">
+      <span class="post-time"> 2014-03-30 </span>
+      <div class="post-category">
+          
+            <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+          
+        </div>
+      <span class="more-meta"> 约 475 字 </span>
+      <span class="more-meta"> 预计阅读 1 分钟 </span>
+    </div>
+  </header>
+  
+  <div class="post-content">
+    <div class="post-summary">
+      今天遇到一个很狗血的问题，一个功能在开发环境没有问题，但在生产环境出错了。 代码如下： ... File tmpFile = new File(fileTmpPath); File newFileTarget = new File(filePath); tmpFile.renameTo(newFileTarget); // 修改新文件的权限 FileManageHelper.chmod(newFileTarget); .... 最后报错信
+    </div>
+    <div class="read-more">
+      <a href="https://jeremyxu2010.github.io/2014/03/%E7%89%B9%E5%88%AB%E8%A6%81%E6%A3%80%E6%9F%A5java%E6%96%87%E4%BB%B6%E6%93%8D%E4%BD%9C%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/" class="read-more-link">阅读更多</a>
+    </div>
+  </div>
+</article>
+
+    
+  </section>
+  
+  <nav class="pagination">
+    
+      <a class="prev" href="/page/21/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text">上一页</span>
+      </a>
+    
+      <a class="next" href="/page/23/">
+        <span class="next-text">下一页</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+  </nav>
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

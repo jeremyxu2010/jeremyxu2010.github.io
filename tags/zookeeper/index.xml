@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>zookeeper on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/zookeeper/</link>
+    <description>Recent content in zookeeper on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 09 Dec 2016 12:09:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/zookeeper/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>解决zookeeper导致tomcat停止时报异常的问题</title>
+      <link>https://jeremyxu2010.github.io/2016/12/%E8%A7%A3%E5%86%B3zookeeper%E5%AF%BC%E8%87%B4tomcat%E5%81%9C%E6%AD%A2%E6%97%B6%E6%8A%A5%E5%BC%82%E5%B8%B8%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Fri, 09 Dec 2016 12:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/12/%E8%A7%A3%E5%86%B3zookeeper%E5%AF%BC%E8%87%B4tomcat%E5%81%9C%E6%AD%A2%E6%97%B6%E6%8A%A5%E5%BC%82%E5%B8%B8%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>问题由来 今天运行工程时，发现停止tomcat时，发现控制台会报一些错误。 十二月 09, 2016 9:25:14 上午 org.apache.coyote.AbstractProtocol stop 信息: Stopping ProtocolHandler [&amp;quot;http-apr-8080&amp;quot;] 十二月 09, 2016 9:25:14 上午 org.apache.catalina.loader.WebappClassLoaderBase loadClass 信息: Illegal access: this web application</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>underlay on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/underlay/</link>
+    <description>Recent content in underlay on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 30 Jun 2019 01:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/underlay/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>清除k8s使用underlay网络的障碍</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</link>
+      <pubDate>Sun, 30 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</guid>
+      <description>k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se</description>
+    </item>
+    
+  </channel>
+</rss>

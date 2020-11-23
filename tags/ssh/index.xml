@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ssh on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/ssh/</link>
+    <description>Recent content in ssh on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 15 Dec 2018 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/ssh/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>SSH的三种端口转发</title>
+      <link>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Sat, 15 Dec 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
+      <description>最近工作中经常需要ssh登录到某台跳板机，再连接受限网络环境中的某台服务器。以前经常用SSH端口转发这一功能，但周围的同事好像对这个并不清楚</description>
+    </item>
+    
+    <item>
+      <title>云服务器上ssh服务安全加固</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</link>
+      <pubDate>Wed, 24 Aug 2016 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</guid>
+      <description>今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来</description>
+    </item>
+    
+    <item>
+      <title>linux下进行端口映射</title>
+      <link>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</link>
+      <pubDate>Wed, 30 Apr 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</guid>
+      <description>工作需要将某个具有外网IP的server的某个端口映射到某个内网IP的server的相同端口上。 首先想到使用NAT，命令如下 echo &amp;#34;1&amp;#34; &amp;gt; /proc/sys/net/ipv4/ip_forward iptables -t nat -I</description>
+    </item>
+    
+  </channel>
+</rss>

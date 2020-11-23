@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>chrome on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/chrome/</link>
+    <description>Recent content in chrome on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 20 Oct 2016 00:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/chrome/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>React0.13在Chrome54上抽风问题总结</title>
+      <link>https://jeremyxu2010.github.io/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Thu, 20 Oct 2016 00:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/</guid>
+      <description>这几天产品处在发版阶段，工作比较忙，很久没有更新博客了。不过今天在工作中遇到一个最新版Chrome浏览器的坑，分析解决的过程还比较有意思，在</description>
+    </item>
+    
+  </channel>
+</rss>

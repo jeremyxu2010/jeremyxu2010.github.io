@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>英文 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/%E8%8B%B1%E6%96%87/</link>
+    <description>Recent content in 英文 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 25 Feb 2018 22:41:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/%E8%8B%B1%E6%96%87/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>英文每天金句</title>
+      <link>https://jeremyxu2010.github.io/2018/02/%E8%8B%B1%E6%96%87%E6%AF%8F%E5%A4%A9%E9%87%91%E5%8F%A5/</link>
+      <pubDate>Sun, 25 Feb 2018 22:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/%E8%8B%B1%E6%96%87%E6%AF%8F%E5%A4%A9%E9%87%91%E5%8F%A5/</guid>
+      <description>发现欧路词典这款软件每天推送的一句英文挺好的，既文艺又鸡汤，但好像没找到导出的办法，这里将每天的每日一句记录下。 You may be disappointed if you fail, but you are doomed if you don&#39;t</description>
+    </item>
+    
+  </channel>
+</rss>

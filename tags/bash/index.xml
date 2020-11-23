@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bash on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/bash/</link>
+    <description>Recent content in bash on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 03 May 2020 14:53:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/bash/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>技术分享之工具推荐</title>
+      <link>https://jeremyxu2010.github.io/2020/05/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%E4%B9%8B%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</link>
+      <pubDate>Sun, 03 May 2020 14:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/05/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%E4%B9%8B%E5%B7%A5%E5%85%B7%E6%8E%A8%E8%8D%90/</guid>
+      <description>最近干的工作比较杂，没有时间进行记录，很久没有写博客了，惭愧！正好五一假日期间有一些时间，把一些点滴记录下来。 一个事情是最近给组内的同学进行</description>
+    </item>
+    
+    <item>
+      <title>批量处理docker镜像</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Sun, 19 May 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/</guid>
+      <description>这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry</description>
+    </item>
+    
+    <item>
+      <title>工作任务项杂记_201904</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</guid>
+      <description>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo</description>
+    </item>
+    
+    <item>
+      <title>巧妙调试docker容器</title>
+      <link>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Sun, 21 Apr 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</guid>
+      <description>问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行</description>
+    </item>
+    
+    <item>
+      <title>保存mysql InnoDB的auto_increment值另类方案</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E4%BF%9D%E5%AD%98mysql-innodb%E7%9A%84auto_increment%E5%80%BC%E5%8F%A6%E7%B1%BB%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Thu, 04 Aug 2016 23:42:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E4%BF%9D%E5%AD%98mysql-innodb%E7%9A%84auto_increment%E5%80%BC%E5%8F%A6%E7%B1%BB%E6%96%B9%E6%A1%88/</guid>
+      <description>问题描述 mysql数据库有auto_increment这样一个特性，一般是用来设置Integer类型主键自增长。比如下面的代码： -- 刚创建表，</description>
+    </item>
+    
+  </channel>
+</rss>

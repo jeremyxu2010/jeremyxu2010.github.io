@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>初识grunt - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2014/05/%E5%88%9D%E8%AF%86grunt/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="初识grunt" />
+<meta property="og:description" content="很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2014/05/%E5%88%9D%E8%AF%86grunt/" />
+<meta property="article:published_time" content="2014-05-30T01:40:00+08:00" />
+<meta property="article:modified_time" content="2014-05-30T01:40:00+08:00" />
+<meta itemprop="name" content="初识grunt">
+<meta itemprop="description" content="很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天">
+<meta itemprop="datePublished" content="2014-05-30T01:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2014-05-30T01:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="926">
+
+
+
+<meta itemprop="keywords" content="grunt,bower," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="初识grunt"/>
+<meta name="twitter:description" content="很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">初识grunt</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2014-05-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 926 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很早就听人提过grunt，我的概念里一直认为它是一个类似java界maven的东西，帮助开发人员从频繁地编译、配置管理等工作中解放出来。今天比较有空，就尝试使用一下这个东西，看看它是不是真的那么好用。</p>
+<p>首先安装nodejs</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装Homebrew</span>
+ruby -e <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#75715e">#安装nodejs</span>
+brew install node
+<span style="color:#75715e">#安装grunt-cli</span>
+npm install -g grunt-cli
+</code></pre></div><p>切换到工程目录，安装3个nodejs模块</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">npm install grunt --save-dev
+npm install grunt-contrib-uglify --save-dev
+npm install grunt-contrib-htmlmin --save-dev
+</code></pre></div><p>在工程目录中新建一个<code>Gruntfile.js</code>文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">grunt</span>) {
+  <span style="color:#75715e">// Project configuration.
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">grunt</span>.<span style="color:#a6e22e">initConfig</span>({
+    <span style="color:#a6e22e">uglify</span><span style="color:#f92672">:</span> {
+      <span style="color:#a6e22e">build</span><span style="color:#f92672">:</span> {
+          <span style="color:#a6e22e">options</span><span style="color:#f92672">:</span> {
+              <span style="color:#a6e22e">preserveComments</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>,
+              <span style="color:#a6e22e">compress</span><span style="color:#f92672">:</span> {
+                  <span style="color:#a6e22e">drop_console</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+              },
+              <span style="color:#a6e22e">banner</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;/*! compress js file date : &#39;</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;&lt;%= grunt.template.today(&#34;yyyy-mm-dd&#34;) %&gt; */&#39;</span>
+          },
+          <span style="color:#a6e22e">files</span><span style="color:#f92672">:</span> [{
+              <span style="color:#a6e22e">expand</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+              <span style="color:#a6e22e">cwd</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;src/&#39;</span>,
+              <span style="color:#a6e22e">src</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;**/*.js&#39;</span>,
+              <span style="color:#a6e22e">dest</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;build/&#39;</span>
+          }]
+      }
+    },
+    <span style="color:#a6e22e">htmlmin</span><span style="color:#f92672">:</span> {
+        <span style="color:#a6e22e">build</span><span style="color:#f92672">:</span> {
+            <span style="color:#a6e22e">options</span><span style="color:#f92672">:</span> {                                 <span style="color:#75715e">// Target options
+</span><span style="color:#75715e"></span>                <span style="color:#a6e22e">removeComments</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+                <span style="color:#a6e22e">collapseWhitespace</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>
+            },
+            <span style="color:#a6e22e">files</span><span style="color:#f92672">:</span> [{
+                <span style="color:#a6e22e">expand</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+                <span style="color:#a6e22e">cwd</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;src/&#39;</span>,
+                <span style="color:#a6e22e">src</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;**/*.html&#39;</span>,
+                <span style="color:#a6e22e">dest</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;build/&#39;</span>
+            }]
+        }
+    }
+  });
+
+  <span style="color:#75715e">// 加载包含 &#34;uglify&#34; 任务的插件。
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">grunt</span>.<span style="color:#a6e22e">loadNpmTasks</span>(<span style="color:#e6db74">&#39;grunt-contrib-uglify&#39;</span>);
+
+  <span style="color:#75715e">// 加载包含 &#34;htmlmin&#34; 任务的插件。
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">grunt</span>.<span style="color:#a6e22e">loadNpmTasks</span>(<span style="color:#e6db74">&#39;grunt-contrib-htmlmin&#39;</span>);
+
+  <span style="color:#75715e">// 默认被执行的任务列表。
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">grunt</span>.<span style="color:#a6e22e">registerTask</span>(<span style="color:#e6db74">&#39;default&#39;</span>, [<span style="color:#e6db74">&#39;uglify&#39;</span>, <span style="color:#e6db74">&#39;htmlmin&#39;</span>]);
+};
+</code></pre></div><p>这个文件需要理解一下每个Gruntfile(和Grunt插件)都使用下面这个基本格式，并且所有Grunt代码都必须指定在这个函数里面：</p>
+<pre><code>module.exports = function(grunt) {
+    // 在这里处理Grunt相关的事情
+}
+</code></pre><p>这个函数里面的内容一般会有一个项目配置、加载多个任务的插件、多个自定义任务，每个任务里又可以定义多个目标，每个任务和每个目标都可以有options配置，配置遵循就近原则（离目标越近,其优先级越高），大概形式如下：</p>
+<pre><code>    // 项目配置
+    grunt.initConfig({
+        task1: {
+            options: {
+            },
+            target1: {
+                options: {
+                }
+            },
+            target2: {
+            }
+        }，
+        task2: {
+            target1: {
+            },
+            target2: {
+            }
+        }
+        .....
+
+    });
+
+    // 加载提供&quot;task1&quot;任务的插件
+    grunt.loadNpmTasks('task1_node_module_name');
+    // 加载提供&quot;task2&quot;任务的插件
+    grunt.loadNpmTasks('task2_node_module_name');
+    ....
+
+    grunt.registerTask('task3', ['task1:target1', 'task2']);
+    grunt.registerTask('default', ['task1', 'task2']);
+</code></pre><p>然后就可以使用<code>grunt task1:target1</code>, <code>grunt task2</code>(这个会执行task2下的所有目标), <code>grunt task3</code>来执行了, 其中名称叫default的自定义任务比较特殊，当直接执行<code>grunt</code>时，会执行这个任务。</p>
+<p>当然还一些高级特性，这个看看官方文档就清楚了，比如数据属性、多种多样的文件描述、项目脚手架等。</p>
+<p>了解地差不多了，我准备把前两个写的那个pingdemo使用grunt来构建试试看，期间还稍微看了下bower。</p>
+<p>安装bower</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">npm install -g bower
+</code></pre></div><p>在项目根目录下创建<code>bower.json</code>文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;pingdemo&#34;</span>,
+  <span style="color:#f92672">&#34;version&#34;</span>: <span style="color:#e6db74">&#34;0.1.0&#34;</span>,
+  <span style="color:#f92672">&#34;main&#34;</span>: <span style="color:#e6db74">&#34;build/main.js&#34;</span>,
+  <span style="color:#f92672">&#34;ignore&#34;</span>: [
+    <span style="color:#e6db74">&#34;**/*.txt&#34;</span>
+  ],
+  <span style="color:#f92672">&#34;dependencies&#34;</span>: {
+    <span style="color:#f92672">&#34;jquery&#34;</span>: <span style="color:#e6db74">&#34;2.1.1&#34;</span>
+  },
+  <span style="color:#f92672">&#34;private&#34;</span>: <span style="color:#66d9ef">true</span>
+}
+</code></pre></div><p>安装项目依赖的外部js文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">bower install
+</code></pre></div><p>这样它会自动从github上下载jquery。</p>
+<p>最后放出重新整理过工程结构的pingdemo地址</p>
+<p><code>https://github.com/jeremyxu2010/pingdemo</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2014-05-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/grunt/">grunt</a>
+          
+          <a href="/tags/bower/">bower</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">nagios安装配置</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/">
+            <span class="next-text nav-default">linux下进行端口映射</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

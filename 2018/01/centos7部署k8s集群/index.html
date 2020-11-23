@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CentOS7部署k8s集群 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="CentOS7部署k8s集群" />
+<meta property="og:description" content="环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" />
+<meta property="article:published_time" content="2018-01-28T22:07:00+08:00" />
+<meta property="article:modified_time" content="2018-01-28T22:07:00+08:00" />
+<meta itemprop="name" content="CentOS7部署k8s集群">
+<meta itemprop="description" content="环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台">
+<meta itemprop="datePublished" content="2018-01-28T22:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-01-28T22:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="2444">
+
+
+
+<meta itemprop="keywords" content="docker,k8s," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CentOS7部署k8s集群"/>
+<meta name="twitter:description" content="环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">CentOS7部署k8s集群</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-01-28 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2444 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">环境介绍及准备</a>
+      <ul>
+        <li><a href="#heading-1">主机信息</a></li>
+        <li><a href="#heading-2">关闭三台机器上的防火墙</a></li>
+      </ul>
+    </li>
+    <li><a href="#etcd">部署etcd</a></li>
+    <li><a href="#master">部署master</a>
+      <ul>
+        <li><a href="#docker">安装Docker</a></li>
+        <li><a href="#kubernets">安装kubernets</a></li>
+        <li><a href="#registry">搭建及运行registry</a></li>
+        <li><a href="#kubernetes">配置并启动kubernetes</a></li>
+      </ul>
+    </li>
+    <li><a href="#node">部署node</a>
+      <ul>
+        <li><a href="#docker-3">安装docker</a></li>
+        <li><a href="#kubernets-1">安装kubernets</a></li>
+        <li><a href="#kubernetes-1">配置并启动kubernetes</a></li>
+        <li><a href="#heading-6">查看状态</a></li>
+      </ul>
+    </li>
+    <li><a href="#overlayflannel">创建Overlay网络——Flannel</a>
+      <ul>
+        <li><a href="#flannel">安装Flannel</a></li>
+        <li><a href="#flannel-1">配置Flannel</a></li>
+        <li><a href="#etcdflannelkey">配置etcd中关于flannel的key</a></li>
+        <li><a href="#heading-7">启动</a></li>
+        <li><a href="#flannel-2">Flannel网络</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-8">测试</a></li>
+    <li><a href="#heading-9">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">环境介绍及准备</h2>
+<p>操作系统采用Centos7.3 64位，细节如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@k8s-master ~<span style="color:#f92672">]</span><span style="color:#75715e"># uname -a</span>
+Linux k8s-master 3.10.0-327.el7.x86_64 <span style="color:#75715e">#1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux</span>
+<span style="color:#f92672">[</span>root@k8s-master ~<span style="color:#f92672">]</span><span style="color:#75715e"># cat /etc/redhat-release</span>
+CentOS Linux release 7.2.1511 <span style="color:#f92672">(</span>Core<span style="color:#f92672">)</span>
+</code></pre></div><h3 id="heading-1">主机信息</h3>
+<p>本文准备了三台机器用于部署k8s的运行环境，细节如下：</p>
+<table>
+<thead>
+<tr>
+<th>节点及功能</th>
+<th>主机名</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>master、etcd、registry</td>
+<td>k8s-master</td>
+<td>10.211.55.6</td>
+</tr>
+<tr>
+<td>node1</td>
+<td>k8s-node-1</td>
+<td>10.211.55.7</td>
+</tr>
+<tr>
+<td>node2</td>
+<td>k8s-node-2</td>
+<td>10.211.55.8</td>
+</tr>
+</tbody>
+</table>
+<p>设置三台机器的主机名：
+master上执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@localhost ~<span style="color:#f92672">]</span><span style="color:#75715e"># hostnamectl --static set-hostname k8s-master</span>
+</code></pre></div><p>node1上执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@localhost ~<span style="color:#f92672">]</span><span style="color:#75715e"># hostnamectl --static set-hostname k8s-node-1</span>
+</code></pre></div><p>node2上执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>root@localhost ~<span style="color:#f92672">]</span><span style="color:#75715e"># hostnamectl --static set-hostname k8s-node-2</span>
+</code></pre></div><p>在三台机器上设置hosts，均执行如下命令：</p>
+<pre><code>echo '10.211.55.6    k8s-master
+10.211.55.6   etcd
+10.211.55.6   registry
+10.211.55.7   k8s-node-1
+10.211.55.8   k8s-node-2' &gt;&gt; /etc/hosts
+</code></pre><h3 id="heading-2">关闭三台机器上的防火墙</h3>
+<pre><code>systemctl disable firewalld.service
+systemctl stop firewalld.service
+</code></pre><h2 id="etcd">部署etcd</h2>
+<p>k8s运行依赖etcd，需要先部署etcd，本文采用yum方式安装：</p>
+<pre><code># yum install -y etcd
+</code></pre><p>yum安装的etcd默认配置文件在<code>/etc/etcd/etcd.conf</code>。编辑配置文件，更改以下信息：</p>
+<pre><code>ETCD_NAME=master
+ETCD_LISTEN_CLIENT_URLS=&quot;http://0.0.0.0:2379,http://0.0.0.0:4001&quot;
+ETCD_ADVERTISE_CLIENT_URLS=&quot;http://etcd:2379,http://etcd:4001&quot;
+</code></pre><p>启动并验证状态</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># systemctl start etcd</span>
+<span style="color:#75715e"># systemctl enable etcd</span>
+<span style="color:#75715e">#  etcdctl set testdir/testkey0 0</span>
+<span style="color:#ae81ff">0</span>
+<span style="color:#75715e">#  etcdctl get testdir/testkey0</span> 
+<span style="color:#ae81ff">0</span>
+<span style="color:#75715e"># etcdctl -C http://etcd:4001 cluster-health</span>
+member 8e9e05c52164694d is healthy: got healthy result from http://0.0.0.0:2379
+cluster is healthy
+<span style="color:#75715e"># etcdctl -C http://etcd:2379 cluster-health</span>
+member 8e9e05c52164694d is healthy: got healthy result from http://0.0.0.0:2379
+cluster is healthy
+</code></pre></div><p>扩展：Etcd集群部署参见——<a href="http://www.cnblogs.com/zhenyuyaodidiao/p/6237019.html">http://www.cnblogs.com/zhenyuyaodidiao/p/6237019.html</a></p>
+<h2 id="master">部署master</h2>
+<h3 id="docker">安装Docker</h3>
+<pre><code>[root@k8s-master ~]# yum install -y docker
+</code></pre><h4 id="docker-1">配置Docker配置文件</h4>
+<p>使其允许从registry中拉取镜像。增加如下一行：
+OPTIONS=&rsquo;–insecure-registry registry:5000&rsquo;</p>
+<pre><code>[root@k8s-master ~]# vim /etc/sysconfig/docker
+
+# /etc/sysconfig/docker
+
+# Modify these options if you want to change the way the docker daemon runs
+OPTIONS='--selinux-enabled --log-driver=journald --signature-verification=false'
+if [ -z &quot;${DOCKER_CERT_PATH}&quot; ]; then
+    DOCKER_CERT_PATH=/etc/docker
+fi
+
+OPTIONS='--insecure-registry registry:5000'
+</code></pre><h4 id="docker-2">设置使用阿里云的docker加速器</h4>
+<pre><code>cp -n /lib/systemd/system/docker.service /etc/systemd/system/docker.service
+sed -i &quot;s|ExecStart=/usr/bin/dockerd-current|ExecStart=/usr/bin/dockerd-current --registry-mirror=&lt;your accelerate address&gt;|g&quot; /etc/systemd/system/docker.service
+systemctl daemon-reload
+systemctl restart docker.service
+</code></pre><h4 id="heading-3">设置开机自启动并开启服务</h4>
+<pre><code># systemctl enable docker.service
+# systemctl restart docker.service
+</code></pre><h3 id="kubernets">安装kubernets</h3>
+<pre><code>[root@k8s-master ~]# yum install -y kubernetes
+</code></pre><h3 id="registry">搭建及运行registry</h3>
+<pre><code>docker pull registry:2
+// 将registry的数据卷与本地关联，便于管理和备份registry数据
+docker run -d -p 5000:5000 --name registry -v /data/registry:/var/lib/registry registry:2
+</code></pre><h3 id="kubernetes">配置并启动kubernetes</h3>
+<p>在kubernetes master上需要运行以下组件：</p>
+<ul>
+<li>Kubernets API Server</li>
+<li>Kubernets Controller Manager</li>
+<li>Kubernets Scheduler</li>
+</ul>
+<p>相应的要更改以下几个配置中带颜色部分信息：</p>
+<h4 id="etckubernetesapiserver">修改<code>/etc/kubernetes/apiserver</code></h4>
+<pre><code>KUBE_API_ADDRESS=”–insecure-bind-address=0.0.0.0”
+KUBE_API_PORT=”–port=8080”
+KUBE_ETCD_SERVERS=”–etcd-servers=http://etcd:2379“
+KUBE_ADMISSION_CONTROL=”–admission-control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ResourceQuota”
+</code></pre><h4 id="etckubernetesconfig">修改<code>/etc/kubernetes/config</code></h4>
+<pre><code>KUBE_MASTER=&quot;–master=http://k8s-master:8080&quot;
+</code></pre><h4 id="heading-4">启动服务并设置开机自启动</h4>
+<pre><code># systemctl enable kube-apiserver.service
+# systemctl start kube-apiserver.service
+# systemctl enable kube-controller-manager.service
+# systemctl start kube-controller-manager.service
+# systemctl enable kube-scheduler.service
+# systemctl start kube-scheduler.service
+</code></pre><h2 id="node">部署node</h2>
+<h3 id="docker-3">安装docker</h3>
+<p>参见master的docker安装步骤</p>
+<h3 id="kubernets-1">安装kubernets</h3>
+<p>参见master的kubernets安装步骤</p>
+<h3 id="kubernetes-1">配置并启动kubernetes</h3>
+<p>在kubernetes node上需要运行以下组件：</p>
+<ul>
+<li>Kubelet</li>
+<li>Kubernets Proxy</li>
+</ul>
+<p>相应的要更改以下几个配置文中信息：</p>
+<h4 id="-etckubernetesconfig">修改 /etc/kubernetes/config</h4>
+<pre><code>KUBE_MASTER=&quot;–master=http://k8s-master:8080&quot;
+</code></pre><h4 id="etckuberneteskubelet">修改/etc/kubernetes/kubelet</h4>
+<pre><code>KUBELET_ADDRESS=&quot;–address=0.0.0.0&quot;
+KUBELET_HOSTNAME=&quot;–hostname-override=k8s-node-1&quot; (注意第二台要写 k8s-node-2)
+KUBELET_API_SERVER=&quot;–api-servers=http://k8s-master:8080&quot;
+</code></pre><h4 id="heading-5">启动服务并设置开机自启动</h4>
+<pre><code># systemctl enable kubelet.service
+# systemctl start kubelet.service
+# systemctl enable kube-proxy.service
+# systemctl start kube-proxy.service
+</code></pre><h3 id="heading-6">查看状态</h3>
+<p>在master上查看集群中节点及节点状态</p>
+<pre><code>#  kubectl -s http://k8s-master:8080 get node
+NAME         STATUS    AGE
+k8s-node-1   Ready     3m
+k8s-node-2   Ready     16s
+# kubectl get nodes
+NAME         STATUS    AGE
+k8s-node-1   Ready     3m
+k8s-node-2   Ready     43s
+</code></pre><p>至此，已经搭建了一个kubernetes集群。</p>
+<h2 id="overlayflannel">创建Overlay网络——Flannel</h2>
+<h3 id="flannel">安装Flannel</h3>
+<p>在master、node上均执行如下命令，进行安装</p>
+<pre><code># yum install -y flannel
+</code></pre><h3 id="flannel-1">配置Flannel</h3>
+<p>master、node上均编辑/etc/sysconfig/flanneld，修改以下配置：</p>
+<pre><code># etcd url location.  Point this to the server where etcd runs
+FLANNEL_ETCD_ENDPOINTS=&quot;http://etcd:2379&quot;
+</code></pre><h3 id="etcdflannelkey">配置etcd中关于flannel的key</h3>
+<p>Flannel使用Etcd进行配置，来保证多个Flannel实例之间的配置一致性，所以需要在etcd上进行如下配置：</p>
+<pre><code># etcdctl mk /atomic.io/network/config '{ &quot;Network&quot;: &quot;10.0.0.0/16&quot; }'
+{ &quot;Network&quot;: &quot;10.0.0.0/16&quot; }
+</code></pre><h3 id="heading-7">启动</h3>
+<p>启动Flannel之后，需要依次重启docker、kubernete。
+在master执行：</p>
+<pre><code>systemctl enable flanneld.service 
+systemctl start flanneld.service 
+service docker restart
+systemctl restart kube-apiserver.service
+systemctl restart kube-controller-manager.service
+systemctl restart kube-scheduler.service
+
+</code></pre><p>在node上执行：</p>
+<pre><code>systemctl enable flanneld.service 
+systemctl start flanneld.service 
+service docker restart
+systemctl restart kubelet.service
+systemctl restart kube-proxy.service
+</code></pre><h3 id="flannel-2">Flannel网络</h3>
+<p>Flannel算是k8s里最简单的网络了，这里找到<a href="http://tonybai.com/2017/01/17/understanding-flannel-network-for-kubernetes/">一篇文章</a>可以帮忙理解Flannel网络。</p>
+<h2 id="heading-8">测试</h2>
+<pre><code># docker pull nginx # 从外网registry拉一个nginx镜像过来
+# docker tag nginx registry:5000/nginx # 为本地镜像打tag
+# docker push registry:5000/nginx # 推送至本地registry
+# docker rmi registry:5000/nginx # 删除本地镜像
+
+cat &lt;&lt; EOF &gt;nginx.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: registry:5000/nginx
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 400m
+EOF
+# kubectl create -f nginx.yaml #创建nginx-dpmt部署
+
+cat &lt;&lt; EOF &gt;nginx-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+  labels:
+    app: nginx-svc
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30088
+EOF
+# kubectl create -f nginx-svc.yaml # 创建nginx-svc服务
+# kubectl describe service nginx-svc
+Name:			nginx-svc
+Namespace:		default
+Labels:			app=nginx-svc
+Selector:		app=nginx
+Type:			NodePort
+IP:			10.254.53.185
+Port:			&lt;unset&gt;	80/TCP
+NodePort:		&lt;unset&gt;	30088/TCP
+Endpoints:		10.0.19.2:80,10.0.4.2:80
+Session Affinity:	None
+No events.
+# curl http://k8s-node-1:30088/ # 通过nodePort测试nginx服务
+</code></pre><p>测试过程中遇到两个问题：</p>
+<ol>
+<li>
+<p>pod服务一直处于 ContainerCreating状态，后来参考<a href="http://www.voidcn.com/article/p-kpjywccp-bny.html">这里</a>，安装了rhsm相关的包解决了。</p>
+</li>
+<li>
+<p><code>nginx-svc.yaml</code>文件中<code>spec.selector.app</code>的名称与<code>nginx.yaml</code>中的<code>spec.template.metadata.labels.app</code>不一致，这个导致一直无法通过NodePort访问服务。</p>
+</li>
+</ol>
+<h2 id="heading-9">参考</h2>
+<ol>
+<li><a href="http://qinghua.github.io/kubernetes-deployment/">http://qinghua.github.io/kubernetes-deployment/</a></li>
+<li><a href="http://wdxtub.com/2017/06/05/k8s-note/">http://wdxtub.com/2017/06/05/k8s-note/</a></li>
+<li><a href="https://jimmysong.io/kubernetes-handbook/guide/accessing-kubernetes-pods-from-outside-of-the-cluster.html">https://jimmysong.io/kubernetes-handbook/guide/accessing-kubernetes-pods-from-outside-of-the-cluster.html</a></li>
+<li><a href="http://tonybai.com/2017/01/17/understanding-flannel-network-for-kubernetes/">http://tonybai.com/2017/01/17/understanding-flannel-network-for-kubernetes/</a></li>
+<li><a href="http://www.cnblogs.com/puroc/p/6297851.html">http://www.cnblogs.com/puroc/p/6297851.html</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/">https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-01-28</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/k8s/">k8s</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">powershell学习备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/11/%E5%86%99py2py3%E5%85%BC%E5%AE%B9%E7%9A%84%E4%BB%A3%E7%A0%81/">
+            <span class="next-text nav-default">写py2、py3兼容的代码</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

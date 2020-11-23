@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blog on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/blog/</link>
+    <description>Recent content in blog on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Apr 2016 13:53:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>开发者的博客写作环境</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Sun, 10 Apr 2016 13:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/</guid>
+      <description>作为一个开发者，本时有工作中肯定有技术上各种点点滴滴想记下来，毕竟好记忆不如烂笔头。当然使用一个笔记工具完全可以满足这个需求。但同时我在想能</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>netfilter on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/netfilter/</link>
+    <description>Recent content in netfilter on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 13 Oct 2018 22:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/netfilter/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>追查iptables规则失效原因</title>
+      <link>https://jeremyxu2010.github.io/2018/10/%E8%BF%BD%E6%9F%A5iptables%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E5%8E%9F%E5%9B%A0/</link>
+      <pubDate>Sat, 13 Oct 2018 22:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/%E8%BF%BD%E6%9F%A5iptables%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E5%8E%9F%E5%9B%A0/</guid>
+      <description>今天在工作中用到了一条iptables规则，虽然明白这条规则的意思，但结合之前对iptables的理解，想不明白为什么会这么工作，后来仔细研</description>
+    </item>
+    
+  </channel>
+</rss>

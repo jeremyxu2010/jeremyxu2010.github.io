@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>研究监控系统之prometheus - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="研究监控系统之prometheus" />
+<meta property="og:description" content="这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/" />
+<meta property="article:published_time" content="2018-08-05T12:30:00+08:00" />
+<meta property="article:modified_time" content="2018-08-05T12:30:00+08:00" />
+<meta itemprop="name" content="研究监控系统之prometheus">
+<meta itemprop="description" content="这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本">
+<meta itemprop="datePublished" content="2018-08-05T12:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-05T12:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="6489">
+
+
+
+<meta itemprop="keywords" content="golang,prometheus," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="研究监控系统之prometheus"/>
+<meta name="twitter:description" content="这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">研究监控系统之prometheus</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-05 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+            
+          </div>
+        <span class="more-meta"> 约 6489 字 </span>
+        <span class="more-meta"> 预计阅读 13 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#prometheus">什么是prometheus？</a>
+      <ul>
+        <li><a href="#heading">特征</a></li>
+        <li><a href="#heading-1">组件</a></li>
+        <li><a href="#heading-2">架构</a></li>
+        <li><a href="#heading-3">适用场景</a></li>
+        <li><a href="#heading-4">不适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#prometheus-1">prometheus的概念</a>
+      <ul>
+        <li><a href="#jobsinstances">Jobs和Instances(任务和实例)</a></li>
+        <li><a href="#heading-6">数据模型</a></li>
+        <li><a href="#metrics">metrics类型</a></li>
+      </ul>
+    </li>
+    <li><a href="#prometheus-2">安装部署prometheus</a></li>
+    <li><a href="#prometheus-3">解读prometheus的概念</a></li>
+    <li><a href="#heading-8">监控指标上报</a>
+      <ul>
+        <li><a href="#exporter">各类exporter</a></li>
+        <li><a href="#heading-9">编写监控指标上报代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-10">查询监控指标数据</a></li>
+    <li><a href="#heading-11">图表里查看监控状态</a></li>
+    <li><a href="#heading-12">部署优化</a>
+      <ul>
+        <li><a href="#heading-13">远端存储</a></li>
+        <li><a href="#heading-14">联邦模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-15">监控告警</a></li>
+    <li><a href="#heading-16">最佳实践</a></li>
+    <li><a href="#heading-17">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标：</p>
+<ol>
+<li>宿主机的CPU、内存使用情况</li>
+<li>自身系统的各进程占用CPU、内存使用情况</li>
+<li>自身系统本身的重要业务指标</li>
+</ol>
+<p>以前用过<a href="https://www.nagios.org/">nagios</a>和<a href="https://www.zabbix.com/">zabbix</a>，nagios用起来太过原始，配置文件维护得很累，监控的图表也比较难看；zabbix的主要开发语言是C和PHP，要暴露一些自定义的监控指标较困难。网上一些云原生的项目都是用<code>prometheus+grafana</code>方案的，刚好花时间研究一下这个。</p>
+<p>以下的概述摘自 <code>https://github.com/1046102779/prometheus/blob/master/introduction/overview.md</code></p>
+<h2 id="prometheus">什么是prometheus？</h2>
+<p><a href="https://github.com/prometheus">Prometheus</a>是一个开源监控系统，它前身是SoundCloud的警告工具包。从2012年开始，许多公司和组织开始使用Prometheus。该项目的开发人员和用户社区非常活跃，越来越多的开发人员和用户参与到该项目中。目前它是一个独立的开源项目，且不依赖与任何公司。 为了强调这点和明确该项目治理结构，Prometheus在2016年继Kurberntes之后，加入了Cloud Native Computing Foundation。</p>
+<h3 id="heading">特征</h3>
+<p>Prometheus的主要特征有：</p>
+<ol>
+<li>多维度数据模型</li>
+<li>灵活的查询语言</li>
+<li>不依赖分布式存储，单个服务器节点是自主的</li>
+<li>以HTTP方式，通过pull模型拉去时间序列数据</li>
+<li>也通过中间网关支持push模型</li>
+<li>通过服务发现或者静态配置，来发现目标服务对象</li>
+<li>支持多种多样的图表和界面展示，grafana也支持它</li>
+</ol>
+<h3 id="heading-1">组件</h3>
+<p>Prometheus生态包括了很多组件，它们中的一些是可选的：</p>
+<ol>
+<li>主服务Prometheus Server负责抓取和存储时间序列数据</li>
+<li>客户库负责检测应用程序代码</li>
+<li>支持短生命周期的PUSH网关</li>
+<li>基于Rails/SQL仪表盘构建器的GUI</li>
+<li>多种导出工具，可以支持Prometheus存储数据转化为HAProxy、StatsD、Graphite等工具所需要的数据存储格式</li>
+<li>警告管理器</li>
+<li>命令行查询工具</li>
+<li>其他各种支撑工具</li>
+</ol>
+<p>多数Prometheus组件是Go语言写的，这使得这些组件很容易编译和部署。</p>
+<h3 id="heading-2">架构</h3>
+<p>下面这张图说明了Prometheus的整体架构，以及生态中的一些组件作用: <img src="/images/20180805/68747470733a2f2f70726f6d6574686575732e696f2f6173736574732f6172636869746563747572652e737667.svg" alt="Prometheus Arhitecture"></p>
+<p>Prometheus服务，可以直接通过目标拉取数据，或者间接地通过中间网关拉取数据。它在本地存储抓取的所有数据，并通过一定规则进行清理和整理数据，并把得到的结果存储到新的时间序列中，PromQL和其他API可视化地展示收集的数据</p>
+<h3 id="heading-3">适用场景</h3>
+<p>Prometheus在记录纯数字时间序列方面表现非常好。它既适用于面向服务器等硬件指标的监控，也适用于高动态的面向服务架构的监控。对于现在流行的微服务，Prometheus的多维度数据收集和数据筛选查询语言也是非常的强大。</p>
+<p>Prometheus是为服务的可靠性而设计的，当服务出现故障时，它可以使你快速定位和诊断问题。它的搭建过程对硬件和服务没有很强的依赖关系。</p>
+<h3 id="heading-4">不适用场景</h3>
+<p>Prometheus，它的价值在于可靠性，甚至在很恶劣的环境下，你都可以随时访问它和查看系统服务各种指标的统计信息。 如果你对统计数据需要100%的精确，它并不适用，例如：它不适用于实时计费系统</p>
+<h2 id="prometheus-1">prometheus的概念</h2>
+<p>prometheus里的概念比较少，重要的只有以下几个。</p>
+<h3 id="jobsinstances">Jobs和Instances(任务和实例)</h3>
+<p>就Prometheus而言，pull拉取采样点的端点服务称之为instance。多个这样pull拉取采样点的instance, 则构成了一个job。</p>
+<p>例如, 一个被称作api-server的任务有四个相同的实例。</p>
+<pre><code>job: api-server
+   instance 1：1.2.3.4:5670
+   instance 2：1.2.3.4:5671
+   instance 3：5.6.7.8:5670
+   instance 4：5.6.7.8:5671
+</code></pre><h4 id="heading-5">自动化生成的标签和时间序列</h4>
+<p>当Prometheus拉取一个目标, 会自动地把两个标签添加到度量名称的标签列表中，分别是：</p>
+<p>job: 目标所属的配置任务名称api-server。
+instance: 采样点所在服务: host:port
+如果以上两个标签二者之一存在于采样点中，这个取决于honor_labels配置选项。</p>
+<p>对于每个采样点所在服务instance，Prometheus都会存储以下的度量指标采样点：</p>
+<ul>
+<li>up{job=&rdquo;[job-name]&quot;, instance=&quot;instance-id&rdquo;}: up值=1，表示采样点所在服务健康; 否则，网络不通, 或者服务挂掉了</li>
+<li>scrape_duration_seconds{job=&rdquo;[job-name]&quot;, instance=&rdquo;[instance-id]&quot;}: 尝试获取目前采样点的时间开销</li>
+<li>scrape_samples_scraped{job=&rdquo;[job-name]&quot;, instance=&rdquo;[instance-id]&quot;}: 这个采样点目标暴露的样本点数量</li>
+</ul>
+<p><strong>up度量指标对服务健康的监控是非常有用的</strong>。</p>
+<h3 id="heading-6">数据模型</h3>
+<p>Prometheus从根本上存储的所有数据都是<a href="http://en.wikipedia.org/wiki/Time_series">时间序列</a>: 具有时间戳的数据流只属于单个度量指标和该度量指标下的多个标签维度。除了存储时间序列数据外，Prometheus也可以利用查询表达式存储5分钟的返回结果中的时间序列数据</p>
+<h4 id="metricslabels">metrics和labels(度量指标名称和标签)</h4>
+<p>每一个时间序列数据由metric度量指标名称和它的标签labels键值对集合唯一确定。</p>
+<p>这个metric度量指标名称指定监控目标系统的测量特征（如：<code>http_requests_total</code>- 接收http请求的总计数）. metric度量指标命名ASCII字母、数字、下划线和冒号，他必须配正则表达式<code>[a-zA-Z_:][a-zA-Z0-9_:]*</code>。</p>
+<p>标签开启了Prometheus的多维数据模型：对于相同的度量名称，通过不同标签列表的结合, 会形成特定的度量维度实例。(例如：所有包含度量名称为<code>/api/tracks</code>的http请求，打上<code>method=POST</code>的标签，则形成了具体的http请求)。这个查询语言在这些度量和标签列表的基础上进行过滤和聚合。改变任何度量上的任何标签值，则会形成新的时间序列图</p>
+<p>标签label名称可以包含ASCII字母、数字和下划线。它们必须匹配正则表达式<code>[a-zA-Z_][a-zA-Z0-9_]*</code>。带有<code>_</code>下划线的标签名称被保留内部使用。</p>
+<p>标签labels值包含任意的Unicode码。</p>
+<p>具体详见<a href="https://prometheus.io/docs/practices/naming/">metrics和labels命名最佳实践</a>。</p>
+<h4 id="heading-7">有序的采样值</h4>
+<p>有序的采样值形成了实际的时间序列数据列表。每个采样值包括：</p>
+<ul>
+<li>一个64位的浮点值</li>
+<li>一个精确到毫秒级的时间戳 一个样本数据集是针对一个指定的时间序列在一定时间范围的数据收集。这个时间序列是由&lt;metric_name&gt;{&lt;label_name&gt;=&lt;label_value&gt;, &hellip;}</li>
+</ul>
+<p>&lsquo;&lsquo;小结：指定度量名称和度量指标下的相关标签值，则确定了所关心的目标数据，随着时间推移形成一个个点，在图表上实时绘制动态变化的线条&rsquo;&rsquo;</p>
+<h4 id="notation">Notation(符号)</h4>
+<p>表示一个度量指标和一组键值对标签，需要使用以下符号：</p>
+<blockquote>
+<p>[metric name]{[label name]=[label value], &hellip;}</p>
+</blockquote>
+<p>例如，度量指标名称是<code>api_http_requests_total</code>， 标签为<code>method=&quot;POST&quot;</code>, <code>handler=&quot;/messages&quot;</code> 的示例如下所示：</p>
+<blockquote>
+<p>api_http_requests_total{method=&quot;POST&rdquo;, handler=&rdquo;/messages&rdquo;}</p>
+</blockquote>
+<p>这些命名和OpenTSDB使用方法是一样的</p>
+<h3 id="metrics">metrics类型</h3>
+<hr>
+<p>Prometheus客户库提供了四个核心的metrics类型。这四种类型目前仅在客户库和wire协议中区分。Prometheus服务还没有充分利用这些类型。不久的将来就会发生改变。</p>
+<h4 id="counter">Counter(计数器)</h4>
+<p><em>counter</em> 是一个累计度量指标，它是一个只能递增的数值。计数器主要用于统计服务的请求数、任务完成数和错误出现的次数等等。计数器是一个递增的值。反例：统计goroutines的数量。</p>
+<h4 id="gauge">Gauge(测量器)</h4>
+<p><em>gauge</em>是一个度量指标，它表示一个既可以递增, 又可以递减的值。</p>
+<p>测量器主要测量类似于温度、当前内存使用量等，也可以统计当前服务运行随时增加或者减少的Goroutines数量</p>
+<h4 id="histogram">Histogram(柱状图)</h4>
+<p><em>histogram</em>，是柱状图，在Prometheus系统中的查询语言中，有三种作用：</p>
+<ol>
+<li>对每个采样点进行统计，打到各个分类值中(bucket)</li>
+<li>对每个采样点值累计和(sum)</li>
+<li>对采样点的次数累计和(count)</li>
+</ol>
+<p>度量指标名称: <code>[basename]</code>的柱状图, 上面三类的作用度量指标名称</p>
+<ul>
+<li>[basename]_bucket{le=&quot;上边界&rdquo;}, 这个值为小于等于上边界的所有采样点数量</li>
+<li>[basename]_sum</li>
+<li>[basename]_count</li>
+</ul>
+<p>小结：所以如果定义一个度量类型为Histogram，则Prometheus系统会自动生成三个对应的指标</p>
+<p>使用<a href="https://prometheus.io/docs/querying/functions/#histogram_quantile">histogram_quantile()</a>函数, 计算直方图或者是直方图聚合计算的分位数阈值。 一个直方图计算<a href="http://en.wikipedia.org/wiki/Apdex">Apdex值</a>也是合适的, 当在buckets上操作时，记住直方图是累计的。</p>
+<h4 id="summary">[Summary]总结</h4>
+<p>类似<em>histogram</em>柱状图，<em>summary</em>是采样点分位图统计，(通常的使用场景：请求持续时间和响应大小)。 它也有三种作用：</p>
+<ol>
+<li>对于每个采样点进行统计，并形成分位图。（如：正态分布一样，统计低于60分不及格的同学比例，统计低于80分的同学比例，统计低于95分的同学比例）</li>
+<li>统计班上所有同学的总成绩(sum)</li>
+<li>统计班上同学的考试总人数(count)</li>
+</ol>
+<p>带有度量指标的<code>[basename]</code>的<code>summary</code> 在抓取时间序列数据展示。</p>
+<ul>
+<li>观察时间的φ-quantiles (0 ≤ φ ≤ 1), 显示为<code>[basename]{分位数=&quot;[φ]&quot;}</code></li>
+<li><code>[basename]_sum</code>， 是指所有观察值的总和</li>
+<li><code>[basename]_count</code>, 是指已观察到的事件计数值</li>
+</ul>
+<p>*<em>summary的最简单的理解, DEMO</em></p>
+<p>详见<a href="https://prometheus.io/docs/practices/histograms">histogram和summaries</a></p>
+<p>上面的几个概念单纯讲还是比较难讲清楚，下面还是安装部署好prometheus，结合实例具体说一下。</p>
+<h2 id="prometheus-2">安装部署prometheus</h2>
+<p>安装部署prometheus也是极简单的，我这里用<code>docker-compose</code>部署，<code>docker-compose.yml</code>文件内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">version: <span style="color:#e6db74">&#39;3&#39;</span>
+
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - <span style="color:#ae81ff">9090</span>:<span style="color:#ae81ff">9090</span>/tcp
+    user: root
+    volumes:
+      - ${PWD}/prometheus/data:/prometheus
+      - ${PWD}/prometheus/conf/prometheus.yml:/etc/prometheus/prometheus.yml
+  
+  grafana:
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    image: grafana/grafana
+    volumes:
+      - ${PWD}/grafana/data:/var/lib/grafana
+    ports:
+      - <span style="color:#ae81ff">3000</span>:<span style="color:#ae81ff">3000</span>/tcp
+    user: grafana
+</code></pre></div><p>上述描述文件将启动两个容器，prometheus和grafana，两个服务均使用本机的配置文件，使用本机的目录作为数据目录。</p>
+<p>prometheus本地的配置文件直接用<code>( docker run --rm -ti --entrypoint '' prom/prometheus cat/etc/prometheus/prometheus.yml ) &gt; ./prometheus/conf/prometheus.yml </code>就得到了。</p>
+<p>然后用<code>docker-compose up -d</code>命令即可启动prometheus和grafana。可直接用浏览器访问，prometheus的访问地址是<code>http://127.0.0.1:9090</code>， grafana的访问地址是<code>http://127.0.0.1:3000</code>。</p>
+<h2 id="prometheus-3">解读prometheus的概念</h2>
+<p>我们打开prometheus的配置文件，看一下内容：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">global:
+  scrape_interval:     15s <span style="color:#75715e"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span>
+  evaluation_interval: 15s <span style="color:#75715e"># Evaluate rules every 15 seconds. The default is every 1 minute.</span>
+
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: []
+
+rule_files: []
+
+scrape_configs:
+  - job_name: <span style="color:#e6db74">&#39;prometheus&#39;</span>
+    static_configs:
+    - targets: [<span style="color:#e6db74">&#39;localhost:9090&#39;</span>]
+</code></pre></div><p>这里可以看到配置了一个名叫<code>prometheus</code>的job：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">scrape_configs:
+  - job_name: <span style="color:#e6db74">&#39;prometheus&#39;</span>
+    static_configs:
+    - targets: [<span style="color:#e6db74">&#39;localhost:9090&#39;</span>]
+</code></pre></div><p>而这个job的服务端点是静态配置的，目前只有<code>localhost:9090</code>这一个。以上配置说明prometheus将会每15s从prometheus这个job定义的服务端点<code>localhost:9090</code>拉取监控指标数据，并将之存入TSDB。当然prometheus还支持其它的服务端点定义方式，参见<a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">配置</a>里一堆以<code>_sd_config</code>结尾的配置。例如可配置基于consul的服务端点发现：</p>
+<pre><code>  - job_name: 'consul_srvs'
+    consul_sd_configs:
+      server: '127.0.0.1:8500'
+      services:
+        - 'serviceA'
+        - 'serviceB'
+</code></pre><p>我们用浏览器访问<code>http://127.0.0.1:9090/metrics</code>，即可看到一个instance向外暴露的监控指标。除了注释外，其它每一行都是一个监控指标项，大部分指标形如：</p>
+<pre><code>go_info{version=&quot;go1.10.3&quot;} 1
+</code></pre><p>这里<code>go_info</code>即为度量指标名称，<code>version</code>为这个度量指标的标签，<code>go1.10.3</code>为这个度量指标version标签的值，<code>1</code>为这个度量指标当前采样的值，一个度量指标的标签可以有0个或多个标签。这就是上面说到的监控指标数据模型。</p>
+<p>可以看到有些度量指标的形式如下：</p>
+<pre><code>go_memstats_frees_total 135196
+</code></pre><p>按prometheus官方建议的规范，以<code>_total</code>为后缀的度量指标一般类型是counter计数器类型。</p>
+<p>有些度量指标的形式如下：</p>
+<pre><code>go_memstats_gc_sys_bytes 913408
+</code></pre><p>这种度量指标一般类型是gauge测量器类型。</p>
+<p>有些度量指标的形式如下：</p>
+<pre><code>prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;100&quot;} 0
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;1000&quot;} 0
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;10000&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;100000&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;1e+06&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;1e+07&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;1e+08&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;1e+09&quot;} 46
+prometheus_http_response_size_bytes_bucket{handler=&quot;/metrics&quot;,le=&quot;+Inf&quot;} 46
+prometheus_http_response_size_bytes_sum{handler=&quot;/metrics&quot;} 234233
+prometheus_http_response_size_bytes_count{handler=&quot;/metrics&quot;} 46
+</code></pre><p>这种就是histogram柱状图类型。</p>
+<p>还有的形式如下：</p>
+<pre><code>go_gc_duration_seconds{quantile=&quot;0&quot;} 7.3318e-05
+go_gc_duration_seconds{quantile=&quot;0.25&quot;} 0.000118693
+go_gc_duration_seconds{quantile=&quot;0.5&quot;} 0.000236845
+go_gc_duration_seconds{quantile=&quot;0.75&quot;} 0.000337872
+go_gc_duration_seconds{quantile=&quot;1&quot;} 0.000707002
+go_gc_duration_seconds_sum 0.003731953
+go_gc_duration_seconds_count 14
+</code></pre><p>这种就是summary总结类型。</p>
+<p>这就是上面说到的监控指标的数据类型。</p>
+<h2 id="heading-8">监控指标上报</h2>
+<p>prometheus已经部署好了，接下来就要埋点上报监控指标数据了。</p>
+<h3 id="exporter">各类exporter</h3>
+<p>在prometheus的世界里70%的场景并不需要专门写埋点逻辑代码，因为已经有现成的各类exporter了，只要找到合适的exporter，启动exporter就直接暴露出一个符合prometheus规范的服务端点了。</p>
+<p>exporter列表参见<a href="https://prometheus.io/docs/instrumenting/exporters/">这里</a>，另外<a href="https://github.com/prometheus">官方git仓库</a>里也有一些exporter。</p>
+<p>举个栗子，在某个宿主机上运行<a href="https://github.com/prometheus/node_exporter">node_exporter</a>后，用浏览器访问<code>http://${host_ip}:9100/metrics</code>即可看到node_exporter暴露出的这个宿主机各类监控指标数据，然后在prometheus的配置文件里加入以下一段：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">scrape_configs:
+  ......
+  - job_name: <span style="color:#e6db74">&#39;node_monitor_demo&#39;</span>
+    static_configs:
+    - targets: [<span style="color:#e6db74">&#39;${host_ip}:9100&#39;</span>]
+</code></pre></div><p>然后在prometheus的web管理控制台里就可以查询到相应的监控指标了。在<code>http://127.0.0.1:9090/graph</code>界面里输入<code>go_memstats_alloc_bytes{instance=&quot;${host_ip}:9100&quot;}</code>点击<code>Execute</code>按钮即可。</p>
+<h3 id="heading-9">编写监控指标上报代码</h3>
+<p>如果不幸，你的监控指标很特殊，需要自己写埋点上报逻辑代码，也是比较简单的。已经有<a href="https://prometheus.io/docs/instrumenting/clientlibs/">各个语言的Client Libraries</a>了，照着示例写就可以了。</p>
+<p>下面举一个go语言的示例。</p>
+<p>首先创建一个http服务</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;flag&#34;</span>
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;net/http&#34;</span>
+
+	<span style="color:#e6db74">&#34;github.com/prometheus/client_golang/prometheus/promhttp&#34;</span>
+)
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">addr</span> = <span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">String</span>(<span style="color:#e6db74">&#34;listen-address&#34;</span>, <span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#e6db74">&#34;The address to listen on for HTTP requests.&#34;</span>)
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">flag</span>.<span style="color:#a6e22e">Parse</span>()
+	<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Handle</span>(<span style="color:#e6db74">&#34;/metrics&#34;</span>, <span style="color:#a6e22e">promhttp</span>.<span style="color:#a6e22e">Handler</span>())
+	<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">addr</span>, <span style="color:#66d9ef">nil</span>))
+}
+</code></pre></div><p>然后初始化metric对象（这里采用<a href="https://github.com/armon/go-metrics">go-metrics</a>库，方便不少）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">import</span> (
+    <span style="color:#a6e22e">prometheussink</span> <span style="color:#e6db74">&#34;github.com/armon/go-metrics/prometheus&#34;</span>
+    <span style="color:#e6db74">&#34;github.com/armon/go-metrics&#34;</span>
+)
+
+<span style="color:#a6e22e">sink</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">prometheussink</span>.<span style="color:#a6e22e">NewPrometheusSink</span>()
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">NewGlobal</span>(<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">DefaultConfig</span>(<span style="color:#e6db74">&#34;service-name&#34;</span>), <span style="color:#a6e22e">sink</span>)
+</code></pre></div><p>最后在需要埋点的地方调用metrics的相应方法就可以了</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Run some code
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">SetGauge</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;foo&#34;</span>}, <span style="color:#ae81ff">42</span>)
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">EmitKey</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;bar&#34;</span>}, <span style="color:#ae81ff">30</span>)
+
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">IncrCounter</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;baz&#34;</span>}, <span style="color:#ae81ff">42</span>)
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">IncrCounter</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;baz&#34;</span>}, <span style="color:#ae81ff">1</span>)
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">IncrCounter</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;baz&#34;</span>}, <span style="color:#ae81ff">80</span>)
+
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">AddSample</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;method&#34;</span>, <span style="color:#e6db74">&#34;wow&#34;</span>}, <span style="color:#ae81ff">42</span>)
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">AddSample</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;method&#34;</span>, <span style="color:#e6db74">&#34;wow&#34;</span>}, <span style="color:#ae81ff">100</span>)
+<span style="color:#a6e22e">metrics</span>.<span style="color:#a6e22e">AddSample</span>([]<span style="color:#66d9ef">string</span>{<span style="color:#e6db74">&#34;method&#34;</span>, <span style="color:#e6db74">&#34;wow&#34;</span>}, <span style="color:#ae81ff">22</span>)
+</code></pre></div><h2 id="heading-10">查询监控指标数据</h2>
+<p>Prometheus提供一个函数式的表达式语言，可以使用户实时地查找和聚合时间序列数据。表达式计算结果可以在图表中展示，也可以在Prometheus表达式浏览器中以表格形式展示，或者作为数据源, 以HTTP API的方式提供给外部系统使用。prometheus的查询表达式语言也比较简单，<a href="https://prometheus.io/docs/prometheus/latest/querying/">官方文档</a>大概花了两三个网页就讲完了，我的感觉是看看官方文档，再结合官方给出的<a href="https://prometheus.io/docs/prometheus/latest/querying/examples/">示例</a>，到prometheus的web管理控制台做做实验就掌握得差不多了。</p>
+<h2 id="heading-11">图表里查看监控状态</h2>
+<p>监控数据采集上来了，当然不是只在prometheus的管理控制台里查询，业务上肯定需要在图表中展现监控状态，这里采用<a href="http://grafana.org/">grafana</a>完成这个工作，具体整合步骤参考<a href="https://prometheus.io/docs/visualization/grafana/">官方文档</a>即可。在grafana里的图表panel可share出去，集成到其它业务系统的web界面里。</p>
+<h2 id="heading-12">部署优化</h2>
+<h3 id="heading-13">远端存储</h3>
+<p>prometheus默认是将监控数据保存在本地磁盘中的，当然在分布式架构环境下，这样是不太可取的。不过它支持远端存储，可与远端存储系统集成。</p>
+<p>Prometheus integrates with remote storage systems in two ways:</p>
+<ul>
+<li>Prometheus can write samples that it ingests to a remote URL in a standardized format.</li>
+<li>Prometheus can read (back) sample data from a remote URL in a standardized format.</li>
+</ul>
+<p><img src="/images/20180805/remote_integrations.png" alt="Remote read and write architecture"></p>
+<p>目前支持的远端存储系统如下：</p>
+<p>The <a href="https://prometheus.io/docs/operating/configuration/#%3Cremote_write%3E">remote write</a> and <a href="https://prometheus.io/docs/operating/configuration/#%3Cremote_read%3E">remote read</a> features of Prometheus allow transparently sending and receiving samples. This is primarily intended for long term storage. It is recommended that you perform careful evaluation of any solution in this space to confirm it can handle your data volumes.</p>
+<ul>
+<li><a href="https://github.com/solarwinds/prometheus2appoptics">AppOptics</a>: write</li>
+<li><a href="https://github.com/ChronixDB/chronix.ingester">Chronix</a>: write</li>
+<li><a href="https://github.com/weaveworks/cortex">Cortex</a>: read and write</li>
+<li><a href="https://github.com/crate/crate_adapter">CrateDB</a>: read and write</li>
+<li><a href="https://github.com/infonova/prometheusbeat">Elasticsearch</a>: write</li>
+<li><a href="https://gnocchi.xyz/prometheus.html">Gnocchi</a>: write</li>
+<li><a href="https://github.com/prometheus/prometheus/tree/master/documentation/examples/remote_storage/remote_storage_adapter">Graphite</a>: write</li>
+<li><a href="https://docs.influxdata.com/influxdb/v1.4/supported_protocols/prometheus">InfluxDB</a>: read and write</li>
+<li><a href="https://github.com/circonus-labs/irondb-prometheus-adapter">IRONdb</a>: read and write</li>
+<li><a href="https://m3db.github.io/m3/integrations/prometheus">M3DB</a>: read and write</li>
+<li><a href="https://github.com/prometheus/prometheus/tree/master/documentation/examples/remote_storage/remote_storage_adapter">OpenTSDB</a>: write</li>
+<li><a href="https://github.com/timescale/prometheus-postgresql-adapter">PostgreSQL/TimescaleDB</a>: read and write</li>
+<li><a href="https://github.com/signalfx/metricproxy#prometheus">SignalFx</a>: write</li>
+</ul>
+<h3 id="heading-14">联邦模式</h3>
+<p>如果prometheus仅能够中心化地进行数据采集存储、分析，不支持集群模式，带来的性能问题显而易见。Prometheus给出了一种联邦的部署方式，就是Prometheus server可以从其他的Prometheus server采集数据，实施步骤直接参考<a href="https://prometheus.io/docs/prometheus/latest/federation/">官方文档</a>。</p>
+<h2 id="heading-15">监控告警</h2>
+<p>一个监控系统必须要有告警，否则产生不了太大的价值，prometheus的监控告警也是比较成熟的，不过本次没有深入使用，这里就不细谈了，直接参考<a href="https://prometheus.io/docs/alerting/overview/">官方文档</a>就可以了，写得还算详细。</p>
+<h2 id="heading-16">最佳实践</h2>
+<p>官方还给出一些<a href="https://prometheus.io/docs/practices/naming/">最佳实践</a>，可以简单浏览一下。主要是一些指标命名建议、监控指标类型的选择、告警策略、采用Recording rules提前生成监控指标、何时部署Pushgateway。</p>
+<p>THE END</p>
+<h2 id="heading-17">参考</h2>
+<ol>
+<li><a href="https://prometheus.io/docs">https://prometheus.io/docs</a></li>
+<li><a href="https://mp.weixin.qq.com/s/2m6x7MoNdHlzRCSenESvnw">https://mp.weixin.qq.com/s/2m6x7MoNdHlzRCSenESvnw</a></li>
+<li><a href="https://github.com/1046102779/prometheus">https://github.com/1046102779/prometheus</a></li>
+<li><a href="https://github.com/armon/go-metrics">https://github.com/armon/go-metrics</a></li>
+<li><a href="https://github.com/prometheus/node_exporter">https://github.com/prometheus/node_exporter</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/golang/">golang</a>
+          
+          <a href="/tags/prometheus/">prometheus</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">k8s加入TLS安全访问</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/07/%E7%A0%94%E7%A9%B6%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%9F%E8%B8%AA%E6%8A%80%E6%9C%AF%E4%B9%8Bjaeger/">
+            <span class="next-text nav-default">研究调用链跟踪技术之jaeger</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

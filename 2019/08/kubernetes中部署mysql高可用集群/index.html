@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>kubernetes中部署mysql高可用集群 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="kubernetes中部署mysql高可用集群" />
+<meta property="og:description" content="很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/" />
+<meta property="article:published_time" content="2019-08-31T18:40:00+08:00" />
+<meta property="article:modified_time" content="2019-08-31T18:40:00+08:00" />
+<meta itemprop="name" content="kubernetes中部署mysql高可用集群">
+<meta itemprop="description" content="很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服">
+<meta itemprop="datePublished" content="2019-08-31T18:40:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-31T18:40:00&#43;08:00" />
+<meta itemprop="wordCount" content="2510">
+
+
+
+<meta itemprop="keywords" content="kubernetes,mysql,proxysql,helm," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="kubernetes中部署mysql高可用集群"/>
+<meta name="twitter:description" content="很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">kubernetes中部署mysql高可用集群</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-31 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2510 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mysql">搭建MySQL集群</a></li>
+    <li><a href="#mysql-1">实现MySQL集群透明访问</a></li>
+    <li><a href="#mysql-2">业务访问MySQL</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服务。刚好在最近一周的工作中，需要在kubernetes环境中搭建mysql高可用集群，这里记录一下。</p>
+<h2 id="mysql">搭建MySQL集群</h2>
+<p>MySQL的主从半同步复制方案、Galera集群方案以前都也实践过，感觉都不是太友好，配置比较麻烦，而且发生故障转移时经常需要人工参与。所以这里还是采用MySQL官方推荐的Group Replication集群方案。关于MySQL Group Replication集群的架构设计可以看<a href="https://dev.mysql.com/doc/refman/5.7/en/group-replication.html">官方文档</a>，懒得看英文的话，也可以看我之前整理出的<a href="https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/#mysql-innodb-cluster%E7%AE%80%E4%BB%8B">资料</a>。另外kubedb网页上也有介绍<a href="https://kubedb.com/docs/0.12.0/guides/mysql/clustering/overview/">MySQL几种高可用方案的构架方案</a>，也比较有意思。</p>
+<p><a href="https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/#%E6%90%AD%E5%BB%BAmysql-innodb-cluster">之前的博文</a>也讲过在非容器环境搭建MySQL Group Replication集群，现在在Kubernetes的容器环境配合kubedb，搭建更方便了，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 添加appscode的helm仓库</span>
+$ helm repo add appscode https://charts.appscode.com/stable/
+$ helm repo update
+<span style="color:#75715e"># 部署kubedb</span>
+$ helm install appscode/kubedb --namespace kube-system --name kubedb --version 0.12.0
+
+<span style="color:#75715e"># 创建部署mysql集群的命名空间</span>
+$ kubectl create ns demo
+
+<span style="color:#75715e"># 创建MySQL类型的自定义资源，kubedb作为Controller会负责自动将MySQL Group Replication集群部署好</span>
+$ cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl apply -f -
+</span><span style="color:#e6db74">---
+</span><span style="color:#e6db74">apiVersion: catalog.kubedb.com/v1alpha1
+</span><span style="color:#e6db74">kind: MySQLVersion
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: &#34;5.7.25&#34;
+</span><span style="color:#e6db74">  labels:
+</span><span style="color:#e6db74">    app: kubedb
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  version: &#34;5.7.25&#34;
+</span><span style="color:#e6db74">  db:
+</span><span style="color:#e6db74">    image: &#34;kubedb/mysql:5.7.25&#34;
+</span><span style="color:#e6db74">  exporter:
+</span><span style="color:#e6db74">    image: &#34;kubedb/mysqld-exporter:v0.11.0&#34;
+</span><span style="color:#e6db74">  tools:
+</span><span style="color:#e6db74">    image: &#34;kubedb/mysql-tools:5.7.25&#34;
+</span><span style="color:#e6db74">  podSecurityPolicies:
+</span><span style="color:#e6db74">    databasePolicyName: &#34;mysql-db&#34;
+</span><span style="color:#e6db74">    snapshotterPolicyName: &#34;mysql-snapshot&#34;
+</span><span style="color:#e6db74">  initContainer:
+</span><span style="color:#e6db74">    image: &#34;kubedb/mysql-tools:5.7.25&#34;
+</span><span style="color:#e6db74">---
+</span><span style="color:#e6db74">apiVersion: v1
+</span><span style="color:#e6db74">kind: ConfigMap
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: my-custom-config
+</span><span style="color:#e6db74">  namespace: demo
+</span><span style="color:#e6db74">data:
+</span><span style="color:#e6db74">  my-config.cnf: |
+</span><span style="color:#e6db74">    [mysqld]
+</span><span style="color:#e6db74">    max_connections = 2048
+</span><span style="color:#e6db74">    read_buffer_size = 4194304
+</span><span style="color:#e6db74">    skip-name-resolve
+</span><span style="color:#e6db74">    innodb_lru_scan_depth = 256
+</span><span style="color:#e6db74">    character-set-server = utf8mb4
+</span><span style="color:#e6db74">    collation-server = utf8mb4_general_ci
+</span><span style="color:#e6db74">---
+</span><span style="color:#e6db74">apiVersion: kubedb.com/v1alpha1
+</span><span style="color:#e6db74">kind: MySQL
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: mysql
+</span><span style="color:#e6db74">  namespace: demo
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  version: &#34;5.7.25&#34;
+</span><span style="color:#e6db74">  replicas: 3
+</span><span style="color:#e6db74">  topology:
+</span><span style="color:#e6db74">    mode: GroupReplication
+</span><span style="color:#e6db74">    group:
+</span><span style="color:#e6db74">      name: &#34;dc002fc3-c412-4d18-b1d4-66c1fbfbbc9b&#34;
+</span><span style="color:#e6db74">      baseServerID: 100
+</span><span style="color:#e6db74">  storageType: Durable
+</span><span style="color:#e6db74">  configSource:
+</span><span style="color:#e6db74">    configMap:
+</span><span style="color:#e6db74">      name: my-custom-config
+</span><span style="color:#e6db74">  storage:
+</span><span style="color:#e6db74">    storageClassName: &#34;standard&#34;
+</span><span style="color:#e6db74">    accessModes:
+</span><span style="color:#e6db74">      - ReadWriteOnce
+</span><span style="color:#e6db74">    resources:
+</span><span style="color:#e6db74">      requests:
+</span><span style="color:#e6db74">        storage: 1Gi
+</span><span style="color:#e6db74">  terminationPolicy: WipeOut
+</span><span style="color:#e6db74">  updateStrategy:
+</span><span style="color:#e6db74">    type: RollingUpdate
+</span><span style="color:#e6db74">---
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><h2 id="mysql-1">实现MySQL集群透明访问</h2>
+<p>MySQL集群搭建好了，如何访问呢？kubedb的文档上有说明：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 首先找到mysql的root密码</span>
+$ kubectl get secrets -n demo mysql-auth -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.\username}&#39;</span> | base64 -d
+root
+$ kubectl get secrets -n demo mysql-auth -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.data.\password}&#39;</span> | base64 -d
+dlNiQpjULZvEqo3B
+
+<span style="color:#75715e"># 读数据的话，连接3个member中任何一个mysql实例都可以</span>
+$ kubectl exec -it -n demo mysql-0 -- mysql -u root --password<span style="color:#f92672">=</span>dlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -e <span style="color:#e6db74">&#34;select 1;&#34;</span>
+mysql: <span style="color:#f92672">[</span>Warning<span style="color:#f92672">]</span> Using a password on the command line interface can be insecure.
++---+
+| <span style="color:#ae81ff">1</span> |
++---+
+| <span style="color:#ae81ff">1</span> |
++---+
+
+<span style="color:#75715e"># 写数据的话，得先找到当前是master的mysql实例地址</span>
+$ kubectl exec -it -n demo mysql-0 -- mysql -u root --password<span style="color:#f92672">=</span>dlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -e <span style="color:#e6db74">&#34;SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = (SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = &#39;group_replication_primary_member&#39;);&#34;</span>
++------------------------------+-------------+
+| MEMBER_HOST                  | MEMBER_PORT |
++------------------------------+-------------+
+| mysql-0.mysql-gvr.demo |        <span style="color:#ae81ff">3306</span> |
++------------------------------+-------------+
+
+<span style="color:#75715e"># 然后连接mysql的master实例地址进行数据库写操作</span>
+$ kubectl exec -it -n demo mysql-0 -- mysql -u root --password<span style="color:#f92672">=</span>dlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -P <span style="color:#ae81ff">3306</span> -e <span style="color:#e6db74">&#34;create database test;&#34;</span>
+</code></pre></div><p>特别对于写操作，上层应用还得先找mysql的master实例地址后，操作才能进行下去，这样太难受了。</p>
+<p>这里我们可以使用<a href="https://dev.mysql.com/doc/mysql-router/8.0/en/">MySQL Router方案</a>来处理，这个在<a href="https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/#%E5%88%9D%E5%A7%8B%E5%8C%96mysql-router">之前的博文</a>里也讲到。不过在MySQL官方的方案里<code>MySQL Router</code>一般是<a href="https://dev.mysql.com/doc/mysql-router/8.0/en/mysql-router-general-using-deploying.html">作为应用的sidecar进行部署</a>的。我这里想更集中式地部署，于是采用了业界广泛实践的<a href="https://github.com/sysown/proxysql">ProxySQL方案</a>。</p>
+<p>部署ProxySQL的过程如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 在MGR集群中创建检查MGR节点状态的函数和视图</span>
+$ curl -O https://raw.githubusercontent.com/lefred/mysql_gr_routing_check/master/addition_to_sys.sql
+$ kubectl cp addition_to_sys.sql demo/mysql-0:/tmp/
+$ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -P <span style="color:#ae81ff">3306</span> -e <span style="color:#e6db74">&#39;source /tmp/addition_to_sys.sql&#39;</span>
+
+<span style="color:#75715e"># 在MGR集群中创建监控用户并授权</span>
+$ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -P <span style="color:#ae81ff">3306</span> -e <span style="color:#e6db74">&#34;grant SELECT on sys.* to &#39;proxymonitor&#39;@&#39;%&#39; identified by &#39;proxymonitor&#39;;flush privileges;&#34;</span>
+
+<span style="color:#75715e"># 在MGR集群中创建访问业务库的用户并授权</span>
+$ kubectl -n demo exec -ti mysql-0 -- mysql -uroot -pdlNiQpjULZvEqo3B --host<span style="color:#f92672">=</span>mysql-0.mysql-gvr.demo -P <span style="color:#ae81ff">3306</span> -e <span style="color:#e6db74">&#34;grant all privileges on biz_db.* to &#39;biz_user&#39;@&#39;%&#39; identified by &#39;bizpassword&#39;;flush privileges;&#34;</span>
+
+<span style="color:#75715e"># 借助proxysql-cluster项目提供的helm charts部署proxysql 3实例集群</span>
+$ git clone https://github.com/jeremyxu2010/proxysql-cluster.git
+$ docker build --rm -t severalnines/proxysql:1.4.16 -f ./proxysql-cluster/docker/Dockerfile ./proxysql-cluster/docker
+$ cat <span style="color:#e6db74">&lt;&lt; EOF &gt; proxysql-values.yaml
+</span><span style="color:#e6db74"># Default admin username
+</span><span style="color:#e6db74">proxysql:
+</span><span style="color:#e6db74">  admin:
+</span><span style="color:#e6db74">    username: admin
+</span><span style="color:#e6db74">    password: admin
+</span><span style="color:#e6db74">  clusterAdmin:
+</span><span style="color:#e6db74">    username: cluster1
+</span><span style="color:#e6db74">    password: secret1pass
+</span><span style="color:#e6db74"># 在proxysql中初始化MGR集群的相关信息
+</span><span style="color:#e6db74"># 1. 向mysql_servers表插入MGR各member的地址信息，其中当前的master示例放入hostgroup 1中，所有示例放入hostgroup 2中
+</span><span style="color:#e6db74"># 2. 向mysql_group_replication_hostgroups表插入proxysql使用hostgroup的规则
+</span><span style="color:#e6db74"># * proxysql会导流写请求到writer_hostgroup，即hostgrup 1
+</span><span style="color:#e6db74"># * proxysql会导流读请求到reader_hostgroup，即hostgrup 2
+</span><span style="color:#e6db74"># * backup_writer_hostgroup的id为3
+</span><span style="color:#e6db74"># * offline_hostgroup的id为4
+</span><span style="color:#e6db74"># * active表明这条规则是生效的
+</span><span style="color:#e6db74"># * max_writers表明最多只有一个writer，如果监测到多个实例是可写的，则只会将一个实例移入writer_hostgroup，其它实例会被移入backup_writer_hostgroup
+</span><span style="color:#e6db74"># * writer_is_also_reader表明可写实例也会被作为reader
+</span><span style="color:#e6db74"># * max_transactions_behind表明后端最大允许的事务数
+</span><span style="color:#e6db74"># 3. 插入允许连接的帐户信息，注意要与MGR集群中的访问用户信息一致
+</span><span style="color:#e6db74"># 4. 插入proxysql读写分离规则
+</span><span style="color:#e6db74">  additionConfig: |
+</span><span style="color:#e6db74">    mysql_servers =
+</span><span style="color:#e6db74">    (
+</span><span style="color:#e6db74">        { address=&#34;mysql-0.mysql-gvr&#34;, port=3306 , hostgroup=1, max_connections=2048 },
+</span><span style="color:#e6db74">        { address=&#34;mysql-0.mysql-gvr&#34;, port=3306 , hostgroup=2, max_connections=2048 },
+</span><span style="color:#e6db74">        { address=&#34;mysql-1.mysql-gvr&#34;, port=3306 , hostgroup=2, max_connections=2048 },
+</span><span style="color:#e6db74">        { address=&#34;mysql-2.mysql-gvr&#34;, port=3306 , hostgroup=2, max_connections=2048 }
+</span><span style="color:#e6db74">    )
+</span><span style="color:#e6db74">    mysql_group_replication_hostgroups =
+</span><span style="color:#e6db74">    (
+</span><span style="color:#e6db74">        { writer_hostgroup=1 , backup_writer_hostgroup=3, reader_hostgroup=2, offline_hostgroup=4, active=1, max_writers=1, writer_is_also_reader=1, max_transactions_behind=100 }
+</span><span style="color:#e6db74">    )
+</span><span style="color:#e6db74">    mysql_users =
+</span><span style="color:#e6db74">    (
+</span><span style="color:#e6db74">        { username = &#34;biz_user&#34; , password = &#34;bizpassword&#34; , default_hostgroup = 1 , active = 1 }
+</span><span style="color:#e6db74">    )
+</span><span style="color:#e6db74">    mysql_query_rules =
+</span><span style="color:#e6db74">    (
+</span><span style="color:#e6db74">        {
+</span><span style="color:#e6db74">            rule_id=100
+</span><span style="color:#e6db74">            active=1
+</span><span style="color:#e6db74">            match_pattern=&#34;^SELECT .* FOR UPDATE&#34;
+</span><span style="color:#e6db74">            destination_hostgroup=1
+</span><span style="color:#e6db74">            apply=1
+</span><span style="color:#e6db74">        },
+</span><span style="color:#e6db74">        {
+</span><span style="color:#e6db74">            rule_id=200
+</span><span style="color:#e6db74">            active=1
+</span><span style="color:#e6db74">            match_pattern=&#34;^SELECT .*&#34;
+</span><span style="color:#e6db74">            destination_hostgroup=2
+</span><span style="color:#e6db74">            apply=1
+</span><span style="color:#e6db74">        },
+</span><span style="color:#e6db74">        {
+</span><span style="color:#e6db74">            rule_id=300
+</span><span style="color:#e6db74">            active=1
+</span><span style="color:#e6db74">            match_pattern=&#34;.*&#34;
+</span><span style="color:#e6db74">            destination_hostgroup=1
+</span><span style="color:#e6db74">            apply=1
+</span><span style="color:#e6db74">        }
+</span><span style="color:#e6db74">    )
+</span><span style="color:#e6db74"># MySQL Settings
+</span><span style="color:#e6db74">mysql:
+</span><span style="color:#e6db74">  # This is the monitor user, just needs usage rights on the databases
+</span><span style="color:#e6db74">  monitor:
+</span><span style="color:#e6db74">    username: proxymonitor
+</span><span style="color:#e6db74">    password: proxymonitor
+</span><span style="color:#e6db74">  admin:
+</span><span style="color:#e6db74">    username: root
+</span><span style="color:#e6db74">    password: dlNiQpjULZvEqo3B
+</span><span style="color:#e6db74">EOF</span>
+$ helm install --namespace demo --name proxysql ./proxysql-cluster/ -f proxysql-values.yaml
+</code></pre></div><p>这里在部署时遇到了一些小波折，最开始是使用<a href="https://github.com/ScientaNL/k8s-proxysql-cluster">k8s-proxysql-cluster</a>部署一套proxysql集群，并到其中手动初始化MGR集群相关信息的。但后来遇到了一系列问题：</p>
+<ol>
+<li>proxysql的配置信息未保存到pv中，这个导致某个proxysql实例重启后，proxysql集群中的MGR信息完全丢失。</li>
+<li>某个proxysql实例pod被重新调度后，其ip地址发生变化，proxysql集群便会处于不健康状况。</li>
+</ol>
+<p>为了解决上述问题，直接新写了一个部署proxysql集群的helm chart，其采用config file的方式初始化MGR集群信息，同时<code>proxysql_servers</code>中不再使用IP，而是使用固定的服务。经测试通过该方式部署的proxysql集群运行得十分稳定。</p>
+<h2 id="mysql-2">业务访问MySQL</h2>
+<p>像上面那样部署了MySQL Group Replication集群和ProxySQL集群后，业务方访问MySQL服务就很轻松了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 容器内</span>
+$ mysql -ubiz_user -pbizpassword -hproxysql-proxysql-cluste.demo -P3306 biz_db -e <span style="color:#e6db74">&#34;select 1;&#34;</span>
+
+<span style="color:#75715e"># 容器外，先得到k8s svc的clusterIP</span>
+$ kubectl -n demo get svc  proxysql-proxysql-cluste -o<span style="color:#f92672">=</span>jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.spec.clusterIP}&#39;</span>
+10.68.63.23
+<span style="color:#75715e"># 然后也是直接连接</span>
+$ mysql -ubiz_user -pbizpassword -h10.68.63.23 -P3306 biz_db -e <span style="color:#e6db74">&#34;select 1;&#34;</span>
+</code></pre></div><p>done</p>
+<h2 id="heading">参考</h2>
+<ol>
+<li><a href="https://kubedb.com/docs/0.12.0/guides/mysql/clustering/overview/">https://kubedb.com/docs/0.12.0/guides/mysql/clustering/overview/</a></li>
+<li><a href="https://kubedb.com/docs/0.12.0/guides/mysql/clustering/group_replication_single_primary/">https://kubedb.com/docs/0.12.0/guides/mysql/clustering/group_replication_single_primary/</a></li>
+<li><a href="https://kubedb.com/docs/0.12.0/concepts/databases/mysql/">https://kubedb.com/docs/0.12.0/concepts/databases/mysql/</a></li>
+<li><a href="https://www.xuejiayuan.net/blog/ea021ec24ac240db8665f0299dbb0667">https://www.xuejiayuan.net/blog/ea021ec24ac240db8665f0299dbb0667</a></li>
+<li><a href="https://blog.frognew.com/2017/08/proxysql-1.4-and-mysql-group-replication.html">https://blog.frognew.com/2017/08/proxysql-1.4-and-mysql-group-replication.html</a></li>
+<li><a href="https://dev.mysql.com/doc/mysql-router/8.0/en/mysql-router-general-using-deploying.html">https://dev.mysql.com/doc/mysql-router/8.0/en/mysql-router-general-using-deploying.html</a></li>
+<li><a href="https://github.com/sysown/proxysql/wiki/Configuring-ProxySQL">https://github.com/sysown/proxysql/wiki/Configuring-ProxySQL</a></li>
+<li><a href="http://fuxkdb.com/2018/08/25/%E5%A6%82%E4%BD%95%E7%A1%AE%E5%AE%9ASingle-Primary%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84MGR%E4%B8%BB%E8%8A%82%E7%82%B9/">http://fuxkdb.com/2018/08/25/%E5%A6%82%E4%BD%95%E7%A1%AE%E5%AE%9ASingle-Primary%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84MGR%E4%B8%BB%E8%8A%82%E7%82%B9/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-08-31</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/mysql/">mysql</a>
+          
+          <a href="/tags/proxysql/">proxysql</a>
+          
+          <a href="/tags/helm/">helm</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">kubernetes使用ceph存储卷</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/08/mqtt%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/">
+            <span class="next-text nav-default">MQTT协议学习</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>tcpdump使用技巧（转载） - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="tcpdump使用技巧（转载）" />
+<meta property="og:description" content="很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/" />
+<meta property="article:published_time" content="2016-09-19T23:54:00+08:00" />
+<meta property="article:modified_time" content="2016-09-19T23:54:00+08:00" />
+<meta itemprop="name" content="tcpdump使用技巧（转载）">
+<meta itemprop="description" content="很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t">
+<meta itemprop="datePublished" content="2016-09-19T23:54:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-09-19T23:54:00&#43;08:00" />
+<meta itemprop="wordCount" content="3080">
+
+
+
+<meta itemprop="keywords" content="network,tcpdump," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="tcpdump使用技巧（转载）"/>
+<meta name="twitter:description" content="很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">tcpdump使用技巧（转载）</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-09-19 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 3080 字 </span>
+        <span class="more-meta"> 预计阅读 7 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">基本语法</a></li>
+    <li><a href="#heading-1">高级包头过滤</a></li>
+    <li><a href="#heading-2">大叔注</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇<a href="http://linuxwiki.github.io/NetTools/tcpdump.html">tcpdump入门使用技巧</a>，看了下感觉挺好，终于知道到底怎么写过滤表达式了，这里转载过来备忘一下。</p>
+<p>以下内容转载自这里<code>http://linuxwiki.github.io/NetTools/tcpdump.html</code></p>
+<hr>
+<p>一般情况下，非HTTP协议的网络分析，在服务器端用tcpdump比较多，在客户端用wireshark比较多，两个抓包软件的语法是一样的。</p>
+<h2 id="heading">基本语法</h2>
+<ul>
+<li>过滤主机</li>
+</ul>
+<p>抓取所有经过eth1，目的或源地址是192.168.1.1的网络数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 host 192.168.1.1
+</code></pre></div><p>指定源地址</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 src host 192.168.1.1
+</code></pre></div><p>指定目的地址</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 dst host 192.168.1.1
+</code></pre></div><ul>
+<li>过滤端口</li>
+</ul>
+<p>抓取所有经过eth1，目的或源端口是25的网络数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 port <span style="color:#ae81ff">25</span>
+</code></pre></div><p>指定源端口</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 src port <span style="color:#ae81ff">25</span>
+</code></pre></div><p>指定目的端口</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 dst port <span style="color:#ae81ff">25</span>
+</code></pre></div><ul>
+<li>网络过滤</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 net 192.168
+tcpdump -i eth1 src net 192.168
+tcpdump -i eth1 dst net 192.168
+</code></pre></div><ul>
+<li>协议过滤</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 arp
+tcpdump -i eth1 ip
+tcpdump -i eth1 tcp
+tcpdump -i eth1 udp
+tcpdump -i eth1 icmp
+</code></pre></div><ul>
+<li>常用表达式</li>
+</ul>
+<pre><code>非 : ! or &quot;not&quot; (去掉双引号)
+且 : &amp;&amp; or &quot;and&quot;
+或 : || or &quot;or&quot;
+</code></pre><p>抓取所有经过eth1，目的地址是192.168.1.254或192.168.1.200端口是80的TCP数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;((tcp) and (port 80) and ((dst host 192.168.1.254) or (dst host 192.168.1.200)))&#39;</span>
+</code></pre></div><p>抓取所有经过eth1，目标MAC地址是00:01:02:03:04:05的ICMP数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;((icmp) and ((ether dst host 00:01:02:03:04:05)))&#39;</span>
+</code></pre></div><p>抓取所有经过eth1，目的网络是192.168，但目的主机不是192.168.1.200的TCP数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;((tcp) and ((dst net 192.168) and (not dst host 192.168.1.200)))&#39;</span>
+</code></pre></div><h2 id="heading-1">高级包头过滤</h2>
+<p>首先了解如何从包头过滤信息</p>
+<pre><code>proto[x:y]          : 过滤从x字节开始的y字节数。比如ip[2:2]过滤出3、4字节（第一字节从0开始排）
+proto[x:y] &amp; z = 0  : proto[x:y]和z的与操作为0
+proto[x:y] &amp; z !=0  : proto[x:y]和z的与操作不为0
+proto[x:y] &amp; z = z  : proto[x:y]和z的与操作为z
+proto[x:y] = z      : proto[x:y]等于z
+</code></pre><p>操作符 : &gt;, &lt;, &gt;=, &lt;=, =, !=</p>
+<ul>
+<li>IP头</li>
+</ul>
+<pre><code> 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |Version|  IHL  |Type of Service|          Total Length         |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |         Identification        |Flags|      Fragment Offset    |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |  Time to Live |    Protocol   |         Header Checksum       |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                       Source Address                          |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                    Destination Address                        |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                    Options                    |    Padding    | &lt;-- optional
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                            DATA ...                           |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>本文只针对IPv4。</p>
+<ul>
+<li>IP选项设置了吗？</li>
+</ul>
+<p>“一般”的IP头是20字节，但IP头有选项设置，不能直接从偏移21字节处读取数据。IP头有个长度字段可以知道头长度是否大于20字节。</p>
+<pre><code> +-+-+-+-+-+-+-+-+
+ |Version|  IHL  |
+ +-+-+-+-+-+-+-+-+
+</code></pre><p>通常第一个字节的二进制值是：01000101，分成两个部分：</p>
+<p>0100 = 4 表示IP版本 0101 = 5 表示IP头32 bit的块数，5 x 32 bits = 160 bits or 20 bytes</p>
+<p>如果第一字节第二部分的值大于5，那么表示头有IP选项。</p>
+<p>下面介绍两种过滤方法（第一种方法比较操蛋，可忽略）：</p>
+<ul>
+<li>比较第一字节的值是否大于01000101，这可以判断IPv4带IP选项的数据和IPv6的数据。</li>
+</ul>
+<p>01000101十进制等于69，计算方法如下（小提示：用计算器更方便）</p>
+<pre><code>0 : 0  \
+1 : 2^6 = 64 \ 第一部分 (IP版本)
+0 : 0   /
+0 : 0  /
+-
+0 : 0  \
+1 : 2^2 = 4  \ 第二部分 (头长度)
+0 : 0   /
+1 : 2^0 = 1 /
+64 + 4 + 1 = 69
+</code></pre><p>如果设置了IP选项，那么第一自己是01000110（十进制70），过滤规则：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[0] &gt; 69&#39;</span>
+</code></pre></div><p>IPv6的数据也会匹配，看看第二种方法。</p>
+<ul>
+<li>位操作</li>
+</ul>
+<pre><code>0100 0101 : 第一字节的二进制
+0000 1111 : 与操作
+&lt;=========
+0000 0101 : 结果
+</code></pre><p>正确的过滤方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[0] &amp; 15 &gt; 5&#39;</span>
+</code></pre></div><p>或者</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[0] &amp; 0x0f &gt; 5&#39;</span>
+</code></pre></div><ul>
+<li>分片标记</li>
+</ul>
+<p>当发送端的MTU大于到目的路径链路上的MTU时就会被分片，这段话有点拗口，权威的请参考《TCP/IP详解》。唉，32借我的书没还，只能凑合写，大家记得看书啊。</p>
+<p>分片信息在IP头的第七和第八字节：</p>
+<pre><code> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |Flags|      Fragment Offset    |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>Bit 0: 保留，必须是0
+Bit 1: (DF) 0 = 可能分片, 1 = 不分片
+Bit 2: (MF) 0 = 最后的分片, 1 = 还有分片</p>
+<p>Fragment Offset字段只有在分片的时候才使用。</p>
+<p>要抓带DF位标记的不分片的包，第七字节的值应该是：</p>
+<p>01000000 = 64</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[6] = 64&#39;</span>
+</code></pre></div><ul>
+<li>抓分片包</li>
+</ul>
+<p>匹配MF，分片包</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[6] = 32&#39;</span>
+</code></pre></div><p>最后分片包的开始3位是0，但是有Fragment Offset字段。</p>
+<p>匹配分片和最后分片</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;((ip[6:2] &gt; 0) and (not ip[6] = 64))&#39;</span>
+</code></pre></div><p>测试分片可以用下面的命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ping -M want -s <span style="color:#ae81ff">3000</span> 192.168.1.1
+</code></pre></div><ul>
+<li>匹配小TTL</li>
+</ul>
+<p>TTL字段在第九字节，并且正好是完整的一个字节，TTL最大值是255，二进制为11111111。</p>
+<p>可以用下面的命令验证一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ping -M want -s <span style="color:#ae81ff">3000</span> -t <span style="color:#ae81ff">256</span> 192.168.1.200
+ping: ttl <span style="color:#ae81ff">256</span> out of range
+</code></pre></div><pre><code> +-+-+-+-+-+-+-+-+
+ |  Time to Live |
+ +-+-+-+-+-+-+-+-+
+</code></pre><p>在网关可以用下面的命令看看网络中谁在使用traceroute</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[8] &lt; 5&#39;</span>
+</code></pre></div><ul>
+<li>抓大于X字节的包</li>
+</ul>
+<p>大于600字节</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;ip[2:2] &gt; 600&#39;</span>
+</code></pre></div><ul>
+<li>更多的IP过滤</li>
+</ul>
+<p>首先还是需要知道TCP基本结构，再次推荐《TCP/IP详解》，卷一就够看的了，避免走火入魔。</p>
+<p>TCP头</p>
+<pre><code> 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |          Source Port          |       Destination Port        |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                        Sequence Number                        |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                    Acknowledgment Number                      |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |  Data |       |C|E|U|A|P|R|S|F|                               |
+ | Offset|  Res. |W|C|R|C|S|S|Y|I|            Window             |
+ |       |       |R|E|G|K|H|T|N|N|                               |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |           Checksum            |         Urgent Pointer        |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                    Options                    |    Padding    |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ |                             data                              |
+ +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code></pre><p>抓取源端口大于1024的TCP数据包</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[0:2] &gt; 1024&#39;</span>
+</code></pre></div><p>匹配TCP数据包的特殊标记
+TCP标记定义在TCP头的第十四个字节</p>
+<pre><code> +-+-+-+-+-+-+-+-+
+ |C|E|U|A|P|R|S|F|
+ |W|C|R|C|S|S|Y|I|
+ |R|E|G|K|H|T|N|N|
+ +-+-+-+-+-+-+-+-+
+</code></pre><p>重复一下TCP三次握手，两个主机是如何勾搭的：</p>
+<p>源发送SYN
+目标回答SYN, ACK
+源发送ACK
+没女朋友的童鞋要学习一下：</p>
+<ol>
+<li>MM，你的手有空吗？&ndash;</li>
+<li>有空，你呢？~~</li>
+<li>我也有空 <em>_</em></li>
+</ol>
+<p>失败的loser是酱紫的：</p>
+<ol>
+<li>MM，这是你掉的板砖吗？(SYN) ￣▽￣</li>
+<li>不是，找拍啊？(RST-ACK) ˋ﹏ˊ</li>
+</ol>
+<p>只抓SYN包，第十四字节是二进制的00000010，也就是十进制的2</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] = 2&#39;</span>
+</code></pre></div><p>抓SYN, ACK （00010010 or 18）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] = 18&#39;</span>
+</code></pre></div><p>抓SYN或者SYN-ACK</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] &amp; 2 = 2&#39;</span>
+</code></pre></div><p>用到了位操作，就是不管ACK位是啥。</p>
+<p>抓PSH-ACK</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] = 24&#39;</span>
+</code></pre></div><p>抓所有包含FIN标记的包（FIN通常和ACK一起，表示幽会完了，回见）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] &amp; 1 = 1&#39;</span>
+</code></pre></div><p>抓RST（勾搭没成功，伟大的greatwall对她认为有敏感信息的连接发RST包，典型的棒打鸳鸯）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[13] &amp; 4 = 4&#39;</span>
+</code></pre></div><p>下图详细描述了TCP各种状态的标记，方便分析。</p>
+<p><img src="/images/20160919/tcp_state_machine.jpg" alt="tcp_state_machine.jpg"></p>
+<ul>
+<li>大叔注</li>
+</ul>
+<p>tcpdump考虑了一些数字恐惧症者的需求，提供了部分常用的字段偏移名字：</p>
+<p>icmptype (ICMP类型字段)
+icmpcode (ICMP符号字段)
+tcpflags (TCP标记字段)</p>
+<p>ICMP类型值有：</p>
+<p>icmp-echoreply, icmp-unreach, icmp-sourcequench, icmp-redirect, icmp-echo, icmp-routeradvert, icmp-routersolicit, icmp-timxceed, icmp-paramprob, icmp-tstamp, icmp-tstampreply, icmp-ireq, icmp-ireqreply, icmp-maskreq, icmp-maskreply</p>
+<p>TCP标记值：</p>
+<p>tcp-fin, tcp-syn, tcp-rst, tcp-push, tcp-push, tcp-ack, tcp-urg</p>
+<p>这样上面按照TCP标记位抓包的就可以写直观的表达式了：</p>
+<p>只抓SYN包</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[tcpflags] = tcp-syn&#39;</span>
+</code></pre></div><p>抓SYN, ACK</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[tcpflags] &amp; tcp-syn != 0 and tcp[tcpflags] &amp; tcp-ack != 0&#39;</span>
+</code></pre></div><ul>
+<li>抓SMTP数据</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;((port 25) and (tcp[(tcp[12]&gt;&gt;2):4] = 0x4d41494c))&#39;</span>
+</code></pre></div><p>抓取数据区开始为&quot;MAIL&quot;的包，&ldquo;MAIL&quot;的十六进制为0x4d41494c。</p>
+<ul>
+<li>抓HTTP GET数据</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[(tcp[12]&gt;&gt;2):4] = 0x47455420&#39;</span>
+</code></pre></div><p>&ldquo;GET &ldquo;的十六进制是47455420</p>
+<ul>
+<li>抓SSH返回</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;tcp[(tcp[12]&gt;&gt;2):4] = 0x5353482D&#39;</span>
+</code></pre></div><p>&ldquo;SSH-&ldquo;的十六进制是0x5353482D</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 <span style="color:#e6db74">&#39;(tcp[(tcp[12]&gt;&gt;2):4] = 0x5353482D) and (tcp[((tcp[12]&gt;&gt;2)+4):2] = 0x312E)&#39;</span>
+</code></pre></div><p>抓老版本的SSH返回信息，如&quot;SSH-1.99..&rdquo;</p>
+<h2 id="heading-2">大叔注</h2>
+<p>如果是为了查看数据内容，建议用tcpdump -s 0 -w filename把数据包都保存下来，然后用wireshark的Follow TCP Stream/Follow UDP Stream来查看整个会话的内容。</p>
+<p>-s 0是抓取完整数据包，否则默认只抓68字节。</p>
+<p>另外，用tcpflow也可以方便的获取TCP会话内容，支持tcpdump的各种表达式。</p>
+<ul>
+<li>UDP头</li>
+</ul>
+<pre><code>  0      7 8     15 16    23 24    31
+ +--------+--------+--------+--------+
+ |     Source      |   Destination   |
+ |      Port       |      Port       |
+ +--------+--------+--------+--------+
+ |                 |                 |
+ |     Length      |    Checksum     |
+ +--------+--------+--------+--------+
+ |                                   |
+ |              DATA ...             |
+ +-----------------------------------+
+</code></pre><p>抓DNS请求数据</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">tcpdump -i eth1 udp dst port <span style="color:#ae81ff">53</span>
+</code></pre></div><ul>
+<li>其他</li>
+</ul>
+<p>-c参数对于运维人员来说也比较常用，因为流量比较大的服务器，靠人工CTRL+C还是抓的太多，甚至导致服务器宕机，于是可以用-c参数指定抓多少个包。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">time tcpdump -nn -i eth0 <span style="color:#e6db74">&#39;tcp[tcpflags] = tcp-syn&#39;</span> -c <span style="color:#ae81ff">10000</span> &gt; /dev/null
+</code></pre></div><p>上面的命令计算抓10000个SYN包花费多少时间，可以判断访问量大概是多少。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-09-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/network/">network</a>
+          
+          <a href="/tags/tcpdump/">tcpdump</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">TCP细节分析</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/">
+            <span class="next-text nav-default">获取docker容器的主机虚拟网卡</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

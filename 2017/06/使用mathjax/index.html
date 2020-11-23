@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>使用mathjax - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="使用mathjax" />
+<meta property="og:description" content="为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E4%BD%BF%E7%94%A8mathjax/" />
+<meta property="article:published_time" content="2017-06-03T18:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-03T18:00:00+08:00" />
+<meta itemprop="name" content="使用mathjax">
+<meta itemprop="description" content="为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax">
+<meta itemprop="datePublished" content="2017-06-03T18:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-03T18:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1275">
+
+
+
+<meta itemprop="keywords" content="hexo,markdwon,mathjax," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="使用mathjax"/>
+<meta name="twitter:description" content="为何要用mathjax 在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 MathJax"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">使用mathjax</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E5%85%B7/"> 工具 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1275 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#mathjax">为何要用mathjax</a></li>
+    <li><a href="#hexomathjax">hexo支持MathJax</a></li>
+    <li><a href="#latex">LaTex简明教程</a></li>
+    <li><a href="#heading">规则</a>
+      <ul>
+        <li><a href="#heading-1">行内公式</a></li>
+        <li><a href="#heading-2">行内公式</a></li>
+        <li><a href="#latex-1">常用LaTex代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-3">几个非常有用的资源</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="mathjax">为何要用mathjax</h2>
+<p>在书写数值计算类文章，特别是机器学习相关算法时，难免需要插入复杂的数学公式。一种是用图片在网页上展示，另外一种是使用 <a href="https://www.mathjax.org/">MathJax</a> 来展示复杂的数学公式。它直接使用 Javascript 使用矢量字库或 SVG 文件来显示数学公式。优点是效果好，比如在 Retina 屏幕上也不会变得模糊。并且可以直接把公式写在 Markdown 文章里。</p>
+<h2 id="hexomathjax">hexo支持MathJax</h2>
+<p>我是使用<a href="https://typora.io/">Typora</a>书写<code>markdown</code>文档的，它自身就支持<code>MathJax</code>了，就不用特别的想办法支持<code>MathJax</code>了。</p>
+<p>最好写好的<code>markdown</code>文档要<code>hexo-next</code>主题渲染出来，它支持<code>MathJax</code>的方法很简单，还是简单记录一下，直接在<code>_config.yml</code>文件里加入以下代码段就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># MathJax Support</span>
+mathjax:
+  enable: <span style="color:#66d9ef">true</span>
+  per_page: <span style="color:#66d9ef">false</span>
+  cdn: //cdn.bootcss.com/mathjax/<span style="color:#ae81ff">2.4</span><span style="color:#ae81ff">.0</span>/MathJax.js?config=TeX-AMS-MML_HTMLorMML
+</code></pre></div><p>但默认的hexo使用的markdown渲染引擎与mathjax有些冲突，建议还是换用<a href="https://github.com/wzpan/hexo-renderer-pandoc">hexo-renderer-pandoc</a>作为markdown的渲染引擎。</p>
+<p>安装方法也很简单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install pandoc
+yarn remove hexo-renderer-marked
+yarn add hexo-renderer-pandoc
+</code></pre></div><h2 id="latex">LaTex简明教程</h2>
+<p>先看个例子</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-latex" data-lang="latex"><span style="color:#e6db74">$$</span>
+J<span style="color:#f92672">(</span>\theta<span style="color:#f92672">)</span> <span style="color:#f92672">=</span> \frac <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> \sum_{i<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>}^m <span style="color:#f92672">(</span>h_\theta<span style="color:#f92672">(</span>x^{<span style="color:#f92672">(</span>i<span style="color:#f92672">)</span>} <span style="color:#f92672">-</span> y^{<span style="color:#f92672">(</span>i<span style="color:#f92672">)</span>}<span style="color:#f92672">)</span><span style="color:#f92672">)</span>^<span style="color:#ae81ff">2</span>
+<span style="color:#e6db74">$$</span>
+</code></pre></div><p>上面的LaTex 格式书写的数学公式经过 MathJax 展示后效果如下：</p>
+<p>$$
+J(\theta) = \frac 1 2 \sum_{i=1}^m (h_\theta(x^{(i)} - y^{(i)}))^2
+$$
+这个公式是线性回归算法里的成本函数。</p>
+<h2 id="heading">规则</h2>
+<p>关于在 Markdown 书写 LaTex 数学公式有几个规则常用规则需要记住：</p>
+<h3 id="heading-1">行内公式</h3>
+<p>行内公式使用 <code>$</code> 号作为公式的左右边界，如 <code>$h(x) = \theta_0 + \theta_1 x$</code>，示例如下：</p>
+<p>梯度递减公式： $ \theta_i = \theta_i - \alpha\frac\partial{\partial\theta_i}J(\theta) $</p>
+<h3 id="heading-2">行内公式</h3>
+<p>公式需要独立显示一行时，使用 <code>$$</code> 来作为公式的左右边界</p>
+<h3 id="latex-1">常用LaTex代码</h3>
+<p>需要记住的几个常用的符号，这样书写起来会快一点</p>
+<table>
+<thead>
+<tr>
+<th>编码</th>
+<th>说明</th>
+<th>示例</th>
+<th>代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\frac</td>
+<td>分子分母之间的横线</td>
+<td>$\frac1 x$</td>
+<td><code> $\frac1x$</code></td>
+</tr>
+<tr>
+<td>_</td>
+<td>用下划线来表示下标</td>
+<td>$x_i$</td>
+<td><code> $x_i$</code></td>
+</tr>
+<tr>
+<td>^</td>
+<td>次方运算符来表示上标</td>
+<td>$x^i$</td>
+<td><code> $x^i$</code></td>
+</tr>
+<tr>
+<td>\sum</td>
+<td>累加器，上下标用上面介绍的编码来书写</td>
+<td>$\sum$</td>
+<td><code> $\sum$</code></td>
+</tr>
+<tr>
+<td>\alpha</td>
+<td>希腊字母 alpha</td>
+<td>$y := \alpha x$</td>
+<td><code> $y := \alpha x$</code></td>
+</tr>
+<tr>
+<td>\theta</td>
+<td>希腊字母theta</td>
+<td>$\theta$</td>
+<td><code>$\theta$</code></td>
+</tr>
+<tr>
+<td>\pi</td>
+<td>希腊字母pi</td>
+<td>$\pi$</td>
+<td><code>$\pi$</code></td>
+</tr>
+<tr>
+<td>\delta</td>
+<td>希腊字母delta</td>
+<td>$\delta$</td>
+<td><code>$\delta$</code></td>
+</tr>
+<tr>
+<td>\Delta</td>
+<td>希腊字母Delta</td>
+<td>$\Delta$</td>
+<td><code>$\Delta$</code></td>
+</tr>
+<tr>
+<td>\prod</td>
+<td>连乘积符号</td>
+<td>$\prod$</td>
+<td><code>$\prod$</code></td>
+</tr>
+<tr>
+<td>\int</td>
+<td>积分符号</td>
+<td>$ \int$</td>
+<td><code>$\int$</code></td>
+</tr>
+<tr>
+<td>\nabla</td>
+<td>希腊字母nabla</td>
+<td>$\nabla$</td>
+<td><code>$\nabla$</code></td>
+</tr>
+<tr>
+<td>\in</td>
+<td>属于</td>
+<td>$\in$</td>
+<td><code>$\in$</code></td>
+</tr>
+<tr>
+<td>\partial</td>
+<td>希腊字母partial</td>
+<td>$\partial$</td>
+<td><code>$partial$</code></td>
+</tr>
+<tr>
+<td>\begin{bmatrix}a&amp;b\c&amp;d\\end{bmatrix}</td>
+<td>矩阵符号</td>
+<td>$\begin{bmatrix}a&amp;b\c&amp;d\\end{bmatrix}$</td>
+<td><code>$\begin{bmatrix}a&amp;b\\c&amp;d\\\end{bmatrix}$</code></td>
+</tr>
+<tr>
+<td>\mathbb R</td>
+<td>实数</td>
+<td>$\mathbb R$</td>
+<td><code>$\mathbb R$</code></td>
+</tr>
+<tr>
+<td>\left(A + B\right)</td>
+<td>随着公式大小缩放的左右括号</td>
+<td>$\left(A + B\right)$</td>
+<td><code>$\left(A + B\right)$</code></td>
+</tr>
+<tr>
+<td>A \quad B</td>
+<td>加入一些空隙</td>
+<td>$A \quad B$</td>
+<td><code>$A \quad B$</code></td>
+</tr>
+<tr>
+<td>\sqrt[2]{x}</td>
+<td>根式</td>
+<td>$ \sqrt[2]{x}$</td>
+<td>$\sqrt[2]{x}$</td>
+</tr>
+</tbody>
+</table>
+<p>记住这几个就差不多了，完整的符号列表要看<a href="http://mirrors.opencas.org/ctan/info/symbols/math/maths-symbols.pdf">这里</a>，倒回去看一下线性回归算法的成本函数的公式及其 LaTex 代码，对着练习个10分钟基本就可以掌握常用公式的写法了。要特别注意公式里空格和 <code>{}</code> 的运用规则。基本原则是，空格可加可不加，但如果会引起歧义，最好加上空格。<code>{}</code> 是用来组成群组的。比如写一个分式时，分母是一个复杂公式时，可以用 <code>{}</code> 包含起来，这样整个复杂公式都会变成分母了。</p>
+<h2 id="heading-3">几个非常有用的资源</h2>
+<ul>
+<li>这是一篇质量很高的<a href="http://mlworks.cn/posts/introduction-to-mathjax-and-latex-expression/">介绍 MathJax 的中文博客文章</a>，需要注意的是如果是用 markdown 编写 MathJax 公式，当公式里需要两个斜杠 \ 时要写四个斜杠 \。因为 \ 会被 markdown 转义一次。</li>
+</ul>
+<ul>
+<li>Github 上有个<a href="https://kerzol.github.io/markdown-mathjax/editor.html">在线 Markdown MathJax 编辑器</a>，可以在这里练习，平时写公式时也可以在这里先写好再拷贝到文章里</li>
+<li>这是 <a href="http://www.forkosh.com/mathtextutorial.html">LaTex 完整教程</a>，包含完整的 LaTex 数学公式的内容，包括更高级的格式控制等</li>
+<li>这是一份PDF 格式的 <a href="http://mirrors.ctan.org/info/symbols/math/maths-symbols.pdf">MathJax 支持的数学符号表</a>，当需要书写复杂数学公式时，一些非常特殊的符号的转义字符可以从这里查到</li>
+<li>别人整理出的一份<a href="http://mlworks.cn/posts/introduction-to-mathjax-and-latex-expression/">技巧</a></li>
+</ul>
+<p>好啦，这样差不多就可以写出优美的数学公式啦。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/hexo/">hexo</a>
+          
+          <a href="/tags/markdwon/">markdwon</a>
+          
+          <a href="/tags/mathjax/">mathjax</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记01</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/">
+            <span class="next-text nav-default">使用keras破解验证码</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

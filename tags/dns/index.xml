@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dns on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/dns/</link>
+    <description>Recent content in dns on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 04 May 2019 00:41:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/dns/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>工作任务项杂记_201904</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</guid>
+      <description>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo</description>
+    </item>
+    
+  </channel>
+</rss>

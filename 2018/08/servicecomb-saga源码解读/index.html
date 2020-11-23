@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>servicecomb-saga源码解读 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="servicecomb-saga源码解读" />
+<meta property="og:description" content="前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" />
+<meta property="article:published_time" content="2018-08-18T17:50:00+08:00" />
+<meta property="article:modified_time" content="2018-08-18T17:50:00+08:00" />
+<meta itemprop="name" content="servicecomb-saga源码解读">
+<meta itemprop="description" content="前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个">
+<meta itemprop="datePublished" content="2018-08-18T17:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-18T17:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="4563">
+
+
+
+<meta itemprop="keywords" content="microservice,java," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="servicecomb-saga源码解读"/>
+<meta name="twitter:description" content="前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">servicecomb-saga源码解读</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-18 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/"> 微服务 </a>
+            
+          </div>
+        <span class="more-meta"> 约 4563 字 </span>
+        <span class="more-meta"> 预计阅读 10 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#omega">omega模块的功能</a>
+      <ul>
+        <li><a href="#heading">成功场景</a></li>
+        <li><a href="#heading-1">异常场景</a></li>
+        <li><a href="#heading-2">超时场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#omega-1">omega代码解读</a>
+      <ul>
+        <li><a href="#id">注入分布式事务ID</a></li>
+        <li><a href="#saga">分布式事务开始与结束时记录saga执行事件</a></li>
+        <li><a href="#saga-1">本地事务方法执行前后记录saga执行事件</a></li>
+        <li><a href="#heading-3">收到补偿事件后的处理流程</a></li>
+        <li><a href="#sagaalpha">saga消息发送支持多alpha负载均衡及重试</a></li>
+        <li><a href="#server-streaming-grpc">Server streaming gRPC连接中断尝试重连</a></li>
+        <li><a href="#heading-4">方法执行参数的序列化</a></li>
+      </ul>
+    </li>
+    <li><a href="#omegagolang">omega的golang实现</a></li>
+    <li><a href="#heading-5">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>前面写过一篇<a href="/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/">servicecomb-saga开发实战</a>，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个坑了。</p>
+<p>整个servicecomb-saga的代码量还是比较多的，这里着重解读下omega模块的源码，其实如果理解了omega模块的代码逻辑，alpha模块就比较清楚了。</p>
+<h2 id="omega">omega模块的功能</h2>
+<p>首先参考<a href="/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/#%E5%85%B7%E4%BD%93%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B">具体处理流程</a>：</p>
+<h3 id="heading">成功场景</h3>
+<p>成功场景下，每个开始的事件都会有对应的结束事件。</p>
+<p><a href="https://github.com/apache/incubator-servicecomb-saga/blob/master/docs/static_files/successful_scenario.png"><img src="https://github.com/apache/incubator-servicecomb-saga/raw/master/docs/static_files/successful_scenario.png" alt="Successful Scenario"></a></p>
+<h3 id="heading-1">异常场景</h3>
+<p>异常场景下，omega会向alpha上报中断事件，然后alpha会向该全局事务的其它已完成的子事务发送补偿指令，确保最终所有的子事务要么都成功，要么都回滚。</p>
+<p><a href="https://github.com/apache/incubator-servicecomb-saga/blob/master/docs/static_files/exception_scenario.png"><img src="https://github.com/apache/incubator-servicecomb-saga/raw/master/docs/static_files/exception_scenario.png" alt="Exception Scenario"></a></p>
+<h3 id="heading-2">超时场景</h3>
+<p>超时场景下，已超时的事件会被alpha的定期扫描器检测出来，与此同时，该超时事务对应的全局事务也会被中断。</p>
+<p><a href="https://github.com/apache/incubator-servicecomb-saga/blob/master/docs/static_files/timeout_scenario.png"><img src="https://github.com/apache/incubator-servicecomb-saga/raw/master/docs/static_files/timeout_scenario.png" alt="Timeout Scenario"></a></p>
+<p>从上述处理流程可以看出omega主要完成以下4大功能：</p>
+<ol>
+<li>注入分布式事务ID（包括向当前服务注入分布式事务id、向调用的其它服务传递分布式事务id）</li>
+<li>在整个分布式事务开始与结束时记录saga执行事件</li>
+<li>在本地事务方法执行的前后记录saga执行事件</li>
+<li>收到补偿事件后执行补偿方法，并记录saga补偿执行事件</li>
+</ol>
+<p>后面在解读时会逐一说明上述4大功能在代码上是如何实现的。</p>
+<h2 id="omega-1">omega代码解读</h2>
+<p>参考<a href="/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/#%E6%B7%BB%E5%8A%A0saga%E7%9A%84%E6%B3%A8%E8%A7%A3%E5%8F%8A%E7%9B%B8%E5%BA%94%E7%9A%84%E8%A1%A5%E5%81%BF%E6%96%B9%E6%B3%95">添加saga的注解及相应的补偿方法</a>，我们可以看到servicecomb-saga仅要求业务应用配置<code>EnableOmega</code>，<code>@SagaStart</code>，<code>@Compensable</code>这三个annotation，下面看下这三个annotation具体是如何工作的。</p>
+<p><code>incubator-servicecomb-saga/omega/omega-spring-starter/src/main/java/org/apache/servicecomb/saga/omega/spring/EnableOmega.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Target</span><span style="color:#f92672">(</span>ElementType<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@Retention</span><span style="color:#f92672">(</span>RetentionPolicy<span style="color:#f92672">.</span><span style="color:#a6e22e">RUNTIME</span><span style="color:#f92672">)</span>
+<span style="color:#a6e22e">@Import</span><span style="color:#f92672">(</span><span style="color:#f92672">{</span>OmegaSpringConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> TransactionAspectConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">}</span><span style="color:#f92672">)</span>
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Indicates create the OmegaContext and inject it into the interceptors
+</span><span style="color:#75715e"> * to pass the transactions id across the application.
+</span><span style="color:#75715e"> * @see org.apache.servicecomb.saga.omega.context.OmegaContext
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#a6e22e">@interface</span> EnableOmega <span style="color:#f92672">{</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>一看名字就知道，这是个spring特性开关annotation，当在业务应用中打上此annotation，则会导入一些配置类，这种写法在spring-boot里很常见。</p>
+<p>再来看<code>OmegaSpringConfig</code>，<code>TransactionAspectConfig</code>。</p>
+<p><code>incubator-servicecomb-saga/omega/omega-spring-starter/src/main/java/org/apache/servicecomb/saga/omega/spring/OmegaSpringConfig.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Configuration</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OmegaSpringConfig</span> <span style="color:#f92672">{</span>
+
+  <span style="color:#a6e22e">@Bean</span><span style="color:#f92672">(</span>name <span style="color:#f92672">=</span> <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;omegaUniqueIdGenerator&#34;</span><span style="color:#f92672">}</span><span style="color:#f92672">)</span>
+  IdGenerator<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">idGenerator</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> UniqueIdGenerator<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  OmegaContext <span style="color:#a6e22e">omegaContext</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Qualifier</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;omegaUniqueIdGenerator&#34;</span><span style="color:#f92672">)</span> IdGenerator<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> idGenerator<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> OmegaContext<span style="color:#f92672">(</span>idGenerator<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  CompensationContext <span style="color:#a6e22e">compensationContext</span><span style="color:#f92672">(</span>OmegaContext omegaContext<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> CompensationContext<span style="color:#f92672">(</span>omegaContext<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  ServiceConfig <span style="color:#a6e22e">serviceConfig</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${spring.application.name}&#34;</span><span style="color:#f92672">)</span> String serviceName<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> ServiceConfig<span style="color:#f92672">(</span>serviceName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  MessageSender <span style="color:#a6e22e">grpcMessageSender</span><span style="color:#f92672">(</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.address:localhost:8080}&#34;</span><span style="color:#f92672">)</span> String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> addresses<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.ssl.enable:false}&#34;</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">boolean</span> enableSSL<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.ssl.mutualAuth:false}&#34;</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">boolean</span> mutualAuth<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.ssl.cert:client.crt}&#34;</span><span style="color:#f92672">)</span> String cert<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.ssl.key:client.pem}&#34;</span><span style="color:#f92672">)</span> String key<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${alpha.cluster.ssl.certChain:ca.crt}&#34;</span><span style="color:#f92672">)</span> String certChain<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Value</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;${omega.connection.reconnectDelay:3000}&#34;</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">int</span> reconnectDelay<span style="color:#f92672">,</span>
+      ServiceConfig serviceConfig<span style="color:#f92672">,</span>
+      <span style="color:#a6e22e">@Lazy</span> MessageHandler handler<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+    MessageFormat messageFormat <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KryoMessageFormat<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    AlphaClusterConfig clusterConfig <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AlphaClusterConfig<span style="color:#f92672">(</span>Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">asList</span><span style="color:#f92672">(</span>addresses<span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        enableSSL<span style="color:#f92672">,</span> mutualAuth<span style="color:#f92672">,</span> cert<span style="color:#f92672">,</span> key<span style="color:#f92672">,</span> certChain<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">final</span> MessageSender sender <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LoadBalancedClusterMessageSender<span style="color:#f92672">(</span>
+        clusterConfig<span style="color:#f92672">,</span>
+        messageFormat<span style="color:#f92672">,</span>
+        messageFormat<span style="color:#f92672">,</span>
+        serviceConfig<span style="color:#f92672">,</span>
+        handler<span style="color:#f92672">,</span>
+        reconnectDelay<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    sender<span style="color:#f92672">.</span><span style="color:#a6e22e">onConnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    
+    Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addShutdownHook</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Runnable<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#a6e22e">@Override</span>
+      <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        sender<span style="color:#f92672">.</span><span style="color:#a6e22e">onDisconnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        sender<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">return</span> sender<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这个配置类里声明了5个spring bean，功能如下：</p>
+<ol>
+<li><code>omegaUniqueIdGenerator</code>：这是一个唯一ID生成器，用于给分布式事务生成唯一的全局事务ID及本地事务ID。</li>
+<li><code>omegaContext</code>：这个bean里保存了当前的事务上下文信息（主要就是全局事务ID及本地事务ID），同时也提供API，用于读取设置当前的事务上下文信息。</li>
+<li><code>compensationContext</code>：这个bean里保存了可被调用的补偿方法，同时也提供API供其它部分执行某个补偿方法。</li>
+<li><code>serviceConfig</code>：这个bean里保存了当前业务服务的唯一标识。</li>
+<li><code>grpcMessageSender</code>：这个bean维护与<code>alpha</code>的grpc连接，同时如其名称提供API供其它部分通过grpc发送saga事件至<code>alpha</code>。</li>
+</ol>
+<p><code>incubator-servicecomb-saga/omega/omega-spring-tx/src/main/java/org/apache/servicecomb/saga/omega/transaction/spring/TransactionAspectConfig.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Configuration</span>
+<span style="color:#a6e22e">@EnableAspectJAutoProxy</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TransactionAspectConfig</span> <span style="color:#f92672">{</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  MessageHandler <span style="color:#a6e22e">messageHandler</span><span style="color:#f92672">(</span>MessageSender sender<span style="color:#f92672">,</span> CompensationContext context<span style="color:#f92672">,</span> OmegaContext omegaContext<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> CompensationMessageHandler<span style="color:#f92672">(</span>sender<span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Order</span><span style="color:#f92672">(</span>0<span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@Bean</span>
+  SagaStartAspect <span style="color:#a6e22e">sagaStartAspect</span><span style="color:#f92672">(</span>MessageSender sender<span style="color:#f92672">,</span> OmegaContext context<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> SagaStartAspect<span style="color:#f92672">(</span>sender<span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Order</span><span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>
+  <span style="color:#a6e22e">@Bean</span>
+  TransactionAspect <span style="color:#a6e22e">transactionAspect</span><span style="color:#f92672">(</span>MessageSender sender<span style="color:#f92672">,</span> OmegaContext context<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> TransactionAspect<span style="color:#f92672">(</span>sender<span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Bean</span>
+  CompensableAnnotationProcessor <span style="color:#a6e22e">compensableAnnotationProcessor</span><span style="color:#f92672">(</span>OmegaContext omegaContext<span style="color:#f92672">,</span>
+      CompensationContext compensationContext<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> CompensableAnnotationProcessor<span style="color:#f92672">(</span>omegaContext<span style="color:#f92672">,</span> compensationContext<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这个配置类里声明了4个spring bean，功能如下：</p>
+<ol>
+<li><code>messageHandler</code>：这个bean处理从<code>alpha</code>接收到的补偿事件，主要逻辑就是收到补偿事件后执行补偿方法，并向<code>alpha</code>发送saga补偿执行完成事件。</li>
+<li><code>sagaStartAspect</code>：这个bean完成<code>@SagaStart</code>这个annotation的AOP拦截处理，主要逻辑就是在整个分布式事务开始与结束时记录saga执行事件。</li>
+<li><code>transactionAspect</code>：这个bean完成<code>@Compensable</code>这个annotation的AOP拦截处理，主要逻辑就是在本地事务方法执行的前后记录saga执行事件。</li>
+<li><code>compensableAnnotationProcessor</code>：这个bean完成两个功能：</li>
+</ol>
+<ul>
+<li>完成<code>@OmegaContextAware</code>这个annotation的处理逻辑，主要逻辑是当spring bean的某个field是一个Executor，并且打上了<code>@OmegaContextAware</code>这个annotation，则让在这个Executor中执行的任务执行前设置上正确的事务上下文信息（主要就是全局事务ID及本地事务ID）。从代码上看目前这个功能仅在框架内部使用。</li>
+<li>将打上<code>@Compensable</code>这个annotation的方法提前注册好，保存在<code>compensationContext</code>这个bean中。</li>
+</ul>
+<p>其实上面那样将主要的spring bean功能解读一遍后，整个脉络就很清楚了。这里再复述一遍omega的主体功能的如何实现的。</p>
+<h3 id="id">注入分布式事务ID</h3>
+<p>通过对<code>@SagaStart</code>这个annotation的AOP拦截处理，在分布式事务开始时给当前分布式事务ID分配全局唯一ID，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/SagaStartAspect.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execution(@org.apache.servicecomb.saga.omega.context.annotations.SagaStart * *(..)) &amp;&amp; @annotation(sagaStart)&#34;</span><span style="color:#f92672">)</span>
+  Object <span style="color:#a6e22e">advise</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">,</span> SagaStart sagaStart<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+    initializeOmegaContext<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initializeOmegaContext</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    context<span style="color:#f92672">.</span><span style="color:#a6e22e">setLocalTxId</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">newGlobalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>通过对<code>@Compensable</code>这个annotation的AOP拦截处理，在本地事务开始时给当前本地事务ID分配唯一ID，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/TransactionAspect.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execution(@org.apache.servicecomb.saga.omega.transaction.annotations.Compensable * *(..)) &amp;&amp; @annotation(compensable)&#34;</span><span style="color:#f92672">)</span>
+  Object <span style="color:#a6e22e">advise</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">,</span> Compensable compensable<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+    Method method <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>MethodSignature<span style="color:#f92672">)</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">getSignature</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    String localTxId <span style="color:#f92672">=</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    context<span style="color:#f92672">.</span><span style="color:#a6e22e">newLocalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Updated context {} for compensable method {} &#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">,</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+      context<span style="color:#f92672">.</span><span style="color:#a6e22e">setLocalTxId</span><span style="color:#f92672">(</span>localTxId<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Restored context back to {}&#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><p>通过不同RequestInterceptor将当前的分布式上下文信息通过请求头等方式传递给其它的服务，代码如下：</p>
+<p>框架实现了基于多种transport的分布式上下文信息传递方案，见<code>incubator-servicecomb-saga/omega/omega-transport</code>目录下的各类实现。下面的代码以<code>resttemplate</code>为例。</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transport/omega-transport-resttemplate/src/main/java/org/apache/servicecomb/saga/omega/transport/resttemplate/TransactionClientHttpRequestInterceptor.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TransactionClientHttpRequestInterceptor</span> <span style="color:#66d9ef">implements</span> ClientHttpRequestInterceptor <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger LOG <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>MethodHandles<span style="color:#f92672">.</span><span style="color:#a6e22e">lookup</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lookupClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> OmegaContext omegaContext<span style="color:#f92672">;</span>
+
+  TransactionClientHttpRequestInterceptor<span style="color:#f92672">(</span>OmegaContext omegaContext<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">omegaContext</span> <span style="color:#f92672">=</span> omegaContext<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> ClientHttpResponse <span style="color:#a6e22e">intercept</span><span style="color:#f92672">(</span>HttpRequest request<span style="color:#f92672">,</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> body<span style="color:#f92672">,</span>
+      ClientHttpRequestExecution execution<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>omegaContext<span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeaders</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>GLOBAL_TX_ID_KEY<span style="color:#f92672">,</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeaders</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>LOCAL_TX_ID_KEY<span style="color:#f92672">,</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Added {} {} and {} {} to request header&#34;</span><span style="color:#f92672">,</span>
+          GLOBAL_TX_ID_KEY<span style="color:#f92672">,</span>
+          omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+          LOCAL_TX_ID_KEY<span style="color:#f92672">,</span>
+          omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> execution<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>request<span style="color:#f92672">,</span> body<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>通过HandlerInterceptor在调用具体业务方法前将传递来的分布式上下文信息保存进<code>OmegaContext</code>，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transport/omega-transport-resttemplate/src/main/java/org/apache/servicecomb/saga/omega/transport/resttemplate/TransactionHandlerInterceptor.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TransactionHandlerInterceptor</span> <span style="color:#66d9ef">implements</span> HandlerInterceptor <span style="color:#f92672">{</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger LOG <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>MethodHandles<span style="color:#f92672">.</span><span style="color:#a6e22e">lookup</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lookupClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> OmegaContext omegaContext<span style="color:#f92672">;</span>
+
+  TransactionHandlerInterceptor<span style="color:#f92672">(</span>OmegaContext omegaContext<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">omegaContext</span> <span style="color:#f92672">=</span> omegaContext<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">preHandle</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">,</span> HttpServletResponse response<span style="color:#f92672">,</span> Object handler<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>omegaContext <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      String globalTxId <span style="color:#f92672">=</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeader</span><span style="color:#f92672">(</span>GLOBAL_TX_ID_KEY<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>globalTxId <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;no such header: {}&#34;</span><span style="color:#f92672">,</span> GLOBAL_TX_ID_KEY<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+        omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">setGlobalTxId</span><span style="color:#f92672">(</span>globalTxId<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">setLocalTxId</span><span style="color:#f92672">(</span>request<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeader</span><span style="color:#f92672">(</span>LOCAL_TX_ID_KEY<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">postHandle</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">,</span> HttpServletResponse response<span style="color:#f92672">,</span> Object o<span style="color:#f92672">,</span> ModelAndView mv<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">afterCompletion</span><span style="color:#f92672">(</span>HttpServletRequest request<span style="color:#f92672">,</span> HttpServletResponse response<span style="color:#f92672">,</span> Object o<span style="color:#f92672">,</span> Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="saga">分布式事务开始与结束时记录saga执行事件</h3>
+<p>通过对<code>@SagaStart</code>这个annotation的AOP拦截处理，在整个分布式事务开始与结束时记录saga执行事件，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/SagaStartAspect.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Aspect</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SagaStartAspect</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execution(@org.apache.servicecomb.saga.omega.context.annotations.SagaStart * *(..)) &amp;&amp; @annotation(sagaStart)&#34;</span><span style="color:#f92672">)</span>
+  Object <span style="color:#a6e22e">advise</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">,</span> SagaStart sagaStart<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+    sagaStartAnnotationProcessor<span style="color:#f92672">.</span><span style="color:#a6e22e">preIntercept</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> sagaStart<span style="color:#f92672">.</span><span style="color:#a6e22e">timeout</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Initialized context {} before execution of method {}&#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">,</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      Object result <span style="color:#f92672">=</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      sagaStartAnnotationProcessor<span style="color:#f92672">.</span><span style="color:#a6e22e">postIntercept</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">debug</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Transaction with context {} has finished.&#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#75715e">// We don&#39;t need to handle the OmegaException here
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span><span style="color:#f92672">(</span>throwable <span style="color:#66d9ef">instanceof</span> OmegaException<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        sagaStartAnnotationProcessor<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> throwable<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Transaction {} failed.&#34;</span><span style="color:#f92672">,</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+      <span style="color:#66d9ef">throw</span> throwable<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+      <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/SagaStartAnnotationProcessor.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SagaStartAnnotationProcessor</span> <span style="color:#66d9ef">implements</span> EventAwareInterceptor <span style="color:#f92672">{</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> OmegaContext omegaContext<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> MessageSender sender<span style="color:#f92672">;</span>
+
+  SagaStartAnnotationProcessor<span style="color:#f92672">(</span>OmegaContext omegaContext<span style="color:#f92672">,</span> MessageSender sender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">omegaContext</span> <span style="color:#f92672">=</span> omegaContext<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span> <span style="color:#f92672">=</span> sender<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> AlphaResponse <span style="color:#a6e22e">preIntercept</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> timeout<span style="color:#f92672">,</span> String retriesMethod<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">int</span> retries<span style="color:#f92672">,</span> Object<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> message<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> SagaStartedEvent<span style="color:#f92672">(</span>omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> timeout<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>OmegaException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> TransactionalException<span style="color:#f92672">(</span>e<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> e<span style="color:#f92672">.</span><span style="color:#a6e22e">getCause</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">postIntercept</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    AlphaResponse response <span style="color:#f92672">=</span> sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> SagaEndedEvent<span style="color:#f92672">(</span>omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>response<span style="color:#f92672">.</span><span style="color:#a6e22e">aborted</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> OmegaException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;transaction &#34;</span> <span style="color:#f92672">+</span> parentTxId <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; is aborted&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">,</span> Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    String globalTxId <span style="color:#f92672">=</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TxAbortedEvent<span style="color:#f92672">(</span>globalTxId<span style="color:#f92672">,</span> omegaContext<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">,</span> throwable<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="saga-1">本地事务方法执行前后记录saga执行事件</h3>
+<p>通过对<code>@Compensable</code>这个annotation的AOP拦截处理，在本地事务开始与结束时记录saga执行事件，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/DefaultRecovery.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DefaultRecovery</span> <span style="color:#66d9ef">implements</span> RecoveryPolicy <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger LOG <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>MethodHandles<span style="color:#f92672">.</span><span style="color:#a6e22e">lookup</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lookupClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">,</span> Compensable compensable<span style="color:#f92672">,</span> CompensableInterceptor interceptor<span style="color:#f92672">,</span>
+      OmegaContext context<span style="color:#f92672">,</span> String parentTxId<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> retries<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+    AlphaResponse response <span style="color:#f92672">=</span> interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">preIntercept</span><span style="color:#f92672">(</span>parentTxId<span style="color:#f92672">,</span> compensationSignature<span style="color:#f92672">,</span> compensable<span style="color:#f92672">.</span><span style="color:#a6e22e">timeout</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        retrySignature<span style="color:#f92672">,</span> retries<span style="color:#f92672">,</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">getArgs</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      Object result <span style="color:#f92672">=</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">postIntercept</span><span style="color:#f92672">(</span>parentTxId<span style="color:#f92672">,</span> compensationSignature<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      interceptor<span style="color:#f92672">.</span><span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>parentTxId<span style="color:#f92672">,</span> compensationSignature<span style="color:#f92672">,</span> throwable<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">throw</span> throwable<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/CompensableInterceptor.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CompensableInterceptor</span> <span style="color:#66d9ef">implements</span> EventAwareInterceptor <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> OmegaContext context<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> MessageSender sender<span style="color:#f92672">;</span>
+
+  CompensableInterceptor<span style="color:#f92672">(</span>OmegaContext context<span style="color:#f92672">,</span> MessageSender sender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span> <span style="color:#f92672">=</span> sender<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">context</span> <span style="color:#f92672">=</span> context<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> AlphaResponse <span style="color:#a6e22e">preIntercept</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> timeout<span style="color:#f92672">,</span> String retriesMethod<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">int</span> retries<span style="color:#f92672">,</span> Object<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> message<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TxStartedEvent<span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> parentTxId<span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">,</span>
+        timeout<span style="color:#f92672">,</span> retriesMethod<span style="color:#f92672">,</span> retries<span style="color:#f92672">,</span> message<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">postIntercept</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TxEndedEvent<span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> parentTxId<span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">,</span> Throwable throwable<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>
+        <span style="color:#66d9ef">new</span> TxAbortedEvent<span style="color:#f92672">(</span>context<span style="color:#f92672">.</span><span style="color:#a6e22e">globalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> context<span style="color:#f92672">.</span><span style="color:#a6e22e">localTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> parentTxId<span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">,</span> throwable<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading-3">收到补偿事件后的处理流程</h3>
+<p>通过Server streaming的gRPC，当从<code>alpha</code>收到补偿事件后，调用消息处理器，消息处理器则会执行对应的补偿方法，并记录saga补偿执行事件，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-connector/omega-connector-grpc/src/main/java/org/apache/servicecomb/saga/omega/connector/grpc/GrpcCompensateStreamObserver.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GrpcCompensateStreamObserver</span> <span style="color:#66d9ef">implements</span> StreamObserver<span style="color:#f92672">&lt;</span>GrpcCompensateCommand<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onNext</span><span style="color:#f92672">(</span>GrpcCompensateCommand command<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Received compensate command, global tx id: {}, local tx id: {}, compensation method: {}&#34;</span><span style="color:#f92672">,</span>
+        command<span style="color:#f92672">.</span><span style="color:#a6e22e">getGlobalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> command<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> command<span style="color:#f92672">.</span><span style="color:#a6e22e">getCompensationMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    messageHandler<span style="color:#f92672">.</span><span style="color:#a6e22e">onReceive</span><span style="color:#f92672">(</span>
+        command<span style="color:#f92672">.</span><span style="color:#a6e22e">getGlobalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        command<span style="color:#f92672">.</span><span style="color:#a6e22e">getLocalTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        command<span style="color:#f92672">.</span><span style="color:#a6e22e">getParentTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">?</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">:</span> command<span style="color:#f92672">.</span><span style="color:#a6e22e">getParentTxId</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        command<span style="color:#f92672">.</span><span style="color:#a6e22e">getCompensationMethod</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+        deserializer<span style="color:#f92672">.</span><span style="color:#a6e22e">deserialize</span><span style="color:#f92672">(</span>command<span style="color:#f92672">.</span><span style="color:#a6e22e">getPayloads</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toByteArray</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>incubator-servicecomb-saga/omega/omega-transaction/src/main/java/org/apache/servicecomb/saga/omega/transaction/CompensationMessageHandler.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CompensationMessageHandler</span> <span style="color:#66d9ef">implements</span> MessageHandler <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onReceive</span><span style="color:#f92672">(</span>String globalTxId<span style="color:#f92672">,</span> String localTxId<span style="color:#f92672">,</span> String parentTxId<span style="color:#f92672">,</span> String compensationMethod<span style="color:#f92672">,</span>
+      Object<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span> payloads<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    context<span style="color:#f92672">.</span><span style="color:#a6e22e">apply</span><span style="color:#f92672">(</span>globalTxId<span style="color:#f92672">,</span> localTxId<span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">,</span> payloads<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    sender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> TxCompensatedEvent<span style="color:#f92672">(</span>globalTxId<span style="color:#f92672">,</span> localTxId<span style="color:#f92672">,</span> parentTxId<span style="color:#f92672">,</span> compensationMethod<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>以上就是omega主体流程的代码解读了，下面说一些框架实现的其它特性。</p>
+<h3 id="sagaalpha">saga消息发送支持多alpha负载均衡及重试</h3>
+<p>通过<code>LoadBalancedClusterMessageSender</code>、<code>RetryableMessageSender</code>（这个貌似没有实现完）包装原始的<code>GrpcClientMessageSender</code>，以支持saga消息发送的多alpha负载均衡、发送失败重试，代码如一下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-connector/omega-connector-grpc/src/main/java/org/apache/servicecomb/saga/omega/connector/grpc/LoadBalancedClusterMessageSender.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoadBalancedClusterMessageSender</span> <span style="color:#66d9ef">implements</span> MessageSender <span style="color:#f92672">{</span>
+
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Map<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">&gt;</span> senders <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Collection<span style="color:#f92672">&lt;</span>ManagedChannel<span style="color:#f92672">&gt;</span> channels<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> BlockingQueue<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span> pendingTasks <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedBlockingQueue<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> BlockingQueue<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span> availableMessageSenders <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedBlockingQueue<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> MessageSender retryableMessageSender <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> RetryableMessageSender<span style="color:#f92672">(</span>
+      availableMessageSenders<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Supplier<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span> defaultMessageSender <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Supplier<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> MessageSender <span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> retryableMessageSender<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">LoadBalancedClusterMessageSender</span><span style="color:#f92672">(</span>AlphaClusterConfig clusterConfig<span style="color:#f92672">,</span>
+      MessageSerializer serializer<span style="color:#f92672">,</span>
+      MessageDeserializer deserializer<span style="color:#f92672">,</span>
+      ServiceConfig serviceConfig<span style="color:#f92672">,</span>
+      MessageHandler handler<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">int</span> reconnectDelay<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>String address <span style="color:#f92672">:</span> clusterConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">getAddresses</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      ManagedChannel channel<span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>clusterConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">isEnableSSL</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sslContext <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            sslContext <span style="color:#f92672">=</span> buildSslContext<span style="color:#f92672">(</span>clusterConfig<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+          <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>SSLException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Unable to build SslContext&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+          <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+         channel <span style="color:#f92672">=</span> NettyChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forTarget</span><span style="color:#f92672">(</span>address<span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">negotiationType</span><span style="color:#f92672">(</span>NegotiationType<span style="color:#f92672">.</span><span style="color:#a6e22e">TLS</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">sslContext</span><span style="color:#f92672">(</span>sslContext<span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+        channel <span style="color:#f92672">=</span> ManagedChannelBuilder<span style="color:#f92672">.</span><span style="color:#a6e22e">forTarget</span><span style="color:#f92672">(</span>address<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">usePlaintext</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+      channels<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>channel<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      senders<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>
+          <span style="color:#66d9ef">new</span> GrpcClientMessageSender<span style="color:#f92672">(</span>
+              address<span style="color:#f92672">,</span>
+              channel<span style="color:#f92672">,</span>
+              serializer<span style="color:#f92672">,</span>
+              deserializer<span style="color:#f92672">,</span>
+              serviceConfig<span style="color:#f92672">,</span>
+              <span style="color:#66d9ef">new</span> ErrorHandlerFactory<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+              handler<span style="color:#f92672">)</span><span style="color:#f92672">,</span>
+          0L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onConnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>MessageSender sender <span style="color:#f92672">:</span>senders<span style="color:#f92672">.</span><span style="color:#a6e22e">keySet</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        sender<span style="color:#f92672">.</span><span style="color:#a6e22e">onConnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Failed connecting to alpha at {}&#34;</span><span style="color:#f92672">,</span> sender<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onDisconnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>MessageSender sender <span style="color:#f92672">:</span>senders<span style="color:#f92672">.</span><span style="color:#a6e22e">keySet</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        sender<span style="color:#f92672">.</span><span style="color:#a6e22e">onDisconnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Failed disconnecting from alpha at {}&#34;</span><span style="color:#f92672">,</span> sender<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    scheduler<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">for</span><span style="color:#f92672">(</span>ManagedChannel channel <span style="color:#f92672">:</span> channels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      channel<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdownNow</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> String <span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;UNKNOWN&#34;</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> AlphaResponse <span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>TxEvent event<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> send<span style="color:#f92672">(</span>event<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> FastestSender<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  AlphaResponse <span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>TxEvent event<span style="color:#f92672">,</span> MessageSenderPicker messageSenderPicker<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">do</span> <span style="color:#f92672">{</span>
+      MessageSender messageSender <span style="color:#f92672">=</span> messageSenderPicker<span style="color:#f92672">.</span><span style="color:#a6e22e">pick</span><span style="color:#f92672">(</span>senders<span style="color:#f92672">,</span> defaultMessageSender<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">long</span> startTime <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        AlphaResponse response <span style="color:#f92672">=</span> messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>event<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        senders<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>messageSender<span style="color:#f92672">,</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">-</span> startTime<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">return</span> response<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>OmegaException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">throw</span> e<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Retry sending event {} due to failure&#34;</span><span style="color:#f92672">,</span> event<span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#75715e">// very large latency on exception
+</span><span style="color:#75715e"></span>        senders<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>messageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> OmegaException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Failed to send event &#34;</span> <span style="color:#f92672">+</span> event <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; due to interruption&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * The strategy of picking the fastest {@link MessageSender}
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FastestSender</span> <span style="color:#66d9ef">implements</span> MessageSenderPicker <span style="color:#f92672">{</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> MessageSender <span style="color:#a6e22e">pick</span><span style="color:#f92672">(</span>Map<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">&gt;</span> messageSenders<span style="color:#f92672">,</span>
+      Supplier<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span> defaultSender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Long min <span style="color:#f92672">=</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">;</span>
+    MessageSender sender <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Map<span style="color:#f92672">.</span><span style="color:#a6e22e">Entry</span><span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">&gt;</span> entry <span style="color:#f92672">:</span> messageSenders<span style="color:#f92672">.</span><span style="color:#a6e22e">entrySet</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>min <span style="color:#f92672">&gt;</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          min <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getValue</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+          sender <span style="color:#f92672">=</span> entry<span style="color:#f92672">.</span><span style="color:#a6e22e">getKey</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sender <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> defaultSender<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> sender<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="server-streaming-grpc">Server streaming gRPC连接中断尝试重连</h3>
+<p>当与alpha的Server streaming gRPC连接中断后，会往任务队列里扔进一个重新建立Server streaming gRPC连接的任务，而有一个定时执行的单线程池，其会定时扫描该队列里的任务，如有新的任务则会拿出来执行，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-connector/omega-connector-grpc/src/main/java/org/apache/servicecomb/saga/omega/connector/grpc/GrpcCompensateStreamObserver.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GrpcCompensateStreamObserver</span> <span style="color:#66d9ef">implements</span> StreamObserver<span style="color:#f92672">&lt;</span>GrpcCompensateCommand<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;failed to process grpc compensate command.&#34;</span><span style="color:#f92672">,</span> t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    errorHandler<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>incubator-servicecomb-saga/omega/omega-connector/omega-connector-grpc/src/main/java/org/apache/servicecomb/saga/omega/connector/grpc/LoadBalancedClusterMessageSender.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LoadBalancedClusterMessageSender</span> <span style="color:#66d9ef">implements</span> MessageSender <span style="color:#f92672">{</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> BlockingQueue<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span> pendingTasks <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> LinkedBlockingQueue<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ScheduledExecutorService scheduler <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newSingleThreadScheduledExecutor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">LoadBalancedClusterMessageSender</span><span style="color:#f92672">(</span>AlphaClusterConfig clusterConfig<span style="color:#f92672">,</span>
+      MessageSerializer serializer<span style="color:#f92672">,</span>
+      MessageDeserializer deserializer<span style="color:#f92672">,</span>
+      ServiceConfig serviceConfig<span style="color:#f92672">,</span>
+      MessageHandler handler<span style="color:#f92672">,</span>
+      <span style="color:#66d9ef">int</span> reconnectDelay<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    scheduleReconnectTask<span style="color:#f92672">(</span>reconnectDelay<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">scheduleReconnectTask</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> reconnectDelay<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    scheduler<span style="color:#f92672">.</span><span style="color:#a6e22e">scheduleWithFixedDelay</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Runnable<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#a6e22e">@Override</span>
+      <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+          pendingTasks<span style="color:#f92672">.</span><span style="color:#a6e22e">take</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">interrupt</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> reconnectDelay<span style="color:#f92672">,</span> MILLISECONDS<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorHandlerFactory</span> <span style="color:#f92672">{</span>
+    Runnable <span style="color:#a6e22e">getHandler</span><span style="color:#f92672">(</span>MessageSender messageSender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">final</span> Runnable runnable <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PushBackReconnectRunnable<span style="color:#f92672">(</span>messageSender<span style="color:#f92672">,</span> senders<span style="color:#f92672">,</span> pendingTasks<span style="color:#f92672">,</span>
+          availableMessageSenders<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Runnable<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          pendingTasks<span style="color:#f92672">.</span><span style="color:#a6e22e">offer</span><span style="color:#f92672">(</span>runnable<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+      <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+  <span style="color:#f92672">}</span>
+  <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>incubator-servicecomb-saga/omega/omega-connector/omega-connector-grpc/src/main/java/org/apache/servicecomb/saga/omega/connector/grpc/PushBackReconnectRunnable.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PushBackReconnectRunnable</span> <span style="color:#66d9ef">implements</span> Runnable <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger LOG <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>MethodHandles<span style="color:#f92672">.</span><span style="color:#a6e22e">lookup</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lookupClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> MessageSender messageSender<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Map<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">&gt;</span> senders<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> BlockingQueue<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span> pendingTasks<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> BlockingQueue<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span> connectedSenders<span style="color:#f92672">;</span>
+
+  PushBackReconnectRunnable<span style="color:#f92672">(</span>
+      MessageSender messageSender<span style="color:#f92672">,</span>
+      Map<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">,</span> Long<span style="color:#f92672">&gt;</span> senders<span style="color:#f92672">,</span>
+      BlockingQueue<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span> pendingTasks<span style="color:#f92672">,</span>
+      BlockingQueue<span style="color:#f92672">&lt;</span>MessageSender<span style="color:#f92672">&gt;</span> connectedSenders<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">messageSender</span> <span style="color:#f92672">=</span> messageSender<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">senders</span> <span style="color:#f92672">=</span> senders<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pendingTasks</span> <span style="color:#f92672">=</span> pendingTasks<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">connectedSenders</span> <span style="color:#f92672">=</span> connectedSenders<span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Retry connecting to alpha at {}&#34;</span><span style="color:#f92672">,</span> messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">onDisconnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">onConnected</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      senders<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>messageSender<span style="color:#f92672">,</span> 0L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      connectedSenders<span style="color:#f92672">.</span><span style="color:#a6e22e">offer</span><span style="color:#f92672">(</span>messageSender<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Retry connecting to alpha at {} is successful&#34;</span><span style="color:#f92672">,</span> messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      LOG<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Failed to reconnect to alpha at {}&#34;</span><span style="color:#f92672">,</span> messageSender<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      pendingTasks<span style="color:#f92672">.</span><span style="color:#a6e22e">offer</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="heading-4">方法执行参数的序列化</h3>
+<p>在记录saga事件时需要将Compensable方法的执行参数序列化保存下来，用于后面调用补偿方法时使用，这里使用了在java领域比较高效的<a href="https://github.com/EsotericSoftware/kryo">kryo</a>序列化技术，代码如下：</p>
+<p><code>incubator-servicecomb-saga/omega/omega-format/src/main/java/org/apache/servicecomb/saga/omega/format/KryoMessageFormat.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">KryoMessageFormat</span> <span style="color:#66d9ef">implements</span> MessageFormat <span style="color:#f92672">{</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> DEFAULT_BUFFER_SIZE <span style="color:#f92672">=</span> 4096<span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> KryoFactory factory <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KryoFactory<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Kryo <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Kryo<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> KryoPool pool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> KryoPool<span style="color:#f92672">.</span><span style="color:#a6e22e">Builder</span><span style="color:#f92672">(</span>factory<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">softReferences</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">serialize</span><span style="color:#f92672">(</span>Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span> objects<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Output output <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Output<span style="color:#f92672">(</span>DEFAULT_BUFFER_SIZE<span style="color:#f92672">,</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    Kryo kryo <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">borrow</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    kryo<span style="color:#f92672">.</span><span style="color:#a6e22e">writeObjectOrNull</span><span style="color:#f92672">(</span>output<span style="color:#f92672">,</span> objects<span style="color:#f92672">,</span> Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">release</span><span style="color:#f92672">(</span>kryo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">return</span> output<span style="color:#f92672">.</span><span style="color:#a6e22e">toBytes</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+
+  <span style="color:#a6e22e">@Override</span>
+  <span style="color:#66d9ef">public</span> Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">deserialize</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> message<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+      Input input <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Input<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ByteArrayInputStream<span style="color:#f92672">(</span>message<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      Kryo kryo <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">borrow</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span> objects <span style="color:#f92672">=</span> kryo<span style="color:#f92672">.</span><span style="color:#a6e22e">readObjectOrNull</span><span style="color:#f92672">(</span>input<span style="color:#f92672">,</span> Object<span style="color:#f92672">[</span><span style="color:#f92672">]</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+      pool<span style="color:#f92672">.</span><span style="color:#a6e22e">release</span><span style="color:#f92672">(</span>kryo<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+      <span style="color:#66d9ef">return</span> objects<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>KryoException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+      <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> OmegaException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Unable to deserialize message&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>omega主体流程的代码解读就到这里了。</p>
+<h2 id="omegagolang">omega的golang实现</h2>
+<p>servicecomb-saga整个是java实现的，而对于golang语言实现的业务来说，不太好接入，这里为了加深对框架的理解，顺手写了一个omega的golang实现，github地址：<a href="https://github.com/jeremyxu2010/matrix-saga-go">https://github.com/jeremyxu2010/matrix-saga-go</a></p>
+<h2 id="heading-5">参考</h2>
+<ol>
+<li><a href="https://github.com/apache/incubator-servicecomb-saga">https://github.com/apache/incubator-servicecomb-saga</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/microservice/">microservice</a>
+          
+          <a href="/tags/java/">java</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/08/mongodb4.0%E5%A4%9A%E6%96%87%E6%A1%A3%E4%BA%8B%E5%8A%A1%E5%B0%9D%E9%B2%9C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">mongodb4.0多文档事务尝鲜</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/">
+            <span class="next-text nav-default">k8s加入TLS安全访问</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

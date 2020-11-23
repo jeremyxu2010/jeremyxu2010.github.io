@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>devops on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/devops/</link>
+    <description>Recent content in devops on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 29 Sep 2019 18:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/devops/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes CSI存储插件探究</title>
+      <link>https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/</guid>
+      <description>本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber</description>
+    </item>
+    
+    <item>
+      <title>使用Aggregated APIServer的方式构建API服务</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Sat, 20 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上</description>
+    </item>
+    
+    <item>
+      <title>彻底解决pvc无法mount的问题</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 14 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac</description>
+    </item>
+    
+    <item>
+      <title>解决pvc无法mount的问题</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 07 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其</description>
+    </item>
+    
+    <item>
+      <title>完善cni的ipam方案</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sun, 07 Jul 2019 14:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/</guid>
+      <description>上两周，为了优化k8s的网络性能，最终选择了macvlan+ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I</description>
+    </item>
+    
+    <item>
+      <title>k8s学习记录02</title>
+      <link>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/</link>
+      <pubDate>Mon, 21 May 2018 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/</guid>
+      <description>部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local</description>
+    </item>
+    
+    <item>
+      <title>k8s学习记录01</title>
+      <link>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/</link>
+      <pubDate>Sun, 20 May 2018 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/</guid>
+      <description>最近在本机macOS安装了开发用的k8s集群之后，花了些时间研究k8s，在这个过程中有一些零零星星的实操技巧，在这里记录一下，这些实际操作技</description>
+    </item>
+    
+    <item>
+      <title>基于Docker for macOS的Kubernetes本地环境搭建与应用部署</title>
+      <link>https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 05 May 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/</guid>
+      <description>最近的工作跟微服务有关，偶然在网上发现一个用k8s写微服务的小例子，觉得这样写微服务真的好简单，都不用在程序框架层面实现服务注册与服务发现了</description>
+    </item>
+    
+  </channel>
+</rss>

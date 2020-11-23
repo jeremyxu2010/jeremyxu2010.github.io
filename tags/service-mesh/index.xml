@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>service mesh on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/service-mesh/</link>
+    <description>Recent content in service mesh on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 06 Jul 2018 10:53:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/service-mesh/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>研究consul的service mesh功能</title>
+      <link>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/</link>
+      <pubDate>Fri, 06 Jul 2018 10:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/</guid>
+      <description>之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi</description>
+    </item>
+    
+  </channel>
+</rss>

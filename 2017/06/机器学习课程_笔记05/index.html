@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记05 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记05" />
+<meta property="og:description" content="生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/" />
+<meta property="article:published_time" content="2017-06-12T15:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-12T15:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记05">
+<meta itemprop="description" content="生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in">
+<meta itemprop="datePublished" content="2017-06-12T15:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-12T15:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1682">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记05"/>
+<meta name="twitter:description" content="生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记05</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-12 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1682 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">生成学习算法</a></li>
+    <li><a href="#heading-1">高斯判别分析</a></li>
+    <li><a href="#heading-2">生成学习算法与判别学习算法的对比</a></li>
+    <li><a href="#heading-3">朴素贝叶斯方法</a></li>
+    <li><a href="#laplace">Laplace平滑</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">生成学习算法</h2>
+<p>logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。</p>
+<p>判别学习算法描述为以下公式：
+<code>$$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in \{0, 1\} \quad directly. $$</code></p>
+<p>所以logistics回归是判别学习算法的一个例子。</p>
+<p>一个生成学习算法给定所属的类的情况下显示某种特定特征的概率。其计算公式如下：
+<code>$$ P(y=1|X) = \frac {P(X|y=1)P(y)} {P(X)} \\ P(X) = p(y=0|X)P(X) + P(y=1|X)P(X) $$</code>
+一个生成学习算法一开始是对<code>$P(X|y)$</code>进行建模，而不是对<code>$P(y|X)$</code>。</p>
+<h2 id="heading-1">高斯判别分析</h2>
+<p>推导过程：
+<code>$$ 假设 \quad X \in \mathbb R^n, \quad 并且是连续的 \\ 假设 \quad P(X|y) \quad 服从高斯分布 \\ 随机变量z \sim N(\mu, \Sigma), \quad 这里\mu是均值，\Sigma是协方差 = E[(X-\mu)(X-\mu)^T] \\ 那么概率密度函数为P(z) = \frac 1 {(2\pi)^{\frac n 2}|\Sigma|^{\frac 1 2}} exp(- \frac 1 2 (X-\mu)^T\Sigma^{-1}(X-\mu)) \\ P(y) = \phi^y(1-\phi)^{1-y} \\ P(X|y=0) = \frac 1 {(2\pi)^{\frac n 2}|\Sigma|^{\frac 1 2}}exp(- \frac 1 2 (X-\mu_0)^T\Sigma^{-1}(X-\mu_0)) \\ P(X|y=1) = \frac 1 {(2\pi)^{\frac n 2}|\Sigma|^{\frac 1 2}}exp(- \frac 1 2 (X-\mu_1)^T\Sigma^{-1}(X-\mu_1)) \\ 参数的对数似然性公式为 \quad \ell(\phi, \mu_0, \mu_1, \Sigma) = log\Pi_{i=1}^mP(X^{(i)}, y^{(i)}) \\ = log\Pi_{i=1}^mP(X^{(i)}| y^{(i)})P(y^{(i)})，这个是Joint \quad likelihood\\ 这里对比logistics回归里的参数对数似然性公式为\quad \ell(\Theta) = log\Pi_{i=1}^mP(y^{(i)|X^{(i)}}; \Theta)，这个是Conditional \quad likelihood\\ 最大化\ell得出\\ \phi = \frac {\Sigma_i y^{(i)}} m = \frac {\Sigma_i \mathbb 1 \{y^{(i) = 1}\}} m \\ \mu_0 = \frac {\Sigma_i^m \mathbb 1 \{y^{(i) = 0}\} X{(i)}} {\Sigma_i^m \mathbb 1 \{y^{(i) = 0}\}} \\ \mu_1 = \frac {\Sigma_i^m \mathbb 1 \{y^{(i) = 1}\} X{(i)}} {\Sigma_i^m \mathbb 1 \{y^{(i) = 1}\}} \\ \Sigma = \cdots \\ 预测\underset{y}{\operatorname{argmax}}P(y|X) = \frac {\underset{y}{\operatorname{argmax}}P(X|y)P(y)} {P(X)} =  \underset{y}{\operatorname{argmax}}P(X|y)P(y) \\ 这里P(X) = P(X|y=0)P(y=0) + P(X|y=1)P(y=1) \\ 如果P(y)是均匀分布的P(y=0)=P(y=1)，则上述公式就推导得到\underset{y}{\operatorname{argmax}}P(X|y) $$</code></p>
+<h2 id="heading-2">生成学习算法与判别学习算法的对比</h2>
+<p>这里有几个结论：</p>
+<ol>
+<li>如果<code>$X|y$</code>服从高斯分布，那么<code>$P(y=1|X)$</code>的后验分布函数将是一个logistics函数。</li>
+<li>如果<code>$P(X|y=1) \sim Poisson(\lambda_1)，P(X|y=0) \sim Poisson(\lambda_0)$</code>，那么<code>$P(y=1|X)$</code>的后验分布函数将是一个logistics函数。</li>
+<li>如果<code>$P(X|y=1)、P(X|y=0)$</code>服从某个相同的指数分布族，那么的后验分布函数将是一个logistics函数。</li>
+</ol>
+<p>因此<code>$X|y$</code>服从高斯分布或泊松分布是比<code>$y|X$</code>服从logistics分布更强的假设。</p>
+<p>如果<code>$P(X|y)$</code>服从高斯分布的假设假设或大概成立，那么高斯判别算法的表现将会更好，将会优于logistic回归，因为高斯判别算法利用了更多的关于数据的信息。相反如果不确定<code>$P(X|y)$</code>的分布情况，那么logistic回归的表现可能会更好。</p>
+<p>高斯判别分析为了拟合出一个还不错的模型，通常需要更少的数据。而logistic回归算法做了更弱的假设，与高斯判别分析相比，为了拟合出模型它需要多的样本。</p>
+<h2 id="heading-3">朴素贝叶斯方法</h2>
+<p>这里先讲了一个创建特征向量$X$来表示某一封邮件的办法。</p>
+<p>假设<code>$X \in \{0, 1\}^n，n=50000$，现在要对$P(X|y)$</code>建模，则<code>$X$有$2^{50000}$</code>个可能，如果使用多项式分布的softmax回归，则需要得到<code>$2^{50000}-1$</code>个参数，这样计算量太大了。</p>
+<p>朴素贝叶斯方法，推导过程如下：</p>
+<p>假设<code>$X_i$</code>是条件独立的，因此有<code>$P(X_1, X_2, \cdots, X_n|y) = P(X_1|y)P(X_2|y) \cdots P(X_n|y) = \prod_{i=1}^nP(X_i|y)$</code>。</p>
+<p>而在伯努利分布里，参数定义如下：</p>
+<p><code>$\phi_{i|y=1} = P(X_i=1|y=1)，\quad \phi_{i|y=0} = P(X_i=1|y=0)，\quad \phi_y=P(y=1)$</code></p>
+<p>因此就可以写出Joint参数似然性:</p>
+<p><code>$\ell(\phi_y, \phi_{i|y=1}, \phi_{i|y=0}) = \prod_{i=1}^mP(X^{(i)}, y^{(i)})$</code>，之后进行极大似然估计，就得到了</p>
+<p><code>$\phi_{j|y=1} = \frac {\sum_{i=1}^m \mathbb 1 \{X_j^{(i)}, y^{(i)}=1\}} {\sum_{i=1}^m \mathbb 1 \{y^{(i)} = 1\}}$</code></p>
+<p><code>$\phi_{j|y=0} = \frac {\sum_{i=1}^m \mathbb 1 \{X_j^{(i)}, y^{(i)}=0\}} {\sum_{i=1}^m \mathbb 1 \{y^{(i)} = 0\}}$</code></p>
+<p><code>$\phi_y = \frac {\sum_{i=1}^m\{y^{(i)} = 1\}} {m}$</code></p>
+<p>又因为贝叶斯公式，得到</p>
+<p><code>$P(y=1|X)=\frac {P(X|y=1)P(y=1)} {P(X|y=1)P(y=1) + P(X|y=0)P(y=0)} = \frac {(\prod_{i=1}^nP(X_i|y=1))P(y=1)} {(\prod_{i=1}^nP(X_i|y=1))P(y=1) + (\prod_{i=1}^nP(X_i|y=0))P(y=0)}$</code></p>
+<p>最后将上述的<code>$\phi_{j|y=1}，\phi_{j|y=0}，\phi_y$</code>代入上式，即可得到预测结果。</p>
+<p>这里讲朴素贝叶斯讲得比较复杂，如果想比较简单地理解，推荐看看<a href="http://www.ruanyifeng.com/">阮一峰</a>的一篇文章-<a href="http://www.ruanyifeng.com/blog/2013/12/naive_bayes_classifier.html">朴素贝叶斯分类器的应用</a>。</p>
+<h2 id="laplace">Laplace平滑</h2>
+<p>为了避免一些没有见过的事件，算法认为这些事件不可能发生，于是可以使用Laplace平滑改进此问题。方法如下：</p>
+<p>如果<code>$y \in \{1, 2, \cdots, k\}$，那么$P(y=j)=\frac {\sum_{i=1}^m \mathbb 1 \{y^{(i)} = j\} + 1} {m+k}$</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-12</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/retrying_library_for_java/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Retrying_Library_For_Java</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/">
+            <span class="next-text nav-default">机器学习课程_笔记04</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

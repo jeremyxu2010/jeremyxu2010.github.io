@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>docker源码分析-Daemon创建及启动 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="docker源码分析-Daemon创建及启动" />
+<meta property="og:description" content="上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/" />
+<meta property="article:published_time" content="2016-10-06T04:22:00+08:00" />
+<meta property="article:modified_time" content="2016-10-06T04:22:00+08:00" />
+<meta itemprop="name" content="docker源码分析-Daemon创建及启动">
+<meta itemprop="description" content="上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂">
+<meta itemprop="datePublished" content="2016-10-06T04:22:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-10-06T04:22:00&#43;08:00" />
+<meta itemprop="wordCount" content="6083">
+
+
+
+<meta itemprop="keywords" content="docker,golang," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="docker源码分析-Daemon创建及启动"/>
+<meta name="twitter:description" content="上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">docker源码分析-Daemon创建及启动</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-10-06 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 6083 字 </span>
+        <span class="more-meta"> 预计阅读 13 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#docker-daemon">Docker Daemon的执行</a></li>
+    <li><a href="#docker-daemon-1">Docker Daemon的创建</a></li>
+    <li><a href="#heading">总结</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂，大家看着来要有耐心了。</p>
+<h2 id="docker-daemon">Docker Daemon的执行</h2>
+<p>Docker Daemon的入口在<code>cmd/dockerd/docker.go</code>，先看main函数。</p>
+<pre><code>func main() {
+	if reexec.Init() {
+		return
+	}
+
+	// Set terminal emulation based on platform as required.
+	_, stdout, stderr := term.StdStreams()
+	logrus.SetOutput(stderr)
+
+	cmd := newDaemonCommand()
+	cmd.SetOutput(stdout)
+	if err := cmd.Execute(); err != nil {
+		fmt.Fprintf(stderr, &quot;%s\n&quot;, err)
+		os.Exit(1)
+	}
+}
+</code></pre><p>跟Docker Client的main函数，只不过加了个是否执行过初始化方法的检查，看了半天，感觉在这里<code>dockerd</code>并没有注册对应的初始化方法，因此这里<code>reexec.Init()</code>必然返回false，因此这个检查看着很
+诡异。</p>
+<p>Daemon命令行不存在子命令，就一个根命令，按上一篇的跟踪方法，很快就跟踪到<code>runDaemon</code>函数。</p>
+<pre><code>func runDaemon(opts daemonOptions) error {
+	if opts.version {
+		showVersion()
+		return nil
+	}
+
+	daemonCli := NewDaemonCli()
+
+	// On Windows, this may be launching as a service or with an option to
+	// register the service.
+	stop, err := initService(daemonCli)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	if stop {
+		return nil
+	}
+
+	err = daemonCli.start(opts)
+	notifyShutdown(err)
+	return err
+}
+</code></pre><p>与windows系统相关的代码忽略掉，其实就是创建了一个DaemonCli对象，然后调用<code>start</code>方法启动它，因为是个daemon程序，所以这里<code>start</code>方法是一个阻塞的方法，一旦它执行完毕，则进行收尾工作。</p>
+<p>再看<code>daemonCli.start</code>方法，它定义在<code>cmd/dockerd/daemon.go</code>里，前面一大段都是读取解析检验参数，就不多说了，这个有个小地方要注意，daemon程序支持将参数写进json文件里，dockerd启动时会将json配置文件里的选项与命令行的选项进行合并。</p>
+<p>然后是设置合理的umask以避免创建的文件权限不正确，再然后是设置日志选项、生成pid文件。</p>
+<pre><code>api := apiserver.New(serverConfig)
+</code></pre><p>根据serverConfig创建API Server对象。</p>
+<pre><code>	for i := 0; i &lt; len(cli.Config.Hosts); i++ {
+		var err error
+		if cli.Config.Hosts[i], err = dopts.ParseHost(cli.Config.TLS, cli.Config.Hosts[i]); err != nil {
+			return fmt.Errorf(&quot;error parsing -H %s : %v&quot;, cli.Config.Hosts[i], err)
+		}
+
+		protoAddr := cli.Config.Hosts[i]
+		protoAddrParts := strings.SplitN(protoAddr, &quot;://&quot;, 2)
+		if len(protoAddrParts) != 2 {
+			return fmt.Errorf(&quot;bad format %s, expected PROTO://ADDR&quot;, protoAddr)
+		}
+
+		proto := protoAddrParts[0]
+		addr := protoAddrParts[1]
+
+		// It's a bad idea to bind to TCP without tlsverify.
+		if proto == &quot;tcp&quot; &amp;&amp; (serverConfig.TLSConfig == nil || serverConfig.TLSConfig.ClientAuth != tls.RequireAndVerifyClientCert) {
+			logrus.Warn(&quot;[!] DON'T BIND ON ANY IP ADDRESS WITHOUT setting -tlsverify IF YOU DON'T KNOW WHAT YOU'RE DOING [!]&quot;)
+		}
+		ls, err := listeners.Init(proto, addr, serverConfig.SocketGroup, serverConfig.TLSConfig)
+		if err != nil {
+			return err
+		}
+		ls = wrapListeners(proto, ls)
+		// If we're binding to a TCP port, make sure that a container doesn't try to use it.
+		if proto == &quot;tcp&quot; {
+			if err := allocateDaemonPort(addr); err != nil {
+				return err
+			}
+		}
+		logrus.Debugf(&quot;Listener created for HTTP on %s (%s)&quot;, proto, addr)
+		api.Accept(addr, ls...)
+	}
+</code></pre><p>因为daemon程序可以根据选项监控多个地址，所以上述代码遍历这些地址，也监听了多个地址。</p>
+<pre><code>registryService := registry.NewService(cli.Config.ServiceOptions)
+</code></pre><p>从docker的总体架构得知，daemon程序在pull镜像等操作时，需要与registry服务交互，这里即创建了registryService对象，用于与registry服务交互。registryService对象定义在<code>registry</code>目录，这个目录里文件不是太多，逻辑也不是太复杂，暂且略过。总体来说就是实现了下列接口方法，供daemon程序与registry服务交互。</p>
+<pre><code>type Service interface {
+	Auth(ctx context.Context, authConfig *types.AuthConfig, userAgent string) (status, token string, err error)
+	LookupPullEndpoints(hostname string) (endpoints []APIEndpoint, err error)
+	LookupPushEndpoints(hostname string) (endpoints []APIEndpoint, err error)
+	ResolveRepository(name reference.Named) (*RepositoryInfo, error)
+	ResolveIndex(name string) (*registrytypes.IndexInfo, error)
+	Search(ctx context.Context, term string, limit int, authConfig *types.AuthConfig, userAgent string, headers map[string][]string) (*registrytypes.SearchResults, error)
+	ServiceConfig() *registrytypes.ServiceConfig
+	TLSConfig(hostname string) (*tls.Config, error)
+}
+</code></pre><p>回到daemon的start方法，接下来构造了与<code>docker-containerd</code>通信的对象<code>containerdRemote</code>。</p>
+<pre><code>containerdRemote, err := libcontainerd.New(cli.getLibcontainerdRoot(), cli.getPlatformRemoteOptions()...)
+	if err != nil {
+		return err
+	}
+</code></pre><p><code>docker-containerd</code>是一个控制<code>runC</code>的后台程序，其代码在<a href="https://github.com/docker/containerd">https://github.com/docker/containerd</a>。与<code>docker-containerd</code>通信的模块源码在<code>libcontainerd</code>目录，这个目录里文件不是太多，简单来说就是提供了下列接口方法，供daemon程序调用以控制管理容器的运行。</p>
+<pre><code>// Client provides access to containerd features.
+type Client interface {
+	Create(containerID string, checkpoint string, checkpointDir string, spec specs.Spec, options ...CreateOption) error
+	Signal(containerID string, sig int) error
+	SignalProcess(containerID string, processFriendlyName string, sig int) error
+	AddProcess(ctx context.Context, containerID, processFriendlyName string, process Process) error
+	Resize(containerID, processFriendlyName string, width, height int) error
+	Pause(containerID string) error
+	Resume(containerID string) error
+	Restore(containerID string, options ...CreateOption) error
+	Stats(containerID string) (*Stats, error)
+	GetPidsForContainer(containerID string) ([]int, error)
+	Summary(containerID string) ([]Summary, error)
+	UpdateResources(containerID string, resources Resources) error
+	CreateCheckpoint(containerID string, checkpointID string, checkpointDir string, exit bool) error
+	DeleteCheckpoint(containerID string, checkpointID string, checkpointDir string) error
+	ListCheckpoints(containerID string, checkpointDir string) (*Checkpoints, error)
+}
+</code></pre><p>再回到daemon的start方法，接下来声明监听系统的一些终止信号，如监听到这些信息，就停止<code>DaemonCli</code>。</p>
+<pre><code>	signal.Trap(func() {
+		cli.stop()
+		&lt;-stopc // wait for daemonCli.start() to return
+	})
+</code></pre><p>再接下来，创建<code>Daemon</code>对象，注意创建<code>Daemon</code>对象时传入了<code>registryService</code>，<code>containerdRemote</code>，这个跟docker的总体架构是相符的。</p>
+<pre><code>	d, err := daemon.NewDaemon(cli.Config, registryService, containerdRemote)
+	if err != nil {
+		return fmt.Errorf(&quot;Error starting daemon: %v&quot;, err)
+	}
+</code></pre><p><code>NewDaemon</code>方法完成的功能较多，下一小节再详细描述，这里还是继续看daemon的start方法。</p>
+<pre><code>	c, err := cluster.New(cluster.Config{
+		Root:                   cli.Config.Root,
+		Name:                   name,
+		Backend:                d,
+		NetworkSubnetsProvider: d,
+		DefaultAdvertiseAddr:   cli.Config.SwarmDefaultAdvertiseAddr,
+		RuntimeRoot:            cli.getSwarmRunRoot(),
+	})
+	if err != nil {
+		logrus.Fatalf(&quot;Error creating cluster component: %v&quot;, err)
+	}
+
+	// Restart all autostart containers which has a swarm endpoint
+	// and is not yet running now that we have successfully
+	// initialized the cluster.
+	d.RestartSwarmContainers()
+</code></pre><p>V1.12版本的docker还集成了swarm的相关功能，这里将自动启动安装有swarm endpoint的容器。</p>
+<pre><code>	cli.initMiddlewares(api, serverConfig)
+</code></pre><p>给API Server注册一些中间件，这些中间件主要进行版本兼容性检查、添加CORS跨站点请求相关响应头、对请求进行认证。</p>
+<pre><code>func (cli *DaemonCli) initMiddlewares(s *apiserver.Server, cfg *apiserver.Config) {
+	v := cfg.Version
+
+	vm := middleware.NewVersionMiddleware(v, api.DefaultVersion, api.MinVersion)
+	s.UseMiddleware(vm)
+
+	if cfg.EnableCors {
+		c := middleware.NewCORSMiddleware(cfg.CorsHeaders)
+		s.UseMiddleware(c)
+	}
+
+	u := middleware.NewUserAgentMiddleware(v)
+	s.UseMiddleware(u)
+
+	cli.authzMiddleware = authorization.NewMiddleware(cli.Config.AuthorizationPlugins)
+	s.UseMiddleware(cli.authzMiddleware)
+}
+</code></pre><p>再接下来初始化API Server的路由。</p>
+<pre><code>	initRouter(api, d, c)
+
+...
+
+func initRouter(s *apiserver.Server, d *daemon.Daemon, c *cluster.Cluster) {
+	decoder := runconfig.ContainerDecoder{}
+
+	routers := []router.Router{}
+
+	// we need to add the checkpoint router before the container router or the DELETE gets masked
+	routers = addExperimentalRouters(routers, d, decoder)
+
+	routers = append(routers, []router.Router{
+		container.NewRouter(d, decoder),
+		image.NewRouter(d, decoder),
+		systemrouter.NewRouter(d, c),
+		volume.NewRouter(d),
+		build.NewRouter(dockerfile.NewBuildManager(d)),
+		swarmrouter.NewRouter(c),
+	}...)
+
+	if d.NetworkControllerEnabled() {
+		routers = append(routers, network.NewRouter(d, c))
+	}
+
+	s.InitRouter(utils.IsDebugEnabled(), routers...)
+}
+</code></pre><p>可能看到API Server处理的请求主要包括容器、镜像、系统、卷、编译、swarm、网络这几个方法。构建路由时均将<code>Daemon</code>对象传入了，也就是说某条路由对应的handler将会调用<code>Daemon</code>对象的相关方法进行业务操作，最后向Docker Client输出回应。API Server这些路由对应的Handler在<code>api/server/router</code>目录下都可以找到，每个handler逻辑都很简单，就不详细描述了。</p>
+<p>再回到daemon的start方法，下面的方法当监听到系统信号<code>SIGHUP</code>，就会重新加载daemon程序的配置。</p>
+<pre><code>cli.setupConfigReloadTrap()
+</code></pre><p>再然后创建goroutine使<code>API Server</code>开始对外提供服务，并在该goroutine里等待<code>API Server</code>停止。<code>API Server</code>默认也不会停止，除非主动停止它或出现什么错误，所以这个goroutine是阻塞的。另外<code>API Server</code>很有可能是监听多个地址的，所以<code>serveAPI</code>方法使用了多个goroutine以调用多个<code>HTTPServer</code>的<code>Serve</code>方法，并同样阻塞住。</p>
+<pre><code>	serveAPIWait := make(chan error)
+	go api.Wait(serveAPIWait)
+
+func (s *Server) Wait(waitChan chan error) {
+  if err := s.serveAPI(); err != nil {
+  	logrus.Errorf(&quot;ServeAPI error: %v&quot;, err)
+  	waitChan &lt;- err
+  	return
+  }
+  waitChan &lt;- nil
+}
+
+// serveAPI loops through all initialized servers and spawns goroutine
+// with Server method for each. It sets createMux() as Handler also.
+func (s *Server) serveAPI() error {
+	var chErrors = make(chan error, len(s.servers))
+	for _, srv := range s.servers {
+		srv.srv.Handler = s.routerSwapper
+		go func(srv *HTTPServer) {
+			var err error
+			logrus.Infof(&quot;API listen on %s&quot;, srv.l.Addr())
+			if err = srv.Serve(); err != nil &amp;&amp; strings.Contains(err.Error(), &quot;use of closed network connection&quot;) {
+				err = nil
+			}
+			chErrors &lt;- err
+		}(srv)
+	}
+
+	for i := 0; i &lt; len(s.servers); i++ {
+		err := &lt;-chErrors
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+</code></pre><p>然后调用操作系统的systemd服务，docker的daemon进程已成功启动。</p>
+<pre><code>	// after the daemon is done setting up we can notify systemd api
+	notifySystem()
+</code></pre><pre><code>	// Daemon is fully initialized and handling API traffic
+	// Wait for serve API to complete
+	errAPI := &lt;-serveAPIWait
+	c.Cleanup()
+	shutdownDaemon(d, 15)
+	containerdRemote.Cleanup()
+	if errAPI != nil {
+		return fmt.Errorf(&quot;Shutting down due to ServeAPI error: %v&quot;, errAPI)
+	}
+
+	return nil
+</code></pre><p>最后由于上面调用<code>serveAPI</code>方法的goroutine阻塞住了，所以<code>errAPI := &lt;-serveAPIWait</code>这行代码就会使main goroutine阻塞住了，这样daemon进程就不会退出。一旦阻塞解除了，也就意味着daemon进程需要退出了，这时做一些清理工作。</p>
+<p>以上就是Docker Daemon的整体执行逻辑了。</p>
+<h2 id="docker-daemon-1">Docker Daemon的创建</h2>
+<p>上面一小节里，有一个方法<code>daemon.NewDaemon(cli.Config, registryService, containerdRemote)</code>简单地跳过了，但其实这个方法是相当重要的，这里将这个方法详细说明一下。</p>
+<pre><code>	setDefaultMtu(config)
+
+	// Ensure that we have a correct root key limit for launching containers.
+	if err := ModifyRootKeyLimit(); err != nil {
+		logrus.Warnf(&quot;unable to modify root key limit, number of containers could be limitied by this quota: %v&quot;, err)
+	}
+
+	// Ensure we have compatible and valid configuration options
+	if err := verifyDaemonSettings(config); err != nil {
+		return nil, err
+	}
+
+	// Do we have a disabled network?
+	config.DisableBridge = isBridgeNetworkDisabled(config)
+
+	// Verify the platform is supported as a daemon
+	if !platformSupported {
+		return nil, errSystemNotSupported
+	}
+
+	// Validate platform-specific requirements
+	if err := checkSystem(); err != nil {
+		return nil, err
+	}
+
+	// set up SIGUSR1 handler on Unix-like systems, or a Win32 global event
+	// on Windows to dump Go routine stacks
+	setupDumpStackTrap(config.Root)
+</code></pre><p>首先就是一大段选项、环境的检测调整，代码注释得很清楚，就不多说了。</p>
+<pre><code>	uidMaps, gidMaps, err := setupRemappedRoot(config)
+	if err != nil {
+		return nil, err
+	}
+	rootUID, rootGID, err := idtools.GetRootUIDGID(uidMaps, gidMaps)
+	if err != nil {
+		return nil, err
+	}
+</code></pre><p>docker支持用户空间重映射特性，这里就是在解析与之相关的<code>userns-remap</code>参数。docker用户空间重映射特性其实就是将容器内的用户映射为宿主机上的普通用户，这个主要是为了加强容器安全的。</p>
+<pre><code>	// get the canonical path to the Docker root directory
+	var realRoot string
+	if _, err := os.Stat(config.Root); err != nil &amp;&amp; os.IsNotExist(err) {
+		realRoot = config.Root
+	} else {
+		realRoot, err = fileutils.ReadSymlinkedDirectory(config.Root)
+		if err != nil {
+			return nil, fmt.Errorf(&quot;Unable to get the full path to root (%s): %s&quot;, config.Root, err)
+		}
+	}
+
+	if err := setupDaemonRoot(config, realRoot, rootUID, rootGID); err != nil {
+		return nil, err
+	}
+
+	if err := setupDaemonProcess(config); err != nil {
+		return nil, err
+	}
+
+	// set up the tmpDir to use a canonical path
+	tmp, err := tempDir(config.Root, rootUID, rootGID)
+	if err != nil {
+		return nil, fmt.Errorf(&quot;Unable to get the TempDir under %s: %s&quot;, config.Root, err)
+	}
+	realTmp, err := fileutils.ReadSymlinkedDirectory(tmp)
+	if err != nil {
+		return nil, fmt.Errorf(&quot;Unable to get the full path to the TempDir (%s): %s&quot;, tmp, err)
+	}
+	os.Setenv(&quot;TMPDIR&quot;, realTmp)
+</code></pre><p>接下来对存储目录进行必要的权限调整、对daemon进程的<code>oom_score_adj</code>参数进行必要的调整（减小daemon进程被OS杀掉的可能性）、创建临时目录。</p>
+<pre><code>	d := &amp;Daemon{configStore: config}
+	// Ensure the daemon is properly shutdown if there is a failure during
+	// initialization
+	defer func() {
+		if err != nil {
+			if err := d.Shutdown(); err != nil {
+				logrus.Error(err)
+			}
+		}
+	}()
+
+	// Set the default isolation mode (only applicable on Windows)
+	if err := d.setDefaultIsolation(); err != nil {
+		return nil, fmt.Errorf(&quot;error setting default isolation mode: %v&quot;, err)
+	}
+
+	logrus.Debugf(&quot;Using default logging driver %s&quot;, config.LogConfig.Type)
+
+	if err := configureMaxThreads(config); err != nil {
+		logrus.Warnf(&quot;Failed to configure golang's threads limit: %v&quot;, err)
+	}
+
+	installDefaultAppArmorProfile()
+</code></pre><p>上述代码完成以下几个功能：</p>
+<ul>
+<li>创建Daemon对象</li>
+<li>如<code>NewDaemon</code>方法有任何异常，则退出方法时关闭Daemon</li>
+<li>调整进程的最大线程数限制</li>
+<li>安装AppArmor相关的配置</li>
+</ul>
+<pre><code>	daemonRepo := filepath.Join(config.Root, &quot;containers&quot;)
+	if err := idtools.MkdirAllAs(daemonRepo, 0700, rootUID, rootGID); err != nil &amp;&amp; !os.IsExist(err) {
+		return nil, err
+	}
+
+	driverName := os.Getenv(&quot;DOCKER_DRIVER&quot;)
+	if driverName == &quot;&quot; {
+		driverName = config.GraphDriver
+	}
+
+	d.pluginStore = pluginstore.NewStore(config.Root)
+
+	d.layerStore, err = layer.NewStoreFromOptions(layer.StoreOptions{
+		StorePath:                 config.Root,
+		MetadataStorePathTemplate: filepath.Join(config.Root, &quot;image&quot;, &quot;%s&quot;, &quot;layerdb&quot;),
+		GraphDriver:               driverName,
+		GraphDriverOptions:        config.GraphOptions,
+		UIDMaps:                   uidMaps,
+		GIDMaps:                   gidMaps,
+		PluginGetter:              d.pluginStore,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	graphDriver := d.layerStore.DriverName()
+	imageRoot := filepath.Join(config.Root, &quot;image&quot;, graphDriver)
+
+	// Configure and validate the kernels security support
+	if err := configureKernelSecuritySupport(config, graphDriver); err != nil {
+		return nil, err
+	}
+
+	logrus.Debugf(&quot;Max Concurrent Downloads: %d&quot;, *config.MaxConcurrentDownloads)
+	d.downloadManager = xfer.NewLayerDownloadManager(d.layerStore, *config.MaxConcurrentDownloads)
+	logrus.Debugf(&quot;Max Concurrent Uploads: %d&quot;, *config.MaxConcurrentUploads)
+	d.uploadManager = xfer.NewLayerUploadManager(*config.MaxConcurrentUploads)
+
+	ifs, err := image.NewFSStoreBackend(filepath.Join(imageRoot, &quot;imagedb&quot;))
+	if err != nil {
+		return nil, err
+	}
+
+	d.imageStore, err = image.NewImageStore(ifs, d.layerStore)
+	if err != nil {
+		return nil, err
+	}
+
+	// Configure the volumes driver
+	volStore, err := d.configureVolumes(rootUID, rootGID)
+	if err != nil {
+		return nil, err
+	}
+
+	trustKey, err := api.LoadOrCreateTrustKey(config.TrustKeyPath)
+	if err != nil {
+		return nil, err
+	}
+
+	trustDir := filepath.Join(config.Root, &quot;trust&quot;)
+
+	if err := system.MkdirAll(trustDir, 0700); err != nil {
+		return nil, err
+	}
+
+	distributionMetadataStore, err := dmetadata.NewFSMetadataStore(filepath.Join(imageRoot, &quot;distribution&quot;))
+	if err != nil {
+		return nil, err
+	}
+
+	eventsService := events.New()
+
+	referenceStore, err := reference.NewReferenceStore(filepath.Join(imageRoot, &quot;repositories.json&quot;))
+	if err != nil {
+		return nil, fmt.Errorf(&quot;Couldn't create Tag store repositories: %s&quot;, err)
+	}
+</code></pre><p>再就是创建初始化了一堆与镜像存储相关的目录及Store，有以下几个：</p>
+<ul>
+<li><code>/var/lib/docker/containers</code> 这个目录是用来记录的是容器相关的信息，每运行一个容器，就在这个目录下面生成一个容器Id对应的子目录。</li>
+<li><code>/var/lib/docker/image/${graphDriverName}/layerdb</code> 这个目录是用来记录layer元数据的</li>
+<li><code>/var/lib/docker/image/${graphDriverName}/imagedb</code> 这个目录是用来记录镜像元数据的</li>
+<li><code>/var/lib/docker/image/${graphDriverName}/distribution</code> 这个目录用来记录layer元数据与镜像元数据之间的关联关系</li>
+<li><code>/var/lib/docker/image/${graphDriverName}/repositories.json</code> 这个目录是用来记录镜像仓库元数据的</li>
+<li><code>/var/lib/docker/trust</code> 这个目录用来放一些证书文件</li>
+<li><code>/var/lib/docker/volumes</code> 这个目录是用来记录卷元数据的</li>
+</ul>
+<pre><code>	migrationStart := time.Now()
+	if err := v1.Migrate(config.Root, graphDriver, d.layerStore, d.imageStore, referenceStore, distributionMetadataStore); err != nil {
+		logrus.Errorf(&quot;Graph migration failed: %q. Your old graph data was found to be too inconsistent for upgrading to content-addressable storage. Some of the old data was probably not upgraded. We recommend starting over with a clean storage directory if possible.&quot;, err)
+	}
+	logrus.Infof(&quot;Graph migration to content-addressability took %.2f seconds&quot;, time.Since(migrationStart).Seconds())
+</code></pre><p>接下来是一个迁移旧版Graph数据的逻辑。</p>
+<pre><code>	// Discovery is only enabled when the daemon is launched with an address to advertise.  When
+	// initialized, the daemon is registered and we can store the discovery backend as its read-only
+	if err := d.initDiscovery(config); err != nil {
+		return nil, err
+	}
+</code></pre><p>如果配置了在集群中向外发布的访问地址，则需要初始化集群节点的服务发现Agent。一般来说就是定时向KV库报告自身的状态及公布访问地址，代码如下：</p>
+<pre><code>// initDiscovery initializes the nodes discovery subsystem by connecting to the specified backend
+// and starts a registration loop to advertise the current node under the specified address.
+func initDiscovery(backendAddress, advertiseAddress string, clusterOpts map[string]string) (discoveryReloader, error) {
+	heartbeat, backend, err := parseDiscoveryOptions(backendAddress, clusterOpts)
+	if err != nil {
+		return nil, err
+	}
+
+	reloader := &amp;daemonDiscoveryReloader{
+		backend: backend,
+		ticker:  time.NewTicker(heartbeat),
+		term:    make(chan bool),
+		readyCh: make(chan struct{}),
+	}
+	// We call Register() on the discovery backend in a loop for the whole lifetime of the daemon,
+	// but we never actually Watch() for nodes appearing and disappearing for the moment.
+	go reloader.advertiseHeartbeat(advertiseAddress)
+	return reloader, nil
+}
+
+// advertiseHeartbeat registers the current node against the discovery backend using the specified
+// address. The function never returns, as registration against the backend comes with a TTL and
+// requires regular heartbeats.
+func (d *daemonDiscoveryReloader) advertiseHeartbeat(address string) {
+	var ready bool
+	if err := d.initHeartbeat(address); err == nil {
+		ready = true
+		close(d.readyCh)
+	}
+
+	for {
+		select {
+		case &lt;-d.ticker.C:
+			if err := d.backend.Register(address); err != nil {
+				logrus.Warnf(&quot;Registering as %q in discovery failed: %v&quot;, address, err)
+			} else {
+				if !ready {
+					close(d.readyCh)
+					ready = true
+				}
+			}
+		case &lt;-d.term:
+			return
+		}
+	}
+}
+
+// initHeartbeat is used to do the first heartbeat. It uses a tight loop until
+// either the timeout period is reached or the heartbeat is successful and returns.
+func (d *daemonDiscoveryReloader) initHeartbeat(address string) error {
+	// Setup a short ticker until the first heartbeat has succeeded
+	t := time.NewTicker(500 * time.Millisecond)
+	defer t.Stop()
+	// timeout makes sure that after a period of time we stop being so aggressive trying to reach the discovery service
+	timeout := time.After(60 * time.Second)
+
+	for {
+		select {
+		case &lt;-timeout:
+			return errors.New(&quot;timeout waiting for initial discovery&quot;)
+		case &lt;-d.term:
+			return errors.New(&quot;terminated&quot;)
+		case &lt;-t.C:
+			if err := d.backend.Register(address); err == nil {
+				return nil
+			}
+		}
+	}
+}
+</code></pre><p>再然后就是给Daemon对象的一系列属性赋上值。</p>
+<pre><code>	d.ID = trustKey.PublicKey().KeyID()
+	d.repository = daemonRepo
+	d.containers = container.NewMemoryStore()
+	d.execCommands = exec.NewStore()
+	d.referenceStore = referenceStore
+	d.distributionMetadataStore = distributionMetadataStore
+	d.trustKey = trustKey
+	d.idIndex = truncindex.NewTruncIndex([]string{})
+	d.statsCollector = d.newStatsCollector(1 * time.Second)
+	d.defaultLogConfig = containertypes.LogConfig{
+		Type:   config.LogConfig.Type,
+		Config: config.LogConfig.Config,
+	}
+	d.RegistryService = registryService
+	d.EventsService = eventsService
+	d.volumes = volStore
+	d.root = config.Root
+	d.uidMaps = uidMaps
+	d.gidMaps = gidMaps
+	d.seccompEnabled = sysInfo.Seccomp
+
+	d.nameIndex = registrar.NewRegistrar()
+	d.linkIndex = newLinkIndex()
+	d.containerdRemote = containerdRemote
+
+	go d.execCommandGC()
+
+	d.containerd, err = containerdRemote.Client(d)
+	if err != nil {
+		return nil, err
+	}
+</code></pre><p>首先确保插件系统初始化完毕，然后根据<code>/var/lib/docker/containers</code>目录里容器目录还原部分容器、初始化容器依赖的网络环境，初始化容器之间的link关系等。</p>
+<pre><code>	// Plugin system initialization should happen before restore. Dont change order.
+	if err := pluginInit(d, config, containerdRemote); err != nil {
+		return nil, err
+	}
+
+	if err := d.restore(); err != nil {
+		return nil, err
+	}
+
+	func (daemon *Daemon) restore() error {
+	var (
+		debug         = utils.IsDebugEnabled()
+		currentDriver = daemon.GraphDriverName()
+		containers    = make(map[string]*container.Container)
+	)
+
+	if !debug {
+		logrus.Info(&quot;Loading containers: start.&quot;)
+	}
+	dir, err := ioutil.ReadDir(daemon.repository)
+	if err != nil {
+		return err
+	}
+
+	containerCount := 0
+	for _, v := range dir {
+		id := v.Name()
+		container, err := daemon.load(id)
+		if !debug &amp;&amp; logrus.GetLevel() == logrus.InfoLevel {
+			fmt.Print(&quot;.&quot;)
+			containerCount++
+		}
+		if err != nil {
+			logrus.Errorf(&quot;Failed to load container %v: %v&quot;, id, err)
+			continue
+		}
+
+		// Ignore the container if it does not support the current driver being used by the graph
+		if (container.Driver == &quot;&quot; &amp;&amp; currentDriver == &quot;aufs&quot;) || container.Driver == currentDriver {
+			rwlayer, err := daemon.layerStore.GetRWLayer(container.ID)
+			if err != nil {
+				logrus.Errorf(&quot;Failed to load container mount %v: %v&quot;, id, err)
+				continue
+			}
+			container.RWLayer = rwlayer
+			logrus.Debugf(&quot;Loaded container %v&quot;, container.ID)
+
+			containers[container.ID] = container
+		} else {
+			logrus.Debugf(&quot;Cannot load container %s because it was created with another graph driver.&quot;, container.ID)
+		}
+	}
+
+	var migrateLegacyLinks bool
+	removeContainers := make(map[string]*container.Container)
+	restartContainers := make(map[*container.Container]chan struct{})
+	activeSandboxes := make(map[string]interface{})
+	for _, c := range containers {
+		if err := daemon.registerName(c); err != nil {
+			logrus.Errorf(&quot;Failed to register container %s: %s&quot;, c.ID, err)
+			continue
+		}
+		if err := daemon.Register(c); err != nil {
+			logrus.Errorf(&quot;Failed to register container %s: %s&quot;, c.ID, err)
+			continue
+		}
+
+		// verify that all volumes valid and have been migrated from the pre-1.7 layout
+		if err := daemon.verifyVolumesInfo(c); err != nil {
+			// don't skip the container due to error
+			logrus.Errorf(&quot;Failed to verify volumes for container '%s': %v&quot;, c.ID, err)
+		}
+
+		// The LogConfig.Type is empty if the container was created before docker 1.12 with default log driver.
+		// We should rewrite it to use the daemon defaults.
+		// Fixes https://github.com/docker/docker/issues/22536
+		if c.HostConfig.LogConfig.Type == &quot;&quot; {
+			if err := daemon.mergeAndVerifyLogConfig(&amp;c.HostConfig.LogConfig); err != nil {
+				logrus.Errorf(&quot;Failed to verify log config for container %s: %q&quot;, c.ID, err)
+				continue
+			}
+		}
+	}
+	var wg sync.WaitGroup
+	var mapLock sync.Mutex
+	for _, c := range containers {
+		wg.Add(1)
+		go func(c *container.Container) {
+			defer wg.Done()
+			if err := backportMountSpec(c); err != nil {
+				logrus.Errorf(&quot;Failed to migrate old mounts to use new spec format&quot;)
+			}
+
+			rm := c.RestartManager(false)
+			if c.IsRunning() || c.IsPaused() {
+				if err := daemon.containerd.Restore(c.ID, libcontainerd.WithRestartManager(rm)); err != nil {
+					logrus.Errorf(&quot;Failed to restore %s with containerd: %s&quot;, c.ID, err)
+					return
+				}
+				if !c.HostConfig.NetworkMode.IsContainer() &amp;&amp; c.IsRunning() {
+					options, err := daemon.buildSandboxOptions(c)
+					if err != nil {
+						logrus.Warnf(&quot;Failed build sandbox option to restore container %s: %v&quot;, c.ID, err)
+					}
+					mapLock.Lock()
+					activeSandboxes[c.NetworkSettings.SandboxID] = options
+					mapLock.Unlock()
+				}
+
+			}
+			// fixme: only if not running
+			// get list of containers we need to restart
+			if !c.IsRunning() &amp;&amp; !c.IsPaused() {
+				// Do not autostart containers which
+				// has endpoints in a swarm scope
+				// network yet since the cluster is
+				// not initialized yet. We will start
+				// it after the cluster is
+				// initialized.
+				if daemon.configStore.AutoRestart &amp;&amp; c.ShouldRestart() &amp;&amp; !c.NetworkSettings.HasSwarmEndpoint {
+					mapLock.Lock()
+					restartContainers[c] = make(chan struct{})
+					mapLock.Unlock()
+				} else if c.HostConfig != nil &amp;&amp; c.HostConfig.AutoRemove {
+					mapLock.Lock()
+					removeContainers[c.ID] = c
+					mapLock.Unlock()
+				}
+			}
+
+			if c.RemovalInProgress {
+				// We probably crashed in the middle of a removal, reset
+				// the flag.
+				//
+				// We DO NOT remove the container here as we do not
+				// know if the user had requested for either the
+				// associated volumes, network links or both to also
+				// be removed. So we put the container in the &quot;dead&quot;
+				// state and leave further processing up to them.
+				logrus.Debugf(&quot;Resetting RemovalInProgress flag from %v&quot;, c.ID)
+				c.ResetRemovalInProgress()
+				c.SetDead()
+				c.ToDisk()
+			}
+
+			// if c.hostConfig.Links is nil (not just empty), then it is using the old sqlite links and needs to be migrated
+			if c.HostConfig != nil &amp;&amp; c.HostConfig.Links == nil {
+				migrateLegacyLinks = true
+			}
+		}(c)
+	}
+	wg.Wait()
+	daemon.netController, err = daemon.initNetworkController(daemon.configStore, activeSandboxes)
+	if err != nil {
+		return fmt.Errorf(&quot;Error initializing network controller: %v&quot;, err)
+	}
+
+	// migrate any legacy links from sqlite
+	linkdbFile := filepath.Join(daemon.root, &quot;linkgraph.db&quot;)
+	var legacyLinkDB *graphdb.Database
+	if migrateLegacyLinks {
+		legacyLinkDB, err = graphdb.NewSqliteConn(linkdbFile)
+		if err != nil {
+			return fmt.Errorf(&quot;error connecting to legacy link graph DB %s, container links may be lost: %v&quot;, linkdbFile, err)
+		}
+		defer legacyLinkDB.Close()
+	}
+
+	// Now that all the containers are registered, register the links
+	for _, c := range containers {
+		if migrateLegacyLinks {
+			if err := daemon.migrateLegacySqliteLinks(legacyLinkDB, c); err != nil {
+				return err
+			}
+		}
+		if err := daemon.registerLinks(c, c.HostConfig); err != nil {
+			logrus.Errorf(&quot;failed to register link for container %s: %v&quot;, c.ID, err)
+		}
+	}
+
+	group := sync.WaitGroup{}
+	for c, notifier := range restartContainers {
+		group.Add(1)
+
+		go func(c *container.Container, chNotify chan struct{}) {
+			defer group.Done()
+
+			logrus.Debugf(&quot;Starting container %s&quot;, c.ID)
+
+			// ignore errors here as this is a best effort to wait for children to be
+			//   running before we try to start the container
+			children := daemon.children(c)
+			timeout := time.After(5 * time.Second)
+			for _, child := range children {
+				if notifier, exists := restartContainers[child]; exists {
+					select {
+					case &lt;-notifier:
+					case &lt;-timeout:
+					}
+				}
+			}
+
+			// Make sure networks are available before starting
+			daemon.waitForNetworks(c)
+			if err := daemon.containerStart(c, &quot;&quot;); err != nil {
+				logrus.Errorf(&quot;Failed to start container %s: %s&quot;, c.ID, err)
+			}
+			close(chNotify)
+		}(c, notifier)
+
+	}
+	group.Wait()
+
+	removeGroup := sync.WaitGroup{}
+	for id := range removeContainers {
+		removeGroup.Add(1)
+		go func(cid string) {
+			if err := daemon.ContainerRm(cid, &amp;types.ContainerRmConfig{ForceRemove: true, RemoveVolume: true}); err != nil {
+				logrus.Errorf(&quot;Failed to remove container %s: %s&quot;, cid, err)
+			}
+			removeGroup.Done()
+		}(id)
+	}
+	removeGroup.Wait()
+
+	// any containers that were started above would already have had this done,
+	// however we need to now prepare the mountpoints for the rest of the containers as well.
+	// This shouldn't cause any issue running on the containers that already had this run.
+	// This must be run after any containers with a restart policy so that containerized plugins
+	// can have a chance to be running before we try to initialize them.
+	for _, c := range containers {
+		// if the container has restart policy, do not
+		// prepare the mountpoints since it has been done on restarting.
+		// This is to speed up the daemon start when a restart container
+		// has a volume and the volume dirver is not available.
+		if _, ok := restartContainers[c]; ok {
+			continue
+		} else if _, ok := removeContainers[c.ID]; ok {
+			// container is automatically removed, skip it.
+			continue
+		}
+
+		group.Add(1)
+		go func(c *container.Container) {
+			defer group.Done()
+			if err := daemon.prepareMountPoints(c); err != nil {
+				logrus.Error(err)
+			}
+		}(c)
+	}
+
+	group.Wait()
+
+	if !debug {
+		if logrus.GetLevel() == logrus.InfoLevel &amp;&amp; containerCount &gt; 0 {
+			fmt.Println()
+		}
+		logrus.Info(&quot;Loading containers: done.&quot;)
+	}
+
+	return nil
+}
+</code></pre><p>至此Daemon对象就创建成功了。</p>
+<h2 id="heading">总结</h2>
+<p>Docker Daemon的运行逻辑属于Docker的核心，它相关的组件很多，代码理起来很复杂，但如果仔细看还是能看明白它的条理的。</p>
+<p>另外在看docker源码的过程中发现docker中有三块还是比较有意思的，这三块分别是：容器的创建与启动过程、镜像的存储过程、容器网络的创建过程。后面抽空将这三部分也写个文档分析一下。</p>
+<h2 id="heading-1">参考</h2>
+<p><code>http://www.kancloud.cn/infoq/docker-source-code-analysis/80527</code>
+<code>http://www.kancloud.cn/infoq/docker-source-code-analysis/80528</code>
+<code>http://www.kancloud.cn/infoq/docker-source-code-analysis/80529</code>
+<code>http://www.aboutyun.com/thread-16811-1-1.html</code>
+<code>http://pipul.org/2016/03/how-docker-image-stored-on-aufs-filesystem/</code>
+<code>http://yihongwei.com/2015/10/docker-volume-plugin/</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-10-06</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/docker/">docker</a>
+          
+          <a href="/tags/golang/">golang</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/10/react0.13%E5%9C%A8chrome54%E4%B8%8A%E6%8A%BD%E9%A3%8E%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">React0.13在Chrome54上抽风问题总结</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-client%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/">
+            <span class="next-text nav-default">docker源码分析-Client创建与命令执行</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

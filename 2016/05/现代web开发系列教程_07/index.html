@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>现代Web开发系列教程_07 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="现代Web开发系列教程_07" />
+<meta property="og:description" content="今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/" />
+<meta property="article:published_time" content="2016-05-15T00:07:00+08:00" />
+<meta property="article:modified_time" content="2016-05-15T00:07:00+08:00" />
+<meta itemprop="name" content="现代Web开发系列教程_07">
+<meta itemprop="description" content="今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前">
+<meta itemprop="datePublished" content="2016-05-15T00:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-15T00:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="1003">
+
+
+
+<meta itemprop="keywords" content="web,html5,javascript,nodejs," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="现代Web开发系列教程_07"/>
+<meta name="twitter:description" content="今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">现代Web开发系列教程_07</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-15 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1003 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">前端代码</a></li>
+    <li><a href="#heading-1">写前端代码编译脚本</a></li>
+    <li><a href="#heading-2">后端代码</a></li>
+    <li><a href="#heading-3">运行测试</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。</p>
+<h2 id="heading">前端代码</h2>
+<p>前端代码稍微复杂一点，就先从前端代码开始。</p>
+<p><code>frontend/js/demo6.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">ReactDOM</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-dom&#39;</span>;
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">ReactRouter</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router&#39;</span>;
+<span style="color:#66d9ef">import</span> { <span style="color:#a6e22e">Router</span>, <span style="color:#a6e22e">Route</span>, <span style="color:#a6e22e">IndexRoute</span>, <span style="color:#a6e22e">browserHistory</span> } <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-router&#39;</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">App</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+  <span style="color:#a6e22e">render</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">div</span><span style="color:#f92672">&gt;</span>{<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">props</span>.<span style="color:#a6e22e">children</span>}<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"> </span><span style="color:#960050;background-color:#1e0010">;</span>
+  }
+}
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Home</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+  <span style="color:#a6e22e">render</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">Home</span> <span style="color:#a6e22e">Page</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"> </span><span style="color:#960050;background-color:#1e0010">;</span>
+  }
+}
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">About</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+  <span style="color:#a6e22e">render</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">About</span> <span style="color:#a6e22e">Page</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"> </span><span style="color:#960050;background-color:#1e0010">;</span>
+  }
+}
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Features</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span>{
+  <span style="color:#a6e22e">render</span>(){
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">Features</span> <span style="color:#a6e22e">Page</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"> </span><span style="color:#960050;background-color:#1e0010">;</span>
+  }
+}
+
+document.<span style="color:#a6e22e">body</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;div id=&#34;reactHolder&#34;&gt;&lt;/div&gt;&#39;</span>;
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Router</span> <span style="color:#a6e22e">history</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">browserHistory</span>}<span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Route</span> <span style="color:#a6e22e">path</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/&#39;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">App</span>}<span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">IndexRoute</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">Home</span>} <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Route</span> <span style="color:#a6e22e">path</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;about&#39;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">About</span>} <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Route</span> <span style="color:#a6e22e">path</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;features&#39;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">Features</span>} <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>
+      <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Route</span> <span style="color:#a6e22e">path</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;*&#39;</span> <span style="color:#a6e22e">component</span><span style="color:#f92672">=</span>{<span style="color:#a6e22e">Home</span>} <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">&gt;</span>
+  <span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010">,</span>
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;reactHolder&#39;</span>)
+);
+</code></pre></div><p>可以看到就是定义了几个React组件，并用<code>react-router</code>定义了一个很简的路由，这个路由的<code>history</code>使用的是<code>browserHistory</code>。<code>react</code>的用法可参考<a href="http://reactjs.cn/react/docs/getting-started.html">这里</a>，<code>react-router</code>的用法可参考<a href="http://react-guide.github.io/react-router-cn/index.html">这里</a></p>
+<h2 id="heading-1">写前端代码编译脚本</h2>
+<p><code>webpack.config.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">webpack</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#34;webpack&#34;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">HtmlWebpackPlugin</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;html-webpack-plugin&#39;</span>);
+
+<span style="color:#a6e22e">module</span>.<span style="color:#a6e22e">exports</span> <span style="color:#f92672">=</span> {
+    <span style="color:#a6e22e">entry</span><span style="color:#f92672">:</span> {
+        <span style="color:#a6e22e">demo6</span> <span style="color:#f92672">:</span> <span style="color:#a6e22e">__dirname</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/frontend/js/demo6.js&#39;</span>
+    },
+    <span style="color:#a6e22e">output</span><span style="color:#f92672">:</span> {
+        <span style="color:#a6e22e">path</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">__dirname</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/public&#39;</span>,
+        <span style="color:#a6e22e">publicPath</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;/&#39;</span>,
+        <span style="color:#a6e22e">filename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;js/[name].js&#39;</span>,
+        <span style="color:#a6e22e">hotUpdateMainFilename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;hot-update/[hash].hot-update.json&#39;</span>,
+        <span style="color:#a6e22e">chunkFilename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;js/chunks/[name].js&#39;</span>,
+        <span style="color:#a6e22e">hotUpdateChunkFilename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;hot-update/chunks/[id].[hash].hot-update.js&#39;</span>,
+    },
+    <span style="color:#a6e22e">plugins</span><span style="color:#f92672">:</span> [
+        <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">webpack</span>.<span style="color:#a6e22e">SourceMapDevToolPlugin</span>({
+            <span style="color:#a6e22e">test</span><span style="color:#f92672">:</span>      <span style="color:#e6db74">/\.(js|css|less)($|\?)/i</span>,
+            <span style="color:#a6e22e">filename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;[file].map&#39;</span>
+        }),
+        <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">HtmlWebpackPlugin</span>({
+          <span style="color:#a6e22e">title</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;demo6&#39;</span>,
+          <span style="color:#a6e22e">filename</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;index.html&#39;</span>,
+          <span style="color:#a6e22e">hash</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>,
+          <span style="color:#a6e22e">chunks</span> <span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;demo6&#39;</span>]
+        })
+    ],
+    <span style="color:#a6e22e">module</span><span style="color:#f92672">:</span> {
+        <span style="color:#a6e22e">loaders</span><span style="color:#f92672">:</span> [
+            {<span style="color:#a6e22e">test</span><span style="color:#f92672">:</span> <span style="color:#e6db74">/\.(js|jsx)$/</span>, <span style="color:#a6e22e">loaders</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;babel&#34;</span>]}
+        ]
+    },
+    <span style="color:#a6e22e">resolve</span><span style="color:#f92672">:</span> {
+        <span style="color:#a6e22e">extensions</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;.js&#39;</span>, <span style="color:#e6db74">&#39;.jsx&#39;</span>]
+    },
+    <span style="color:#a6e22e">devtool</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;eval&#39;</span>
+};
+</code></pre></div><p><code>.babelrc</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">{ <span style="color:#e6db74">&#34;presets&#34;</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;react&#34;</span>, <span style="color:#e6db74">&#34;es2015&#34;</span>] }
+</code></pre></div><p>上面的<code>webpack</code>编译配置很简单，就是配置把<code>frontend/js/demo6.js</code>编译到<code>public/js/demo6.js</code>，同时生成<code>public/index.html</code>，其引用生成的<code>public/js/demo6.js</code></p>
+<p>利用npm-scripts来进行webpack的调用</p>
+<pre><code>  &quot;scripts&quot;: {
+    &quot;wpack&quot;: &quot;./node_modules/.bin/webpack --watch --progress&quot;
+  },
+</code></pre><h2 id="heading-2">后端代码</h2>
+<p><code>backend/server.js</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#e6db74">&#34;use strict&#34;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">koa</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">serve</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa-static&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">sendfile</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;koa-sendfile&#39;</span>)
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;path&#39;</span>);
+<span style="color:#66d9ef">const</span> Promise <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;bluebird&#39;</span>);
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">fs</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;fs&#39;</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">statAsync</span> <span style="color:#f92672">=</span> Promise.<span style="color:#a6e22e">promisify</span>(<span style="color:#a6e22e">fs</span>.<span style="color:#a6e22e">stat</span>);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">app</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">koa</span>();
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#a6e22e">serve</span>(<span style="color:#a6e22e">__dirname</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;/../public&#39;</span>));
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">use</span>(<span style="color:#66d9ef">function</span> <span style="color:#f92672">*</span>(<span style="color:#a6e22e">next</span>){
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">__dirname</span>, <span style="color:#e6db74">&#39;..&#39;</span>, <span style="color:#e6db74">&#39;public&#39;</span>, <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">path</span>);
+    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">stats</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+    <span style="color:#66d9ef">try</span>{
+        <span style="color:#a6e22e">stats</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">statAsync</span>(<span style="color:#a6e22e">p</span>);
+    }<span style="color:#66d9ef">catch</span>(<span style="color:#a6e22e">ignore</span>){}
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">stats</span>) {
+        <span style="color:#66d9ef">try</span> {
+            <span style="color:#a6e22e">stats</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">yield</span> <span style="color:#a6e22e">sendfile</span>(<span style="color:#66d9ef">this</span>, <span style="color:#a6e22e">path</span>.<span style="color:#a6e22e">resolve</span>(<span style="color:#a6e22e">__dirname</span>, <span style="color:#e6db74">&#39;..&#39;</span>, <span style="color:#e6db74">&#39;public&#39;</span>, <span style="color:#e6db74">&#39;index.html&#39;</span>));
+        }<span style="color:#66d9ef">catch</span>(<span style="color:#a6e22e">ignore</span>){}
+        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">stats</span>) <span style="color:#66d9ef">this</span>.<span style="color:#66d9ef">throw</span>(<span style="color:#ae81ff">404</span>);
+    }
+});
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">port</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">5000</span>;
+
+<span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">listen</span>(<span style="color:#a6e22e">port</span>);
+
+<span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;server started on port &#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">port</span>);
+</code></pre></div><p>因为前端使用了<code>browserHistory</code>路由，后端要实现类似nginx的try_files逻辑，详情见<a href="http://react-guide.github.io/react-router-cn/docs/guides/basics/Histories.html#createbrowserhistory">这里</a>，如果后端是用Java写法，可以考虑使用<a href="https://github.com/eclipse/jetty.project/blob/master/jetty-fcgi/fcgi-server/src/main/java/org/eclipse/jetty/fcgi/server/proxy/TryFilesFilter.java">TryFilesFilter</a></p>
+<p>这里使用<code>bluebird</code>的<code>promisify</code>方法将NodeJS风格的API <code>fs.stat</code> 转化成返回Promise对象的方法，这个是为配合<code>koa</code>的<code>yield</code>而为，详见<a href="/2016/05/06/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">这里</a></p>
+<p>同样利用npm-scripts启动后端server</p>
+<pre><code>  &quot;scripts&quot;: {
+    &quot;serve&quot;: &quot;node ./backend/server.js&quot;
+  },
+</code></pre><h2 id="heading-3">运行测试</h2>
+<p>打开两个终端，在一个里面执行<code>npm run serve</code>启动后端server，在另一个里面执行<code>npm run wpack</code>启动webpack对前端代码进行编译。最后使用浏览器分别访问<code>http://127.0.0.1:5000/</code>、<code>http://127.0.0.1:5000/about</code>、<code>http://127.0.0.1:5000/features</code>，即可看到路由切换的效果。</p>
+<p>本篇<a href="https://github.com/jeremyxu2010/web_dev/tree/master/demo6">源代码地址</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-15</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/web/">web</a>
+          
+          <a href="/tags/html5/">html5</a>
+          
+          <a href="/tags/javascript/">javascript</a>
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">获取后台任务进度的另类办法</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/java%E7%9B%91%E5%90%AC%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E5%8F%98%E6%9B%B4/">
+            <span class="next-text nav-default">Java监听目录文件变更</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

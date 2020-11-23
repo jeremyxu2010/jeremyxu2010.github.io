@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>k8s加入TLS安全访问 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="k8s加入TLS安全访问" />
+<meta property="og:description" content="以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/" />
+<meta property="article:published_time" content="2018-08-12T12:30:00+08:00" />
+<meta property="article:modified_time" content="2018-08-12T12:30:00+08:00" />
+<meta itemprop="name" content="k8s加入TLS安全访问">
+<meta itemprop="description" content="以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服">
+<meta itemprop="datePublished" content="2018-08-12T12:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-12T12:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="1102">
+
+
+
+<meta itemprop="keywords" content="kubernetes,tls," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s加入TLS安全访问"/>
+<meta name="twitter:description" content="以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">k8s加入TLS安全访问</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-12 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1102 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">生成并信任自签名证书</a></li>
+    <li><a href="#k8s">在k8s里使用自签名证书</a></li>
+    <li><a href="#nginx-ingress">为何选nginx-ingress</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。</p>
+<h2 id="heading">生成并信任自签名证书</h2>
+<p>首先这里生成自签名的服务器证书，官方介绍了<code>easyrsa</code>, <code>openssl</code> 、 <code>cfssl</code>三个工具，这里使用<code>cfssl</code>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">brew install -y cfssl
+<span style="color:#75715e"># 生成默认配置文件</span>
+cfssl print-defaults config &gt; config.json
+cfssl print-defaults csr &gt; csr.json
+<span style="color:#75715e"># 生成自定义的config.json文件</span>
+cp config.json ca-config.json
+<span style="color:#75715e"># 生成ca和server的证书请求json文件</span>
+cp csr.json ca-csr.json
+cp csr.json server-csr.json
+</code></pre></div><p>编辑<code>ca-config.json</code>，内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;signing&#34;</span>: {
+        <span style="color:#f92672">&#34;default&#34;</span>: {
+            <span style="color:#f92672">&#34;expiry&#34;</span>: <span style="color:#e6db74">&#34;168h&#34;</span>
+        },
+        <span style="color:#f92672">&#34;profiles&#34;</span>: {
+            <span style="color:#f92672">&#34;k8s-local&#34;</span>: {
+                <span style="color:#f92672">&#34;expiry&#34;</span>: <span style="color:#e6db74">&#34;8760h&#34;</span>,
+                <span style="color:#f92672">&#34;usages&#34;</span>: [
+                    <span style="color:#e6db74">&#34;signing&#34;</span>,
+                    <span style="color:#e6db74">&#34;key encipherment&#34;</span>,
+                    <span style="color:#e6db74">&#34;server auth&#34;</span>,
+                    <span style="color:#e6db74">&#34;client auth&#34;</span>
+                ]
+            }
+        }
+    }
+}
+</code></pre></div><p>编辑ca-csr.json，内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;CN&#34;</span>: <span style="color:#e6db74">&#34;k8s-local&#34;</span>,
+    <span style="color:#f92672">&#34;key&#34;</span>: {
+        <span style="color:#f92672">&#34;algo&#34;</span>: <span style="color:#e6db74">&#34;rsa&#34;</span>,
+        <span style="color:#f92672">&#34;size&#34;</span>: <span style="color:#ae81ff">2048</span>
+    },
+    <span style="color:#f92672">&#34;names&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;C&#34;</span>: <span style="color:#e6db74">&#34;CN&#34;</span>,
+            <span style="color:#f92672">&#34;ST&#34;</span>: <span style="color:#e6db74">&#34;GuangDong&#34;</span>,
+            <span style="color:#f92672">&#34;L&#34;</span>: <span style="color:#e6db74">&#34;Shenzhen&#34;</span>,
+            <span style="color:#f92672">&#34;O&#34;</span>: <span style="color:#e6db74">&#34;my self signed certificate&#34;</span>,
+            <span style="color:#f92672">&#34;OU&#34;</span>: <span style="color:#e6db74">&#34;self signed&#34;</span>
+        }
+    ]
+}
+</code></pre></div><p>编辑server-csr.json，内容如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+    <span style="color:#f92672">&#34;CN&#34;</span>: <span style="color:#e6db74">&#34;k8s.local&#34;</span>,
+    <span style="color:#f92672">&#34;hosts&#34;</span>: [
+        <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+        <span style="color:#e6db74">&#34;*.k8s.local&#34;</span>
+    ],
+    <span style="color:#f92672">&#34;key&#34;</span>: {
+        <span style="color:#f92672">&#34;algo&#34;</span>: <span style="color:#e6db74">&#34;rsa&#34;</span>,
+        <span style="color:#f92672">&#34;size&#34;</span>: <span style="color:#ae81ff">2048</span>
+    },
+    <span style="color:#f92672">&#34;names&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;C&#34;</span>: <span style="color:#e6db74">&#34;CN&#34;</span>,
+            <span style="color:#f92672">&#34;ST&#34;</span>: <span style="color:#e6db74">&#34;GuangDong&#34;</span>,
+            <span style="color:#f92672">&#34;L&#34;</span>: <span style="color:#e6db74">&#34;Shenzhen&#34;</span>,
+            <span style="color:#f92672">&#34;O&#34;</span>: <span style="color:#e6db74">&#34;my self signed certificate&#34;</span>,
+            <span style="color:#f92672">&#34;OU&#34;</span>: <span style="color:#e6db74">&#34;self signed&#34;</span>
+        }
+    ]
+}
+</code></pre></div><p>执行以下命令，生成CA证书及服务器证书</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+cfssl gencert -ca<span style="color:#f92672">=</span>ca.pem -ca-key<span style="color:#f92672">=</span>ca-key.pem --config<span style="color:#f92672">=</span>ca-config.json -profile<span style="color:#f92672">=</span>k8s-local server-csr.json | cfssljson -bare server
+</code></pre></div><p>这样就得到<code>ca.pem</code>，<code>server-key.pem</code>，<code>server.pem</code>三个证书文件，其中<code>ca.pem</code>是ca的证书，<code>server-key.pem</code>是服务器证书的密钥，<code>server.pem</code>是服务器证书。</p>
+<p>用<code>Keychain Access</code>打开<code>ca.pem</code>文件，然后修改设置，信任该CA，如下图如示：</p>
+<p><img src="/images/20180812/image-20180812220958311.png" alt="image-20180812220958311"></p>
+<h2 id="k8s">在k8s里使用自签名证书</h2>
+<p>创建默认的tls secret：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl -n kube-system create secret tls default-tls-cert --key<span style="color:#f92672">=</span>server-key.pem --cert<span style="color:#f92672">=</span>server.pem
+</code></pre></div><p>这里举例，现在有一个服务<code>k8s-dashboard</code>，它是以下面的方式部署进k8s的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">helm install --name<span style="color:#f92672">=</span>local-k8s-dashboard --namespace kube-system stable/kubernetes-dashboard
+</code></pre></div><p>而该k8s集群已经部署了nginx-ingress-controller，使用的以下命令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">helm install --name local-nginx-ingress stable/nginx-ingress
+</code></pre></div><p>这里就可以创建<code>k8s-dashboard</code>这个服务的ingress规则了，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl create -f -
+</span><span style="color:#e6db74">apiVersion: extensions/v1beta1
+</span><span style="color:#e6db74">kind: Ingress
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  annotations:
+</span><span style="color:#e6db74">    nginx.ingress.kubernetes.io/ssl-redirect: &#34;true&#34;
+</span><span style="color:#e6db74">    nginx.ingress.kubernetes.io/rewrite-target: /
+</span><span style="color:#e6db74">    nginx.ingress.kubernetes.io/secure-backends: &#34;true&#34;
+</span><span style="color:#e6db74">  name: k8s-dashboard-ingress
+</span><span style="color:#e6db74">  namespace: kube-system
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  tls:
+</span><span style="color:#e6db74">  - hosts:
+</span><span style="color:#e6db74">    - k8s-dashboard.k8s.local
+</span><span style="color:#e6db74">    secretName: default-tls-cert
+</span><span style="color:#e6db74">  rules:
+</span><span style="color:#e6db74">  - host: k8s-dashboard.k8s.local
+</span><span style="color:#e6db74">    http:
+</span><span style="color:#e6db74">      paths:
+</span><span style="color:#e6db74">      - backend:
+</span><span style="color:#e6db74">          serviceName: local-k8s-dashboard-kubernetes-dashboard
+</span><span style="color:#e6db74">          servicePort: 443
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>注意，这里因为<code>k8s-dashboard</code>这个服务本身是以https提供服务的，所以才加上了一些与ssl相关的<code>annotations</code>，如果只是普通http服务，则不需要这些<code>annotations</code>。</p>
+<p>最后在chrome浏览器中就可以以<code>https://k8s-dashboard.k8s.local</code>访问<code>k8s-dashboard</code>服务了，而且浏览器地址栏是安全的绿色哦。</p>
+<p><img src="/images/20180812/image-20180812222040765.png" alt="image-20180812222040765"></p>
+<h2 id="nginx-ingress">为何选nginx-ingress</h2>
+<p>在上述过程中对比了k8s里两个比较重要的ingress controller：<a href="https://docs.traefik.io/configuration/backends/kubernetes/">traefik-ingress</a>和<a href="https://kubernetes.github.io/ingress-nginx/">nginx-ingress</a>，比较起来，还是<a href="https://kubernetes.github.io/ingress-nginx/">nginx-ingress</a>功能更强大，与k8s整合更好一些，看来有k8s官方维护支持果然很强大。</p>
+<p><img src="/images/20180812/image-20180812222558350.png" alt="image-20180812222558350"></p>
+<p><a href="https://kubernetes.github.io/ingress-nginx/">nginx-ingress</a>的<a href="https://kubernetes.github.io/ingress-nginx/user-guide/">用户指南</a>也写得很详细，以后可以多看看。</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://kubernetes.io/docs/concepts/cluster-administration/certificates/">https://kubernetes.io/docs/concepts/cluster-administration/certificates/</a></li>
+<li><a href="https://github.com/helm/charts/blob/master/stable/kubernetes-dashboard">https://github.com/helm/charts/blob/master/stable/kubernetes-dashboard</a></li>
+<li><a href="https://github.com/helm/charts/tree/master/stable/nginx-ingress">https://github.com/helm/charts/tree/master/stable/nginx-ingress</a></li>
+<li><a href="https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/tls">https://github.com/kubernetes/contrib/tree/master/ingress/controllers/nginx/examples/tls</a></li>
+<li><a href="https://docs.traefik.io/configuration/backends/kubernetes/">https://docs.traefik.io/configuration/backends/kubernetes/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-12</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/tls/">tls</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">servicecomb-saga源码解读</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/">
+            <span class="next-text nav-default">研究监控系统之prometheus</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

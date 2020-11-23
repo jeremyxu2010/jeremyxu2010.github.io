@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>清除k8s使用underlay网络的障碍 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="清除k8s使用underlay网络的障碍" />
+<meta property="og:description" content="k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/" />
+<meta property="article:published_time" content="2019-06-30T01:35:00+08:00" />
+<meta property="article:modified_time" content="2019-06-30T01:35:00+08:00" />
+<meta itemprop="name" content="清除k8s使用underlay网络的障碍">
+<meta itemprop="description" content="k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se">
+<meta itemprop="datePublished" content="2019-06-30T01:35:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-06-30T01:35:00&#43;08:00" />
+<meta itemprop="wordCount" content="1934">
+
+
+
+<meta itemprop="keywords" content="macvlan,underlay,kubernetes," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="清除k8s使用underlay网络的障碍"/>
+<meta name="twitter:description" content="k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">清除k8s使用underlay网络的障碍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-06-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1934 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#k8sunderlay">k8s中使用underlay网络的障碍</a></li>
+    <li><a href="#ptp">使用修改后的ptp解决上述问题</a></li>
+    <li><a href="#cni">开发cni插件的一般过程</a></li>
+    <li><a href="#heading">总结</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="k8sunderlay">k8s中使用underlay网络的障碍</h2>
+<p>上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问serviceIP，这一点可能通过修改修改业务应用的chart来解决，主要解决方法是：</p>
+<ul>
+<li>使<code>kube-dns</code>服务通过underlay网络直接可达，可以将<code>coredns</code>的pod设置为使用hostNetwork，然后修改kubelet里配置的<code>--cluster-dns</code>参数。</li>
+<li>修改业务应用的chart，避免使用serviceIP，可以通过其它服务发现机制直接找到目标pod的podIP。</li>
+</ul>
+<p>上述两个方案虽然可行，但需要进行一系列调整，成本确实比较高，如果业务应用的chart比较复杂，改造起来就更费劲了。</p>
+<h2 id="ptp">使用修改后的ptp解决上述问题</h2>
+<p>在网上偶然看到<a href="https://juejin.im/post/5c926709f265da60e86e0ca6#heading-3">一篇文章</a>，在这篇文章里讲到可以向已经使用了macvlan等underlay网络的pod中再插入一个ptp的网络接口，设置必要的路由规则后，即可实现在这种pod中也可以正常访问serviceIP。当然依旧是使用cni插件的方式实现的。Bingo, 这正是我需要的。</p>
+<p>于是我参考<a href="https://github.com/lyft/cni-ipvlan-vpc-k8s/blob/master/plugin/unnumbered-ptp/unnumbered-ptp.go">unnumbered-ptp.go</a>, 我实现了一个veth-to-host的cni插件，该插件的原理如下：</p>
+<ul>
+<li>创建⼀对veth pair，⼀端挂⼊容器内，⼀端挂⼊宿主机内。</li>
+<li>在容器内设置路由规则，当目标地址是宿主机IP或非underlay网络，则使用veth将数据包转出，nexthop地址是宿主机IP。</li>
+<li>在宿主机内设置路由规则，当目标地址是容器的underlay网络IP时，使用veth将数据包转出, nexthop地址是容器的underlay网络IP。</li>
+</ul>
+<p>然后原来的macvlan配合使用该cni插件，即可在使用了underlay网络的pod也可以正常访问serviceIP，cni的配置如下：</p>
+<p><code>/etc/cni/net.d/10-cnichain.conflist</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;cni0&#34;</span>,
+  <span style="color:#f92672">&#34;cniVersion&#34;</span>: <span style="color:#e6db74">&#34;0.3.1&#34;</span>,
+  <span style="color:#f92672">&#34;plugins&#34;</span>: [
+        {
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;mymacvlan&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;macvlan&#34;</span>,
+            <span style="color:#f92672">&#34;master&#34;</span>: <span style="color:#e6db74">&#34;enp5s0f0&#34;</span>,
+            <span style="color:#f92672">&#34;ipam&#34;</span>: {
+                <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;host-local&#34;</span>,
+                <span style="color:#f92672">&#34;subnet&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.0/24&#34;</span>,
+                <span style="color:#f92672">&#34;rangeStart&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.50&#34;</span>,
+                <span style="color:#f92672">&#34;rangeEnd&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.60&#34;</span>,
+                <span style="color:#f92672">&#34;gateway&#34;</span>: <span style="color:#e6db74">&#34;10.10.20.254&#34;</span>,
+                <span style="color:#f92672">&#34;routes&#34;</span>: [{
+                        <span style="color:#f92672">&#34;dst&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0/0&#34;</span>
+                }]
+            }
+        },
+        {
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;myptp&#34;</span>,
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;veth-to-host&#34;</span>,
+            <span style="color:#f92672">&#34;hostInterface&#34;</span>: <span style="color:#e6db74">&#34;enp5s0f0&#34;</span>,
+            <span style="color:#f92672">&#34;containerInterface&#34;</span>: <span style="color:#e6db74">&#34;veth0&#34;</span>,
+            <span style="color:#f92672">&#34;ipMasq&#34;</span>: <span style="color:#66d9ef">true</span>
+        }
+  ]
+}
+</code></pre></div><p>这里有几点要注意一下：</p>
+<ul>
+<li>veth-to-host cni插件的二进制文件需要放入<code>CNI_BIN_PATH</code>目录中</li>
+<li>上述的cni配置是一个链式配置，一定要注意顺序，<code>macvlan</code>等underlay网络的cni配置要放在前面</li>
+</ul>
+<p>应用了上述cni配置后，一般来说可以正常工作了。如果我们对实现原理比较好奇的话，可以简单创建一个pod，执行以下命令观察创建的网络接口和各种路由规则：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 检查pod容器里的网络接口</span>
+<span style="color:#f92672">[</span>root@node-1 ~<span style="color:#f92672">]</span><span style="color:#75715e"># kubectl -n demo exec -ti redis-predixy-67d989bdd9-p7fbf sh</span>
+/ <span style="color:#75715e"># ip link show</span>
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">65536</span> qdisc noqueue state UNKNOWN qlen <span style="color:#ae81ff">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0@if3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UNKNOWN
+    link/ether 2e:31:a0:bc:39:20 brd ff:ff:ff:ff:ff:ff
+4: veth0@if139: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP
+    link/ether 46:4a:fd:d5:3a:bf brd ff:ff:ff:ff:ff:ff
+<span style="color:#75715e"># 检查pod容器里的路由规则</span>
+/ <span style="color:#75715e"># ip route show</span>
+default via 10.10.20.152 dev veth0
+10.10.20.0/24 dev eth0 scope link  src 10.10.20.53
+10.10.20.152 dev veth0 scope link
+<span style="color:#75715e"># 退出pod容器</span>
+/ <span style="color:#75715e"># exit</span>
+
+
+<span style="color:#75715e"># 检查宿主机里的网络接口</span>
+<span style="color:#f92672">[</span>root@node-1 ~<span style="color:#f92672">]</span><span style="color:#75715e"># ip link show</span>
+...
+139: vetha0e043dd@if4: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span style="color:#ae81ff">1500</span> qdisc noqueue state UP mode DEFAULT group default
+    link/ether 12:78:cc:ea:9b:26 brd ff:ff:ff:ff:ff:ff link-netnsid <span style="color:#ae81ff">3</span>
+...
+<span style="color:#75715e"># 检查宿主机主表里的路由规则</span>
+<span style="color:#f92672">[</span>root@node-1 ~<span style="color:#f92672">]</span><span style="color:#75715e"># ip route show</span>
+...
+10.10.20.53 dev vetha0e043dd scope link
+...
+<span style="color:#75715e"># 检查宿主机的自定义路由表</span>
+<span style="color:#f92672">[</span>root@node-1 ~<span style="color:#f92672">]</span><span style="color:#75715e"># ip rule show</span>
+...
+1024:	from all iif vetha0e043dd lookup <span style="color:#ae81ff">596</span>
+...
+<span style="color:#75715e"># 检查宿主机上自定义路由表中的路由规则</span>
+<span style="color:#f92672">[</span>root@node-1 ~<span style="color:#f92672">]</span><span style="color:#75715e"># ip route show table 596</span>
+default via 10.10.20.53 dev vetha0e043dd
+</code></pre></div><p>从上述输出可以看出确实与该CNI插件的原理是一致的。</p>
+<h2 id="cni">开发cni插件的一般过程</h2>
+<p>上面实际的开发了一个崭新的cni插件，下面总结一下开发cni插件的过程：</p>
+<ul>
+<li>
+<p>首先是画好网络拓扑图，示例如下。在这个拓扑图中要将同宿主机上的pod之间、pod及宿主机、跨主机上的pod之间网络流量如何流转描述清楚，这里需要了解较多的网络知识，如网络的二三层、路由表、nat、bridge、openvswith、sdn、policy route等。</p>
+<p><img src="/images/20190630/image-20190630150148403.png" alt="image-20190630150148403"></p>
+</li>
+<li>
+<p>然后到<a href="https://github.com/containernetworking/plugins/tree/master/plugins">cni官方插件</a>这里找一找，看看有没有满足需求的现成cni插件。除非需求很特殊，一般是可以找到现成插件的。</p>
+</li>
+<li>
+<p>如果找不到现在插件，可以参考<a href="https://github.com/containernetworking/plugins/tree/master/plugins/sample">cni插件示例</a>编写新的cni插件，主要就是按网络拓扑图里设想的方案实现<code>cmdAdd</code>、<code>cmdDel</code>等方法，这些方法的主要逻辑就是按设想创建网络接口、设置路由规则、设置NAT规则等。</p>
+</li>
+<li>
+<p>编写好cni插件后，编译出cni插件的二进制文件，可以本地先测试一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 提前将二进制文件放入CNI_PATH目录下，配置好/etc/cni/net.d目录下的cni配置文件</span>
+<span style="color:#75715e"># 下面会创建一个网络命名空间，并调用cni插件尝试为该网络命名空间配置好网络</span>
+ip netns add test
+CNI_PATH<span style="color:#f92672">=</span>/usr/local/bin NETCONFPATH<span style="color:#f92672">=</span>/etc/cni/net.d /usr/local/bin/cnitool add cni0 /var/run/netns/test
+  
+<span style="color:#75715e"># 进入网络命名空间，检查网络接口、路由表信息</span>
+ip netns exec test sh
+....
+  
+<span style="color:#75715e"># 在宿主机检查网络接口、路由表信息</span>
+ip link show
+ip route show
+ip rule show
+iptables -t nat -L -n
+iptables -L -n
+</code></pre></div><p>检查结果如果没有什么大的问题，跟设想一致的话，这个cni插件就差不多了。</p>
+</li>
+<li>
+<p>接下来可以创建两个跨主机的pod再检查一下。</p>
+</li>
+<li>
+<p>如果可以的话，写点单元测试就更好了，参考<a href="https://github.com/containernetworking/plugins/blob/master/plugins/sample/sample_linux_test.go">这里</a>。</p>
+</li>
+<li>
+<p>最后记得为新写的cni插件写个文档，参考<a href="https://github.com/containernetworking/plugins/tree/master/plugins/main/bridge">这里</a>。</p>
+</li>
+</ul>
+<h2 id="heading">总结</h2>
+<p>总的来说，开发一个cni网络插件过程还是挺清晰的，也比较简单，本周也算是又掌握一门技能。</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://github.com/containernetworking/cni">https://github.com/containernetworking/cni</a></li>
+<li><a href="https://juejin.im/post/5c926709f265da60e86e0ca6#heading-3">https://juejin.im/post/5c926709f265da60e86e0ca6#heading-3</a></li>
+<li><a href="https://github.com/kubernetes/dns/issues/176">https://github.com/kubernetes/dns/issues/176</a></li>
+<li><a href="https://github.com/lyft/cni-ipvlan-vpc-k8s/blob/master/plugin/unnumbered-ptp/unnumbered-ptp.go">https://github.com/lyft/cni-ipvlan-vpc-k8s/blob/master/plugin/unnumbered-ptp/unnumbered-ptp.go</a></li>
+<li><a href="https://github.com/containernetworking/plugins">https://github.com/containernetworking/plugins</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-06-30</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/macvlan/">macvlan</a>
+          
+          <a href="/tags/underlay/">underlay</a>
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">完善cni的ipam方案</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/">
+            <span class="next-text nav-default">kuberntes中的redis集群性能调优</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

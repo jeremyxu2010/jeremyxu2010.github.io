@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>给tomcat7配置SSL证书 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="给tomcat7配置SSL证书" />
+<meta property="og:description" content="今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/11/%E7%BB%99tomcat7%E9%85%8D%E7%BD%AEssl%E8%AF%81%E4%B9%A6/" />
+<meta property="article:published_time" content="2016-11-07T22:31:00+08:00" />
+<meta property="article:modified_time" content="2016-11-07T22:31:00+08:00" />
+<meta itemprop="name" content="给tomcat7配置SSL证书">
+<meta itemprop="description" content="今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是">
+<meta itemprop="datePublished" content="2016-11-07T22:31:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-11-07T22:31:00&#43;08:00" />
+<meta itemprop="wordCount" content="1066">
+
+
+
+<meta itemprop="keywords" content="java,ssl,tomcat," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="给tomcat7配置SSL证书"/>
+<meta name="twitter:description" content="今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">给tomcat7配置SSL证书</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-11-07 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1066 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#tomcat7ssl">tomcat7配置SSL证书</a></li>
+    <li><a href="#ssl">申请SSL证书的通用步骤</a></li>
+    <li><a href="#heading">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>今天工作中需要给tomcat7配置SSL证书，以使用https访问tomcat服务。以前都是自签名，照着网上的文档完成的，这回有一点不同的是https证书已经从GoDaddy买回来了，配置过程中遇到了一点坑，这里记录一下。</p>
+<h2 id="tomcat7ssl">tomcat7配置SSL证书</h2>
+<p>从GoDaddy买来的证书包括3个文件，test.com.key, test.com.crt, godaddy_intermediate.crt。这里稍微解释一下，这3个文件。</p>
+<p>test.com.key是私钥文件，文件内容如下：</p>
+<pre><code>-----BEGIN RSA PRIVATE KEY-----
+...
+-----END RSA PRIVATE KEY-----
+</code></pre><p>test.com.crt是私钥对应的证书，文件内容如下：</p>
+<pre><code>-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+</code></pre><p>godaddy_intermediate.crt是GoDaddy的一些中级证书，内容如下：</p>
+<pre><code>-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+</code></pre><p>在网上查了下，需要先根据这3个文件生成p12文件，命令如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl pkcs12 -export -inkey test.com.key -in test.com.crt -chain -CAfile godaddy_intermediate.crt -out tomcatserver.p12 -name tomcatserver -passout pass:123456
+</code></pre></div><p>不过我执行这行命令时，报错了：</p>
+<pre><code>Error unable to get issuer certificate getting chain.
+</code></pre><p>又到处查阅文档，发现需要将<code>Go_Daddy_Class_2_CA.pem</code>与<code>godaddy_intermediate.crt</code>合并，得到<code>ca_bundle.crt</code>，以保证CA链可以到达根证书颁发节点，到处都是坑啊。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat /etc/ssl/certs/Go_Daddy_Class_2_CA.pem godaddy_intermediate.crt &gt; ca_bundle.crt
+</code></pre></div><p>然后再执行上面的命令，p12文件就生成好了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl pkcs12 -export -inkey test.com.key -in test.com.crt -chain -CAfile ca_bundle.crt -out tomcatserver.p12 -name tomcatserver -passout pass:123456
+</code></pre></div><p>用portecle打开看一下，这个KeyPair的证书详情表明CA链上确实有4个证书。</p>
+<p><img src="/images/20161107/p12_portecle_open.png" alt="p12_portecle_open.png"></p>
+<p>再将p12的keystore转化为jks的keystore。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">keytool -importkeystore -v  -srckeystore tomcatserver.p12 -srcstoretype pkcs12 -srcstorepass <span style="color:#ae81ff">123456</span> -destkeystore tomcatserver.jks -deststoretype jks -deststorepass <span style="color:#ae81ff">123456</span>
+</code></pre></div><p>这样就得到了jks格式的keystore文件tomcatserver.jks。</p>
+<p>最后在tomcat7的server.xml修改配置。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Connector</span>
+           <span style="color:#a6e22e">protocol=</span><span style="color:#e6db74">&#34;org.apache.coyote.http11.Http11NioProtocol&#34;</span>
+           <span style="color:#a6e22e">port=</span><span style="color:#e6db74">&#34;8443&#34;</span> <span style="color:#a6e22e">maxThreads=</span><span style="color:#e6db74">&#34;200&#34;</span>
+           <span style="color:#a6e22e">scheme=</span><span style="color:#e6db74">&#34;https&#34;</span> <span style="color:#a6e22e">secure=</span><span style="color:#e6db74">&#34;true&#34;</span> <span style="color:#a6e22e">SSLEnabled=</span><span style="color:#e6db74">&#34;true&#34;</span>
+           <span style="color:#a6e22e">keystoreFile=</span><span style="color:#e6db74">&#34;/somewhere/tomcatserver.jks&#34;</span> <span style="color:#a6e22e">keystorePass=</span><span style="color:#e6db74">&#34;123456&#34;</span>
+           <span style="color:#a6e22e">clientAuth=</span><span style="color:#e6db74">&#34;false&#34;</span> <span style="color:#a6e22e">sslProtocol=</span><span style="color:#e6db74">&#34;TLS&#34;</span><span style="color:#f92672">/&gt;</span>
+</code></pre></div><p>Over!</p>
+<h2 id="ssl">申请SSL证书的通用步骤</h2>
+<p>上一节的步骤有些曲折，仔细研究了下，发现如果按一定步骤从头来申请SSL证书，还是比较简单的。</p>
+<ul>
+<li>生成私钥文件<code>www.test.com.key</code></li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl genrsa -out www.test.com.key <span style="color:#ae81ff">2048</span>
+</code></pre></div><ul>
+<li>生成证书请求文件<code>www.test.com.csr</code>，下次证书过期了，还是同样方法生成一个新的证书请求文件</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl req -new -sha256 -subj <span style="color:#e6db74">&#34;/C=CN/ST=ProvinceName/L=CityName/O=OrgName/OU=OrgUnitName/CN=www.test.com&#34;</span> -key www.test.com.key -out www.test.com.csr
+</code></pre></div><ul>
+<li>到SSL证书提供商那里填写在线申请表，并提交<code>www.test.com.csr</code>文件，提交申请</li>
+<li>SSL证书提供商证书审核通过后，将得到<code>ca_bundle.crt</code>与<code>www.test.com.crt</code>，于是就有这三个文件：<code>www.test.com.key</code>、<code>www.test.com.crt</code>、<code>ca_bundle.crt</code></li>
+<li>用上述3个文件生成p12文件</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">openssl pkcs12 -export -inkey www.test.com.key -in www.test.com.crt -chain -CAfile ca_bundle.crt -out tomcatserver.p12 -name tomcatserver -passout pass:123456
+</code></pre></div><ul>
+<li>将p12文件转换为jks文件</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">keytool -importkeystore -v  -srckeystore tomcatserver.p12 -srcstoretype pkcs12 -srcstorepass <span style="color:#ae81ff">123456</span> -destkeystore tomcatserver.jks -deststoretype jks -deststorepass <span style="color:#ae81ff">123456</span>
+</code></pre></div><h2 id="heading">参考</h2>
+<p><code>http://www.oschina.net/question/2266279_221175</code>
+<code>http://www.fourproc.com/2010/06/23/create-a-ssl-keystore-for-a-tomcat-server-using-openssl-.html</code>
+<code>https://sg.godaddy.com/zh/help/tomcat-4x5x6x-renew-a-certificate-5355</code>
+<code>https://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-11-07</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/ssl/">ssl</a>
+          
+          <a href="/tags/tomcat/">tomcat</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/11/redis%E7%A0%94%E7%A9%B6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">redis研究</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/">
+            <span class="next-text nav-default">SSM项目脚手架</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

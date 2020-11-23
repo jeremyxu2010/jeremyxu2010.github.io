@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>vagrant on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/vagrant/</link>
+    <description>Recent content in vagrant on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 26 May 2019 20:14:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/vagrant/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>MySQL InnoDB Cluster实战</title>
+      <link>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sun, 26 May 2019 20:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</guid>
+      <description>对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，</description>
+    </item>
+    
+    <item>
+      <title>使用vagrant搭建验证环境</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Sun, 24 Mar 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8vagrant%E6%90%AD%E5%BB%BA%E9%AA%8C%E8%AF%81%E7%8E%AF%E5%A2%83/</guid>
+      <description>这周的工作需要在一个独立的kubernetes环境调试功能，自然而然地想到在本机装个虚拟机搭建这个环境。不过有同事推荐我试一下vagrant</description>
+    </item>
+    
+  </channel>
+</rss>

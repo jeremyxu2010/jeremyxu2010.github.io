@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记02 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记02" />
+<meta property="og:description" content="线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/" />
+<meta property="article:published_time" content="2017-06-03T22:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-03T22:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记02">
+<meta itemprop="description" content="线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输">
+<meta itemprop="datePublished" content="2017-06-03T22:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-03T22:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1586">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记02"/>
+<meta name="twitter:description" content="线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记02</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-03 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1586 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">线性回归</a>
+      <ul>
+        <li><a href="#heading-1">使用的符号</a></li>
+        <li><a href="#heading-2">推导过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#gradient-descent-algorithm">梯度下降（Gradient Descent Algorithm）</a>
+      <ul>
+        <li><a href="#heading-3">算法推导</a></li>
+        <li><a href="#heading-4">批梯度下降</a></li>
+        <li><a href="#heading-5">随机梯度下降（增量梯度下降）</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-6">正规方程组</a>
+      <ul>
+        <li><a href="#heading-7">定义一些符号</a></li>
+        <li><a href="#heading-8">一些事实</a></li>
+        <li><a href="#heading-9">推导过程</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">线性回归</h2>
+<p>首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。</p>
+<h3 id="heading-1">使用的符号</h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>代表的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>m</td>
+<td>训练样本的数目</td>
+</tr>
+<tr>
+<td>X</td>
+<td>输入变量，通常也可以称为特征</td>
+</tr>
+<tr>
+<td>y</td>
+<td>输出变量，有时也称为目标变量</td>
+</tr>
+<tr>
+<td>(X, y)</td>
+<td>表示一个样本</td>
+</tr>
+<tr>
+<td>($X^{(i)}$, $y^{(i)}$)</td>
+<td>表示第i个样本</td>
+</tr>
+<tr>
+<td>h</td>
+<td>假设（hypothesis）函数</td>
+</tr>
+<tr>
+<td>n</td>
+<td>特征的个数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-2">推导过程</h3>
+<p>首先是单个特征的线性假设函数
+<code>$h(x)=\theta_0 + \theta_1x$</code></p>
+<p>多个特征的线性假设函数</p>
+<p><code>$h(X)=h_\Theta(X)=\theta_0+\theta_1X_1+\theta_2X_2$</code></p>
+<p>为了便利，定义</p>
+<p><code>$X_0=1$</code></p>
+<p>则有</p>
+<p><code>$h\Theta(X) = \sum_{i=0} ^n \Theta_i X_i = \Theta^TX$</code></p>
+<p><code>$\Theta$</code>被称为学习算法的参数，利用训练集合选择或学习得到合适的参数值是学习算法的任务。</p>
+<p>为了进行预测，一件可以做的事是尝试让学习算法的预测在训练数据上尽可能准确。</p>
+<p>那么就得到了线性回归算法里的成本函数。</p>
+<p><code>$J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$</code></p>
+<p>我们要做的是要使上述函数的值最小化。</p>
+<p>下面有两个方法可以帮助选取$\Theta$以使上述函数的值最小化。</p>
+<h2 id="gradient-descent-algorithm">梯度下降（Gradient Descent Algorithm）</h2>
+<p>这是一个搜索算法，基本的想法是先给参数向量一个初始值，然后不断地改变参数向量使得不断减小，直到我们找到了一个使得取到了最小值，这个算法称之为梯度下降。</p>
+<h3 id="heading-3">算法推导</h3>
+<p><code>$\frac \partial {\partial\Theta_i}J(\Theta)$</code> 这个导数即为梯度在<code>$\theta_i$</code>上下降最陡的方向。</p>
+<p>因此更新$\Theta$的过程可以总结为以下公式：</p>
+<p><code>$\Theta_i := \Theta_i - \alpha \frac \partial {\partial\Theta_i}J(\Theta)$</code></p>
+<p>其中$\alpha$为学习速度参数，它控制了算法朝着最陡峭的方向下降的时候迈的步子有多大。$\alpha$值设的过小，算法向着最陡峭方向下降时，每次迈很小的一步，这样它会花很长时间去收敛。值设的过大，算法可能会越过最小值，因为步子迈的太大了。</p>
+<p><code>$$ \begin{align} \frac \partial {\partial\Theta_i}J(\Theta) &amp; = \frac \partial {\partial\Theta_i} \frac 1 2  (h_\Theta(X) - y)^2 \\ &amp; = 2 \ast \frac 1 2 (h_\Theta(X) - y) \frac \partial {\partial\Theta_i}(h_\Theta(X) - y) \\ &amp; = (h_\Theta(X) - y) \frac \partial {\partial\Theta_i}(\Theta_0X_0 + … + \Theta_nX_n -y) \\ &amp; = (h_\Theta(X) -y ) X_i \end{align} $$</code>
+最后得到更新$\Theta$的过程可以总结为以下公式：</p>
+<p><code>$\Theta_i := \Theta_i - \alpha(h_\Theta(X) -y) * X_i$</code></p>
+<h3 id="heading-4">批梯度下降</h3>
+<p>算法的过程就是重复以下过程，直接最后收敛。</p>
+<p><code>$\Theta_i := \Theta_i - \alpha \sum_{j=1}^m(h_\Theta(X^{(j)}) -y^{(j)}) * X_i^{(j)}=\Theta_i - \alpha  \frac \partial {\partial\Theta_i} J(\Theta)$</code></p>
+<p>在批梯度下降算法中每一次迭代都需要遍历整个训练集合。当训练数据集过大时，就不太适合了，而应该使用随机梯度下降算法</p>
+<h3 id="heading-5">随机梯度下降（增量梯度下降）</h3>
+<p>伪代码示意：</p>
+<p>for j=1 to m {</p>
+<p>​	<code>$\Theta_i := \Theta_i - \alpha(h_\Theta(X^{(j)}) - y^{(j)}) \ast X_i^{(j)}$</code>  for all i</p>
+<p>}</p>
+<p>一直重复上述过程，直至最后收敛。</p>
+<p>这个算法可能会在全局最小值附近一直徘徊，通常得到的参数值能够很接近全局最小值，这已经足够了。这个算法通常比批梯度下降算法快得多，尤其是当你有一个大规模训练集合的时候。</p>
+<h2 id="heading-6">正规方程组</h2>
+<p>对于最小二乘回归问题或者普通的最小二乘问题，实际上存在着方法可以直接给出参数向量的解析表达式，这样为了求参数的值就不需要进行迭代了，这个就是正规方程组。</p>
+<h3 id="heading-7">定义一些符号</h3>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>代表的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$\nabla_\Theta J=\begin{bmatrix}\frac {\partial J}  {\partial \Theta_0} \\ \vdots \\ \frac {\partial J}  {\partial \Theta_n} \\ \end{bmatrix} \in \mathbb R^{n+1}$</code></td>
+<td>J是一个关于参数数组的函数，定义J的梯度关于的导数</td>
+</tr>
+<tr>
+<td><code>$\Theta := \Theta - \alpha \nabla_\Theta J \quad \Theta \in \mathbb R^{n+1},\nabla_\Theta J \in \mathbb R^{n+1}$</code></td>
+<td>梯度下降更新过程</td>
+</tr>
+<tr>
+<td><code>$f(A) \in \mathbb R \quad A \in \mathbb R^{m*n}$</code></td>
+<td>f是一个将m*n的矩阵映射为实数的函数</td>
+</tr>
+<tr>
+<td><code>$\nabla_Af(A) =\begin{bmatrix}\frac {\partial f} {\partial A_{11}} &amp; \cdots &amp; \frac {\partial f} {\partial A_{1n}} \\ \vdots &amp; \cdots &amp; \vdots \\ \frac {\partial f} {\partial A_{m1}} &amp; \cdots &amp; \frac {\partial f} {\partial A_{mn}} \\ \end{bmatrix}$</code></td>
+<td>f对于A的导数</td>
+</tr>
+<tr>
+<td><code>$trA=\sum_{i=0}^nA_{ii} \quad if \quad A \in \mathbb R^{n*n}$</code></td>
+<td>方阵的迹</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-8">一些事实</h3>
+<ol>
+<li><code>$trAB = trBA$</code></li>
+<li><code>$trABC = trCAB = trBCA$</code></li>
+<li><code>$f(A) = trAB \quad then \quad \nabla_AtrAB=B^T$</code></li>
+<li><code>$trA = trA^T$</code></li>
+<li><code>$tr\alpha = \alpha \quad if \quad a \in \mathbb R$</code></li>
+<li><code>$\nabla_AtrABA^TC = CAB + C^TAB^T$</code></li>
+</ol>
+<p>证明正规方程过程中将用到上面所述的事实。</p>
+<h3 id="heading-9">推导过程</h3>
+<p>定义
+<code>$$ X = \begin{bmatrix} (X^{(1)})^T \\ \vdots \\ (X^{(m)})^T \end{bmatrix} $$</code>
+则</p>
+<p><code>$$ X\Theta = \begin{bmatrix}(X^{(i)})^T\Theta \\ \vdots \\ (X^{(m)})^T\Theta \end{bmatrix} = \begin{bmatrix}h_\Theta(X^{(1)} \\ \vdots \\ h_\Theta(X^{(m)}  \end{bmatrix} $$</code>
+再定义
+<code>$$ Y = \begin{bmatrix} y^{(1)} \\ \vdots \\ y^{(m)}\end{bmatrix} $$</code>
+然后得到
+<code>$$ X\Theta \ast y = \begin{bmatrix} h(X^{(1)} - y^{(1)}) \\ \vdots \\ h(X^{(m)} - y^{(m)})  \end{bmatrix} $$</code>
+又因为</p>
+<p><code>$$ Z^TZ=\sum_iZ_i^2 \quad if  \quad Z \in \mathbb R^{m*1} $$</code>
+所以</p>
+<p><code>$$ \frac 1 2 (X\Theta - y) ^ T (X\Theta - y) =  \frac 1 2 \sum_{i=1}^m(h(X^{(i)}) - y)^2 = J(\Theta) $$</code>
+然后算法的目标(算法尽量收敛)是</p>
+<p><code>$$ \nabla_\Theta J(\Theta) \approx \overrightarrow 0 $$</code>
+所以有</p>
+<p><code>$$ \begin {align} \nabla_\Theta \frac 1 2 (X\Theta - y )^T(X\Theta - y )  &amp; = \frac 1 2 \nabla_\Theta tr ( \Theta^T X^T X \Theta - \Theta^T X^T y  - y^T X \Theta + y^T y) \\ &amp; = \frac 1 2 \left[  \nabla_\Theta tr \Theta \Theta^TX^TX - \nabla_\Theta tr y^T X \Theta - \nabla_\Theta y^T X \Theta \right] \\ &amp; = \frac 1 2 \left[ X^T X \Theta + X^T X \Theta - X^Ty  -  X^Ty \right] \\ &amp; = X^TX\Theta - X^Ty \\ &amp; = 0 \end {align} $$</code>
+最后就有
+<code>$$ X^TX\Theta = X^Ty $$</code>
+上述公式被称为正规方程组。我们现在可以给出这个关于的方程组解的解析表达式了：
+<code>$$ \Theta = (X^TX)^{-1}X^Ty $$</code>
+上述公式要求$X^TX$可逆，如果$X^TX$不可逆，可以用伪逆最小化的方法来解决这个问题。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-03</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记03</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/">
+            <span class="next-text nav-default">机器学习课程_笔记01</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>python语言学习备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="作为一个有多年Java开发经验的老程序员，最近却被python精练的语法迷住了。同时发现python语言在云计算、系统运维领域确实用得很多，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/python%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="python语言学习备忘" />
+<meta property="og:description" content="作为一个有多年Java开发经验的老程序员，最近却被python精练的语法迷住了。同时发现python语言在云计算、系统运维领域确实用得很多，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/python%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2016-08-21T14:48:00+08:00" />
+<meta property="article:modified_time" content="2016-08-21T14:48:00+08:00" />
+<meta itemprop="name" content="python语言学习备忘">
+<meta itemprop="description" content="作为一个有多年Java开发经验的老程序员，最近却被python精练的语法迷住了。同时发现python语言在云计算、系统运维领域确实用得很多，">
+<meta itemprop="datePublished" content="2016-08-21T14:48:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-21T14:48:00&#43;08:00" />
+<meta itemprop="wordCount" content="1502">
+
+
+
+<meta itemprop="keywords" content="python,shadowsocks," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="python语言学习备忘"/>
+<meta name="twitter:description" content="作为一个有多年Java开发经验的老程序员，最近却被python精练的语法迷住了。同时发现python语言在云计算、系统运维领域确实用得很多，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">python语言学习备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-21 </span>
+        <div class="post-category">
+            
+              <a href="/categories/python%E5%BC%80%E5%8F%91/"> python开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1502 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">语言关键点</a></li>
+    <li><a href="#heading-1">练手</a></li>
+    <li><a href="#heading-2">下一步计划</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>作为一个有多年Java开发经验的老程序员，最近却被python精练的语法迷住了。同时发现python语言在云计算、系统运维领域确实用得很多，感觉有必要把python这门语言学一学。以下记录了学习过程中的关键点以备忘。</p>
+<h2 id="heading">语言关键点</h2>
+<ul>
+<li>数字特殊计算符号</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#ae81ff">3</span>
+<span style="color:#66d9ef">print</span> <span style="color:#ae81ff">17</span><span style="color:#f92672">/</span><span style="color:#f92672">/</span><span style="color:#ae81ff">3.0</span>
+</code></pre></div><ul>
+<li>复数支持</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">+</span><span style="color:#ae81ff">4j</span>
+<span style="color:#66d9ef">print</span> (<span style="color:#ae81ff">3</span><span style="color:#f92672">+</span><span style="color:#ae81ff">4j</span>)<span style="color:#f92672">.</span>real
+<span style="color:#66d9ef">print</span> (<span style="color:#ae81ff">3</span><span style="color:#f92672">+</span><span style="color:#ae81ff">4j</span>)<span style="color:#f92672">.</span>imag
+<span style="color:#66d9ef">print</span> abs(<span style="color:#ae81ff">3</span><span style="color:#f92672">+</span><span style="color:#ae81ff">4j</span>)
+</code></pre></div><ul>
+<li>字符串</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abcdef</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">\</span><span style="color:#e6db74">ndef</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">def</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">ghi</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abc</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">def</span><span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span><span style="color:#e6db74">ghi</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">def</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">*</span><span style="color:#ae81ff">3</span>
+</code></pre></div><ul>
+<li>unicode与str之间相互转换</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> <span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">中国</span><span style="color:#e6db74">&#39;</span>
+unicodestr<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">中国</span><span style="color:#e6db74">&#39;</span>
+utf8str<span style="color:#f92672">=</span>unicodestr<span style="color:#f92672">.</span>encode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+unicodestr2<span style="color:#f92672">=</span>utf8str<span style="color:#f92672">.</span>decode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><ul>
+<li>list与slice</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">list1<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>]
+<span style="color:#66d9ef">print</span> list1[<span style="color:#ae81ff">3</span>]
+<span style="color:#66d9ef">print</span> list1[<span style="color:#ae81ff">1</span>:]
+<span style="color:#66d9ef">print</span> list1[:<span style="color:#ae81ff">3</span>]
+<span style="color:#66d9ef">print</span> list1[::<span style="color:#ae81ff">2</span>]
+</code></pre></div><ul>
+<li>流程控制</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">if</span> a<span style="color:#f92672">&lt;</span>b:
+  <span style="color:#66d9ef">print</span> a
+<span style="color:#66d9ef">elif</span> a<span style="color:#f92672">==</span>b:
+  <span style="color:#66d9ef">print</span> a
+<span style="color:#66d9ef">else</span>:
+  <span style="color:#66d9ef">print</span> b
+
+list1<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>]
+<span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> list1:
+  <span style="color:#66d9ef">print</span> num
+
+<span style="color:#66d9ef">for</span> idx <span style="color:#f92672">in</span> range(len(list1)):
+  <span style="color:#66d9ef">print</span> idx
+
+<span style="color:#66d9ef">for</span> (idx, num) <span style="color:#f92672">in</span> enumerate(list1):
+  <span style="color:#66d9ef">print</span> idx, num
+
+<span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> list1:
+  <span style="color:#66d9ef">if</span> num<span style="color:#f92672">==</span><span style="color:#ae81ff">3</span>:
+    <span style="color:#66d9ef">break</span>
+
+<span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> list1:
+  <span style="color:#66d9ef">if</span> num<span style="color:#f92672">==</span><span style="color:#ae81ff">3</span>:
+    <span style="color:#66d9ef">continue</span>
+
+  <span style="color:#66d9ef">print</span> num
+
+<span style="color:#66d9ef">while</span> running:
+  <span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">alive</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">==</span><span style="color:#ae81ff">3</span>:
+  <span style="color:#66d9ef">pass</span>
+</code></pre></div><ul>
+<li>函数相关</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fun1</span>(a, b):
+  <span style="color:#66d9ef">print</span> a<span style="color:#f92672">+</span>b
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fun2</span>(a, b<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>):
+  <span style="color:#66d9ef">print</span> a<span style="color:#f92672">+</span>b
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">cheeseshop</span>(kind, <span style="color:#f92672">*</span>arguments, <span style="color:#f92672">*</span><span style="color:#f92672">*</span>keywords):
+  <span style="color:#66d9ef">pass</span>
+
+cheeseshop(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Limburger</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">It</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s very runny, sir.</span><span style="color:#e6db74">&#34;</span>,
+           <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">It</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s really very, VERY runny, sir.</span><span style="color:#e6db74">&#34;</span>,
+           shopkeeper<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Michael Palin</span><span style="color:#e6db74">&#39;</span>,
+           client<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">John Cleese</span><span style="color:#e6db74">&#34;</span>,
+           sketch<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Cheese Shop Sketch</span><span style="color:#e6db74">&#34;</span>)
+
+pairs <span style="color:#f92672">=</span> [(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">one</span><span style="color:#e6db74">&#39;</span>), (<span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">two</span><span style="color:#e6db74">&#39;</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">three</span><span style="color:#e6db74">&#39;</span>), (<span style="color:#ae81ff">4</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">four</span><span style="color:#e6db74">&#39;</span>)]
+pairs<span style="color:#f92672">.</span>sort(key<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> pair: pair[<span style="color:#ae81ff">1</span>])
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fun3</span>(a, b)
+  <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">Calculate a+b</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">  Comment here</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">  </span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+  <span style="color:#66d9ef">pass</span>
+</code></pre></div><ul>
+<li>list作为堆栈</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">stack<span style="color:#f92672">=</span>[<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+stack<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">6</span>)
+<span style="color:#66d9ef">print</span> stack<span style="color:#f92672">.</span>pop()
+</code></pre></div><ul>
+<li>队列</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> deque
+queue <span style="color:#f92672">=</span> deque([<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>])
+queue<span style="color:#f92672">.</span>append(<span style="color:#ae81ff">6</span>)
+queue<span style="color:#f92672">.</span>popleft()
+</code></pre></div><ul>
+<li>filter, map, reduce</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">filter(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">%</span><span style="color:#ae81ff">3</span><span style="color:#f92672">==</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">or</span> x<span style="color:#f92672">%</span><span style="color:#ae81ff">5</span><span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>, range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">100</span>))
+
+map(<span style="color:#66d9ef">lambda</span> x: x<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>, range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>))
+
+reduce(<span style="color:#66d9ef">lambda</span> x, y: x<span style="color:#f92672">+</span>y, range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>))
+</code></pre></div><ul>
+<li>列表推导</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">[num<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> num <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">if</span> num<span style="color:#f92672">%</span><span style="color:#ae81ff">4</span><span style="color:#f92672">!=</span><span style="color:#ae81ff">0</span>]
+</code></pre></div><ul>
+<li>删除变量、删除list子项</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">a<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+b<span style="color:#f92672">=</span>a
+<span style="color:#66d9ef">del</span> a
+
+list1<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">5</span>]
+<span style="color:#66d9ef">del</span> list1[<span style="color:#ae81ff">3</span>]
+<span style="color:#66d9ef">del</span> list1[:]
+</code></pre></div><ul>
+<li>tuple元组</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">t <span style="color:#f92672">=</span> <span style="color:#ae81ff">12345</span>, <span style="color:#ae81ff">54321</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello!</span><span style="color:#e6db74">&#39;</span>
+
+a, b<span style="color:#f92672">=</span>b,a
+</code></pre></div><ul>
+<li>set集合</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+fruit <span style="color:#f92672">=</span> set([<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">apple</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">orange</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">apple</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">pear</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">orange</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">banana</span><span style="color:#e6db74">&#39;</span>])
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">orange</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">in</span> fruit
+
+a<span style="color:#f92672">=</span>{<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">c</span><span style="color:#e6db74">&#39;</span>}
+
+a <span style="color:#f92672">=</span> set(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abracadabra</span><span style="color:#e6db74">&#39;</span>)
+b <span style="color:#f92672">=</span> set(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">alacazam</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span> a<span style="color:#f92672">-</span>b
+<span style="color:#66d9ef">print</span> a<span style="color:#f92672">|</span>b
+<span style="color:#66d9ef">print</span> a<span style="color:#f92672">&amp;</span>b
+<span style="color:#66d9ef">print</span> a<span style="color:#f92672">^</span>b
+</code></pre></div><ul>
+<li>set集合推导式</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> {x <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abracadabra</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">if</span> x <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">abc</span><span style="color:#e6db74">&#39;</span>}
+</code></pre></div><ul>
+<li>dict字典</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">tel <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jack</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4098</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sape</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4139</span>}
+
+dict([(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sape</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">4139</span>), (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">guido</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">4127</span>), (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jack</span><span style="color:#e6db74">&#39;</span>, <span style="color:#ae81ff">4098</span>)])
+
+dict(sape<span style="color:#f92672">=</span><span style="color:#ae81ff">4139</span>, guido<span style="color:#f92672">=</span><span style="color:#ae81ff">4127</span>, jack<span style="color:#f92672">=</span><span style="color:#ae81ff">4098</span>)
+</code></pre></div><ul>
+<li>dict字典推导式</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">{x: x<span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> (<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>)}
+</code></pre></div><ul>
+<li>模块</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> __name__
+<span style="color:#f92672">import</span> sys
+<span style="color:#66d9ef">print</span> sys<span style="color:#f92672">.</span>path
+<span style="color:#66d9ef">print</span> sys<span style="color:#f92672">.</span>argv
+</code></pre></div><ul>
+<li>格式化输出</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> + </span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> = </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>) <span style="color:#f92672">/</span><span style="color:#f92672">/</span><span style="color:#960050;background-color:#1e0010">不</span><span style="color:#960050;background-color:#1e0010">建</span><span style="color:#960050;background-color:#1e0010">议</span><span style="color:#960050;background-color:#1e0010">使</span><span style="color:#960050;background-color:#1e0010">用</span><span style="color:#960050;background-color:#1e0010">这</span><span style="color:#960050;background-color:#1e0010">种</span><span style="color:#960050;background-color:#1e0010">旧</span><span style="color:#960050;background-color:#1e0010">的</span><span style="color:#960050;background-color:#1e0010">语</span><span style="color:#960050;background-color:#1e0010">法</span>
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{} + {} = {}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{0} + {1} = {2}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{num1} + {num2} = {num3}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(num1<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, num2<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, num3<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{num1:.2f} + {num2:.2f} = {num3:.2f}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(num1<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, num2<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, num3<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+
+<span style="color:#66d9ef">print</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{num1:4d} + {num2:4d} = {num3:4d}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(num1<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>, num2<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>, num3<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+
+<span style="color:#f92672">from</span> string <span style="color:#f92672">import</span> Template
+<span style="color:#66d9ef">print</span> Template(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">$who likes $what</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>substitute(who<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">tim</span><span style="color:#e6db74">&#39;</span>, what<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">kung pao</span><span style="color:#e6db74">&#39;</span>)
+
+tel <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jack</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4098</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sape</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4139</span>}
+<span style="color:#66d9ef">print</span> json<span style="color:#f92672">.</span>dumps(tel, indent<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+</code></pre></div><ul>
+<li>文件读写</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">f<span style="color:#f92672">=</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere/filename</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>)
+
+f<span style="color:#f92672">.</span>read()
+
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> f:
+  <span style="color:#66d9ef">print</span> line,
+
+f<span style="color:#f92672">.</span>close()
+</code></pre></div><ul>
+<li>json处理</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> json
+
+f<span style="color:#f92672">=</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere/filename</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>)
+
+tel <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">jack</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4098</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">sape</span><span style="color:#e6db74">&#39;</span>: <span style="color:#ae81ff">4139</span>}
+json<span style="color:#f92672">.</span>dumps(tel, f)
+f<span style="color:#f92672">.</span>close()
+
+f<span style="color:#f92672">=</span>open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere/filename</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span>)
+x<span style="color:#f92672">=</span>json<span style="color:#f92672">.</span>load(f)
+</code></pre></div><ul>
+<li>异常</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">try</span>:
+  <span style="color:#66d9ef">pass</span>
+<span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span> <span style="color:#66d9ef">as</span> e:
+  <span style="color:#66d9ef">pass</span>
+<span style="color:#66d9ef">finally</span>:
+  <span style="color:#66d9ef">pass</span>
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fun1</span>():
+  <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">something</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyError</span>(<span style="color:#a6e22e">Exception</span>):
+  <span style="color:#66d9ef">def</span> __init__(self, value):
+    self<span style="color:#f92672">.</span>value <span style="color:#f92672">=</span> value
+  <span style="color:#66d9ef">def</span> __str__(self):
+    <span style="color:#66d9ef">return</span> repr(self<span style="color:#f92672">.</span>value)
+</code></pre></div><ul>
+<li>with语法</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere/filename</span><span style="color:#e6db74">&#39;</span>, r) <span style="color:#66d9ef">as</span> f:
+  <span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> f:
+    <span style="color:#66d9ef">print</span> line,
+</code></pre></div><ul>
+<li>类的定义</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyClass</span>(BaseClass):
+
+  pubPro<span style="color:#f92672">=</span>None
+
+  <span style="color:#66d9ef">def</span> __init__(self, arg1):
+    BaseClass<span style="color:#f92672">.</span>__init__(self)
+    self<span style="color:#f92672">.</span>arg1 <span style="color:#f92672">=</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">pubFun1</span>(self, arg1, arg2):
+    <span style="color:#66d9ef">pass</span>
+
+  <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__priFun1</span>(self, arg1):
+    <span style="color:#66d9ef">pass</span>
+
+cls<span style="color:#f92672">=</span>MyClass(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hello</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">print</span> type(cls)
+<span style="color:#66d9ef">print</span> cls<span style="color:#f92672">.</span>__class__
+</code></pre></div><ul>
+<li>生成器</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">reverse</span>(data):
+  <span style="color:#66d9ef">for</span> index <span style="color:#f92672">in</span> range(len(data)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>):
+    <span style="color:#66d9ef">yield</span> data[index]
+
+<span style="color:#66d9ef">for</span> char <span style="color:#f92672">in</span> reverse(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">golf</span><span style="color:#e6db74">&#39;</span>):
+  <span style="color:#66d9ef">print</span> char
+</code></pre></div><ul>
+<li>标准库</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> os
+<span style="color:#66d9ef">print</span> os<span style="color:#f92672">.</span>getcwd()
+os<span style="color:#f92672">.</span>chdir(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere</span><span style="color:#e6db74">&#39;</span>)
+os<span style="color:#f92672">.</span>system(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">ping -c 4 127.0.0.1</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">import</span> shutil
+shutil<span style="color:#f92672">.</span>copyfile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/somewhere/filename</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/anotherwhere/filename</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">import</span> glob
+<span style="color:#66d9ef">print</span> glob<span style="color:#f92672">.</span>glob(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*.py</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">import</span> sys
+sys<span style="color:#f92672">.</span>exit(<span style="color:#ae81ff">0</span>)
+sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">err msg</span><span style="color:#e6db74">&#39;</span>)
+sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">output msg</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">import</span> re
+<span style="color:#66d9ef">print</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">([a-z]+)</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">which foot or hand fell fastest</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#f92672">import</span> math
+math<span style="color:#f92672">.</span>cos(math<span style="color:#f92672">.</span>pi <span style="color:#f92672">/</span> <span style="color:#ae81ff">4.0</span>)
+math<span style="color:#f92672">.</span>log(<span style="color:#ae81ff">1024</span>, <span style="color:#ae81ff">2</span>)
+
+<span style="color:#f92672">import</span> random
+random<span style="color:#f92672">.</span>choise([<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">apple</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">pear</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">banana</span><span style="color:#e6db74">&#39;</span>])
+random<span style="color:#f92672">.</span>sample(xrange(<span style="color:#ae81ff">100</span>), <span style="color:#ae81ff">10</span>)
+random<span style="color:#f92672">.</span>random()
+random<span style="color:#f92672">.</span>randrange(<span style="color:#ae81ff">6</span>)
+
+<span style="color:#f92672">import</span> urllib2
+f<span style="color:#f92672">=</span>urllib2<span style="color:#f92672">.</span>urlopen(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.baidu.com</span><span style="color:#e6db74">&#39;</span>)
+<span style="color:#66d9ef">for</span> line <span style="color:#f92672">in</span> f:
+  <span style="color:#66d9ef">print</span> line,
+f<span style="color:#f92672">.</span>close()
+
+<span style="color:#f92672">import</span> smtplib
+smtpConn <span style="color:#f92672">=</span> smtplib<span style="color:#f92672">.</span>SMTP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">stmp.qq.com</span><span style="color:#e6db74">&#39;</span>)
+smtpConn<span style="color:#f92672">.</span>login(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">username</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">password</span><span style="color:#e6db74">&#39;</span>)
+smtpConn<span style="color:#f92672">.</span>sendmail(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">fromuser@qq.com</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">touser@qq.com</span><span style="color:#e6db74">&#39;</span>,\
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    some long text</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">    </span><span style="color:#e6db74">&#39;&#39;&#39;</span>)
+smtpConn<span style="color:#f92672">.</span>quit()
+
+<span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> date
+now <span style="color:#f92672">=</span> date<span style="color:#f92672">.</span>today()
+time1 <span style="color:#f92672">=</span> date(<span style="color:#ae81ff">2016</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">15</span>)
+<span style="color:#66d9ef">print</span> now<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%</span><span style="color:#e6db74">m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">-</span><span style="color:#e6db74">%</span><span style="color:#e6db74">y. </span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%</span><span style="color:#e6db74">b </span><span style="color:#e6db74">%</span><span style="color:#e6db74">Y is a </span><span style="color:#e6db74">%</span><span style="color:#e6db74">A on the </span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> day of </span><span style="color:#e6db74">%</span><span style="color:#e6db74">B.</span><span style="color:#e6db74">&#34;</span>)
+
+range1 <span style="color:#f92672">=</span> now <span style="color:#f92672">-</span> time1
+<span style="color:#66d9ef">print</span> range1<span style="color:#f92672">.</span>days
+
+<span style="color:#f92672">import</span> zlib
+s <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">witch which has which witches wrist watch</span><span style="color:#e6db74">&#39;</span>
+t <span style="color:#f92672">=</span> zlib<span style="color:#f92672">.</span>compress(s)
+zlib<span style="color:#f92672">.</span>decompress(t)
+
+<span style="color:#f92672">import</span> locale
+locale<span style="color:#f92672">.</span>setlocale(locale<span style="color:#f92672">.</span>LC_ALL, locale<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">zh_CN.UTF-8</span><span style="color:#e6db74">&#39;</span>)
+locale<span style="color:#f92672">.</span>getlocale()
+locale<span style="color:#f92672">.</span>getdefaultlocale()
+
+<span style="color:#f92672">import</span> logging
+logging<span style="color:#f92672">.</span>debug(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Debugging information</span><span style="color:#e6db74">&#39;</span>)
+logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Informational message</span><span style="color:#e6db74">&#39;</span>)
+logging<span style="color:#f92672">.</span>warning(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Warning:config file </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> not found</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">server.conf</span><span style="color:#e6db74">&#39;</span>)
+logging<span style="color:#f92672">.</span>error(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Error occurred</span><span style="color:#e6db74">&#39;</span>)
+logging<span style="color:#f92672">.</span>critical(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Critical error -- shutting down</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h2 id="heading-1">练手</h2>
+<p>使用编程语言完成一个简单的任务是学习某个语言最快捷的办法，于是我想了一个简单任务：通过抓取页面自动从<code>ishadowsocks.com</code>上得到一个shadowsocks服务器的连接信息，并更新本机shadowsocks-libev服务的配置文件，再自动重启shadowsocks-libev服务。如果再配合cron定时执行脚本，基本可以做到免费的翻墙方案。源代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+<span style="color:#75715e"># coding: utf-8</span>
+
+<span style="color:#f92672">import</span> urllib
+<span style="color:#f92672">import</span> re
+<span style="color:#f92672">from</span> lxml <span style="color:#f92672">import</span> etree
+<span style="color:#f92672">import</span> json
+<span style="color:#f92672">import</span> os
+
+<span style="color:#75715e"># 请求www.ishadowsocks.org服务器, 获取shadowsocks服务器信息</span>
+content <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>
+f <span style="color:#f92672">=</span> None
+<span style="color:#66d9ef">try</span>:
+    f <span style="color:#f92672">=</span> urllib<span style="color:#f92672">.</span>urlopen(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">http://www.ishadowsocks.org/</span><span style="color:#e6db74">&#39;</span>)
+    content <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+<span style="color:#66d9ef">finally</span>:
+    <span style="color:#66d9ef">if</span> f <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+        f<span style="color:#f92672">.</span>close()
+
+tree <span style="color:#f92672">=</span> etree<span style="color:#f92672">.</span>HTML(content)
+nodes <span style="color:#f92672">=</span> tree<span style="color:#f92672">.</span>xpath(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">//*[@id=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">free</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">]/div/div[2]/div[3]/h4</span><span style="color:#e6db74">&#39;</span>)
+addr <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>
+port <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+pwd <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>
+method <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>
+<span style="color:#66d9ef">for</span> node <span style="color:#f92672">in</span> nodes:
+    txt <span style="color:#f92672">=</span> node<span style="color:#f92672">.</span>text
+    <span style="color:#66d9ef">if</span> type(txt) <span style="color:#f92672">is</span> unicode:
+        utf8str <span style="color:#f92672">=</span> txt<span style="color:#f92672">.</span>encode(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">utf-8</span><span style="color:#e6db74">&#39;</span>)
+        ret <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^.*服务器地址:(.*)$</span><span style="color:#e6db74">&#39;</span>, utf8str)
+        <span style="color:#66d9ef">if</span> len(ret) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            addr <span style="color:#f92672">=</span> ret[<span style="color:#ae81ff">0</span>]
+        ret <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^端口:(.*)$</span><span style="color:#e6db74">&#39;</span>, utf8str)
+        <span style="color:#66d9ef">if</span> len(ret) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            port <span style="color:#f92672">=</span> int(ret[<span style="color:#ae81ff">0</span>])
+        ret <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^.*密码:(.*)$</span><span style="color:#e6db74">&#39;</span>, utf8str)
+        <span style="color:#66d9ef">if</span> len(ret) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            pwd <span style="color:#f92672">=</span> ret[<span style="color:#ae81ff">0</span>]
+        ret <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>findall(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">^加密方式:(.*)$</span><span style="color:#e6db74">&#39;</span>, utf8str)
+        <span style="color:#66d9ef">if</span> len(ret) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            method <span style="color:#f92672">=</span> ret[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>lower()
+
+<span style="color:#75715e"># 生成shadowsocks-libev配置文件</span>
+config <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">server</span><span style="color:#e6db74">&#34;</span>: addr,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">server_port</span><span style="color:#e6db74">&#34;</span>: port,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">local_port</span><span style="color:#e6db74">&#34;</span>: <span style="color:#ae81ff">1080</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">password</span><span style="color:#e6db74">&#34;</span>: pwd,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">timeout</span><span style="color:#e6db74">&#34;</span>: <span style="color:#ae81ff">600</span>,
+    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">method</span><span style="color:#e6db74">&#34;</span>: method
+}
+
+configstr <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>dumps(config, indent<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+
+<span style="color:#66d9ef">with</span> open(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/tmp/shadowsocks-libev.json</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">w</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    f<span style="color:#f92672">.</span>write(configstr)
+    f<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#75715e"># 重启shadowsocks-libev服务</span>
+os<span style="color:#f92672">.</span>system(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.shadowsocks-libev.plist</span><span style="color:#e6db74">&#39;</span>)
+os<span style="color:#f92672">.</span>system(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">launchctl load ~/Library/LaunchAgents/homebrew.mxcl.shadowsocks-libev.plist</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><h2 id="heading-2">下一步计划</h2>
+<p>在kindle上买了本<code>python cookbook</code>，下一步计划把这本书先看完。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-21</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">python</a>
+          
+          <a href="/tags/shadowsocks/">shadowsocks</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95python%E5%AE%9E%E7%8E%B0/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">排序算法python实现</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E5%88%9D%E8%AF%86ceph/">
+            <span class="next-text nav-default">初识ceph</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

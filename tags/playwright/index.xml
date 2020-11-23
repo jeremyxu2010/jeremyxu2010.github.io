@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>playwright on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/playwright/</link>
+    <description>Recent content in playwright on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 01 Nov 2020 20:54:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/playwright/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>web浏览器自动化之playwright</title>
+      <link>https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/</link>
+      <pubDate>Sun, 01 Nov 2020 20:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/11/web%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B9%8Bplaywright/</guid>
+      <description>工作中经常需要在几个后台管理站点上进行一些重复性工作。作为一个会偷懒的程序员，自然要想点主意。 之前就使用selenium-webdriver</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Web应用程序限速方法 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Web应用程序限速方法" />
+<meta property="og:description" content="一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/" />
+<meta property="article:published_time" content="2016-05-09T00:15:00+08:00" />
+<meta property="article:modified_time" content="2016-05-09T00:15:00+08:00" />
+<meta itemprop="name" content="Web应用程序限速方法">
+<meta itemprop="description" content="一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越">
+<meta itemprop="datePublished" content="2016-05-09T00:15:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-05-09T00:15:00&#43;08:00" />
+<meta itemprop="wordCount" content="2095">
+
+
+
+<meta itemprop="keywords" content="java,nginx,guava," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Web应用程序限速方法"/>
+<meta name="twitter:description" content="一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Web应用程序限速方法</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-05-09 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 2095 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ngx-http-core-module">ngx_http_core_module限制下载速率</a></li>
+    <li><a href="#nginx-upload-module">nginx-upload-module限制上传速率</a></li>
+    <li><a href="#ngx-stream-proxy-module">ngx_stream_proxy_module限制上传下载速率</a></li>
+    <li><a href="#javaguavaratelimiter">Java使用Guava的RateLimiter进行限速</a>
+      <ul>
+        <li><a href="#ratelimiter">RateLimiter几个关键的方法</a></li>
+        <li><a href="#heading">使用示例</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越好。但现实情况是服务器的带宽不是无限的，通常我们并不希望某一个用户的极速下载导致其它用户感觉此Web应用程序不可用。这样就带来了网络速率的需求。我在实际工作中大概总结出好几种限速办法，在这里记录以备忘。</p>
+<h2 id="ngx-http-core-module">ngx_http_core_module限制下载速率</h2>
+<p>最简单是直接使用<code>ngx_http_core_module</code>中的<code>limit_rate</code>、<code>limit_rate_after</code>指令，如下</p>
+<pre><code>location /flv/ {
+    alias /www/flv/;
+    limit_rate_after 500k;
+    limit_rate       50k;
+}
+</code></pre><p><code>limit_rate</code>可限制响应传输至浏览器客户端的速率，<code>limit_rate_after</code>表示浏览器客户端下载多少后才可以执行限速(使下载小文件不受限，下载大文件才限速)。</p>
+<p><code>limit_rate</code>还有一种配合后端被代理服务器的用户，如下</p>
+<pre><code>location /download/ {
+    proxy_pass http://127.0.0.1:8080/download/; # proxied server return &quot;X-Accel-Limit-Rate&quot; response header
+}
+</code></pre><p>后端被代理服务器可返回<code>X-Accel-Limit-Rate</code>响应头，nginx将根据这个响应头设置的值进行限速。这样就可以灵活控制限速的逻辑（比如有些用户下载不限速，有些用户下载限速，而且限速的数值也可根据不同用户身份而不同）</p>
+<h2 id="nginx-upload-module">nginx-upload-module限制上传速率</h2>
+<pre><code>location /upload {
+        # 转到后台处理URL,表示Nginx接收完上传的文件后，然后交给后端处理的地址
+        upload_pass @backend;
+
+        # 临时保存路径, 可以使用散列
+        # 上传模块接收到的文件临时存放的路径， 1 表示方式，该方式是需要在/tmp/nginx_upload下创建以0到9为目录名称的目录，上传时候会进行一个散列处理。
+        upload_store /tmp/nginx_upload;
+
+        # 上传文件的权限，rw表示读写 r只读
+        upload_store_access user:rw group:rw all:rw;
+
+        set $upload_field_name &quot;file&quot;;
+        # upload_resumable on;
+
+        # 这里写入http报头，pass到后台页面后能获取这里set的报头字段
+        upload_set_form_field &quot;${upload_field_name}_name&quot; $upload_file_name;
+        upload_set_form_field &quot;${upload_field_name}_content_type&quot; $upload_content_type;
+        upload_set_form_field &quot;${upload_field_name}_path&quot; $upload_tmp_path;
+
+        # Upload模块自动生成的一些信息，如文件大小与文件md5值
+        upload_aggregate_form_field &quot;${upload_field_name}_md5&quot; $upload_file_md5;
+        upload_aggregate_form_field &quot;${upload_field_name}_size&quot; $upload_file_size;
+
+        # 允许的字段，允许全部可以 &quot;^.*$&quot;
+        upload_pass_form_field &quot;^.*$&quot;;
+        # upload_pass_form_field &quot;^submit$|^description$&quot;;
+
+        # 每秒字节速度控制，0表示不受控制，默认0, 128K
+        upload_limit_rate 0;
+
+        # 如果pass页面是以下状态码，就删除此次上传的临时文件
+        upload_cleanup 400 404 499 500-505;
+
+        # 打开开关，意思就是把前端脚本请求的参数会传给后端的脚本语言，比如：http://192.168.1.251:9000/upload/?k=23,后台可以通过POST['k']来访问。
+        upload_pass_args on;
+    }
+
+    location @backend {
+        proxy_pass http://127.0.0.1:8080/process_upload;
+    }
+</code></pre><p><code>upload_limit_rate</code>即可对上传速率进行限制。</p>
+<h2 id="ngx-stream-proxy-module">ngx_stream_proxy_module限制上传下载速率</h2>
+<pre><code>server {
+    listen 81;
+    proxy_pass 127.0.0.1:8081;
+    proxy_download_rate 200k;
+    proxy_upload_rate 200k;
+}
+</code></pre><p>使用<code>ngx_stream_proxy_module</code>的好处时只要是tcp或udp协议且使用nginx作反向代理，都可以限速。<code>proxy_download_rate</code>可限制下载速率，<code>proxy_upload_rate</code>可限制上传速率。</p>
+<h2 id="javaguavaratelimiter">Java使用Guava的RateLimiter进行限速</h2>
+<p>上面说的全是使用nginx配置的方式进行限速，当有很特殊需求时，我们也可以使用程序来限速，如Java可使用<code>Guava</code>的<code>RateLimiter</code>进行限速。</p>
+<p>RateLimiter 从概念上来讲，速率限制器会在可配置的速率下分配许可证。如果必要的话，每个acquire() 会阻塞当前线程直到许可证可用后获取该许可证。一旦获取到许可证，不需要再释放许可证。</p>
+<p>RateLimiter使用的是一种叫令牌桶的流控算法，RateLimiter会按照一定的频率往桶里扔令牌，线程拿到令牌才能执行，比如你希望自己的应用程序QPS不要超过1000，那么RateLimiter设置1000的速率后，就会每秒往桶里扔1000个令牌。（这个跟nginx的ngx_http_limit_req_module中用到的<code>leaky bucket</code>是一个意思）</p>
+<p>RateLimiter经常用于限制对一些物理资源或者逻辑资源的访问速率。与Semaphore 相比，Semaphore 限制了并发访问的数量而不是使用速率。</p>
+<h3 id="ratelimiter">RateLimiter几个关键的方法</h3>
+<ul>
+<li>static RateLimiter create(double permitsPerSecond) 根据指定的稳定吞吐率创建RateLimiter，这里的吞吐率是指每秒多少许可数（通常是指QPS，每秒多少查询）</li>
+<li>static RateLimiter create(double permitsPerSecond, long warmupPeriod, TimeUnit unit) 根据指定的稳定吞吐率和预热期来创建RateLimiter，这里的吞吐率是指每秒多少许可数（通常是指QPS，每秒多少个请求量），在这段预热时间内，RateLimiter每秒分配的许可数会平稳地增长直到预热期结束时达到其最大速率。（只要存在足够请求数来使其饱和）</li>
+<li>double acquire(int permits) 从RateLimiter获取指定许可数，该方法会被阻塞直到获取到请求</li>
+<li>void setRate(double permitsPerSecond) 动态更新RateLimite的稳定速率，参数permitsPerSecond 由构造RateLimiter的工厂方法提供。</li>
+<li>boolean tryAcquire(int permits) 从RateLimiter 获取许可数，如果该许可数可以在无延迟下的情况下立即获取得到的话</li>
+<li>boolean tryAcquire(int permits, long timeout, TimeUnit unit) 从RateLimiter 获取指定许可数如果该许可数可以在不超过timeout的时间内获取得到的话，或者如果无法在timeout 过期之前获取得到许可数的话，那么立即返回false （无需等待）</li>
+</ul>
+<h3 id="heading">使用示例</h3>
+<p>限制写入response的速率不超过200kB/s</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">RateLimiter limiter <span style="color:#f92672">=</span> RateLimiter<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>1024<span style="color:#f92672">*</span>200<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">while</span><span style="color:#f92672">(</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> bytes <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+  limiter<span style="color:#f92672">.</span><span style="color:#a6e22e">acquire</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  response<span style="color:#f92672">.</span><span style="color:#a6e22e">getWriter</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-05-09</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nginx/">nginx</a>
+          
+          <a href="/tags/guava/">guava</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/05/java-nio-file%E6%93%8D%E4%BD%9C/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Java NIO File操作</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/koa%E6%A1%86%E6%9E%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <span class="next-text nav-default">koa框架源码解读</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

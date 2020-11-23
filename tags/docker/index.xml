@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/docker/</link>
+    <description>Recent content in docker on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 06 Oct 2019 13:19:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>避免容器中运行的Java应用被杀掉</title>
+      <link>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</link>
+      <pubDate>Sun, 06 Oct 2019 13:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</guid>
+      <description>今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先</description>
+    </item>
+    
+    <item>
+      <title>生成多平台docker镜像</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Mon, 30 Sep 2019 20:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</guid>
+      <description>工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这</description>
+    </item>
+    
+    <item>
+      <title>让kong监听80和443端口</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</link>
+      <pubDate>Sat, 17 Aug 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</guid>
+      <description>问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443</description>
+    </item>
+    
+    <item>
+      <title>保持Kubernetes容器平台稳定性</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</link>
+      <pubDate>Tue, 21 May 2019 20:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</guid>
+      <description>这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录</description>
+    </item>
+    
+    <item>
+      <title>批量处理docker镜像</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Sun, 19 May 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E6%89%B9%E9%87%8F%E5%A4%84%E7%90%86docker%E9%95%9C%E5%83%8F/</guid>
+      <description>这几天的工作频繁地操作大量docker镜像，这里总结一些过程中的小技巧。 小技巧 列出registry中的镜像 官方的docker registry</description>
+    </item>
+    
+    <item>
+      <title>工作任务项杂记_201904</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</link>
+      <pubDate>Sat, 04 May 2019 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E5%B7%A5%E4%BD%9C%E4%BB%BB%E5%8A%A1%E9%A1%B9%E6%9D%82%E8%AE%B0_201904/</guid>
+      <description>最近的工作比较杂，因此一直没有整理一篇博文。刚好五一假期了，想着不能再拖下去了，即使写出的东西太琐碎，也稍微记录下，作个备忘也挺好的。 spring bo</description>
+    </item>
+    
+    <item>
+      <title>巧妙调试docker容器</title>
+      <link>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Sun, 21 Apr 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</guid>
+      <description>问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行</description>
+    </item>
+    
+    <item>
+      <title>运行docker容器遇到的坑</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</link>
+      <pubDate>Mon, 11 Mar 2019 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</guid>
+      <description>今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p</description>
+    </item>
+    
+    <item>
+      <title>使用docker in docker</title>
+      <link>https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/</link>
+      <pubDate>Sun, 24 Feb 2019 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/</guid>
+      <description>工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记</description>
+    </item>
+    
+    <item>
+      <title>docker日志丢失问题分析</title>
+      <link>https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sat, 12 Jan 2019 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/</guid>
+      <description>今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中</description>
+    </item>
+    
+    <item>
+      <title>arm64硬件架构支持总结</title>
+      <link>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 01 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</guid>
+      <description>自从中兴事件后，国家开始在政策上大力支持国产硬软件，甚至在某些项目投标要求上都加上了隐性条件，软件系统必须能在国产硬软件基础上运行。而国产硬</description>
+    </item>
+    
+    <item>
+      <title>docker的两个bug</title>
+      <link>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</link>
+      <pubDate>Sat, 13 Oct 2018 20:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</guid>
+      <description>这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock</description>
+    </item>
+    
+    <item>
+      <title>harbor源码解读</title>
+      <link>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 10 Sep 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来</description>
+    </item>
+    
+    <item>
+      <title>搭建k8s的开发调试环境</title>
+      <link>https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Tue, 21 Aug 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/</guid>
+      <description>最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机</description>
+    </item>
+    
+    <item>
+      <title>docker实战小结</title>
+      <link>https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Mon, 18 Jun 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/</guid>
+      <description>好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只</description>
+    </item>
+    
+    <item>
+      <title>CentOS7部署k8s集群</title>
+      <link>https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sun, 28 Jan 2018 22:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/</guid>
+      <description>环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台</description>
+    </item>
+    
+    <item>
+      <title>docker排雷记</title>
+      <link>https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/</link>
+      <pubDate>Fri, 03 Feb 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/</guid>
+      <description>上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里</description>
+    </item>
+    
+    <item>
+      <title>boot2docker中安装docker-compose</title>
+      <link>https://jeremyxu2010.github.io/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/</link>
+      <pubDate>Sun, 29 Jan 2017 02:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/</guid>
+      <description>boot2docker中未安装docker-compose，同时无法自动挂载我在宿主机上共享的目录。研究了下，终于找到办法了，记录如下： sudo mkdir</description>
+    </item>
+    
+    <item>
+      <title>分发JavaWeb项目之docker方案</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sat, 28 Jan 2017 23:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</guid>
+      <description>最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc</description>
+    </item>
+    
+    <item>
+      <title>docker源码分析-Daemon创建及启动</title>
+      <link>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
+      <pubDate>Thu, 06 Oct 2016 04:22:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
+      <description>上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂</description>
+    </item>
+    
+    <item>
+      <title>docker源码分析-Client创建与命令执行</title>
+      <link>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-client%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/</link>
+      <pubDate>Wed, 05 Oct 2016 15:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-client%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/</guid>
+      <description>一直在研究docker，最近被人问到docker到底是怎么工作的却不是太清楚，在网上偶然看到一本讲docker源码的电子书，花了整晚看了下，</description>
+    </item>
+    
+    <item>
+      <title>获取docker容器的主机虚拟网卡</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/</link>
+      <pubDate>Mon, 19 Sep 2016 00:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/</guid>
+      <description>起因 今天看到一个做docker开发工程师写的如何实现docker网络隔离的方案，总的来说就是找到docker容器对应的主机虚拟网卡，然后使用</description>
+    </item>
+    
+    <item>
+      <title>研究pipework</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</link>
+      <pubDate>Thu, 01 Sep 2016 22:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</guid>
+      <description>很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。</description>
+    </item>
+    
+    <item>
+      <title>尝试docker的overlay网络</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Mon, 29 Aug 2016 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</guid>
+      <description>docker搭建起集群后，跨主机的容器相互之间通信就要另想方案了。幸好docker1.9之后内置了跨节点通信技术Overlay网络，这里将使</description>
+    </item>
+    
+    <item>
+      <title>Docker生态会重蹈Hadoop的覆辙吗？(转)</title>
+      <link>https://jeremyxu2010.github.io/2016/08/docker%E7%94%9F%E6%80%81%E4%BC%9A%E9%87%8D%E8%B9%88hadoop%E7%9A%84%E8%A6%86%E8%BE%99%E5%90%97%E8%BD%AC/</link>
+      <pubDate>Sun, 28 Aug 2016 22:23:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/docker%E7%94%9F%E6%80%81%E4%BC%9A%E9%87%8D%E8%B9%88hadoop%E7%9A%84%E8%A6%86%E8%BE%99%E5%90%97%E8%BD%AC/</guid>
+      <description>docker最近一年可真是火，不过刚好看到下面这篇文章，觉得还是很有道理的。转载过来研读并思考一下，转载自这里。 Docker的兴起和Hado</description>
+    </item>
+    
+    <item>
+      <title>重搭docker集群</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 24 Aug 2016 23:39:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</guid>
+      <description>以前尝试使用consul搭建了docker集群，当时对底层为什么要执行那些命令不是太理解，直到昨天研究了etcd集群之后，终于对docker</description>
+    </item>
+    
+    <item>
+      <title>学习etcd</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/</link>
+      <pubDate>Wed, 24 Aug 2016 01:24:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E5%AD%A6%E4%B9%A0etcd/</guid>
+      <description>很早之前就听说过etcd，只记得是一个跟zookeeper很类似的东西，可以用来实现分布式锁。但一直没有关心这个东西到底是如何部署的，部署时</description>
+    </item>
+    
+    <item>
+      <title>搭建简易的docker集群</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 29 Jun 2016 02:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/</guid>
+      <description>今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集</description>
+    </item>
+    
+    <item>
+      <title>试用docker功能</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/</link>
+      <pubDate>Sun, 19 Jun 2016 23:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/</guid>
+      <description>花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma</description>
+    </item>
+    
+  </channel>
+</rss>

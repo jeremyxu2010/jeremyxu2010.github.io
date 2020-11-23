@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Netty框架研究 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="Netty框架研究" />
+<meta property="og:description" content="起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/06/netty%E6%A1%86%E6%9E%B6%E7%A0%94%E7%A9%B6/" />
+<meta property="article:published_time" content="2016-06-18T22:51:00+08:00" />
+<meta property="article:modified_time" content="2016-06-18T22:51:00+08:00" />
+<meta itemprop="name" content="Netty框架研究">
+<meta itemprop="description" content="起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目">
+<meta itemprop="datePublished" content="2016-06-18T22:51:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-06-18T22:51:00&#43;08:00" />
+<meta itemprop="wordCount" content="5354">
+
+
+
+<meta itemprop="keywords" content="java,netty,nio," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Netty框架研究"/>
+<meta name="twitter:description" content="起因 以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Netty框架研究</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-06-18 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 5354 字 </span>
+        <span class="more-meta"> 预计阅读 11 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">起因</a></li>
+    <li><a href="#heading-1">解决这个问题先</a></li>
+    <li><a href="#netty">Netty的线程模型</a></li>
+    <li><a href="#cpu">业务操作耗费太多CPU怎么办</a></li>
+    <li><a href="#netty-1">Netty源码研究</a></li>
+    <li><a href="#netty-2">使用Netty进行网络编程注意事项</a></li>
+    <li><a href="#heading-2">总结</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">起因</h2>
+<p>以前也用Netty做到异步网络编程，用过之后也一直没想过要把Netty拿起来重新研究一翻，直到上周工作中遇到一个棘手的问题。 在我们的项目中基于<code>netty-socketio</code>，我们实现了一个基于WebSocket的浏览器与服务端的请求回应机制。</p>
+<p>这里贴一下该机制的大概的代码逻辑，真实项目比这复杂得多。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> com.corundumstudio.socketio.AckRequest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.Configuration<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.SocketConfig<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.SocketIOClient<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.annotation.OnConnect<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.annotation.OnEvent<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.listener.ConnectListener<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.listener.DataListener<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> com.corundumstudio.socketio.listener.DisconnectListener<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> io.netty.util.concurrent.Future<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> io.netty.util.concurrent.GenericFutureListener<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.util.concurrent.TimeUnit<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/6/18.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SocketIOServer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+        SocketIOServer server <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SocketIOServer<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        server<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        SocketConfig socketConfig <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SocketConfig<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        socketConfig<span style="color:#f92672">.</span><span style="color:#a6e22e">setReuseAddress</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Configuration config <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Configuration<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        config<span style="color:#f92672">.</span><span style="color:#a6e22e">setHostname</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;0.0.0.0&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        config<span style="color:#f92672">.</span><span style="color:#a6e22e">setPort</span><span style="color:#f92672">(</span>8888<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        config<span style="color:#f92672">.</span><span style="color:#a6e22e">setSocketConfig</span><span style="color:#f92672">(</span>socketConfig<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        config<span style="color:#f92672">.</span><span style="color:#a6e22e">setContext</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/socketio&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        com<span style="color:#f92672">.</span><span style="color:#a6e22e">corundumstudio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">socketio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketIOServer</span> server <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> com<span style="color:#f92672">.</span><span style="color:#a6e22e">corundumstudio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">socketio</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SocketIOServer</span><span style="color:#f92672">(</span>config<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        server<span style="color:#f92672">.</span><span style="color:#a6e22e">addListeners</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RequestHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        server<span style="color:#f92672">.</span><span style="color:#a6e22e">startAsync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addListener</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GenericFutureListener<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span> <span style="color:#66d9ef">super</span> Void<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">operationComplete</span><span style="color:#f92672">(</span>Future<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span> <span style="color:#66d9ef">super</span> Void<span style="color:#f92672">&gt;</span> future<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>future<span style="color:#f92672">.</span><span style="color:#a6e22e">isSuccess</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;socketio server started.&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RequestHandler</span> <span style="color:#66d9ef">implements</span> ConnectListener<span style="color:#f92672">,</span> DataListener<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span><span style="color:#f92672">,</span> DisconnectListener<span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onConnect</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;client is connected&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onData</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">,</span> String data<span style="color:#f92672">,</span> AckRequest ackSender<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;receive data&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">//这里开始解析请求的数据,然后调用后台Controller层相关接口处理请求,处理完毕之后,向客户端返回响应结果
+</span><span style="color:#75715e"></span>            TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>20<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//这里用20秒来模拟长时间的耗时操作
+</span><span style="color:#75715e"></span>            client<span style="color:#f92672">.</span><span style="color:#a6e22e">sendEvent</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;data&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;data response&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onDisconnect</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;client is disconnected&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>最开始功能一切正常，但最近经过压力测试发现，当请求压力上来之后，很多请求在规则的响应时间内都出现超时失败了。</p>
+<p>分析原因后发现有问题的关键代码如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;receive data&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#75715e">//这里开始解析请求的数据,然后调用后台Controller层相关接口处理请求,处理完毕之后,向客户端返回响应结果
+</span><span style="color:#75715e"></span>            TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>20<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//这里用20秒来模拟长时间的耗时操作
+</span><span style="color:#75715e"></span>            client<span style="color:#f92672">.</span><span style="color:#a6e22e">sendEvent</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;data&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;data response&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>这里实际上是直接使用Netty的NIO线程进行，所以如果业务处理很耗时的话，所以NIO线程都在阻塞等待业务处理完成，这个时候其它请求的IO操作就得不到及时处理。</p>
+<h2 id="heading-1">解决这个问题先</h2>
+<p>处理这个问题也比较简单，就是将业务的处理放到业务线程池里处理。如下面的代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ExecutorService businessExecutor <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newFixedThreadPool</span><span style="color:#f92672">(</span>10<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RequestHandler</span> <span style="color:#66d9ef">implements</span> ConnectListener<span style="color:#f92672">,</span> DataListener<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span><span style="color:#f92672">,</span> DisconnectListener<span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onConnect</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;client is connected&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onData</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">,</span> String data<span style="color:#f92672">,</span> AckRequest ackSender<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+            businessExecutor<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ProcessRequestTask<span style="color:#f92672">(</span>client<span style="color:#f92672">,</span> data<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onDisconnect</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;client is disconnected&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ProcessRequestTask</span> <span style="color:#66d9ef">implements</span> Runnable <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> String data<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> SocketIOClient client<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ProcessRequestTask</span><span style="color:#f92672">(</span>SocketIOClient client<span style="color:#f92672">,</span> String data<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">client</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> data<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;receive data&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">//这里开始解析请求的数据,然后调用后台Controller层相关接口处理请求,处理完毕之后,向客户端返回响应结果
+</span><span style="color:#75715e"></span>                TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>20<span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//这里用20秒来模拟长时间的耗时操作
+</span><span style="color:#75715e"></span>                client<span style="color:#f92672">.</span><span style="color:#a6e22e">sendEvent</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;data&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;data response&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>这样Netty的NIO线程就不会由于业务逻辑的处理而阻塞了。</p>
+<h2 id="netty">Netty的线程模型</h2>
+<p>就着这个问题重新复习一下Netty的线程模型</p>
+<p>总的来说Netty采用的是Reactor主从多线程模型，工作原理是服务端用于接收客户端连接的是一个独立的NIO线程池。Acceptor接收到客户端TCP连接请求处理完成后（可能包含接入认证等），将新创建的SocketChannel注册到IO线程池（sub reactor线程池）的某个IO线程上，由它负责SocketChannel的读写和编解码工作。Acceptor线程池仅仅只用于对接收到的连接作有限的处理，处理完毕后如果链路建立成功，就将链路注册到后端subReactor线程池的IO线程上，由IO线程负责后续的IO操作。</p>
+<p>它的线程模型如下图所示：</p>
+<p><img src="/images/20160618/netty_thread_model.png" alt="netty线程模型"></p>
+<p>这里结合代码解释一下这里说到的概念</p>
+<p>先看一下普通的服务端启动代码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">        ServerBootstrap b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerBootstrap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        b<span style="color:#f92672">.</span><span style="color:#a6e22e">group</span><span style="color:#f92672">(</span>bossGroup<span style="color:#f92672">,</span> workerGroup<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span>NioServerSocketChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">option</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">SO_REUSEADDR</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">TCP_NODELAY</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">handler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CheckAcceptHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">childHandler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ChannelInitializer<span style="color:#f92672">&lt;</span>SocketChannel<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#a6e22e">@Override</span>
+                    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initChannel</span><span style="color:#f92672">(</span>SocketChannel ch<span style="color:#f92672">)</span>
+                            <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;decoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineBasedFrameDecoder<span style="color:#f92672">(</span>4096<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;stringDecoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> StringDecoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;lineEncoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineEncoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;logicHandler&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ServerLogicalHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> listenPort <span style="color:#f92672">=</span> 8888<span style="color:#f92672">;</span>
+
+        b<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>listenPort<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>这里<code>bossGroup</code>就是上面说到的负责接收客户端连接的线程池，<code>workGroup</code>就是subReactor线程池，<code>handler(new ChannelInitializer(){...})</code>就是在指定masterReactor线程池里对接收的连接如何处理的逻辑，<code>childHandler(new ChannelInitializer(){...})</code>就是在指定subReactor线程池里对连接后续的IO操作如何处理的逻辑。<code>workGroup</code>的类型是<code>NioEventLoopGroup</code>，而一个<code>NioEventLoopGroup</code>其实是<code>n</code>个<code>NioEventLoop</code>的组合，经过大量经验测算，这个<code>n</code>设置为CPU核心数的两倍整体IO效率较高，所以在Netty里这个<code>n</code>默认就是CPU核心数的两倍。<code>NioEventLoopGroup</code>里<code>NioEventLoop</code>的数目是有限，而Netty本身同时要处理成千上万连接的IO操作。很容易得出结论在Netty里一个<code>NioEventLoop</code>是同时处理多个连接的IO操作的。</p>
+<blockquote>
+<p>一个NioEventLoop聚合了一个多路复用器Selector，因此可以处理成百上千的客户端连接，Netty的处理策略是每当有一个新的客户端接入，则从NioEventLoop线程组中顺序获取一个可用的NioEventLoop，当到达数组上限之后，重新返回到0，通过这种方式，可以基本保证各个NioEventLoop的负载均衡。一个客户端连接只注册到一个NioEventLoop上，这样就避免了多个IO线程去并发操作它。</p>
+</blockquote>
+<blockquote>
+<p>Netty通过串行化设计理念降低了用户的开发难度，提升了处理性能。利用线程组实现了多个串行化线程水平并行执行，线程之间并没有交集，这样既可以充分利用多核提升并行处理能力，同时避免了线程上下文的切换和并发保护带来的额外性能损耗。</p>
+</blockquote>
+<h2 id="cpu">业务操作耗费太多CPU怎么办</h2>
+<p>Netty本身是通过串行化设计理念来处理万千上万连接的IO操作的。这里就带来一个问题，有一些业务操作就是要耗费太多CPU时间，如何保证处理这样的业务操作时不阻塞Netty的NIO线程？</p>
+<p>Netty本身提供了<code>EventExecutorGroup</code>作为业务操作线程池，使用示例如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventExecutorGroup businessGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DefaultEventExecutorGroup<span style="color:#f92672">(</span>4<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup bossGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventLoopGroup workerGroup <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> NioEventLoopGroup<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+
+        ServerBootstrap b <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerBootstrap<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        b<span style="color:#f92672">.</span><span style="color:#a6e22e">group</span><span style="color:#f92672">(</span>bossGroup<span style="color:#f92672">,</span> workerGroup<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">channel</span><span style="color:#f92672">(</span>NioServerSocketChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">option</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">SO_REUSEADDR</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">childOption</span><span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">TCP_NODELAY</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">handler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> CheckAcceptHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">childHandler</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ChannelInitializer<span style="color:#f92672">&lt;</span>SocketChannel<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#a6e22e">@Override</span>
+                    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initChannel</span><span style="color:#f92672">(</span>SocketChannel ch<span style="color:#f92672">)</span>
+                            <span style="color:#66d9ef">throws</span> Exception <span style="color:#f92672">{</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;decoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineBasedFrameDecoder<span style="color:#f92672">(</span>4096<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;stringDecoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> StringDecoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;lineEncoder&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> LineEncoder<span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ch<span style="color:#f92672">.</span><span style="color:#a6e22e">pipeline</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">addLast</span><span style="color:#f92672">(</span>businessGroup<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;logicHandler&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> ServerLogicalHandler<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> listenPort <span style="color:#f92672">=</span> 8888<span style="color:#f92672">;</span>
+
+        b<span style="color:#f92672">.</span><span style="color:#a6e22e">bind</span><span style="color:#f92672">(</span>listenPort<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sync</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>可以看到<code>ChannelPipeline</code>的<code>add</code>相关方法均提供了一个重载方法，用来指定<code>Handler</code>将在哪个线程池里运行，如果不指定默认就是在Netty的NIO线程池里。</p>
+<p>问题又来了，前面说过Netty是采用串行化设计理念处理连接上的IO操作的，这样做可以避免线程竞争，线程上下文切换带来的额外性能损耗。那如果NIO线程与业务线程同时往channel里写数据，这个不是破坏了Netty的串行化理念。刚开始我也这么想，可后来看到Netty底层的write方法才发现并不存在这个问题。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>Object msg<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> flush<span style="color:#f92672">,</span> ChannelPromise promise<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        AbstractChannelHandlerContext next <span style="color:#f92672">=</span> findContextOutbound<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">final</span> Object m <span style="color:#f92672">=</span> pipeline<span style="color:#f92672">.</span><span style="color:#a6e22e">touch</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">,</span> next<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        EventExecutor executor <span style="color:#f92672">=</span> next<span style="color:#f92672">.</span><span style="color:#a6e22e">executor</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>executor<span style="color:#f92672">.</span><span style="color:#a6e22e">inEventLoop</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>flush<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                next<span style="color:#f92672">.</span><span style="color:#a6e22e">invokeWriteAndFlush</span><span style="color:#f92672">(</span>m<span style="color:#f92672">,</span> promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                next<span style="color:#f92672">.</span><span style="color:#a6e22e">invokeWrite</span><span style="color:#f92672">(</span>m<span style="color:#f92672">,</span> promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            AbstractWriteTask task<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>flush<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                task <span style="color:#f92672">=</span> WriteAndFlushTask<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span>next<span style="color:#f92672">,</span> m<span style="color:#f92672">,</span> promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>  <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                task <span style="color:#f92672">=</span> WriteTask<span style="color:#f92672">.</span><span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span>next<span style="color:#f92672">,</span> m<span style="color:#f92672">,</span> promise<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            safeExecute<span style="color:#f92672">(</span>executor<span style="color:#f92672">,</span> task<span style="color:#f92672">,</span> promise<span style="color:#f92672">,</span> m<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>这里会判断当前<code>EventExecutor</code>是否是NIO线程，如果是则执行Write操作，否则仅仅是创建一个异步Task，执行该异步Task，该异步Task会到该连接对应的NIO线程里去执行，最终保证还是一个NIO线程串行化地处理该连接上的IO操作。</p>
+<p>当然如果不想用<code>EventExecutorGroup</code>，也可以像最上面的示例一样，将长时间的任务丢进自己的业务线程池里处理。</p>
+<h2 id="netty-1">Netty源码研究</h2>
+<p>花了几天时间结合<a href="http://www.infoq.com/cn/author/%E6%9D%8E%E6%9E%97%E9%94%8B">李林峰</a>的帖子自己翻阅Netty的源码，有了不少收获。Netty框架的源代码解读，<a href="http://www.infoq.com/cn/author/%E6%9D%8E%E6%9E%97%E9%94%8B">李林峰</a>的帖子已经把比较重要写了一遍，这里就不赘述了。这里将我发现的几处亮点记录下来以备忘。</p>
+<ul>
+<li><code>MultithreadEventExecutorGroup</code>是一个多线程的线程池，它提供了一个<code>next</code>方法供外部获取一个<code>EventExecutor</code>来提交Task。而为了<code>MultithreadEventExecutorGroup</code>内部的<code>EventExecutor</code>能比较均衡地干活，每次调用<code>next</code>方法实际上是使用<code>EventExecutorChooser</code>帮助选择一个<code>EventExecutor</code>的，下面是<code>EventExecutorChooser</code>的实现代码</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">public</span> EventExecutorChooser <span style="color:#a6e22e">newChooser</span><span style="color:#f92672">(</span>EventExecutor<span style="color:#f92672">[</span><span style="color:#f92672">]</span> executors<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isPowerOfTwo<span style="color:#f92672">(</span>executors<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> PowerOfTowEventExecutorChooser<span style="color:#f92672">(</span>executors<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> GenericEventExecutorChooser<span style="color:#f92672">(</span>executors<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isPowerOfTwo</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> val<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>val <span style="color:#f92672">&amp;</span> <span style="color:#f92672">-</span>val<span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> val<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PowerOfTowEventExecutorChooser</span> <span style="color:#66d9ef">implements</span> EventExecutorChooser <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicInteger idx <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventExecutor<span style="color:#f92672">[</span><span style="color:#f92672">]</span> executors<span style="color:#f92672">;</span>
+
+        PowerOfTowEventExecutorChooser<span style="color:#f92672">(</span>EventExecutor<span style="color:#f92672">[</span><span style="color:#f92672">]</span> executors<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executors</span> <span style="color:#f92672">=</span> executors<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> EventExecutor <span style="color:#a6e22e">next</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> executors<span style="color:#f92672">[</span>idx<span style="color:#f92672">.</span><span style="color:#a6e22e">getAndIncrement</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">&amp;</span> executors<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> 1<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GenericEventExecutorChooser</span> <span style="color:#66d9ef">implements</span> EventExecutorChooser <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicInteger idx <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicInteger<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventExecutor<span style="color:#f92672">[</span><span style="color:#f92672">]</span> executors<span style="color:#f92672">;</span>
+
+        GenericEventExecutorChooser<span style="color:#f92672">(</span>EventExecutor<span style="color:#f92672">[</span><span style="color:#f92672">]</span> executors<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executors</span> <span style="color:#f92672">=</span> executors<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">public</span> EventExecutor <span style="color:#a6e22e">next</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> executors<span style="color:#f92672">[</span>Math<span style="color:#f92672">.</span><span style="color:#a6e22e">abs</span><span style="color:#f92672">(</span>idx<span style="color:#f92672">.</span><span style="color:#a6e22e">getAndIncrement</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">%</span> executors<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>这里针对<code>executors</code>的数目是2的倍数的情况，采用了位操作替换了普通的取模操作。</p>
+<ul>
+<li>Netty内部实现中有很多实例对象内部的状态变更比较频繁，而且这些变更也有可能是由多个线程造成的，为了最小化多线程修改状态所生产的性能开销，同时保证线程安全，采用了大量非阻塞同步的CAS指令实现，这种乐观锁的策略比互斥同步的悲观锁性能高不少。如下面的代码</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">abstract</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SingleThreadEventExecutor</span> <span style="color:#66d9ef">extends</span> AbstractScheduledEventExecutor <span style="color:#f92672">{</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">int</span> state <span style="color:#f92672">=</span> ST_NOT_STARTED<span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> AtomicIntegerFieldUpdater<span style="color:#f92672">&lt;</span>SingleThreadEventExecutor<span style="color:#f92672">&gt;</span> STATE_UPDATER<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">static</span><span style="color:#f92672">{</span>
+        AtomicIntegerFieldUpdater<span style="color:#f92672">&lt;</span>SingleThreadEventExecutor<span style="color:#f92672">&gt;</span> updater <span style="color:#f92672">=</span>
+                PlatformDependent<span style="color:#f92672">.</span><span style="color:#a6e22e">newAtomicIntegerFieldUpdater</span><span style="color:#f92672">(</span>SingleThreadEventExecutor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;state&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>updater <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            updater <span style="color:#f92672">=</span> AtomicIntegerFieldUpdater<span style="color:#f92672">.</span><span style="color:#a6e22e">newUpdater</span><span style="color:#f92672">(</span>SingleThreadEventExecutor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;state&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        STATE_UPDATER <span style="color:#f92672">=</span> updater<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isShuttingDown</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> STATE_UPDATER<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> ST_SHUTTING_DOWN<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">startThread</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>STATE_UPDATER<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> ST_NOT_STARTED<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>STATE_UPDATER<span style="color:#f92672">.</span><span style="color:#a6e22e">compareAndSet</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">,</span> ST_NOT_STARTED<span style="color:#f92672">,</span> ST_STARTED<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                doStartThread<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li><code>NioEventLoop</code>线程除了对多个连接的IO操作进行处理外，本身还需要处理一些定时任务，因而会有以下的代码</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#f92672">;</span><span style="color:#f92672">;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+            <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> ioRatio <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">ioRatio</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>ioRatio <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 100<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    processSelectedKeys<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    runAllTasks<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> ioStartTime <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                    processSelectedKeys<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> ioTime <span style="color:#f92672">=</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">-</span> ioStartTime<span style="color:#f92672">;</span>
+                    runAllTasks<span style="color:#f92672">(</span>ioTime <span style="color:#f92672">*</span> <span style="color:#f92672">(</span>100 <span style="color:#f92672">-</span> ioRatio<span style="color:#f92672">)</span> <span style="color:#f92672">/</span> ioRatio<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * Poll all tasks from the task queue and run them via {@link Runnable#run()} method.  This method stops running
+</span><span style="color:#75715e">     * the tasks in the task queue and returns if it ran longer than {@code timeoutNanos}.
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">runAllTasks</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> timeoutNanos<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        fetchFromScheduledTaskQueue<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Runnable task <span style="color:#f92672">=</span> pollTask<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>task <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> deadline <span style="color:#f92672">=</span> ScheduledFutureTask<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">+</span> timeoutNanos<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">long</span> runTasks <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">long</span> lastExecutionTime<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#f92672">;</span><span style="color:#f92672">;</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                task<span style="color:#f92672">.</span><span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                logger<span style="color:#f92672">.</span><span style="color:#a6e22e">warn</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;A task raised an exception.&#34;</span><span style="color:#f92672">,</span> t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+            runTasks <span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">;</span>
+
+            <span style="color:#75715e">// Check timeout every 64 tasks because nanoTime() is relatively expensive.
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// XXX: Hard-coded value - will make it configurable if it is really a problem.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">(</span>runTasks <span style="color:#f92672">&amp;</span> 0x3F<span style="color:#f92672">)</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                lastExecutionTime <span style="color:#f92672">=</span> ScheduledFutureTask<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>lastExecutionTime <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> deadline<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+
+            task <span style="color:#f92672">=</span> pollTask<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>task <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                lastExecutionTime <span style="color:#f92672">=</span> ScheduledFutureTask<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lastExecutionTime</span> <span style="color:#f92672">=</span> lastExecutionTime<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p><code>run</code>方法里那段代码逻辑很简单，就是处理一些<code>SelectionKey</code>后，按比例抽出一些CPU时间进行队列中任务的处理。<code>runAllTasks</code>方法里从队列里取出任务处理，而且为了在指定的时间内跳出处理任务的逻辑，而且考虑到<code>ScheduledFutureTask.nanoTime()</code>方法比较耗时，每处理64个任务后检查一次，这里为了数字比较高效，又采用了位操作<code>if ((runTasks &amp; 0x3F) == 0)</code></p>
+<ul>
+<li><code>NioEventLoop</code>的run方法里每次loop都需要处理一些<code>SelectionKey</code>，正常办法是使用<code>selector.selectedKeys()</code>拿到<code>SelectionKey</code>的<code>Set</code>，然后依次处理就好了，但Netty为了高效是拿到<code>SelectionKey</code>的数组进行处理的</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+    <span style="color:#66d9ef">private</span> SelectedSelectionKeySet selectedKeys<span style="color:#f92672">;</span>
+    <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            SelectedSelectionKeySet selectedKeySet <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SelectedSelectionKeySet<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            Class<span style="color:#f92672">&lt;</span><span style="color:#f92672">?</span><span style="color:#f92672">&gt;</span> selectorImplClass <span style="color:#f92672">=</span>
+                    Class<span style="color:#f92672">.</span><span style="color:#a6e22e">forName</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;sun.nio.ch.SelectorImpl&#34;</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">,</span> PlatformDependent<span style="color:#f92672">.</span><span style="color:#a6e22e">getSystemClassLoader</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            <span style="color:#75715e">// Ensure the current selector implementation is what we can instrument.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span><span style="color:#f92672">!</span>selectorImplClass<span style="color:#f92672">.</span><span style="color:#a6e22e">isAssignableFrom</span><span style="color:#f92672">(</span>selector<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span> selector<span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+
+            Field selectedKeysField <span style="color:#f92672">=</span> selectorImplClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredField</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;selectedKeys&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            Field publicSelectedKeysField <span style="color:#f92672">=</span> selectorImplClass<span style="color:#f92672">.</span><span style="color:#a6e22e">getDeclaredField</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;publicSelectedKeys&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            selectedKeysField<span style="color:#f92672">.</span><span style="color:#a6e22e">setAccessible</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            publicSelectedKeysField<span style="color:#f92672">.</span><span style="color:#a6e22e">setAccessible</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            selectedKeysField<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>selector<span style="color:#f92672">,</span> selectedKeySet<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            publicSelectedKeysField<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>selector<span style="color:#f92672">,</span> selectedKeySet<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+            selectedKeys <span style="color:#f92672">=</span> selectedKeySet<span style="color:#f92672">;</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">trace</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Instrumented an optimized java.util.Set into: {}&#34;</span><span style="color:#f92672">,</span> selector<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Throwable t<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            selectedKeys <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+            logger<span style="color:#f92672">.</span><span style="color:#a6e22e">trace</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Failed to instrument an optimized java.util.Set into: {}&#34;</span><span style="color:#f92672">,</span> selector<span style="color:#f92672">,</span> t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">processSelectedKeys</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>selectedKeys <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            processSelectedKeysOptimized<span style="color:#f92672">(</span>selectedKeys<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            processSelectedKeysPlain<span style="color:#f92672">(</span>selector<span style="color:#f92672">.</span><span style="color:#a6e22e">selectedKeys</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">package</span> io.netty.channel.nio<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> java.nio.channels.SelectionKey<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.AbstractSet<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Iterator<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">final</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SelectedSelectionKeySet</span> <span style="color:#66d9ef">extends</span> AbstractSet<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> SelectionKey<span style="color:#f92672">[</span><span style="color:#f92672">]</span> keysA<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> keysASize<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> SelectionKey<span style="color:#f92672">[</span><span style="color:#f92672">]</span> keysB<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> keysBSize<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> isA <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+
+    SelectedSelectionKeySet<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        keysA <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SelectionKey<span style="color:#f92672">[</span>1024<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+        keysB <span style="color:#f92672">=</span> keysA<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>SelectionKey o<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>o <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isA<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">int</span> size <span style="color:#f92672">=</span> keysASize<span style="color:#f92672">;</span>
+            keysA<span style="color:#f92672">[</span>size <span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> o<span style="color:#f92672">;</span>
+            keysASize <span style="color:#f92672">=</span> size<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>size <span style="color:#f92672">=</span><span style="color:#f92672">=</span> keysA<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                doubleCapacityA<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">int</span> size <span style="color:#f92672">=</span> keysBSize<span style="color:#f92672">;</span>
+            keysB<span style="color:#f92672">[</span>size <span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> o<span style="color:#f92672">;</span>
+            keysBSize <span style="color:#f92672">=</span> size<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>size <span style="color:#f92672">=</span><span style="color:#f92672">=</span> keysB<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                doubleCapacityB<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doubleCapacityA</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        SelectionKey<span style="color:#f92672">[</span><span style="color:#f92672">]</span> newKeysA <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SelectionKey<span style="color:#f92672">[</span>keysA<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> 1<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">arraycopy</span><span style="color:#f92672">(</span>keysA<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> newKeysA<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> keysASize<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        keysA <span style="color:#f92672">=</span> newKeysA<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">doubleCapacityB</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        SelectionKey<span style="color:#f92672">[</span><span style="color:#f92672">]</span> newKeysB <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SelectionKey<span style="color:#f92672">[</span>keysB<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> 1<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">arraycopy</span><span style="color:#f92672">(</span>keysB<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> newKeysB<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> keysBSize<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        keysB <span style="color:#f92672">=</span> newKeysB<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    SelectionKey<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isA<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            isA <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+            keysA<span style="color:#f92672">[</span>keysASize<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+            keysBSize <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">return</span> keysA<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            isA <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+            keysB<span style="color:#f92672">[</span>keysBSize<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+            keysASize <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">return</span> keysB<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">size</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isA<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> keysASize<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> keysBSize<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>Object o<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">contains</span><span style="color:#f92672">(</span>Object o<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Iterator<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">iterator</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UnsupportedOperationException<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>看到这里我都惊了，看来Netty团队开发人员连<code>数组</code>与<code>Set</code>两者之间遍历的性能差别都注意到了。</p>
+<h2 id="netty-2">使用Netty进行网络编程注意事项</h2>
+<p>读了下述的帖子后，发现使用Netty进行网络编程有不少注意事项，这里列举出来以备忘。</p>
+<ul>
+<li>操作系统的最大句柄数修改</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">vim /etc/security/limits.conf
+*  soft　　nofile　　<span style="color:#ae81ff">1000000</span>
+*  hard　　nofile　　<span style="color:#ae81ff">1000000</span>
+</code></pre></div><ul>
+<li>尽量不要在Netty的I/O线程上处理业务，业务处理就扔到业务线程池里</li>
+<li>IdleStateHandler，ReadTimeoutHandler，WriteTimeoutHandler处理时延要可控，防止时延不可控导致的NioEventLoop被意外阻塞。</li>
+<li>合理的心跳周期，具体的心跳周期并没有统一的标准，180S也许是个不错的选择</li>
+<li>合理设置接收和发送缓冲区容量，用好AdaptiveRecvByteBufAllocator</li>
+<li>使用Netty的内存池，同时注意完成ByteBuf的解码工作之后必须显式的调用ReferenceCountUtil.release(msg)对接收缓冲区ByteBuf进行内存释放</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">childOption<span style="color:#f92672">(</span>ChannelOption<span style="color:#f92672">.</span><span style="color:#a6e22e">ALLOCATOR</span><span style="color:#f92672">,</span> PooledByteBufAllocator<span style="color:#f92672">.</span><span style="color:#a6e22e">DEFAULT</span><span style="color:#f92672">)</span>
+</code></pre></div><ul>
+<li>NIO线程里尽量异步打日志</li>
+<li>调整TCP层面的接收和发送缓冲区大小设置，在Netty中分别对应ChannelOption的SO_SNDBUF和SO_RCVBUF，通常建议值为128K或者256K</li>
+<li>对于时延敏感的应用场景需关闭SO_TCPNODELAY</li>
+<li>Linux内核版本如果大于2.6.35，可考虑开启RPS以实现软中断均衡在多个cpu上，提升网络并行处理性能</li>
+<li>尽量使用“零拷贝”</li>
+<li>采用高性能的序列化框架，比如Protobuf、thrift</li>
+<li>正确地使用互斥同步
+<ul>
+<li>始终使用wait循环来调用wait方法，永远不要在循环之外调用wait方法。原因是尽管条件并不满足被唤醒条件，但是由于其它线程意外调用notifyAll()方法会导致被阻塞线程意外唤醒，此时执行条件并不满足，它将破坏被锁保护的约定关系，导致约束失效，引起意想不到的结果；</li>
+<li>唤醒线程，应该使用notify还是notifyAll，当你不知道究竟该调用哪个方法时，保守的做法是调用notifyAll唤醒所有等待的线程。从优化的角度看，如果处于等待的所有线程都在等待同一个条件，而每次只有一个线程可以从这个条件中被唤醒，那么就应该选择调用notify</li>
+</ul>
+</li>
+<li>如果一个变量虽然被多线程访问，但只是一个线程写、其它线程读，可考虑只用<code>volatile</code>关键字来保证线程安全</li>
+</ul>
+<h2 id="heading-2">总结</h2>
+<p>通过这几天阅读帖子及Netty的源码，对Netty框架的理解深入了许多，现在回头一想以前使用Netty做的网络程序还有不少优化空间。另外这里十分感谢<a href="http://www.infoq.com/cn/author/%E6%9D%8E%E6%9E%97%E9%94%8B">李林峰</a>写的一系列Netty相关的帖子，质量相当高。</p>
+<h2 id="heading-3">参考</h2>
+<p><code>http://www.infoq.com/cn/articles/netty-threading-model</code>
+<code>http://www.infoq.com/cn/articles/netty-server-create</code>
+<code>http://www.infoq.com/cn/articles/netty-concurrent-programming-analysis</code>
+<code>http://www.infoq.com/cn/articles/the-multithreading-of-netty-cases</code>
+<code>http://www.infoq.com/cn/articles/the-multithreading-of-netty-cases-part02</code>
+<code>http://www.infoq.com/cn/articles/netty-elegant-exit-mechanism-and-principles</code>
+<code>http://www.infoq.com/cn/articles/netty-high-performance</code>
+<code>http://www.infoq.com/cn/articles/netty-million-level-push-service-design-points</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-06-18</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/netty/">netty</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">试用docker功能</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/06/%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E6%87%92%E5%88%9D%E5%A7%8B%E5%8C%96/">
+            <span class="next-text nav-default">实例变量的懒初始化</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wget on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/wget/</link>
+    <description>Recent content in wget on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Mar 2019 22:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/wget/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>在线文档电子书化</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E5%9C%A8%E7%BA%BF%E6%96%87%E6%A1%A3%E7%94%B5%E5%AD%90%E4%B9%A6%E5%8C%96/</link>
+      <pubDate>Sun, 10 Mar 2019 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E5%9C%A8%E7%BA%BF%E6%96%87%E6%A1%A3%E7%94%B5%E5%AD%90%E4%B9%A6%E5%8C%96/</guid>
+      <description>在网上看到某技术产品的文档，想把文档弄下来在电子书阅读器上离线看，可发现这个技术文档没有提供pdf等电子书格式，于是想办法自己做一个，这里记</description>
+    </item>
+    
+  </channel>
+</rss>

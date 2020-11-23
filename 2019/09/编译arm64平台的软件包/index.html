@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>编译arm64平台的软件包 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="编译arm64平台的软件包" />
+<meta property="og:description" content="本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/" />
+<meta property="article:published_time" content="2019-09-20T17:50:00+08:00" />
+<meta property="article:modified_time" content="2019-09-20T17:50:00+08:00" />
+<meta itemprop="name" content="编译arm64平台的软件包">
+<meta itemprop="description" content="本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片">
+<meta itemprop="datePublished" content="2019-09-20T17:50:00&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-20T17:50:00&#43;08:00" />
+<meta itemprop="wordCount" content="1824">
+
+
+
+<meta itemprop="keywords" content="debian,centos,deb,rpm,arm64," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="编译arm64平台的软件包"/>
+<meta name="twitter:description" content="本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">编译arm64平台的软件包</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-20 </span>
+        <div class="post-category">
+            
+              <a href="/categories/devops/"> devops </a>
+            
+          </div>
+        <span class="more-meta"> 约 1824 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#debian-deb">构建debian deb包</a></li>
+    <li><a href="#centosrhel-rpm">构建CentOS/RHEL rpm包</a></li>
+    <li><a href="#heading">编译障碍</a></li>
+    <li><a href="#heading-1">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。</p>
+<p>国产化平台使用的是arm64v8 CPU芯片，因此传统软件厂商提供的x86架构二进制软件包都没法用，都需要在arm64v8 CPU的服务器上拿源码重新编译。</p>
+<h2 id="debian-deb">构建debian deb包</h2>
+<p>在x86上构建debian的deb包还是比较简单的，过程简述如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 下面假设要编译curl的deb包</span>
+
+<span style="color:#75715e"># 安装gcc、make等编译链工具</span>
+$ apt-get update <span style="color:#f92672">&amp;&amp;</span> apt-get install -y build-essential
+<span style="color:#75715e"># 安装编译curl依赖的那些软件包</span>
+$ apt-get build-dep curl
+<span style="color:#75715e"># 创建编译目录</span>
+$ mkdir -p ~/build <span style="color:#f92672">&amp;&amp;</span> cd ~/build
+<span style="color:#75715e"># 下载构建curl deb包的源码</span>
+$ apt source curl
+<span style="color:#75715e"># 切换到构建目录</span>
+$ cd curl-7.52.1/
+<span style="color:#75715e"># 执行dpkg-buildpackage命令构建deb包，该条命令执行完毕后，在上一层目录下就会生成deb包</span>
+$ dpkg-buildpackage -us -uc -b
+</code></pre></div><p>对于apt源里有source包的软件包，基本上像上面这样构建就差不多了。</p>
+<p>但有些软件厂商并没有提供apt源或apt源里没有相应CPU架构的包，只提供了软件的deb包，比如<a href="https://dev.mysql.com/downloads/mysql/">mysql</a>。这个时候需要手工下载source deb包，并从source deb包构建出相应cpu架构的deb包，过程简述如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 安装gcc、make等编译链工具</span>
+$ apt-get update <span style="color:#f92672">&amp;&amp;</span> apt-get install -y build-essential
+<span style="color:#75715e"># 下载mysql-community的source包</span>
+$ curl -O -L <span style="color:#e6db74">&#39;https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-community-source_5.7.27-1debian9_amd64.deb&#39;</span>
+<span style="color:#75715e"># 安装source deb包</span>
+$ dpkg -i mysql-community-source_5.7.27-1debian9_amd64.deb
+<span style="color:#75715e"># 创建编译目录</span>
+$ mkdir -p ~/build <span style="color:#f92672">&amp;&amp;</span> cd ~/build
+<span style="color:#75715e"># 将source deb包里的内容拷贝到构建目录</span>
+$ cp /usr/src/mysql/* ~/build/
+<span style="color:#75715e"># 解压mysql原始的源码</span>
+$ tar -xf mysql-community_5.7.27.orig.tar.gz
+<span style="color:#75715e"># 解压构建deb包的debian目录</span>
+$ tar -xf mysql-community_5.7.27-1debian9.debian.tar.xz -C mysql-5.7.27/
+<span style="color:#75715e"># 切换到deb包构建目录</span>
+$ cd mysql-5.7.27/
+<span style="color:#75715e"># 检查编译deb包依赖的那些软件包是否都安装好了，如果没有安装好，先用apt-get install安装一下</span>
+$ grep <span style="color:#e6db74">&#39;Build-Depends&#39;</span> debian/control
+<span style="color:#75715e"># 执行dpkg-buildpackage命令构建deb包，该条命令执行完毕后，在上一层目录下就会生成deb包</span>
+$ dpkg-buildpackage -us -uc -b
+</code></pre></div><p>可以看到过程其实跟x86下构建deb包类似，只是需要手工下载下source deb包、手工准备下deb包的构建目录、手工安装编译时的依赖包。</p>
+<p>构建出arm64v8的deb包后，再将之安装到arm64v8的base docker镜像里，一个arm64v8平台下可使用的docker镜像就生成好了，参考的Dockerfile如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> arm64v8/debian:9</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> curl_7.52.1-5+deb9u9_aarm64.deb /tmp/curl_7.52.1-5+deb9u9_aarm64.deb<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dpkg -i /tmp/curl_7.52.1-5+deb9u9_aarm64.deb<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>...<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="centosrhel-rpm">构建CentOS/RHEL rpm包</h2>
+<p>在x86上构建CentOS/RHEL的rpm包也比较简单，过程简述如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 下面假设要编译curl的rpm包</span>
+
+<span style="color:#75715e"># 安装gcc、make等编译链工具</span>
+$ yum groupinstall -y <span style="color:#e6db74">&#39;Development tools&#39;</span>
+<span style="color:#75715e"># 安装编译curl依赖的那些软件包</span>
+$ yum-builddep -y curl
+<span style="color:#75715e"># 下载构建curl rpm包的源码包</span>
+$ yumdownloader --source curl
+<span style="color:#75715e"># 安装构建curl rpm包的源码包</span>
+$ rpm -ivh curl-7.29.0-54.el7.src.rpm
+<span style="color:#75715e"># 使用rpmbuild命令构建rpm包，该条命令执行完毕后，在~/rpmbuild/RPMS/x86_64目录下就生成了rpm包</span>
+$ cd ~/rpmbuild/SPECS/
+$ rpmbuild -bb ./curl.spec
+</code></pre></div><p>对于yum源里有source包的软件包，基本上像上面这样构建就差不多了。</p>
+<p>但有些软件厂商并没有提供yum源或yum源里没有相应CPU架构的包，只提供了软件的rpm包，比如<a href="https://dev.mysql.com/downloads/mysql/">mysql</a>。这个时候需要手工下载source rpm包，并从source rpm包构建出相应cpu架构的rpm包，过程简述如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 安装gcc、make等编译链工具</span>
+$ yum groupinstall -y <span style="color:#e6db74">&#39;Development tools&#39;</span>
+
+$ curl -O -L <span style="color:#e6db74">&#39;https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-community-5.7.27-1.el7.src.rpm&#39;</span>
+<span style="color:#75715e"># 安装编译mysql-community依赖的那些软件包</span>
+$ yum-builddep -y ./mysql-community-5.7.27-1.el7.src.rpm
+<span style="color:#75715e"># 安装构建curl rpm包的源码包</span>
+$ rpm -ivh ./mysql-community-5.7.27-1.el7.src.rpm
+<span style="color:#75715e"># 使用rpmbuild命令构建rpm包，该条命令执行完毕后，在~/rpmbuild/RPMS/x86_64目录下就生成了rpm包</span>
+$ cd ~/rpmbuild/SPECS/
+$ rpmbuild -bb ./mysql.spec
+</code></pre></div><p>可以看到过程其实跟x86下构建yum包类似，只是需要手工下载下source rpm包、根据下载的source rpm包安装编译时的依赖包。</p>
+<p>构建出arm64v8的rpm包后，再将之安装到arm64v8的base docker镜像里，一个arm64v8平台下可使用的docker镜像就生成好了，参考的Dockerfile如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#66d9ef">FROM</span><span style="color:#e6db74"> arm64v8/centos:7</span><span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">COPY</span> curl-7.29.0-54.el7.aarm64.rpm /tmp/curl-7.29.0-54.el7.aarm64.rpm<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span><span style="color:#66d9ef">RUN</span> dpkg -i /tmp/curl-7.29.0-54.el7.aarm64.rpm<span style="color:#960050;background-color:#1e0010">
+</span><span style="color:#960050;background-color:#1e0010"></span>...<span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="heading">编译障碍</h2>
+<p>arm64v8平台现在还不是很流行，在编译过程中可能会遇到各种各样的编译报错，这时拿着编译报错信息到google上搜索一下，一般都可以找到解决方案，一般是改改源码使编译通过，或者改改编译参数使之通过，这里涉及工作细节，就不细述了。</p>
+<h2 id="heading-1">参考</h2>
+<ol>
+<li><a href="https://www.debian.org/doc/manuals/maint-guide/build.zh-cn.html">https://www.debian.org/doc/manuals/maint-guide/build.zh-cn.html</a></li>
+<li><a href="https://www.debian.org/doc/debian-policy/ch-source.html">https://www.debian.org/doc/debian-policy/ch-source.html</a></li>
+<li><a href="https://askubuntu.com/questions/324845/whats-the-difference-between-apt-get-install-and-apt-get-build-dep">https://askubuntu.com/questions/324845/whats-the-difference-between-apt-get-install-and-apt-get-build-dep</a></li>
+<li><a href="https://dev.mysql.com/downloads/mysql/">https://dev.mysql.com/downloads/mysql/</a></li>
+<li><a href="https://blog.packagecloud.io/eng/2015/04/20/working-with-source-rpms/">https://blog.packagecloud.io/eng/2015/04/20/working-with-source-rpms/</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2019-09-20</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/debian/">debian</a>
+          
+          <a href="/tags/centos/">centos</a>
+          
+          <a href="/tags/deb/">deb</a>
+          
+          <a href="/tags/rpm/">rpm</a>
+          
+          <a href="/tags/arm64/">arm64</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">kubernetes CSI存储插件探究</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/">
+            <span class="next-text nav-default">kubernetes使用ceph存储卷</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

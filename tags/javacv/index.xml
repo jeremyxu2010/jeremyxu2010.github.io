@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>javacv on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/javacv/</link>
+    <description>Recent content in javacv on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Apr 2016 18:29:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/javacv/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>javacv编码mp4视频</title>
+      <link>https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/</link>
+      <pubDate>Sun, 10 Apr 2016 18:29:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/</guid>
+      <description>目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编</description>
+    </item>
+    
+  </channel>
+</rss>

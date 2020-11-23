@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>高可用 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/</link>
+    <description>Recent content in 高可用 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 25 Feb 2018 21:27:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>高可用之keepalived&amp;haproxy</title>
+      <link>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</guid>
+      <description>项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功</description>
+    </item>
+    
+  </channel>
+</rss>

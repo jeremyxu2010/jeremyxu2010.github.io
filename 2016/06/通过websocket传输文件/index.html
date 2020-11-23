@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>通过WebSocket传输文件 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="通过WebSocket传输文件" />
+<meta property="og:description" content="工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/06/%E9%80%9A%E8%BF%87websocket%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/" />
+<meta property="article:published_time" content="2016-06-11T19:41:00+08:00" />
+<meta property="article:modified_time" content="2016-06-11T19:41:00+08:00" />
+<meta itemprop="name" content="通过WebSocket传输文件">
+<meta itemprop="description" content="工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，">
+<meta itemprop="datePublished" content="2016-06-11T19:41:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-06-11T19:41:00&#43;08:00" />
+<meta itemprop="wordCount" content="1980">
+
+
+
+<meta itemprop="keywords" content="java,nio,websocket," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="通过WebSocket传输文件"/>
+<meta name="twitter:description" content="工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">通过WebSocket传输文件</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-06-11 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1980 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">思路</a></li>
+    <li><a href="#heading-1">具体实现</a></li>
+    <li><a href="#heading-2">注意事项</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>工作中需要将大量文件从一台服务器传输至另一台服务器，最开始是直接使用基础的TCP编程搞定的。但后来业务上要求两台服务器间只能走HTTP协议，而且还要保证传输过去的文件的完整性。想了下，最后基于WebSocket协议完成了该功能。</p>
+<h2 id="heading">思路</h2>
+<ol>
+<li>服务器端侦听某端口，接受WebSocket请求，后面可用nginx作反向代理，外部看到的将是80端口</li>
+<li>客户端连接服务器的WebSocket地址，连接成功后，首先传送一个NEW_FILE的数据包，里面带上要传输的文件名</li>
+<li>服务器端收到NEW_FILE包后，解析出文件名，并创建目标文件，再回复ACK_NEW_FILE的数据包</li>
+<li>客户端收到ACK_NEW_FILE的数据包后，检查回应的code，如是成功码，则启动一个线程，该线程负责将源文件的数据封装成多个FILE_DATA数据包，传送这些FILE_DATA数据至服务器端</li>
+<li>服务器端接收FILE_DATA数据包，解析出里面的文件数据，将文件数据写入文件</li>
+<li>客户端发送完源文件数据后，再传送一个FILE_END数据包，该文件包中带上源文件的MD5值</li>
+<li>服务器端收到FILE_END数据包后，比对源文件的MD5值与目标文件的MD5值，如相同，则认为传输成功，并返回ACK_FILE_END数据包，里面带上成功码</li>
+<li>客户端收到ACK_FILE_END数据包，检查回应的code，如是成功码，则认为传输成功，否则认为传输失败。</li>
+</ol>
+<h2 id="heading-1">具体实现</h2>
+<p>以下为示例的简易代码，项目中的代码比这组织得更完善一些。该实现使用了WebSocket的Java实现<code>Java-WebSocket</code>与Java NIO。</p>
+<p><code>FilePacket.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> java.nio.ByteBuffer<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.ByteOrder<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.charset.StandardCharsets<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/6/11.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FilePacket</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> P_NEW_FILE <span style="color:#f92672">=</span> 0x01<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> P_ACK_NEW_FILE <span style="color:#f92672">=</span> 0x02<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> P_FILE_DATA <span style="color:#f92672">=</span> 0x03<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> P_FILE_END <span style="color:#f92672">=</span> 0x04<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> P_ACK_FILE_END <span style="color:#f92672">=</span> 0x05<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> SUCCESS_CODE <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> ERROR_CODE <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> TYPE_LEN <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> type<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ByteBuffer buffer<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">FilePacket</span><span style="color:#f92672">(</span>ByteBuffer buffer<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">buffer</span> <span style="color:#f92672">=</span> buffer<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> FilePacket <span style="color:#a6e22e">constructNewFilePacket</span><span style="color:#f92672">(</span>String fileName<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> bytes <span style="color:#f92672">=</span> fileName<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>TYPE_LEN <span style="color:#f92672">+</span> 4 <span style="color:#f92672">+</span> bytes<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">BIG_ENDIAN</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>P_NEW_FILE<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">putInt</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FilePacket<span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> FilePacket <span style="color:#a6e22e">constructAckNewFilePacket</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> code<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>TYPE_LEN <span style="color:#f92672">+</span> 1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">BIG_ENDIAN</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>P_ACK_NEW_FILE<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>code<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FilePacket<span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> FilePacket <span style="color:#a6e22e">constructFileEndPacket</span><span style="color:#f92672">(</span>String digest<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> bytes <span style="color:#f92672">=</span> digest<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(</span>StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>TYPE_LEN <span style="color:#f92672">+</span> 4 <span style="color:#f92672">+</span> bytes<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">BIG_ENDIAN</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>P_FILE_END<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">putInt</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FilePacket<span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> FilePacket <span style="color:#a6e22e">constructAckFileEndPacket</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> code<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>TYPE_LEN <span style="color:#f92672">+</span> 1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">BIG_ENDIAN</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>P_ACK_FILE_END<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>code<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> FilePacket<span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> FilePacket <span style="color:#a6e22e">parseByteBuffer</span><span style="color:#f92672">(</span>ByteBuffer buffer<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        FilePacket p <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FilePacket<span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        p<span style="color:#f92672">.</span><span style="color:#a6e22e">parseType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> p<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">parseType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">type</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">buffer</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> ByteBuffer <span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> buffer<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> type<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>FileServer.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.java_websocket.WebSocket<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.java_websocket.handshake.ClientHandshake<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.java_websocket.server.WebSocketServer<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> javax.xml.bind.DatatypeConverter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.io.IOException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.net.InetSocketAddress<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.net.UnknownHostException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.ByteBuffer<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.channels.ByteChannel<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.charset.StandardCharsets<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.*<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.MessageDigest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.EnumSet<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.HashMap<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.Map<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.ConcurrentHashMap<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.ConcurrentMap<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/6/11.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileServer</span> <span style="color:#66d9ef">extends</span> WebSocketServer <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> ConcurrentMap<span style="color:#f92672">&lt;</span>WebSocket<span style="color:#f92672">,</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> clients <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ConcurrentHashMap<span style="color:#f92672">&lt;</span>WebSocket<span style="color:#f92672">,</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">FileServer</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> port<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> UnknownHostException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InetSocketAddress<span style="color:#f92672">(</span> port <span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onOpen</span><span style="color:#f92672">(</span>WebSocket webSocket<span style="color:#f92672">,</span> ClientHandshake clientHandshake<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        clients<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>webSocket<span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onClose</span><span style="color:#f92672">(</span>WebSocket webSocket<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> i<span style="color:#f92672">,</span> String s<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> b<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        clients<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>webSocket<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>WebSocket webSocket<span style="color:#f92672">,</span> String s<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// do nothing
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>WebSocket conn<span style="color:#f92672">,</span> ByteBuffer message<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        FilePacket p <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">parseByteBuffer</span><span style="color:#f92672">(</span>message<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Object<span style="color:#f92672">&gt;</span> params<span style="color:#f92672">;</span>
+        ByteChannel fileChannel<span style="color:#f92672">;</span>
+        MessageDigest md<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">case</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_NEW_FILE</span><span style="color:#f92672">:</span>
+                <span style="color:#66d9ef">try</span><span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">int</span> fileNameLen <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getInt</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> fileNameBytes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>fileNameLen<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+                    p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>fileNameBytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    String fileName <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>fileNameBytes<span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;receive file request : &#34;</span> <span style="color:#f92672">+</span> fileName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    Path filePath <span style="color:#f92672">=</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/tmp/otherdir&#34;</span><span style="color:#f92672">,</span> fileName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    fileChannel <span style="color:#f92672">=</span> Files<span style="color:#f92672">.</span><span style="color:#a6e22e">newByteChannel</span><span style="color:#f92672">(</span>filePath<span style="color:#f92672">,</span> EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>StandardOpenOption<span style="color:#f92672">.</span><span style="color:#a6e22e">CREATE</span><span style="color:#f92672">,</span> StandardOpenOption<span style="color:#f92672">.</span><span style="color:#a6e22e">WRITE</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    params <span style="color:#f92672">=</span> clients<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>conn<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    params<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;fileChannel&#34;</span><span style="color:#f92672">,</span> fileChannel<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    md <span style="color:#f92672">=</span> MessageDigest<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;MD5&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    params<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;md&#34;</span><span style="color:#f92672">,</span> md<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;server accept file request: &#34;</span> <span style="color:#f92672">+</span> fileName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FilePacket ackP <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructAckNewFilePacket</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">SUCCESS_CODE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    conn<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>ackP<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;server deny file request&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FilePacket ackP <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructAckNewFilePacket</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">ERROR_CODE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    conn<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>ackP<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_FILE_DATA</span><span style="color:#f92672">:</span>
+                params <span style="color:#f92672">=</span> clients<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>conn<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                fileChannel <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>ByteChannel<span style="color:#f92672">)</span> params<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;fileChannel&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                md <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>MessageDigest<span style="color:#f92672">)</span>params<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;md&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">mark</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    md<span style="color:#f92672">.</span><span style="color:#a6e22e">update</span><span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">reset</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    fileChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">write</span><span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException e<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                        fileChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException ignore<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#f92672">}</span>
+                    conn<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">case</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_FILE_END</span><span style="color:#f92672">:</span>
+                params <span style="color:#f92672">=</span> clients<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>conn<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                fileChannel <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>ByteChannel<span style="color:#f92672">)</span> params<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;fileChannel&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                md <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>MessageDigest<span style="color:#f92672">)</span>params<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;md&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> digest <span style="color:#f92672">=</span> md<span style="color:#f92672">.</span><span style="color:#a6e22e">digest</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    String localDigest <span style="color:#f92672">=</span> DatatypeConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">printHexBinary</span><span style="color:#f92672">(</span>digest<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toUpperCase</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">int</span> digestBytesLen <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getInt</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> digestBytes <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>digestBytesLen<span style="color:#f92672">]</span><span style="color:#f92672">;</span>
+                    p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>digestBytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    String remoteDigest <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>digestBytes<span style="color:#f92672">,</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;receive file end, digest : &#34;</span> <span style="color:#f92672">+</span> remoteDigest<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FilePacket ackP<span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>localDigest<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>remoteDigest<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file digests are same, send success ack code&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ackP <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructAckFileEndPacket</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">SUCCESS_CODE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;file digests are not same, send error ack code&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        ackP <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructAckFileEndPacket</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">ERROR_CODE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                    conn<span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>ackP<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                        fileChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>IOException ignore<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>WebSocket webSocket<span style="color:#f92672">,</span> Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> UnknownHostException<span style="color:#f92672">,</span> InterruptedException <span style="color:#f92672">{</span>
+        FileServer s <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileServer<span style="color:#f92672">(</span> 8888 <span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        s<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span> <span style="color:#e6db74">&#34;FileServer started on port: &#34;</span> <span style="color:#f92672">+</span> s<span style="color:#f92672">.</span><span style="color:#a6e22e">getPort</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>Long<span style="color:#f92672">.</span><span style="color:#a6e22e">MAX_VALUE</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><code>FileClient.java</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">import</span> org.java_websocket.client.WebSocketClient<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.java_websocket.drafts.Draft_17<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> org.java_websocket.handshake.ServerHandshake<span style="color:#f92672">;</span>
+
+<span style="color:#f92672">import</span> javax.xml.bind.DatatypeConverter<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.net.URI<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.net.URISyntaxException<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.ByteBuffer<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.ByteOrder<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.channels.ByteChannel<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Files<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Path<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.Paths<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.nio.file.StandardOpenOption<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.security.MessageDigest<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.EnumSet<span style="color:#f92672">;</span>
+<span style="color:#f92672">import</span> java.util.concurrent.atomic.AtomicBoolean<span style="color:#f92672">;</span>
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * Created by jeremy on 16/6/11.
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FileClient</span> <span style="color:#66d9ef">implements</span> Runnable<span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> String wsUrl<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Path filePath<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> WebSocketClient wsclient<span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">volatile</span> AtomicBoolean running <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicBoolean<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">FileClient</span><span style="color:#f92672">(</span>String wsUrl<span style="color:#f92672">,</span> Path filePath<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">wsUrl</span> <span style="color:#f92672">=</span> wsUrl<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">filePath</span> <span style="color:#f92672">=</span> filePath<span style="color:#f92672">;</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+        FileClient fileClient <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FileClient<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ws://127.0.0.1:8888&#34;</span><span style="color:#f92672">,</span> Paths<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/tmp/onedir&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;test1.txt&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        fileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        fileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">await</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">await</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">while</span><span style="color:#f92672">(</span>running<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>running<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    running<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">(</span>2000L<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Thread t <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        t<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        running<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            wsclient <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> WebSocketClient<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> URI<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">wsUrl</span><span style="color:#f92672">)</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">new</span> Draft_17<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onOpen</span><span style="color:#f92672">(</span>ServerHandshake serverHandshake<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    String fileName <span style="color:#f92672">=</span> FileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">filePath</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getFileName</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toString</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;request send file : &#34;</span> <span style="color:#f92672">+</span> fileName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FilePacket p <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructNewFilePacket</span><span style="color:#f92672">(</span>fileName<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">array</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>String s<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#75715e">// do nothing
+</span><span style="color:#75715e"></span>                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>ByteBuffer bytes<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    FilePacket p <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">parseByteBuffer</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">int</span> code<span style="color:#f92672">;</span>
+                    <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getType</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        <span style="color:#66d9ef">case</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_ACK_NEW_FILE</span><span style="color:#f92672">:</span>
+                            code <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">SUCCESS_CODE</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> code<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;server accept file request&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                                startSendFileData<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                            <span style="color:#f92672">}</span>
+                            <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                        <span style="color:#66d9ef">case</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_ACK_FILE_END</span><span style="color:#f92672">:</span>
+                            code <span style="color:#f92672">=</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                            <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">SUCCESS_CODE</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> code<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;server save file sucessfully&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                                wsclient<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                            <span style="color:#f92672">}</span>
+                            <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onClose</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i<span style="color:#f92672">,</span> String s<span style="color:#f92672">,</span> <span style="color:#66d9ef">boolean</span> b<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    stop<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+
+                <span style="color:#a6e22e">@Override</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onError</span><span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    stop<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+
+            wsclient<span style="color:#f92672">.</span><span style="color:#a6e22e">connect</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>URISyntaxException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            stop<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">stop</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+        running<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>running<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            running<span style="color:#f92672">.</span><span style="color:#a6e22e">notify</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">startSendFileData</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Runnable runnable <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Runnable<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    ByteChannel fileChannel <span style="color:#f92672">=</span> Files<span style="color:#f92672">.</span><span style="color:#a6e22e">newByteChannel</span><span style="color:#f92672">(</span>FileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">filePath</span><span style="color:#f92672">,</span> EnumSet<span style="color:#f92672">.</span><span style="color:#a6e22e">of</span><span style="color:#f92672">(</span>StandardOpenOption<span style="color:#f92672">.</span><span style="color:#a6e22e">READ</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer<span style="color:#f92672">.</span><span style="color:#a6e22e">allocate</span><span style="color:#f92672">(</span>1 <span style="color:#f92672">+</span> 4096<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">order</span><span style="color:#f92672">(</span>ByteOrder<span style="color:#f92672">.</span><span style="color:#a6e22e">BIG_ENDIAN</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                    MessageDigest md <span style="color:#f92672">=</span> MessageDigest<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;MD5&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                    <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+
+                    buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span><span style="color:#75715e">//make buffer ready for write
+</span><span style="color:#75715e"></span>                    buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_FILE_DATA</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+                    <span style="color:#66d9ef">while</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span>bytesRead <span style="color:#f92672">=</span> fileChannel<span style="color:#f92672">.</span><span style="color:#a6e22e">read</span><span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">flip</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>  <span style="color:#75715e">//make buffer ready for read
+</span><span style="color:#75715e"></span>                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">mark</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//skip a byte
+</span><span style="color:#75715e"></span>                        md<span style="color:#f92672">.</span><span style="color:#a6e22e">update</span><span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">reset</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        FileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">wsclient</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>buffer<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span> <span style="color:#75715e">//make buffer ready for write
+</span><span style="color:#75715e"></span>                        buffer<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">byte</span><span style="color:#f92672">)</span>FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">P_FILE_DATA</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+
+                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span><span style="color:#f92672">]</span> digest <span style="color:#f92672">=</span> md<span style="color:#f92672">.</span><span style="color:#a6e22e">digest</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    String digestInHex <span style="color:#f92672">=</span> DatatypeConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">printHexBinary</span><span style="color:#f92672">(</span>digest<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">toUpperCase</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;send file finished, digest: &#34;</span> <span style="color:#f92672">+</span> digestInHex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FilePacket p <span style="color:#f92672">=</span> FilePacket<span style="color:#f92672">.</span><span style="color:#a6e22e">constructFileEndPacket</span><span style="color:#f92672">(</span>digestInHex<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                    FileClient<span style="color:#f92672">.</span><span style="color:#a6e22e">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">wsclient</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">send</span><span style="color:#f92672">(</span>p<span style="color:#f92672">.</span><span style="color:#a6e22e">getBuffer</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    wsclient<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>runnable<span style="color:#f92672">)</span><span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="heading-2">注意事项</h2>
+<ol>
+<li>为了清除内存byte数组拷贝，全部使用的是Java NIO的Buffer，所以要注意<code>flip</code>、<code>clear</code>、<code>mark</code>、<code>reset</code>、<code>compact</code>的用法，用惯了Netty的Buffer，再用Java NIO的Buffer还真是不习惯</li>
+<li>服务器端与客户端传输了int，为了避免大小端问题，最好显式设置ByteOrder，<code>buffer.order(ByteOrder.BIG_ENDIAN);</code></li>
+<li>为了提高文件操作效率，全部使用Java NIO File API，特别要注意打开文件的方式，<code>ByteChannel fileChannel = Files.newByteChannel(FileClient.this.filePath, EnumSet.of(StandardOpenOption.READ));</code>，这个跟Old File API有些不一样，在打开文件Channel时必须指定Channel的操作方式，详见<code>java.nio.file.StandardOpenOption</code></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-06-11</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/nio/">nio</a>
+          
+          <a href="/tags/websocket/">websocket</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/06/%E5%AE%9E%E4%BE%8B%E5%8F%98%E9%87%8F%E7%9A%84%E6%87%92%E5%88%9D%E5%A7%8B%E5%8C%96/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">实例变量的懒初始化</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/05/%E5%A4%84%E7%90%86%E4%B8%80%E4%B8%AAnodejs%E7%A8%8B%E5%BA%8F%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E7%9A%84%E9%97%AE%E9%A2%98/">
+            <span class="next-text nav-default">处理一个NodeJS程序内存泄露的问题</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

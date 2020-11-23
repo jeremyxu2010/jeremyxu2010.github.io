@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>nodejs项目技术小结 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="nodejs项目技术小结" />
+<meta property="og:description" content="最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2020/08/nodejs%E9%A1%B9%E7%9B%AE%E6%8A%80%E6%9C%AF%E5%B0%8F%E7%BB%93/" />
+<meta property="article:published_time" content="2020-08-16T18:07:00+08:00" />
+<meta property="article:modified_time" content="2020-08-16T18:07:00+08:00" />
+<meta itemprop="name" content="nodejs项目技术小结">
+<meta itemprop="description" content="最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较">
+<meta itemprop="datePublished" content="2020-08-16T18:07:00&#43;08:00" />
+<meta itemprop="dateModified" content="2020-08-16T18:07:00&#43;08:00" />
+<meta itemprop="wordCount" content="1126">
+
+
+
+<meta itemprop="keywords" content="javascript,typescript,nodejs,swagger,VueJS,koa2," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="nodejs项目技术小结"/>
+<meta name="twitter:description" content="最近在很紧张地使用typescript开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">nodejs项目技术小结</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2020-08-16 </span>
+        <div class="post-category">
+            
+              <a href="/categories/nodejs%E5%BC%80%E5%8F%91/"> nodejs开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1126 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">前端项目初始化</a></li>
+    <li><a href="#heading-1">后端项目初始化</a></li>
+    <li><a href="#heading-2">前后端接口协议约定</a></li>
+    <li><a href="#heading-3">生产环境部署</a></li>
+    <li><a href="#heading-4">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>最近在很紧张地使用<code>typescript</code>开发一个项目。和正常的业务项目很类似，前期的设计及技术框架搭建还有些意思，目前在做的业务功能开发就比较按部就班，今天终于有时间，先将前期技术框架搭建过程中的一些技术点记录下来。</p>
+<p>这个项目是一个正常的前后端单体应用，在项目启动之初，考虑到团队内部人员的技术积累，最终选择以<code>typescript</code>为前后端主要开发语言。</p>
+<h2 id="heading">前端项目初始化</h2>
+<p>前端选用<code>VueJS</code>及与之配套的一组成熟的库，使用<code>vue-cli</code>创建项目：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm install -g @vue/cli
+$ vue create xx_frontend
+</code></pre></div><p>这里选择<code>Manually select features</code>，选择<code>Babel</code>、<code>TypeScript</code>、<code>Router</code>、<code>Vuex</code>、<code>CSS Pre-processors</code>、<code>Linter/Formatter</code>这些特征。</p>
+<p><img src="/images/20200816/image-20200816213726968.png" alt="image-20200816213726968"></p>
+<h2 id="heading-1">后端项目初始化</h2>
+<p>后端我以一个<code>starter</code>骨架项目为基础，在此基础上开发业务API接口：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ git clone git@github.com:ddimaria/koa-typescript-starter.git
+$ cd koa-typescript-starter
+$ git checkout -b upgrade-to-typescript-3 origin/upgrade-to-typescript-3
+$ yarn install
+$ yarn run watch
+</code></pre></div><h2 id="heading-2">前后端接口协议约定</h2>
+<p>这个项目里前后端使用<code>swagger.json</code>描述交互的API接口，事实上<code>koa-typescript-starter</code>里本身已经集成了<code>swagger</code>的功能。但经过调研，发现让业务开发同学直接编写<code>swagger.json</code>难度较大。于是找了种自动生成<code>swagger.json</code>文档的方案<a href="koa-swagger-decorator">koa-swagger-decorator</a>，我对这个库进行了一些增强。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm install --registry<span style="color:#f92672">=</span>https://npm.pkg.github.com @jeremyxu2010/koa-swagger-decorator@1.6.1 --save
+</code></pre></div><p>然后就参考<a href="https://github.com/jeremyxu2010/koa-swagger-decorator/blob/master/example/routes/index.js">https://github.com/jeremyxu2010/koa-swagger-decorator/blob/master/example/routes/index.js</a>简单配置下<code>SwaggerRouter</code>，在<code>Controller</code>里通过decorator描述每个API接口入参及响应schema就可以了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-typescript" data-lang="typescript"><span style="color:#66d9ef">import</span> {
+  <span style="color:#a6e22e">request</span>,
+  <span style="color:#a6e22e">summary</span>,
+  <span style="color:#a6e22e">body</span>,
+  <span style="color:#a6e22e">tags</span>,
+  <span style="color:#a6e22e">middlewares</span>,
+  <span style="color:#a6e22e">path</span>,
+  <span style="color:#a6e22e">description</span>,
+  <span style="color:#a6e22e">producesAll</span>,
+  <span style="color:#a6e22e">responses</span>
+} <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;@jeremyxu2010/koa-swagger-decorator&#39;</span>;
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">tag</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">tags</span>([<span style="color:#e6db74">&#39;User&#39;</span>]);
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">logTime</span> <span style="color:#f92672">=</span> () <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">async</span> (<span style="color:#a6e22e">ctx</span>, <span style="color:#a6e22e">next</span>) <span style="color:#f92672">=</span><span style="color:#f92672">&gt;</span> {
+  <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">start: </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+  <span style="color:#a6e22e">await</span> <span style="color:#a6e22e">next</span>();
+  <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">`</span><span style="color:#e6db74">end: </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date()<span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>);
+};
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userSchema</span> <span style="color:#f92672">=</span> {
+  <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;string&#39;</span>, <span style="color:#a6e22e">required</span>: <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;jeremyxu&#39;</span> },
+  <span style="color:#a6e22e">password</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;string&#39;</span>, <span style="color:#a6e22e">required</span>: <span style="color:#66d9ef">true</span>, <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;123456&#39;</span> }
+};
+
+<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">userRespSchema</span> <span style="color:#f92672">=</span> {
+  <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;object&#39;</span>,
+  <span style="color:#a6e22e">properties</span><span style="color:#f92672">:</span> {
+    <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;string&#39;</span>, <span style="color:#a6e22e">required</span>: <span style="color:#66d9ef">true</span> }
+  },
+  <span style="color:#a6e22e">example</span><span style="color:#f92672">:</span> {
+    <span style="color:#a6e22e">name</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;jeremyxu&#39;</span>
+  }
+};
+
+<span style="color:#66d9ef">@producesAll</span>([<span style="color:#e6db74">&#39;application/json&#39;</span>])
+<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">default</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserRouter</span> {
+
+  <span style="color:#66d9ef">@request</span>(<span style="color:#e6db74">&#39;POST&#39;</span>, <span style="color:#e6db74">&#39;/user/register&#39;</span>)
+  <span style="color:#66d9ef">@summary</span>(<span style="color:#e6db74">&#39;register user&#39;</span>)
+  <span style="color:#66d9ef">@description</span>(<span style="color:#e6db74">&#39;example of api&#39;</span>)
+  <span style="color:#66d9ef">@tag</span>
+  <span style="color:#66d9ef">@middlewares</span>([<span style="color:#a6e22e">logTime</span>()])
+  <span style="color:#66d9ef">@body</span>(<span style="color:#a6e22e">userSchema</span>)
+  <span style="color:#66d9ef">@responses</span>({
+    <span style="color:#ae81ff">200</span><span style="color:#f92672">:</span> { <span style="color:#a6e22e">description</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;file upload success&#39;</span>, <span style="color:#a6e22e">schema</span>: <span style="color:#66d9ef">userRespSchema</span>}
+  })
+  <span style="color:#66d9ef">static</span> <span style="color:#a6e22e">async</span> <span style="color:#a6e22e">register</span>(<span style="color:#a6e22e">ctx</span>) {
+    <span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">name</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">validatedBody</span>;
+    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">user</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">name</span> };
+    <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">body</span> <span style="color:#f92672">=</span> { <span style="color:#a6e22e">user</span> };
+  }
+  
+  <span style="color:#75715e">// ..... other API
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>后端项目运行起来即可通过<a href="http://127.0.0.1:3000/swagger-html">http://127.0.0.1:3000/swagger-html</a>访问到接口文档。</p>
+<p>前端同学根据swagger文档快速构建一个可用的mock服务也很方便：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 转化swagger.json为openapi.yaml</span>
+$ curl -o swagger.json http://127.0.0.1:3000/swagger-json
+$ npm install -g swagger2openapi <span style="color:#f92672">&amp;&amp;</span> swagger2openapi -p -w -y -o openapi.yaml swagger.json
+
+<span style="color:#75715e"># 根据openapi.yaml自动启动一个mock server</span>
+$ wget https://github.com/danielgtaylor/apisprout/releases/download/v1.3.0/apisprout-v1.3.0-mac.tar.xz
+$ tar -Jxf apisprout-v1.3.0-mac.tar.xz
+$ ./apisprout -p <span style="color:#ae81ff">4000</span> ./openapi.yaml
+</code></pre></div><h2 id="heading-3">生产环境部署</h2>
+<p>虽然通过<code>npm run start</code>可以将服务跑起来，但生产环境还需要利用服务器的多核性能，可以利用<code>pm2</code>来自动完成这点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ npm install -g pm2
+$ pm2 start ./dist/index.js --name xx_backend --instances <span style="color:#ae81ff">4</span>
+</code></pre></div><p>The End！</p>
+<h2 id="heading-4">参考</h2>
+<ol>
+<li><a href="https://juejin.im/post/6844904088048500744">https://juejin.im/post/6844904088048500744</a></li>
+<li><a href="https://github.com/ddimaria/koa-typescript-starter/tree/upgrade-to-typescript-3">https://github.com/ddimaria/koa-typescript-starter/tree/upgrade-to-typescript-3</a></li>
+<li><a href="https://github.com/jeremyxu2010/koa-swagger-decorator">https://github.com/jeremyxu2010/koa-swagger-decorator</a></li>
+<li><a href="https://github.com/danielgtaylor/apisprout">https://github.com/danielgtaylor/apisprout</a></li>
+<li><a href="http://www.doocr.com/articles/5894d4713c6bfb7e3b7fe20e">http://www.doocr.com/articles/5894d4713c6bfb7e3b7fe20e</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-08-16</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/javascript/">javascript</a>
+          
+          <a href="/tags/typescript/">typescript</a>
+          
+          <a href="/tags/nodejs/">nodejs</a>
+          
+          <a href="/tags/swagger/">swagger</a>
+          
+          <a href="/tags/vuejs/">VueJS</a>
+          
+          <a href="/tags/koa2/">koa2</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2020/09/python%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E6%88%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">python多进程实战</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/">
+            <span class="next-text nav-default">微服务中的分布式锁方案</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

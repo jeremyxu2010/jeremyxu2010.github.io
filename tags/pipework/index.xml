@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>pipework on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/pipework/</link>
+    <description>Recent content in pipework on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 01 Sep 2016 22:46:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/pipework/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>研究pipework</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</link>
+      <pubDate>Thu, 01 Sep 2016 22:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</guid>
+      <description>很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。</description>
+    </item>
+    
+  </channel>
+</rss>

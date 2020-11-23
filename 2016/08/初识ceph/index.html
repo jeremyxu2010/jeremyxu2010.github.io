@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>初识ceph - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时间了，在研究了glusterfs之后，一直想找个机会研究一下它，这周终于抽出来时" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/08/%E5%88%9D%E8%AF%86ceph/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="初识ceph" />
+<meta property="og:description" content="ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时间了，在研究了glusterfs之后，一直想找个机会研究一下它，这周终于抽出来时" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/08/%E5%88%9D%E8%AF%86ceph/" />
+<meta property="article:published_time" content="2016-08-17T22:57:00+08:00" />
+<meta property="article:modified_time" content="2016-08-17T22:57:00+08:00" />
+<meta itemprop="name" content="初识ceph">
+<meta itemprop="description" content="ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时间了，在研究了glusterfs之后，一直想找个机会研究一下它，这周终于抽出来时">
+<meta itemprop="datePublished" content="2016-08-17T22:57:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-08-17T22:57:00&#43;08:00" />
+<meta itemprop="wordCount" content="2061">
+
+
+
+<meta itemprop="keywords" content="ceph,cloud,storage," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="初识ceph"/>
+<meta name="twitter:description" content="ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时间了，在研究了glusterfs之后，一直想找个机会研究一下它，这周终于抽出来时"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">初识ceph</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-08-17 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E4%BA%91%E8%AE%A1%E7%AE%97/"> 云计算 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2061 字 </span>
+        <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">概念</a></li>
+    <li><a href="#heading-1">实操</a>
+      <ul>
+        <li><a href="#heading-2">预检</a></li>
+        <li><a href="#heading-3">存储集群安装</a></li>
+        <li><a href="#heading-4">块设备客户端安装</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">总结</a></li>
+    <li><a href="#heading-6">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时间了，在研究了glusterfs之后，一直想找个机会研究一下它，这周终于抽出来时间了。</p>
+<h2 id="heading">概念</h2>
+<p>相对于其它分布式存储系统，它开创性地用统一的系统提供了对象、块、和文件存储功能，它可靠性高、管理简便、并且是自由软件。Ceph提供了一个可无限伸缩的Ceph存储集群，它基于RADOS<a href="http://ceph.com/papers/weil-rados-pdsw07.pdf">A Scalable, Reliable Storage Service for Petabyte-scale Storage Clusters</a></p>
+<p><img src="/images/20160817/ceph_stack.png" alt="ceph_stack.png"></p>
+<p>从上面Ceph的架构图可以看到，底层都是RADOS，通过不同的Client（RADOSGW、RBD、CEPHFS）让应用上层识别为一个对象存储系统、块设备、Posix兼容的文件，另外LIBRADOS也使得各种开发语言都可以操作RADOS。</p>
+<p>Ceph存储集群包含两种类型的守护进程: Ceph监视器、Ceph OSD守护进程。</p>
+<p>Ceph监视器维护着集群运行图的主副本。一个监视器集群确保了当某个监视器失效时的高可用性。存储集群客户端向Ceph监视器索取集群运行图的最新副本。</p>
+<p>Ceph OSD守护进程检查自身状态、以及其它OSD的状态，并报告给监视器们。同时Ceph OSD守护进程负责将数据存储为扁平的对象。</p>
+<p>Ceph客户端和OSD守护进程都用CRUSH算法来计算对象的位置信息，而不是依赖于一个中心化的查询表。与以往方法相比，CRUSH的数据管理机制更好，它很干脆地把工作分配给集群内的所有客户端和OSD来处理，因此具有极大的伸缩性。CRUSH用智能数据复制确保弹性，更能适应超大规模存储。</p>
+<p>Ceph存储系统有存储池的概念，它是存储对象的逻辑分区。每个存储池里都有很多归置组PG（Placement Group），CRUSH算法动态地将PG映射到实际的OSD。</p>
+<p>Ceph客户端要进行IO读写操作流程如下:</p>
+<ul>
+<li>Ceph客户端负责把展现给用户的数据格式（一块设备映像、 REST 风格对象、 CephFS 文件系统目录）转换为可存储于 Ceph 存储集群的对象</li>
+<li>Ceph客户端先连接到某个 Ceph 监视器、获得最新的集群运行图副本</li>
+<li>Ceph客户端根据对象的ID及存储池的ID计算得出目标PG的ID</li>
+<li>Ceph客户端得到目标PG的主OSD地址，连接该OSD进行读写操作</li>
+</ul>
+<p><img src="/images/20160817/ceph_data_op.png" alt="ceph_data_op.png"></p>
+<p>从上面的流程可以看出与glusterfs相比，存储池与OSD之间有PG这么一个中间层。这个中间层使客户端与OSD之间松耦合了，从客户端的角色来看，它只知道对象被存储在某个PG里了，至于对象最终要存储在哪个OSD里它是不感知的。这样当新的OSD上线时，Ceph可以更方便地进行重均衡。</p>
+<p>随着OSD数量的增加，一个存储池PG的数量设置将非常重要，它显著地影响着集群的行为、以及出错时的数据持久性（即灾难性事件导致数据丢失的概率）。官方还提供了一个工具<a href="http://ceph.com/pgcalc/">pgcalc</a>。</p>
+<p>另外CRUSH算法还支持根据数据存储位置来确定如何存储和检索对象。所以部署一个大规模数据集群的时候，应该好好设计自己的CRUSH图，因为它可以帮助管理 Ceph 集群、提升性能、和保证数据安全性。调整Ceph的CRUSH布局的方法见<a href="http://blog.dnsbed.com/archives/1714">这里</a></p>
+<h2 id="heading-1">实操</h2>
+<p>我是在5台CentOS6上进行Ceph在安装的，部署节点的拓扑结构如下:
+<img src="/images/20160817/ceph_deploy_graph.png" alt="ceph_deploy_graph.png"></p>
+<h3 id="heading-2">预检</h3>
+<p>所有节点更换软件源</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#使用阿里云的centos6软件源镜像</span>
+mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo
+<span style="color:#75715e">#使用阿里云的epel软件源镜像</span>
+rpm --import http://mirrors.aliyun.com/epel/RPM-GPG-KEY-EPEL-6
+wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-6.repo
+<span style="color:#75715e">#使用阿里云的ceph软件源镜像</span>
+rpm --import https://download.ceph.com/keys/release.asc
+echo <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[ceph]
+</span><span style="color:#e6db74">name=Ceph packages for </span>$basearch<span style="color:#e6db74">
+</span><span style="color:#e6db74">baseurl=http://mirrors.aliyun.com/ceph/rpm-el6/hammer/</span>$basearch<span style="color:#e6db74">
+</span><span style="color:#e6db74">enabled=1
+</span><span style="color:#e6db74">priority=2
+</span><span style="color:#e6db74">gpgcheck=1
+</span><span style="color:#e6db74">type=rpm-md
+</span><span style="color:#e6db74">gpgkey=https://download.ceph.com/keys/release.asc
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[ceph-noarch]
+</span><span style="color:#e6db74">name=Ceph noarch packages
+</span><span style="color:#e6db74">baseurl=http://mirrors.aliyun.com/ceph/rpm-el6/hammer/noarch
+</span><span style="color:#e6db74">enabled=1
+</span><span style="color:#e6db74">priority=2
+</span><span style="color:#e6db74">gpgcheck=1
+</span><span style="color:#e6db74">type=rpm-md
+</span><span style="color:#e6db74">gpgkey=https://download.ceph.com/keys/release.asc
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[ceph-source]
+</span><span style="color:#e6db74">name=Ceph source packages
+</span><span style="color:#e6db74">baseurl=http://mirrors.aliyun.com/ceph/rpm-el6/hammer/SRPMS
+</span><span style="color:#e6db74">enabled=0
+</span><span style="color:#e6db74">priority=2
+</span><span style="color:#e6db74">gpgcheck=1
+</span><span style="color:#e6db74">type=rpm-md
+</span><span style="color:#e6db74">gpgkey=https://download.ceph.com/keys/release.asc
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span> &gt; /etc/yum.repos.d/Ceph.repo
+
+所有节点设置NTP时间同步，可参考之前的<span style="color:#e6db74">`</span>私有云数据中心NTP服务搭建<span style="color:#e6db74">`</span>
+
+所有节点上创建ceph操作用户
+
+<span style="color:#e6db74">`</span><span style="color:#e6db74">`</span><span style="color:#e6db74">`</span>bash
+useradd -d /home/cephop -m cephop
+passwd cephop
+<span style="color:#75715e">#确保cephop用户有sudo权限</span>
+</code></pre></div><p>同步hosts文件，确保各节点都可以正确解析节点名称</p>
+<p>确保admin-node可无密码SSH登录其它节点</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#在admin-node节点执行以下操作</span>
+su - cephop
+ssh-keygen
+ssh-copy-id cephop@node1
+ssh-copy-id cephop@node2
+ssh-copy-id cephop@node3
+ssh-copy-id cephop@ceph-client
+echo <span style="color:#e6db74">&#34;
+</span><span style="color:#e6db74">Host node1
+</span><span style="color:#e6db74">   Hostname node1
+</span><span style="color:#e6db74">   User cephop
+</span><span style="color:#e6db74">Host node2
+</span><span style="color:#e6db74">   Hostname node2
+</span><span style="color:#e6db74">   User cephop
+</span><span style="color:#e6db74">Host node3
+</span><span style="color:#e6db74">   Hostname node3
+</span><span style="color:#e6db74">   User cephop
+</span><span style="color:#e6db74">Host ceph-client
+</span><span style="color:#e6db74">   Hostname ceph-client
+</span><span style="color:#e6db74">   User cephop
+</span><span style="color:#e6db74">&#34;</span> &gt; ~/.ssh/config
+</code></pre></div><p>禁用ssh的requiretty特性</p>
+<p>设置网络接口开机自启动</p>
+<p>关闭防火墙</p>
+<p>关闭selinux</p>
+<p>管理节点安装ceph-deploy</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo yum install -y ceph-deploy
+</code></pre></div><h3 id="heading-3">存储集群安装</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir my-cluster
+cd my-cluster
+ceph-deploy new node1
+echo <span style="color:#e6db74">&#34;osd pool default size = 2&#34;</span> &gt;&gt; ceph.conf
+ceph-deploy install admin-node node1 node2 node3 ceph-client
+ceph-deploy mon create-initial
+
+<span style="color:#75715e">#在node2, node3上创建上创建osd目录</span>
+ssh node2
+sudo mkdir /var/local/osd0
+exit
+ssh node3
+sudo mkdir /var/local/osd1
+exit
+
+ceph-deploy osd prepare node2:/var/local/osd0 node3:/var/local/osd1
+ceph-deploy osd activate node2:/var/local/osd0 node3:/var/local/osd1
+ceph-deploy admin admin-node node1 node2 node3
+sudo chmod +r /etc/ceph/ceph.client.admin.keyring
+ceph health
+</code></pre></div><h3 id="heading-4">块设备客户端安装</h3>
+<p>在管理节点执行下面的命令</p>
+<pre><code>ceph-deploy install ceph-client
+ceph-deploy admin ceph-client
+</code></pre><p>CentOS6需升级内核才能有brd内核模块，所以在ceph-client上执行下面的命令</p>
+<pre><code>rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -ivh http://www.elrepo.org/elrepo-release-6-6.el6.elrepo.noarch.rpm
+yum --enablerepo=elrepo-kernel install -y  kernel-lt
+#修改/boot/grub/menu.lst确保启动后进入新的内核
+reboot
+#创建块设备映像
+rbd create rbd/foo --size 4096
+#将块设备映像映射为块设备
+sudo rbd map rbd/foo --name client.admin
+#格式化块设备
+sudo mkfs.ext4 -m0 /dev/rbd1
+#后面就可以使用这个块设备了，比如将/dev/rbd1挂载至目录等操作
+</code></pre><p>其它Ceph客户端安装方法类似</p>
+<h2 id="heading-5">总结</h2>
+<ul>
+<li>Ceph概念比较多，内部实现细节有很多精彩的地方，使用前务必要把它的<a href="http://docs.ceph.com/docs/master/architecture/">体系结构</a>这一章通读一遍。</li>
+<li>Ceph推荐的网络方案是区分了公共网与集群网的，这点比glusterfs进步不少。见<a href="http://docs.ceph.com/docs/master/rados/configuration/network-config-ref/">这里</a>。</li>
+<li>Ceph里可以自定义CRUSH图，这个比glusterfs只能以地理位置分布进行复制的方案还是灵活不少。</li>
+</ul>
+<h2 id="heading-6">参考</h2>
+<p><code>http://docs.ceph.org.cn/architecture/</code>
+<code>http://docs.ceph.org.cn/start/</code>
+<code>http://blog.dnsbed.com/archives/1714</code></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-08-17</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/ceph/">ceph</a>
+          
+          <a href="/tags/cloud/">cloud</a>
+          
+          <a href="/tags/storage/">storage</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/08/python%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">python语言学习备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/08/%E5%88%B6%E4%BD%9Ccentos6%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F/">
+            <span class="next-text nav-default">制作CentOS6基础镜像</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

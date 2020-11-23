@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tcpdump on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/tcpdump/</link>
+    <description>Recent content in tcpdump on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 19 Sep 2016 23:54:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/tcpdump/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>tcpdump使用技巧（转载）</title>
+      <link>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</link>
+      <pubDate>Mon, 19 Sep 2016 23:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</guid>
+      <description>很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t</description>
+    </item>
+    
+  </channel>
+</rss>

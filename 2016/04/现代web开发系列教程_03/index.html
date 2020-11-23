@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>现代Web开发系列教程_03 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react官方文档 安装rea" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_03/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="现代Web开发系列教程_03" />
+<meta property="og:description" content="现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react官方文档 安装rea" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_03/" />
+<meta property="article:published_time" content="2016-04-17T15:26:00+08:00" />
+<meta property="article:modified_time" content="2016-04-17T15:26:00+08:00" />
+<meta itemprop="name" content="现代Web开发系列教程_03">
+<meta itemprop="description" content="现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react官方文档 安装rea">
+<meta itemprop="datePublished" content="2016-04-17T15:26:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-04-17T15:26:00&#43;08:00" />
+<meta itemprop="wordCount" content="866">
+
+
+
+<meta itemprop="keywords" content="web,html5,javascript," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="现代Web开发系列教程_03"/>
+<meta name="twitter:description" content="现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react官方文档 安装rea"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">现代Web开发系列教程_03</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-04-17 </span>
+        <div class="post-category">
+            
+              <a href="/categories/web%E5%BC%80%E5%8F%91/"> web开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 866 字 </span>
+        <span class="more-meta"> 预计阅读 2 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#reactbabel">安装react及babel</a></li>
+    <li><a href="#js">修改js代码及模板文件</a></li>
+    <li><a href="#webpack">修改webpack编译脚本</a></li>
+    <li><a href="#es6">转换成ES6写法</a></li>
+    <li><a href="#js-1">去除编译后的js大量重复内容</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react<a href="https://facebook.github.io/react/docs/getting-started.html">官方文档</a></p>
+<h2 id="reactbabel">安装react及babel</h2>
+<pre><code>npm install react react-dom --save
+npm install babel-core babel-loader babel-preset-react --save-dev
+</code></pre><h2 id="js">修改js代码及模板文件</h2>
+<p>demo2.js</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">React</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;react&#39;</span>);
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ReactDOM</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;react-dom&#39;</span>);
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Greeting</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">createClass</span>({
+    <span style="color:#a6e22e">render</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">function</span>(){
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">Hello</span>, <span style="color:#a6e22e">world</span><span style="color:#f92672">!</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010">;</span>
+    }
+});
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Greeting</span> <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>,
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;reactHolder&#39;</span>)
+);
+</code></pre></div><p>base.html</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!doctype html&gt;</span>
+&lt;<span style="color:#f92672">html</span>&gt;
+&lt;<span style="color:#f92672">head</span>&gt;
+    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;utf-8&#34;</span>&gt;
+    &lt;<span style="color:#f92672">title</span>&gt;<span style="color:#960050;background-color:#1e0010">&lt;</span>%= htmlWebpackPlugin.options.title || &#39;Webpack App&#39;%&gt;&lt;/<span style="color:#f92672">title</span>&gt;
+    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">http-equiv</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;X-UA-Compatible&#34;</span> <span style="color:#a6e22e">content</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;IE=edge,chrome=1&#34;</span> /&gt;
+    &lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;renderer&#34;</span> <span style="color:#a6e22e">content</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;webkit&#34;</span>&gt;
+    <span style="color:#960050;background-color:#1e0010">&lt;</span>% for (var css in htmlWebpackPlugin.files.css) { %&gt;
+    &lt;<span style="color:#f92672">link</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&lt;%= htmlWebpackPlugin.files.css[css] %&gt;&#34;</span> <span style="color:#a6e22e">rel</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;stylesheet&#34;</span>&gt;
+    <span style="color:#960050;background-color:#1e0010">&lt;</span>% } %&gt;
+&lt;/<span style="color:#f92672">head</span>&gt;
+&lt;<span style="color:#f92672">body</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;body-cls&#34;</span>&gt;
+    &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;reactHolder&#34;</span>&gt;&lt;/<span style="color:#f92672">div</span>&gt;
+    <span style="color:#960050;background-color:#1e0010">&lt;</span>% for (var chunk in htmlWebpackPlugin.files.chunks) { %&gt; &lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&lt;%= htmlWebpackPlugin.files.chunks[chunk].entry %&gt;&#34;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt; <span style="color:#960050;background-color:#1e0010">&lt;</span>% } %&gt;
+&lt;/<span style="color:#f92672">body</span>&gt;
+&lt;/<span style="color:#f92672">html</span>&gt;
+</code></pre></div><h2 id="webpack">修改webpack编译脚本</h2>
+<p>webpack.config.js</p>
+<pre><code>var webpack = require(&quot;webpack&quot;);
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+
+var output_options = {
+    path: 'public',
+    publicPath: '/demo2/',
+    filename: 'js/[name].js',
+    hotUpdateMainFilename: 'hot-update/[name].[hash].hot-update.js',
+    chunkFilename: 'js/chunks/[name].js',
+    hotUpdateChunkFilename: 'hot-update/chunks/[name].[hash].hot-update.js',
+};
+
+var createHtmlDef = function(opts){
+    return new HtmlWebpackPlugin({
+        title: 'demo2',
+        filename: opts.path,
+        template: 'web-src/html/base.html',
+        chunks: opts.chunks,
+        hash: true,
+        inject: false
+    });
+};
+
+var plugins_options = [
+    createHtmlDef({path: 'demo2.html', chunks: ['vendor', 'demo2']})
+];
+
+var entries = {
+    demo2 : __dirname + '/web-src/js/demo2.js',
+    vendor : ['react', 'react-dom']
+};
+
+var loaders = [
+    {test: /\.(js|jsx)$/, loaders: [&quot;babel&quot;]},
+];
+
+var webpackConfig = {
+    entry: entries,
+    output: output_options,
+    plugins: plugins_options,
+    module: {
+        loaders: loaders
+    }
+};
+
+module.exports = webpackConfig;
+</code></pre><p>因为是使用babel来编译jsx语法的js文件，需要对babel进行一些配置</p>
+<p>.babalrc</p>
+<pre><code>{
+  &quot;presets&quot;: [&quot;react&quot;]
+}
+</code></pre><p>把这个小demo部署到nginx里吧</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ln -sf demo2/public /usr/local/var/www/demo2
+</code></pre></div><p>最后在浏览器里访问<code>http://127.0.0.1/demo2/demo2.html</code>，在页面上就可以看到<code>Hello World</code>了。</p>
+<h2 id="es6">转换成ES6写法</h2>
+<p>react新版本已经推荐采用ES6写法了，也得用上吧。</p>
+<pre><code>npm install babel-preset-es2015 --save-dev
+</code></pre><p>修改.babelrc文件</p>
+<pre><code>{ &quot;presets&quot;: [&quot;react&quot;, &quot;es2015&quot;] }
+</code></pre><p>修改demo2.js</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#66d9ef">import</span> <span style="color:#a6e22e">React</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react&#39;</span>
+<span style="color:#66d9ef">import</span> <span style="color:#a6e22e">ReactDOM</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#39;react-dom&#39;</span>
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Greeting</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">React</span>.<span style="color:#a6e22e">Component</span> {
+    <span style="color:#a6e22e">render</span>(){
+       <span style="color:#66d9ef">return</span> <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">h1</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">Hello</span>, <span style="color:#a6e22e">world</span><span style="color:#f92672">!</span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">1</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010">;</span>
+    }
+}
+
+<span style="color:#a6e22e">ReactDOM</span>.<span style="color:#a6e22e">render</span>(
+  <span style="color:#f92672">&lt;</span><span style="color:#a6e22e">Greeting</span> <span style="color:#f92672">/</span><span style="color:#f92672">&gt;</span>,
+  document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;reactHolder&#39;</span>)
+);
+</code></pre></div><h2 id="js-1">去除编译后的js大量重复内容</h2>
+<p>在webpack.config.js里作一点点修改</p>
+<pre><code>var plugins_options = [
+    createHtmlDef({path: 'demo2.html', chunks: ['vendor', 'demo2']}),
+    new webpack.optimize.CommonsChunkPlugin({
+        name: &quot;vendor&quot;,
+        minChunks: Infinity,
+    })
+];
+</code></pre><p>这里其实有个技巧，我研究了很久才想明白，其它人我不告诉的。CommonsChunkPlugin的工作原理相当于把指定的chunks里每个chunk引用的所有资源先抽出来，然后对这些重复资源进行统计，看每个重复资源被n个chunk引用，如果n&gt;=minChunks设置的值，则将该资源移至common chunk里，如果n&lt;minChunks，则看该资源name指定的chunk引用不，如果引用就只将该资源返还给name指定的chunk，否则返还给所有引用它的chunk。因此</p>
+<pre><code>    new webpack.optimize.CommonsChunkPlugin({
+        name: &quot;vendor&quot;,
+        minChunks: Infinity,
+    })
+
+    var entries = {
+      demo2 : __dirname + '/web-src/js/demo2.js',
+      vendor : ['react', 'react-dom']
+    };
+
+</code></pre><p>相当于把引用的第三方资源抽到vendor.js里了。</p>
+<p>本篇<a href="https://github.com/jeremyxu2010/web_dev/tree/master/demo2">源代码地址</a></p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-04-17</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/web/">web</a>
+          
+          <a href="/tags/html5/">html5</a>
+          
+          <a href="/tags/javascript/">javascript</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_04/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">现代Web开发系列教程_04</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%B3%BB%E5%88%97_02/">
+            <span class="next-text nav-default">现代Web开发教程系列_02</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

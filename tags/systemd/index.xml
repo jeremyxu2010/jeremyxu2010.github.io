@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>systemd on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/systemd/</link>
+    <description>Recent content in systemd on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 04 Jul 2016 00:07:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/systemd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Systemd 入门教程（转载）</title>
+      <link>https://jeremyxu2010.github.io/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/</link>
+      <pubDate>Mon, 04 Jul 2016 00:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/</guid>
+      <description>最近开始使用CentOS7了，跟CentOS6相比最大的变更可能就是守护进程由init改为了systemd。在网上看到阮一峰的“System</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mvvm on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mvvm/</link>
+    <description>Recent content in mvvm on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 24 Sep 2016 00:44:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mvvm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>微信小程序上手</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%8A%E6%89%8B/</link>
+      <pubDate>Sat, 24 Sep 2016 00:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%8A%E6%89%8B/</guid>
+      <description>这两天移动互联网领域发生了一件大事，微信发布了小程序，然后网上突然涌出了诸多教程，貌似大家对微信小程序的功能与想象空间兴奋不已，我免不了俗，</description>
+    </item>
+    
+  </channel>
+</rss>

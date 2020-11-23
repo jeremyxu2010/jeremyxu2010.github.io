@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mybatis on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/mybatis/</link>
+    <description>Recent content in mybatis on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 20 Mar 2017 20:20:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/mybatis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>编写mybatis-generator插件</title>
+      <link>https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/</link>
+      <pubDate>Mon, 20 Mar 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/%E7%BC%96%E5%86%99mybatis-generator%E6%8F%92%E4%BB%B6/</guid>
+      <description>背景 今天在用mybatis写一些单表查询操作业务逻辑时，发现一个简单的查询至少要写三行，如下所示： DemoCriteria criteria = new DemoCriteria(); criteria.createCriteria().andFiled1EqualTo(filed1Value); List&amp;lt;Demo&amp;gt; demos = demoMapper.selectByCriteria(criteria); 这样写很累啊，于是想了</description>
+    </item>
+    
+    <item>
+      <title>mybatis-generator使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 05 Mar 2017 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/mybatis-generator%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>最近要做一个新的项目，项目涉及的业务还比较复杂，表相当多。项目使用的技术框架为SSM。于是决定使用mybatis-generator来生成D</description>
+    </item>
+    
+    <item>
+      <title>SSM项目脚手架</title>
+      <link>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</link>
+      <pubDate>Sun, 06 Nov 2016 00:09:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/11/ssm%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/</guid>
+      <description>使用SSM做了好几个项目，今天突然想起来还是建一个脚手架工程，地址在这里，便于以后快速创建这类项目。 SSM项目脚手架项目 在网上找到一个ssm</description>
+    </item>
+    
+  </channel>
+</rss>

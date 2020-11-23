@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>机器学习 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content in 机器学习 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 16 Jun 2017 22:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习课程_笔记08</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/</link>
+      <pubDate>Fri, 16 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/</guid>
+      <description>核（Kernels） SVM算法的原理如下： $$ min \frac 1 2 ||w||^2 \\ s. t. y^{(i)}(W^TX^{(i)} + b) &amp;gt;= 1 $$ 上述式子的对偶问题如下： $$ max\sum_i\alpha_i - \frac 1 2 \sum_i \sum_j y^{(i)}y^{(j)} \alpha_i \alpha_j &amp;lt;X^{(i)}, X^{(j)}&amp;gt; \\ s. t. \alpha_i&amp;gt;=0, \sum_iy_i\alpha_i=0 \\ W = \sum_i\alpha_iy^{(i)}X^{(i)}</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记07</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/</link>
+      <pubDate>Fri, 16 Jun 2017 21:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/</guid>
+      <description>自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记06</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/</link>
+      <pubDate>Fri, 16 Jun 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/</guid>
+      <description>多项式事件模型 面的这种基本的朴素贝叶斯模型叫做多元伯努利事件模型，该模型有多种扩展，一种是每个分量的多值化，即将$P(X_i|y)$由伯努利</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记05</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/</link>
+      <pubDate>Mon, 12 Jun 2017 15:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/</guid>
+      <description>生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记04</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/</link>
+      <pubDate>Sun, 04 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/</guid>
+      <description>牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记03</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/</link>
+      <pubDate>Sun, 04 Jun 2017 04:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/</guid>
+      <description>局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记02</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/</link>
+      <pubDate>Sat, 03 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/</guid>
+      <description>线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记01</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/</link>
+      <pubDate>Sat, 03 Jun 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/</guid>
+      <description>最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中</description>
+    </item>
+    
+    <item>
+      <title>使用keras破解验证码</title>
+      <link>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</link>
+      <pubDate>Sun, 07 May 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/05/%E4%BD%BF%E7%94%A8keras%E7%A0%B4%E8%A7%A3%E9%AA%8C%E8%AF%81%E7%A0%81/</guid>
+      <description>今天做一个业务功能时，需要自动登录第三方系统，虽然第三方系统已经给我方分配了用户名及密码，但登录时必须必须输入验证码，如此就很难做到自动化登</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_03</title>
+      <link>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/</link>
+      <pubDate>Sun, 19 Mar 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_03/</guid>
+      <description>上一篇使用tensorflow完成一个卷积神经网络，但当时写的代码虽然可以工作，还比较零乱，并且并没有经过参数调优，最终得到的模型准确率也并</description>
+    </item>
+    
+    <item>
+      <title>使用snownlp进行评论情感分析</title>
+      <link>https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/</link>
+      <pubDate>Thu, 16 Mar 2017 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/%E4%BD%BF%E7%94%A8snownlp%E8%BF%9B%E8%A1%8C%E8%AF%84%E8%AE%BA%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/</guid>
+      <description>背景 最近项目中有一个需求，希望分析用户对某些商品的评论，以推测用户对这些商品的情感倾向，从而为运营人员管理这些商品提供依据。 这个问题属于自然</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_02</title>
+      <link>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_02/</link>
+      <pubDate>Thu, 02 Mar 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/03/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_02/</guid>
+      <description>上一篇笔记采用一个线性关系的神经层处理了MNIST的训练数据，最后得到一个准确率一般的神经网络。但其实对于这种图像识别的场景，tensorf</description>
+    </item>
+    
+    <item>
+      <title>tensorflow学习笔记_01</title>
+      <link>https://jeremyxu2010.github.io/2017/02/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_01/</link>
+      <pubDate>Tue, 28 Feb 2017 18:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/tensorflow%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0_01/</guid>
+      <description>最近看到一个有趣的项目pix2pix-tensorflow。大概功能是用户在网页上画一只猫的轮廓，然后它就可以输出与这个轮廓很相似的猫的清晰</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>andrew ng on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/andrew-ng/</link>
+    <description>Recent content in andrew ng on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 16 Jun 2017 22:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/andrew-ng/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>机器学习课程_笔记08</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/</link>
+      <pubDate>Fri, 16 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B008/</guid>
+      <description>核（Kernels） SVM算法的原理如下： $$ min \frac 1 2 ||w||^2 \\ s. t. y^{(i)}(W^TX^{(i)} + b) &amp;gt;= 1 $$ 上述式子的对偶问题如下： $$ max\sum_i\alpha_i - \frac 1 2 \sum_i \sum_j y^{(i)}y^{(j)} \alpha_i \alpha_j &amp;lt;X^{(i)}, X^{(j)}&amp;gt; \\ s. t. \alpha_i&amp;gt;=0, \sum_iy_i\alpha_i=0 \\ W = \sum_i\alpha_iy^{(i)}X^{(i)}</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记07</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/</link>
+      <pubDate>Fri, 16 Jun 2017 21:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B007/</guid>
+      <description>自己的数学知识丢太久了，这一课看了好几篇，最后结合视频及网上的分析文档终于看懂了，汗。。。 最优间隔分类器(optimal margin classifier) 如果训练集是线性</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记06</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/</link>
+      <pubDate>Fri, 16 Jun 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B006/</guid>
+      <description>多项式事件模型 面的这种基本的朴素贝叶斯模型叫做多元伯努利事件模型，该模型有多种扩展，一种是每个分量的多值化，即将$P(X_i|y)$由伯努利</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记05</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/</link>
+      <pubDate>Mon, 12 Jun 2017 15:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/</guid>
+      <description>生成学习算法 logistic回归的执行过程就是要搜索这样的一条直线，能够将两类数据分隔开。 判别学习算法描述为以下公式： $$ Learns \quad P(y|X) \quad or \quad learns \quad h_\Theta(X) \in</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记04</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/</link>
+      <pubDate>Sun, 04 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/</guid>
+      <description>牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记03</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/</link>
+      <pubDate>Sun, 04 Jun 2017 04:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/</guid>
+      <description>局部加权回归 线性回归算法里的成本函数： $J(\Theta) = \frac 1 2 \sum_{i=1}^m(h_\Theta(X^{(i)})-y^{(i)})^2$ 正规方程解出的参数解析表达式： $\Theta = (X^TX)^{-1}X^Ty$ 由于使用了过小的特征集合使得模型过于简单，在这种情形下</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记02</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/</link>
+      <pubDate>Sat, 03 Jun 2017 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B002/</guid>
+      <description>线性回归 首先展示了一段视频，介绍了Dean Pomerleau利用监督学习让一辆汽车可以自动行驶。 使用的符号 符号 代表的含义 m 训练样本的数目 X 输</description>
+    </item>
+    
+    <item>
+      <title>机器学习课程_笔记01</title>
+      <link>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/</link>
+      <pubDate>Sat, 03 Jun 2017 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B001/</guid>
+      <description>最近放了一个长假，计划系统地学习下机器学习的基本知识，途径主要是看andrew ng大牛的斯坦福大学公开课-机器学习课程视频，当然在看的过程中</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>helm on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/helm/</link>
+    <description>Recent content in helm on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sat, 31 Aug 2019 18:40:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/helm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes中部署mysql高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服</description>
+    </item>
+    
+    <item>
+      <title>构建基于kubernetes的PaaS服务</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要向外部提供一些诸如MySQL、Redis、MongoDB、Kafka之类的基础PaaS服务。以前每做一个PaaS都要自己去实现工作</description>
+    </item>
+    
+    <item>
+      <title>PosgreSQL高可用集群实践</title>
+      <link>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Fri, 15 Mar 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</guid>
+      <description>工作中一个第三方软件使用了Posgresql数据库，而在我们的场景里，我们需要保证Posgresql数据库的高可用，网上查找了一下，发现st</description>
+    </item>
+    
+  </channel>
+</rss>

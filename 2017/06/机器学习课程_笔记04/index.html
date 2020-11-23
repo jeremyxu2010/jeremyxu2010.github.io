@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>机器学习课程_笔记04 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="徐新杰" />
+  <meta name="description" content="牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="机器学习课程_笔记04" />
+<meta property="og:description" content="牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B004/" />
+<meta property="article:published_time" content="2017-06-04T22:00:00+08:00" />
+<meta property="article:modified_time" content="2017-06-04T22:00:00+08:00" />
+<meta itemprop="name" content="机器学习课程_笔记04">
+<meta itemprop="description" content="牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次">
+<meta itemprop="datePublished" content="2017-06-04T22:00:00&#43;08:00" />
+<meta itemprop="dateModified" content="2017-06-04T22:00:00&#43;08:00" />
+<meta itemprop="wordCount" content="1891">
+
+
+
+<meta itemprop="keywords" content="机器学习,andrew ng," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="机器学习课程_笔记04"/>
+<meta name="twitter:description" content="牛顿方法 首先假设存在一个函数$f(\Theta)$，然后算法的目标是找到一个$\Theta$，使得$f(\Theta)=0$。 牛顿方法的一次"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">机器学习课程_笔记04</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2017-06-04 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"> 机器学习 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1891 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading">牛顿方法</a></li>
+    <li><a href="#heading-1">广义线性模型</a>
+      <ul>
+        <li><a href="#heading-2">推导伯努利分布</a></li>
+        <li><a href="#heading-3">推导高斯分布</a></li>
+        <li><a href="#heading-4">指数分布族推导出一个广义线性模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-5">多项式分布</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <h2 id="heading">牛顿方法</h2>
+<p>首先假设存在一个函数<code>$f(\Theta)$</code>，然后算法的目标是找到一个<code>$\Theta$</code>，使得<code>$f(\Theta)=0$</code>。</p>
+<p>牛顿方法的一次迭代：
+<code>$$ \Theta^{(t+1)}= \Theta^{(t)} - \frac {f(\Theta^{(t)})} {f'(\Theta^{(t)}) } $$</code>
+持续地迭代下去，就可以得到<code>$f(\Theta)=0$</code>。</p>
+<p>同样的，假设现在存在一个函数<code>$\ell(\Theta)$</code>，也就是对数似然率，目标是找到一个<code>$\Theta$</code>，使得<code>$\ell(\Theta)$</code>最大化。可以容易想到<code>$\ell(\Theta)$</code>的一阶导数<code>$\ell'(\Theta)$</code>为0时，<code>$\ell(\Theta)$</code>即达到最大化了。</p>
+<p>同样运用牛顿方法，其一次迭代：
+<code>$$ \Theta^{(t+1)} = \Theta^{(t)} - \frac {\ell'(\Theta^{(t)})} {\ell''(\Theta^{(t)})} $$</code>
+事实证明牛顿方法是一个收敛速度非常快的算法，它的收敛速度用术语可以描述为二次收敛。如果不考虑常量因子，牛顿方法的每一次迭代都会使你正在逼近的解的有效数字的数目加倍。当实现牛顿方法时，对于logistic回归来说通常会在十几次迭代之后收敛。</p>
+<p>一般化的牛顿方法中，<code>$\Theta$</code>是一个向量，因而一般化的算法是这样的：
+<code>$$ \Theta^{(t+1)} = \Theta^{(t)} - H^{-1} \ell'(\Theta) $$</code>
+其中<code>$H​$</code>是Hessian矩阵，该矩阵中元素定义如下：
+<code>$$ H_{ij} = \frac {\partial^2 \ell} {\partial \Theta_i \partial \Theta_j} $$</code>
+通常情况下你会看到算法收敛一般情况下会执行十几次迭代，和梯度上升比起来算法收敛所需要的迭代次数要少得多。牛顿方法的缺点是每一次迭代你都需要重新计算一次Hession矩阵的逆，Hessian矩阵是一个(n+1)*(n+1)的矩阵，如果你要处理的问题中有大量的特征，将会花费很大的代价，但是对于规模较小 特征数量合理的问题，这通常情况下会是一个很快的算法。</p>
+<h2 id="heading-1">广义线性模型</h2>
+<p>在线性回归中，服从高斯分布
+<code>$$ P(y|X; \Theta) \sim N(\mu, \sigma^2) $$</code>
+在logistics回归中，服从伯努利分布
+<code>$$ P(y|X;\Theta) \sim B(\phi) $$</code>
+上述两种分布只是都是一类分布的特例，这类分布被称为指数分布族。</p>
+<p>指数分布族可以写成以下的形式：
+<code>$$ P(y;η)=b(y)exp(η^T T(y)-a(η)) $$</code>
+其中η被称为分布的自然参数，T(y)被称为充分统计量。</p>
+<p>通常情况下，我们经常见到的许多例子里，包括伯努利分布和高斯分布，$T(y)=y$。</p>
+<p>我们固定这三个函数a、b和T，那么这个公式就定义了一个概率分布的集合，它以η为参数，定义了一类概率分布。</p>
+<p>这里推导一下分啥说伯努利分布、高斯分布都是指数分布族的特例。</p>
+<h3 id="heading-2">推导伯努利分布</h3>
+<p><code>$$ P(y=1;\phi) = \phi \\ P(y;\phi) = \phi^y (1 - \phi)^{1-y} \\ = exp(log\phi^y(1-\phi)^{1-y}) \\ = exp(ylog\phi + (1-y)log(1-\phi)) \\ = exp(log \frac \phi {1-\phi} y + log(1-\phi)) \\ = b(y)exp(η^T T(y)-a(η)) \quad where \quad b(y)=1, \quad η= log \frac \phi {1-\phi},  \quad T(y)=y,  \quad a(η)=-log(1-\phi) $$</code></p>
+<p>感觉上面的推导像在硬拼，呵呵。</p>
+<h3 id="heading-3">推导高斯分布</h3>
+<p><code>$$ N(\mu, \sigma^2) \quad assume \quad \sigma=1 \\ N(\mu, \sigma^2) = \frac 1 {\sqrt{2\pi}} (- \frac 1 2 (y - \mu)^2) \\ = \frac 1 {\sqrt{2\pi}} exp(- \frac 1 2 y^2)exp(\mu y - \frac 1 2 \mu^2) \\ =  b(y)exp(η^T T(y)-a(η)) \quad where \quad b(y)=\frac 1 {\sqrt{2\pi}} exp(- \frac 1 2 y^2), \quad η= \mu,  \quad T(y)=y,  \quad a(η)=\frac 1 2 \mu^2 = \frac 1 2 η^2 $$</code></p>
+<p>感觉上面的推导像在硬拼，呵呵。</p>
+<h3 id="heading-4">指数分布族推导出一个广义线性模型</h3>
+<p>广义线性模型通常被简写为GLM。</p>
+<p>三个假设，也可以将它们看成是设计决策，这可以使我生成广义线性模型：
+<code>$$ Assume: \quad y|X;\Theta \quad \sim ExpFamily(η) \\ Give \quad X, goal \quad is \quad to \quad output \quad ExpFamily[T(y)|X] , \quad Want \quad h(X) = ExpFamily[T(y)|X] \\ η=\Theta^T X $$</code>
+下面将伯努利分布推导出对应的广义线性模型
+<code>$$ h_\Theta(X) = ExpFamily[T(y)|X; \Theta] = P(y=1|X;\Theta) =  P(y=1;\phi)  \\ =\phi \\ = \frac 1 {1+e^{-\mu}} \\ = \frac 1 {1+e^{-\Theta^T X}} $$</code>
+这里
+<code>$$ g(η) = ExpFamily[y;η] = \frac 1 {1+ e^{-η}} $$</code>
+<code>$g(η)$</code>将自然参数η与y的期望值联系起来，这个函数被称为正则响应函数，而<code>$g^{-1}$</code>被称为正则关联函数。</p>
+<h2 id="heading-5">多项式分布</h2>
+<p>多项式分布是指在k可能取值上的分布。</p>
+<p>推导过程：
+<code>$$ y \in {1, \cdots, k} \\ Parameters:  \quad \phi_1,\phi_2,\cdots,\phi_k \\ P(y=i) = \phi_i \\ \sum_{i=1}^k P(y=i) = 1 \\ \phi_k = 1- \sum_{i=1}^{k-1} \phi_i \\ Assume \quad Parameters: \quad  \phi_1,\phi_2,\cdots,\phi_{k-1} \\ T(1) = \begin{bmatrix}1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}, \quad T(k-1) = \begin{bmatrix}0 \\ 0 \\ \vdots \\ 1 \end{bmatrix}, \quad T(k) = \begin{bmatrix}0 \\ 0 \\ \vdots \\ 0 \end{bmatrix} \in \mathbb R^{k-1} \\ \mathbb{1}\{True\} =1, \mathbb{1}\{False\} =0 \\ T(y)_i = \mathbb{1}\{y=i\} \\ P(y) = \phi^{\mathbb{1}\{y=1\}}\phi^{\mathbb{1}\{y=2\}}\cdots\phi^{\mathbb{1}\{y=k\}}\\ =\phi^{T(y)_{1}}\phi^{T(y)_{2}}\cdots\phi^{T(y)_{k-1}}\phi^{1-\sum_{j=1}^{k-1}T(y)_j} \\ = b(y)exp(η^T T(y)-a(η)) \quad where \quad b(y)=1, \quad η= \begin{bmatrix} log(\frac {\phi_1} {\phi_k}) \\ \vdots \\ log(\frac {\phi_{k-1}} {\phi_k})  \end{bmatrix} \in \mathbb R^{k-1},  \quad T(y)_i = \mathbb{1}\{y=i\},  \quad a(η)=-log(\phi_k) $$</code>
+这样就将概率分布从多项式分布的形式转化成了指数分布族的形式。</p>
+<p>这里将η定义为$\Theta$的函数，求解这个式，最后得到这个结果：
+<code>$$ \phi_i= \frac {e^η_i} {1+ \sum_{j=1}^{k-1} e^{η_j}}  \quad Here \quad  (i=1, \cdots, k-1) \\ = \frac {e^{\Theta_i^T X}} {1+ \sum_{j=1}^{k-1} e^{\Theta_j^T X}} $$</code>
+学习算法的假设函数就可以推导为：
+<code>$$ h_\Theta(X) = ExpFamily[T(y)|X;\Theta] \\ = ExpFamily\left[ \begin{matrix} \mathbb 1\{j=1\} \\ \vdots \\ \mathbb 1\{j=k-1\}  \end{matrix} \arrowvert X; \Theta \right] \\ = \begin{bmatrix} \phi_1 \\ \vdots \\ \phi_{k-1}  \end{bmatrix} \\ = \begin{bmatrix} \frac {e^{\Theta_1^T X}} {1+ \sum_{j=1}^{k-1} e^{\Theta_j^T X}}  \\ \vdots \\  \frac {e^{\Theta_{k-1}^T X}} {1+ \sum_{j=1}^{k-1} e^{\Theta_j^T X}} \end{bmatrix} $$</code>
+上述算法就叫softmax回归，是logistics回归的推广。</p>
+<p>softmax回归的求解过程就可以归纳如下：
+<code>$$ Assume \quad  y \in \{1, \cdots, k\} \\ You \quad Have: \quad (X^{(1)}, y^{(1)}), \cdots, (X^{(m)}, y^{(m)}) \\ L(\Theta) = \Pi_{i=1}^m P(y^{(i)}|X^{(i)}; \Theta) \\ = \Pi_{i=1}^m \phi_1^{\mathbb 1 \{y^{(i)} = 1\}} \cdots \phi_k^{\mathbb 1 \{y^{(i)} = k\}} \quad Here \quad  \begin{bmatrix} \phi_1 \\ \vdots \\ \phi_{k-1}  \end{bmatrix}  = \begin{bmatrix} \frac {e^{\Theta_1^T X}} {1+ \sum_{j=1}^{k-1} e^{\Theta_j^T X}}  \\ \vdots \\  \frac {e^{\Theta_{k-1}^T X}} {1+ \sum_{j=1}^{k-1} e^{\Theta_j^T X}} \end{bmatrix} $$</code>
+然后使用极大似然估计法求出<code>$\Theta$</code>。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">徐新杰</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2017-06-04</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>
+          
+          <a href="/tags/andrew-ng/">andrew ng</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B005/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">机器学习课程_笔记05</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2017/06/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E8%AF%BE%E7%A8%8B_%E7%AC%94%E8%AE%B003/">
+            <span class="next-text nav-default">机器学习课程_笔记03</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

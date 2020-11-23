@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微服务 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</link>
+    <description>Recent content in 微服务 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 19 Jul 2020 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/%E5%BE%AE%E6%9C%8D%E5%8A%A1/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>微服务中的分布式锁方案</title>
+      <link>https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sun, 19 Jul 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/07/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%96%B9%E6%A1%88/</guid>
+      <description>最近在工作中碰到一个分布式锁问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 为什么需要分布式锁？ 在分布式</description>
+    </item>
+    
+    <item>
+      <title>微服务中的分布式事务方案</title>
+      <link>https://jeremyxu2010.github.io/2020/03/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sun, 01 Mar 2020 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/03/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%96%B9%E6%A1%88/</guid>
+      <description>最近在工作中碰到一个分布式事务问题，这个问题之前做项目的过程也搞过，不过没有深入整理，这个周末有时间刚好整理一把。 问题引出 在微服务架构中，随</description>
+    </item>
+    
+    <item>
+      <title>servicecomb-saga源码解读</title>
+      <link>https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Sat, 18 Aug 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/servicecomb-saga%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>前面写过一篇servicecomb-saga开发实战，当时说后面有时间写一篇源码解读，不过工作一忙，就把这事儿忘了，今天终于得闲可以补上这个</description>
+    </item>
+    
+    <item>
+      <title>研究监控系统之prometheus</title>
+      <link>https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/</link>
+      <pubDate>Sun, 05 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/%E7%A0%94%E7%A9%B6%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F%E4%B9%8Bprometheus/</guid>
+      <description>这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标： 宿主机的CPU、内存使用情况 自身系统的各进程占用CPU、内存使用情况 自身系统本</description>
+    </item>
+    
+    <item>
+      <title>研究调用链跟踪技术之jaeger</title>
+      <link>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%9F%E8%B8%AA%E6%8A%80%E6%9C%AF%E4%B9%8Bjaeger/</link>
+      <pubDate>Sun, 22 Jul 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6%E8%B0%83%E7%94%A8%E9%93%BE%E8%B7%9F%E8%B8%AA%E6%8A%80%E6%9C%AF%E4%B9%8Bjaeger/</guid>
+      <description>最近在做微服务构架里有关调用链跟踪（也有叫分布式追踪）的部分，有一些心得，这里总结一些。 为什么有必要跟踪调用链 当我们进行微服务架构开发时，通</description>
+    </item>
+    
+    <item>
+      <title>研究consul的service mesh功能</title>
+      <link>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/</link>
+      <pubDate>Fri, 06 Jul 2018 10:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/%E7%A0%94%E7%A9%B6consul%E7%9A%84service-mesh%E5%8A%9F%E8%83%BD/</guid>
+      <description>之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天consul发布了1.2版本，宣称其实现了Servi</description>
+    </item>
+    
+    <item>
+      <title>servicecomb-saga开发实战</title>
+      <link>https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Mon, 02 Jul 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/07/servicecomb-saga%E5%BC%80%E5%8F%91%E5%AE%9E%E6%88%98/</guid>
+      <description>最近的工作主要是微服务框架的设计与开发，期间要解决多个微服务的分布式事务问题，由于要解决的主要场景是用spring boot写的java项目，</description>
+    </item>
+    
+    <item>
+      <title>consul基础运维-备份还原导入导出</title>
+      <link>https://jeremyxu2010.github.io/2018/05/consul%E5%9F%BA%E7%A1%80%E8%BF%90%E7%BB%B4-%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/</link>
+      <pubDate>Mon, 21 May 2018 14:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/consul%E5%9F%BA%E7%A1%80%E8%BF%90%E7%BB%B4-%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E5%AF%BC%E5%85%A5%E5%AF%BC%E5%87%BA/</guid>
+      <description>本文档目标 工作中要保证生产环境部署的consul的集群能够安全稳定地对外提供服务，即使出现系统故障也能快速恢复，这里将讲述部分的备份还原操作</description>
+    </item>
+    
+    <item>
+      <title>consul安全加固</title>
+      <link>https://jeremyxu2010.github.io/2018/05/consul%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</link>
+      <pubDate>Fri, 18 May 2018 20:15:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/consul%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</guid>
+      <description>[TOC] 本文档目标 最近的工作需要对默认安装的consul集群进行安全加固，这里将安全加固的步骤记录下来。 consul 术语 首先介绍下在 consul 中会经常见到的术语： n</description>
+    </item>
+    
+  </channel>
+</rss>

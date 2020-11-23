@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>isolation on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/isolation/</link>
+    <description>Recent content in isolation on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 15 Mar 2020 22:36:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/isolation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>数据库基础知识</title>
+      <link>https://jeremyxu2010.github.io/2020/03/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</link>
+      <pubDate>Sun, 15 Mar 2020 22:36:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2020/03/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</guid>
+      <description>最近做的工作与数据库操作有一些关系，这里将数据库的一些基础知识总结一下以备忘。 为什么需要ACID？ 读书时学过关系型数据库必须具备四个特性：原</description>
+    </item>
+    
+    <item>
+      <title>数据库事务备忘</title>
+      <link>https://jeremyxu2010.github.io/2017/10/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sun, 01 Oct 2017 23:36:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/10/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E5%A4%87%E5%BF%98/</guid>
+      <description>数据库事务备忘 以前对数据库事务的隔离级别概念不是很清楚，今天看到一篇文章，将这个事情讲得比较清楚，这里记录一下。 数据库事务的特性 原子性（At</description>
+    </item>
+    
+  </channel>
+</rss>

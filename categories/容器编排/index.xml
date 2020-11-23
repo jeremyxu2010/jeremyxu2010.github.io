@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>容器编排 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/</link>
+    <description>Recent content in 容器编排 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Sun, 10 Nov 2019 18:35:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>优化nginx-ingress-controller并发性能</title>
+      <link>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</link>
+      <pubDate>Sun, 10 Nov 2019 18:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/%E4%BC%98%E5%8C%96nginx-ingress-controller%E5%B9%B6%E5%8F%91%E6%80%A7%E8%83%BD/</guid>
+      <description>这两天遇到一个很有意思的应用场景：有一个业务应用部署在kubernetes容器中，如果将该应用以Kubernetes Service NodePort暴露出</description>
+    </item>
+    
+    <item>
+      <title>kubernetes集群部署运营实践总结</title>
+      <link>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 02 Nov 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/11/kubernetes%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2%E8%BF%90%E8%90%A5%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/</guid>
+      <description>最近为项目奔波，都没有多少时间写博文了。。。不过这大半个月在客户现场处理了大量kubernetes集群部署运营的相关工作，这里总结一下。 ku</description>
+    </item>
+    
+    <item>
+      <title>避免容器中运行的Java应用被杀掉</title>
+      <link>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</link>
+      <pubDate>Sun, 06 Oct 2019 13:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/10/%E9%81%BF%E5%85%8D%E5%AE%B9%E5%99%A8%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84java%E5%BA%94%E7%94%A8%E8%A2%AB%E6%9D%80%E6%8E%89/</guid>
+      <description>今天测试环境遇到一个问题，一个Java的容器由于OOM频繁被Killed掉。这个问题还经常出现的，这里记录下解决过程。 为啥会频繁OOM？ 首先</description>
+    </item>
+    
+    <item>
+      <title>生成多平台docker镜像</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</link>
+      <pubDate>Mon, 30 Sep 2019 20:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%94%9F%E6%88%90%E5%A4%9A%E5%B9%B3%E5%8F%B0docker%E9%95%9C%E5%83%8F/</guid>
+      <description>工作中需要在一台x86服务器从写好的golang程序源码生成linux/amd64、linux/arm64 docker镜像，查阅了下资料，这</description>
+    </item>
+    
+    <item>
+      <title>kubernetes CSI存储插件探究</title>
+      <link>https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/</link>
+      <pubDate>Sun, 29 Sep 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/kubernetes-csi%E5%AD%98%E5%82%A8%E6%8F%92%E4%BB%B6%E6%8E%A2%E7%A9%B6/</guid>
+      <description>本周帮助为一个kubernetes CSI插件实现了动态供应(dynamic provisioning)功能，在这个过程中学习并了解了kuber</description>
+    </item>
+    
+    <item>
+      <title>kubernetes使用ceph存储卷</title>
+      <link>https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/</link>
+      <pubDate>Sat, 07 Sep 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/kubernetes%E4%BD%BF%E7%94%A8ceph%E5%AD%98%E5%82%A8%E5%8D%B7/</guid>
+      <description>最近我在kubernetes中使用了ceph的rbd及cephfs存储卷，遇到了一些问题，并逐一解决了，在这里记录一下。 ceph rbd存储卷扩容失</description>
+    </item>
+    
+    <item>
+      <title>kubernetes中部署mysql高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sat, 31 Aug 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/kubernetes%E4%B8%AD%E9%83%A8%E7%BD%B2mysql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很多软件后端使用的存储都是mysql，当这些软件系统在生产环境部署时，都会面临一个严峻问题，需要在生产环境中部署一个高可用的mysql集群服</description>
+    </item>
+    
+    <item>
+      <title>让kong监听80和443端口</title>
+      <link>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</link>
+      <pubDate>Sat, 17 Aug 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/08/%E8%AE%A9kong%E7%9B%91%E5%90%AC80%E5%92%8C443%E7%AB%AF%E5%8F%A3/</guid>
+      <description>问题 使用kong的chart，在kubernetes集群默认安装出来kong的容器是监听8000和8443端口的，而为了让外部以80和443</description>
+    </item>
+    
+    <item>
+      <title>限制kubernetes里的系统资源使用</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/</link>
+      <pubDate>Sun, 28 Jul 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E9%99%90%E5%88%B6kubernetes%E9%87%8C%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90%E4%BD%BF%E7%94%A8/</guid>
+      <description>工作中需要对kubernetes中workload使用的系统资源进行一些限制，本周花时间研究了一下，这里记录一下。 kubernetes的系统</description>
+    </item>
+    
+    <item>
+      <title>使用Aggregated APIServer的方式构建API服务</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Sat, 20 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E4%BD%BF%E7%94%A8aggregated-apiserver%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9E%84%E5%BB%BAapi%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上</description>
+    </item>
+    
+    <item>
+      <title>彻底解决pvc无法mount的问题</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 14 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，AttachDetachController执行detac</description>
+    </item>
+    
+    <item>
+      <title>解决pvc无法mount的问题</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sun, 07 Jul 2019 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E8%A7%A3%E5%86%B3pvc%E6%97%A0%E6%B3%95mount%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+      <description>这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。 问题一 问题描述 一个deployment，在其</description>
+    </item>
+    
+    <item>
+      <title>完善cni的ipam方案</title>
+      <link>https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sun, 07 Jul 2019 14:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/07/%E5%AE%8C%E5%96%84cni%E7%9A%84ipam%E6%96%B9%E6%A1%88/</guid>
+      <description>上两周，为了优化k8s的网络性能，最终选择了macvlan+ptp方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的I</description>
+    </item>
+    
+    <item>
+      <title>清除k8s使用underlay网络的障碍</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</link>
+      <pubDate>Sun, 30 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%B8%85%E9%99%A4k8s%E4%BD%BF%E7%94%A8underlay%E7%BD%91%E7%BB%9C%E7%9A%84%E9%9A%9C%E7%A2%8D/</guid>
+      <description>k8s中使用underlay网络的障碍 上一篇说到在k8s里使用underlay网络有一个弊端，使用了underlay网络的pod无法访问se</description>
+    </item>
+    
+    <item>
+      <title>kuberntes中的redis集群性能调优</title>
+      <link>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
+      <pubDate>Sun, 23 Jun 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/kuberntes%E4%B8%AD%E7%9A%84redis%E9%9B%86%E7%BE%A4%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
+      <description>上周在kubernetes里发布了一个redis PaaS服务，不过其它同学简单测了一下，虽说功能上没啥问题，但性能相比物理上运行的Redis</description>
+    </item>
+    
+    <item>
+      <title>构建基于kubernetes的PaaS服务</title>
+      <link>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</link>
+      <pubDate>Tue, 11 Jun 2019 20:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/06/%E6%9E%84%E5%BB%BA%E5%9F%BA%E4%BA%8Ekubernetes%E7%9A%84paas%E6%9C%8D%E5%8A%A1/</guid>
+      <description>工作中需要向外部提供一些诸如MySQL、Redis、MongoDB、Kafka之类的基础PaaS服务。以前每做一个PaaS都要自己去实现工作</description>
+    </item>
+    
+    <item>
+      <title>kubernetes中基础服务排障记</title>
+      <link>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</link>
+      <pubDate>Thu, 30 May 2019 18:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/kubernetes%E4%B8%AD%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1%E6%8E%92%E9%9A%9C%E8%AE%B0/</guid>
+      <description>工作中需要将原本部署在物理机或虚拟机上的一些基础服务搬到kubernetes中，在搬的过程中遇到了不少坑，这里记录一下。 异常网络引起的问题 之</description>
+    </item>
+    
+    <item>
+      <title>保持Kubernetes容器平台稳定性</title>
+      <link>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</link>
+      <pubDate>Tue, 21 May 2019 20:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/%E4%BF%9D%E6%8C%81kubernetes%E5%AE%B9%E5%99%A8%E5%B9%B3%E5%8F%B0%E7%A8%B3%E5%AE%9A%E6%80%A7/</guid>
+      <description>这两天搭建了一套新的kubernetes环境，由于这套环境会被用于演示，所以持续观察了好几天这套环境，发现不少容器平台稳定性的问题，这里记录</description>
+    </item>
+    
+    <item>
+      <title>巧妙调试docker容器</title>
+      <link>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</link>
+      <pubDate>Sun, 21 Apr 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/04/%E5%B7%A7%E5%A6%99%E8%B0%83%E8%AF%95docker%E5%AE%B9%E5%99%A8/</guid>
+      <description>问题 工作中经常发现一些第三方写的docker容器运行有问题，这时我们会通过docker logs命令观察容器的运行日志。很可惜，有时容器中运行</description>
+    </item>
+    
+    <item>
+      <title>打通到kubernetes集群的网络</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Sun, 31 Mar 2019 21:21:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E6%89%93%E9%80%9A%E5%88%B0kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E7%BD%91%E7%BB%9C/</guid>
+      <description>最近在工作中验证istio的网格扩展方案，其中涉及打通网络的需求，也即希望在外部虚拟机可以连通kubernetes集群内部的服务IP、Pod</description>
+    </item>
+    
+    <item>
+      <title>PosgreSQL高可用集群实践</title>
+      <link>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Fri, 15 Mar 2019 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/posgresql%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E5%AE%9E%E8%B7%B5/</guid>
+      <description>工作中一个第三方软件使用了Posgresql数据库，而在我们的场景里，我们需要保证Posgresql数据库的高可用，网上查找了一下，发现st</description>
+    </item>
+    
+    <item>
+      <title>使用docker in docker</title>
+      <link>https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/</link>
+      <pubDate>Sun, 24 Feb 2019 19:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/02/%E4%BD%BF%E7%94%A8docker-in-docker/</guid>
+      <description>工作中需要在容器里操作docker镜像，而且又不想污染宿主机上的docker镜像，找到了docker in docker(dind)的方案，这里记</description>
+    </item>
+    
+    <item>
+      <title>docker日志丢失问题分析</title>
+      <link>https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sat, 12 Jan 2019 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/01/docker%E6%97%A5%E5%BF%97%E4%B8%A2%E5%A4%B1%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90/</guid>
+      <description>今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。 问题 工作中把自己写的应用部署到kubernetes中</description>
+    </item>
+    
+    <item>
+      <title>使用prometheus监控多k8s集群</title>
+      <link>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sun, 18 Nov 2018 15:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/11/%E4%BD%BF%E7%94%A8prometheus%E7%9B%91%E6%8E%A7%E5%A4%9Ak8s%E9%9B%86%E7%BE%A4/</guid>
+      <description>最近在做k8s相关的开发工作，涉及不少k8s的相关知识，这里记录下。 问题引出 遇到一个需求，要使用prometheus监控多个k8s集群。 调研</description>
+    </item>
+    
+    <item>
+      <title>docker的两个bug</title>
+      <link>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</link>
+      <pubDate>Sat, 13 Oct 2018 20:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/docker%E7%9A%84%E4%B8%A4%E4%B8%AAbug/</guid>
+      <description>这几天在工作中使用docker发现了docker的两个bug，这里记录下以备忘。 docker容器生成僵尸进程 现象 公司开发服务器上使用dock</description>
+    </item>
+    
+    <item>
+      <title>harbor源码解读</title>
+      <link>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 10 Sep 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/</guid>
+      <description>harbor基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来</description>
+    </item>
+    
+    <item>
+      <title>k8s中使用cert-manager玩转证书</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</link>
+      <pubDate>Sun, 26 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/</guid>
+      <description>前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很</description>
+    </item>
+    
+    <item>
+      <title>搭建k8s的开发调试环境</title>
+      <link>https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/</link>
+      <pubDate>Tue, 21 Aug 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/</guid>
+      <description>最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。 准备虚拟机</description>
+    </item>
+    
+    <item>
+      <title>k8s加入TLS安全访问</title>
+      <link>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</link>
+      <pubDate>Sun, 12 Aug 2018 12:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/08/k8s%E5%8A%A0%E5%85%A5tls%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE/</guid>
+      <description>以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。 生成并信任自签名证书 首先这里生成自签名的服</description>
+    </item>
+    
+    <item>
+      <title>k8s学习记录02</title>
+      <link>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/</link>
+      <pubDate>Mon, 21 May 2018 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9502/</guid>
+      <description>部署镜像仓库harbor 官方文档中写得很清楚，这里简单概括一下： # 克隆git项目 $ git clone https://github.com/vmware/harbor $ cd harbor/contrib/helm/harbor # Download external dependent charts $ helm dependency update # 编辑部分配置项 $ vim values.yml ...... externalDomain: harbor.local</description>
+    </item>
+    
+    <item>
+      <title>k8s学习记录01</title>
+      <link>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/</link>
+      <pubDate>Sun, 20 May 2018 18:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/k8s%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%9501/</guid>
+      <description>最近在本机macOS安装了开发用的k8s集群之后，花了些时间研究k8s，在这个过程中有一些零零星星的实操技巧，在这里记录一下，这些实际操作技</description>
+    </item>
+    
+    <item>
+      <title>基于Docker for macOS的Kubernetes本地环境搭建与应用部署</title>
+      <link>https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 05 May 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/05/%E5%9F%BA%E4%BA%8Edocker-for-macos%E7%9A%84kubernetes%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2/</guid>
+      <description>最近的工作跟微服务有关，偶然在网上发现一个用k8s写微服务的小例子，觉得这样写微服务真的好简单，都不用在程序框架层面实现服务注册与服务发现了</description>
+    </item>
+    
+    <item>
+      <title>CentOS7部署k8s集群</title>
+      <link>https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Sun, 28 Jan 2018 22:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/01/centos7%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/</guid>
+      <description>环境介绍及准备 操作系统采用Centos7.3 64位，细节如下： [root@k8s-master ~]# uname -a Linux k8s-master 3.10.0-327.el7.x86_64 #1 SMP Thu Nov 19 22:10:57 UTC 2015 x86_64 x86_64 x86_64 GNU/Linux [root@k8s-master ~]# cat /etc/redhat-release CentOS Linux release 7.2.1511 (Core) 主机信息 本文准备了三台</description>
+    </item>
+    
+    <item>
+      <title>boot2docker中安装docker-compose</title>
+      <link>https://jeremyxu2010.github.io/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/</link>
+      <pubDate>Sun, 29 Jan 2017 02:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/boot2docker%E4%B8%AD%E5%AE%89%E8%A3%85docker-compose/</guid>
+      <description>boot2docker中未安装docker-compose，同时无法自动挂载我在宿主机上共享的目录。研究了下，终于找到办法了，记录如下： sudo mkdir</description>
+    </item>
+    
+    <item>
+      <title>docker源码分析-Daemon创建及启动</title>
+      <link>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
+      <pubDate>Thu, 06 Oct 2016 04:22:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-daemon%E5%88%9B%E5%BB%BA%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
+      <description>上一篇分析了Docker Client的源码运行逻辑，本篇接着分析Docker Daemon的运行逻辑。Docker Daemon的运行逻辑很复杂</description>
+    </item>
+    
+    <item>
+      <title>docker源码分析-Client创建与命令执行</title>
+      <link>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-client%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/</link>
+      <pubDate>Wed, 05 Oct 2016 15:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/10/docker%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-client%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/</guid>
+      <description>一直在研究docker，最近被人问到docker到底是怎么工作的却不是太清楚，在网上偶然看到一本讲docker源码的电子书，花了整晚看了下，</description>
+    </item>
+    
+    <item>
+      <title>获取docker容器的主机虚拟网卡</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/</link>
+      <pubDate>Mon, 19 Sep 2016 00:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E8%8E%B7%E5%8F%96docker%E5%AE%B9%E5%99%A8%E7%9A%84%E4%B8%BB%E6%9C%BA%E8%99%9A%E6%8B%9F%E7%BD%91%E5%8D%A1/</guid>
+      <description>起因 今天看到一个做docker开发工程师写的如何实现docker网络隔离的方案，总的来说就是找到docker容器对应的主机虚拟网卡，然后使用</description>
+    </item>
+    
+    <item>
+      <title>研究pipework</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</link>
+      <pubDate>Thu, 01 Sep 2016 22:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6pipework/</guid>
+      <description>很早以前就听说过pipework，据说面对一些复杂的网络配置场景，docker自带的网络模式就有些力不从心了，很多人都在用pipework。</description>
+    </item>
+    
+    <item>
+      <title>尝试docker的overlay网络</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Mon, 29 Aug 2016 00:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E5%B0%9D%E8%AF%95docker%E7%9A%84overlay%E7%BD%91%E7%BB%9C/</guid>
+      <description>docker搭建起集群后，跨主机的容器相互之间通信就要另想方案了。幸好docker1.9之后内置了跨节点通信技术Overlay网络，这里将使</description>
+    </item>
+    
+    <item>
+      <title>Docker生态会重蹈Hadoop的覆辙吗？(转)</title>
+      <link>https://jeremyxu2010.github.io/2016/08/docker%E7%94%9F%E6%80%81%E4%BC%9A%E9%87%8D%E8%B9%88hadoop%E7%9A%84%E8%A6%86%E8%BE%99%E5%90%97%E8%BD%AC/</link>
+      <pubDate>Sun, 28 Aug 2016 22:23:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/docker%E7%94%9F%E6%80%81%E4%BC%9A%E9%87%8D%E8%B9%88hadoop%E7%9A%84%E8%A6%86%E8%BE%99%E5%90%97%E8%BD%AC/</guid>
+      <description>docker最近一年可真是火，不过刚好看到下面这篇文章，觉得还是很有道理的。转载过来研读并思考一下，转载自这里。 Docker的兴起和Hado</description>
+    </item>
+    
+    <item>
+      <title>重搭docker集群</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 24 Aug 2016 23:39:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E9%87%8D%E6%90%ADdocker%E9%9B%86%E7%BE%A4/</guid>
+      <description>以前尝试使用consul搭建了docker集群，当时对底层为什么要执行那些命令不是太理解，直到昨天研究了etcd集群之后，终于对docker</description>
+    </item>
+    
+    <item>
+      <title>搭建简易的docker集群</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 29 Jun 2016 02:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84docker%E9%9B%86%E7%BE%A4/</guid>
+      <description>今天又抽时间研究了一下如何搭建docker集群，终于找到配合consul、docker-machine、swarm搭建一个简易docker集</description>
+    </item>
+    
+    <item>
+      <title>试用docker功能</title>
+      <link>https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/</link>
+      <pubDate>Sun, 19 Jun 2016 23:19:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/06/%E8%AF%95%E7%94%A8docker%E5%8A%9F%E8%83%BD/</guid>
+      <description>花了好几天，终于看完了《Docker进阶与实战》，今天终于抽出时间来实践一把，这里把今天实战的过程记录一下。 安装Docker 因为我使用的Ma</description>
+    </item>
+    
+  </channel>
+</rss>

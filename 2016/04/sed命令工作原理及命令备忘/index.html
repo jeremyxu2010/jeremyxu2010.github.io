@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>sed命令工作原理及命令备忘 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/04/sed%E5%91%BD%E4%BB%A4%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="sed命令工作原理及命令备忘" />
+<meta property="og:description" content="sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/04/sed%E5%91%BD%E4%BB%A4%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98/" />
+<meta property="article:published_time" content="2016-04-12T23:10:00+08:00" />
+<meta property="article:modified_time" content="2016-04-12T23:10:00+08:00" />
+<meta itemprop="name" content="sed命令工作原理及命令备忘">
+<meta itemprop="description" content="sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查">
+<meta itemprop="datePublished" content="2016-04-12T23:10:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-04-12T23:10:00&#43;08:00" />
+<meta itemprop="wordCount" content="2597">
+
+
+
+<meta itemprop="keywords" content="linux,sed," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="sed命令工作原理及命令备忘"/>
+<meta name="twitter:description" content="sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">sed命令工作原理及命令备忘</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-04-12 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%B7%A5%E5%85%B7/"> 工具 </a>
+            
+          </div>
+        <span class="more-meta"> 约 2597 字 </span>
+        <span class="more-meta"> 预计阅读 6 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading-1">核心逻辑</a></li>
+    <li><a href="#heading-2">命令组织形式</a>
+      <ul>
+        <li><a href="#address">address</a></li>
+        <li><a href="#heading-3">!</a></li>
+        <li><a href="#cmd">cmd</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li>
+      <ul>
+        <li></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>sed是一个非交互式的流编辑器（stream editor）。所谓非交互式，是指使用sed只能在命令行下输入编辑命令来编辑文本，然后在屏幕上查看输出；而所谓流编辑器，是指sed每次只从文件（或输入）读入一行，然后对该行进行指定的处理，并将结果输出到屏幕（除非取消了屏幕输出又没有显式地使用打印命令），接着读入下一行。整个文件像流水一样被逐行处理然后逐行输出。</p>
+<p>工作中经常会使用sed命令对文件进行各种操作，之前一直对它的工作原理不是很了解，只不过在网上抄一些命令完成操作，有时遇到了问题，就问一问身边的“脚本小王子”，基本上都可以搞定。今天下班了决定对sed命令深入学习一下。</p>
+<h1 id="heading">工作原理</h1>
+<h2 id="heading-1">核心逻辑</h2>
+<p>sed一次处理一行内容。处理时，把当前处理的行存储在临时缓冲区中，称为“模式空间”（pattern space），接着用sed命令处理缓冲区(pattern space)中的内容，处理完成后，把缓冲区(pattern space)的内容送往屏幕。接着清空缓冲区(pattern space)，处理下一行，这样不断重复，直到文件末尾。</p>
+<p>sed里有两个空间：pattern space与hold space。</p>
+<p>pattern space（模式空间）相当于车间sed把流内容在这里处理；</p>
+<p>hold space（保留空间）相当于仓库，加工的半成品在这里临时储存（当然加工完的成品也在这里存储）。</p>
+<p>sed处理每一行的逻辑：</p>
+<pre><code>1. 先读入一行，去掉尾部换行符，存入pattern space，执行编辑命令。
+
+2. 处理完毕，除非加了-n参数，把现在的pattern space打印出来，在后边打印曾去掉的换行符。
+
+3. 把pattern space内容给hold space，把pattern space置空。
+
+4. 接着读下一行，处理下一行。
+</code></pre>
+<h2 id="heading-2">命令组织形式</h2>
+<p>sed最重要的命令组织形式可以概括为*** [address[,address]][!]{cmd}  ***</p>
+<h3 id="address">address</h3>
+<p>address可以是一个数字，也可以是一个模式，你可以通过逗号要分隔两个address 表示两个address的区间</p>
+<p>man手册上对address的理解比较全面</p>
+<pre><code>Addresses
+       Sed commands can be given with no addresses, in which case the command will be executed for all input lines; with one address, in which case the command will only be executed for input  lines  which  match
+       that  address;  or  with  two addresses, in which case the command will be executed for all input lines which match the inclusive range of lines starting from the first address and continuing to the second
+       address.  Three things to note about address ranges: the syntax is addr1,addr2 (i.e., the addresses are separated by a comma); the line which addr1 matched will always be accepted, even if addr2 selects an
+       earlier line; and if addr2 is a regexp, it will not be tested against the line that addr1 matched.
+
+       After the address (or address-range), and before the command, a !  may be inserted, which specifies that the command shall only be executed if the address (or address-range) does not match.
+
+       The following address types are supported:
+
+       number Match only the specified line number (which increments cumulatively across files, unless the -s option is specified on the command line).
+
+       first~step
+              Match  every step'th line starting with line first.  For example, ``sed -n 1~2p'' will print all the odd-numbered lines in the input stream, and the address 2~5 will match every fifth line, starting
+              with the second.  first can be zero; in this case, sed operates as if it were equal to step.  (This is an extension.)
+
+       $      Match the last line.
+
+       /regexp/
+              Match lines matching the regular expression regexp.
+
+       \cregexpc
+              Match lines matching the regular expression regexp.  The c may be any character.
+
+       GNU sed also supports some special 2-address forms:
+
+       0,addr2
+              Start out in &quot;matched first address&quot; state, until addr2 is found.  This is similar to 1,addr2, except that if addr2 matches the very first line of input the 0,addr2 form will be at the  end  of  its
+              range, whereas the 1,addr2 form will still be at the beginning of its range.  This works only when addr2 is a regular expression.
+
+       addr1,+N
+              Will match addr1 and the N lines following addr1.
+
+       addr1,~N
+              Will match addr1 and the lines following addr1 until the next line whose input line number is a multiple of N.
+</code></pre><h3 id="heading-3">!</h3>
+<p>表示匹配成功后是否执行命令</p>
+<h3 id="cmd">cmd</h3>
+<p>要执行的命令。</p>
+<p>下面摘录一下sed man文档中的常用命令（其中删除了较复杂的与label有关的命令）</p>
+<h5 id="address-1">不可接受address的命令</h5>
+<pre><code>       }      The closing bracket of a { } block.
+</code></pre><h5 id="address-2">可接受零个或一个address的命令</h5>
+<pre><code>       =      Print the current line number.
+
+       a \
+
+       text   Append text, which has each embedded newline preceded by a backslash.
+
+       i \
+
+       text   Insert text, which has each embedded newline preceded by a backslash.
+
+       r filename
+              Append text read from filename.
+
+       R filename
+              Append a line read from filename.  Each invocation of the command reads a line from the file.  This is a GNU extension.
+
+</code></pre><h5 id="address-3">可接受address范围的命令</h5>
+<pre><code>       {      Begin a block of commands (end with a }).
+
+       c \
+
+       text   Replace the selected lines with text, which has each embedded newline preceded by a backslash.
+
+       d      Delete pattern space.  Start next cycle.
+
+       D      If pattern space contains no newline, start a normal new cycle as if the d command was issued.  Otherwise, delete text in the pattern space up to the first newline, and restart cycle with the resul-
+              tant pattern space, without reading a new line of input.
+
+       h H    Copy/append pattern space to hold space.
+
+       g G    Copy/append hold space to pattern space.
+
+       n N    Read/append the next line of input into the pattern space.
+
+       p      Print the current pattern space.
+
+       P      Print up to the first embedded newline of the current pattern space.
+
+       s/regexp/replacement/
+              Attempt to match regexp against the pattern space.  If successful, replace that portion matched with replacement.  The replacement may contain the special character &amp; to refer to that portion of the
+              pattern space which matched, and the special escapes \1 through \9 to refer to the corresponding matching sub-expressions in the regexp.
+
+       w filename
+              Write the current pattern space to filename.
+
+       W filename
+              Write the first line of the current pattern space to filename.  This is a GNU extension.
+
+       x      Exchange the contents of the hold and pattern spaces.
+
+       y/source/dest/
+              Transliterate the characters in the pattern space which appear in source to the corresponding character in dest.
+</code></pre><h1 id="heading-4">常用命令解析</h1>
+<h4 id="sed--n-1p-testtxt"><code>sed -n '1p' test.txt</code></h4>
+<p>打印第一行，这条命令其实应该理解为<code>sed -n '1 p' test.txt</code>, 其中<code>1</code>是一个address，这条命令实际是说按照address的说明，仅第一行被作为要操作的address范围，那么在这个范围里每一行就执行p命令，同时<code>-n</code>说明不要把处理的模式空间内容打印出来，于是最后就打印了第一行。</p>
+<h4 id="sed--i-sabcdefghg-testtxt"><code>sed -i 's/abcd/efgh/g' test.txt</code></h4>
+<p>将文件中所有的abcd替换成efgh，这条命令没有address范围，那么address范围默认就是整个文件范围，这里对整个文件范围里每一行执行<code>s/abcd/efgh/g</code>命令，即将每一行里的abcd替换成efgh, 同时因为有/g选项，一行里如果出现多个abcd, 就每一个都会替换。-i参数说明将直接修改文件，而不仅仅将结果打印到标准输出里(注意MAC OSX下要达成相同效果要写<code>-i ''</code>)。</p>
+<h4 id="sed-thisfishd-testtxt"><code>sed '{/This/{/fish/d}}' test.txt</code></h4>
+<p>删除文件中即有<code>This</code>也有<code>fish</code>的行，这条命令没有address范围，那么address范围默认就是整个文件范围，这里对整个文件范围里每一行执行<code>{/This/{/fish/d}}</code>命令，这是个嵌套命令，意思是先匹配<code>/This/</code>，匹配成功的行再尝试匹配<code>/fish/</code>，如果又匹配成功，则删除该行。</p>
+<h4 id="sed-thisd-fishd-testtxt"><code>sed '{/This/d; /fish/d}' test.txt</code></h4>
+<p>删除文件中有<code>This</code>或<code>fish</code>的行，这条命令与上面那条很像，但逻辑很不一样。这条命令没有address范围，那么address范围默认就是整个文件范围，这里对整个文件范围里每一行执行<code>{/This/d; /fish/d}</code>命令，这也是个嵌套命令，意思是针对当前行，先匹配<code>/This/</code>，如果匹配成功，则删除该行，否则再尝试匹配<code>/fish/</code>，如果匹配成功，则删除该行。</p>
+<h4 id="sed--i-abcdefgh-sxxxyyyyg-testtxt"><code>sed -i '/abcd/,/efgh/ s/xxx/yyyy/g' test.txt</code></h4>
+<p>这条命令就很好理解了，它有address范围，在文件里先匹配<code>/abcd/</code>，以匹配的行为范围的起点，再在文件里匹配<code>/efgh/</code>，以匹配的行为范围的终点，在这个范围里执行<code>s/xxx/yyyy/g</code>命令，这个就不用再解释了。</p>
+<h1 id="heading-5">小结</h1>
+<p>还有一些关于hold space的高级用法，我平时没怎么用到，不过只要头脑里有pattern space与hold space的概念，按sed核心的执行逻辑推演一下，还是可以看懂那些高级用法的，至于要熟练运用的话就得靠多练了。附上<a href="http://sed.sourceforge.net/sed1line_zh-CN.html">sed常用命令及中文解释</a></p>
+<h1 id="ps">PS</h1>
+<p>MAC OSX里记得需要使用<code>brew install gnu-sed</code>安装GNU版的sed，然后使用gsed， 自带的BSD版本sed功能实在弱了点。</p>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-04-12</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/linux/">linux</a>
+          
+          <a href="/tags/sed/">sed</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/04/jvm%E5%BA%95%E5%B1%82%E7%9F%A5%E8%AF%86%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">JVM底层知识备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/">
+            <span class="next-text nav-default">javacv编码mp4视频</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

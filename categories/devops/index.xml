@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>devops on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/categories/devops/</link>
+    <description>Recent content in devops on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Fri, 20 Sep 2019 17:50:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/categories/devops/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>编译arm64平台的软件包</title>
+      <link>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</link>
+      <pubDate>Fri, 20 Sep 2019 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/09/%E7%BC%96%E8%AF%91arm64%E5%B9%B3%E5%8F%B0%E7%9A%84%E8%BD%AF%E4%BB%B6%E5%8C%85/</guid>
+      <description>本周做了较多的国产化适配工作，虽然主要是拿到源码在国产化平台上编译一下，不是太难，但还是总结一下。 国产化平台使用的是arm64v8 CPU芯片</description>
+    </item>
+    
+    <item>
+      <title>MySQL InnoDB Cluster实战</title>
+      <link>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sun, 26 May 2019 20:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/05/mysql-innodb-cluster%E5%AE%9E%E6%88%98/</guid>
+      <description>对于MySQL的高可用集群方案，之前在项目实战中使用过简单的主从半同步复制方案、基于Galera的MySQL高可用集群，但总感觉配置太复杂，</description>
+    </item>
+    
+    <item>
+      <title>使用哨兵模式部署redis高可用集群</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Tue, 12 Mar 2019 10:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E9%83%A8%E7%BD%B2redis%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4/</guid>
+      <description>很早以前就听说过redis社区推崇一种哨兵模式的高可用集群部署模式，今天花时间研究了一下，正好记录下来。 哨兵模式 哨兵简介 哨兵模式是在Redi</description>
+    </item>
+    
+    <item>
+      <title>运行docker容器遇到的坑</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</link>
+      <pubDate>Mon, 11 Mar 2019 00:14:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E8%BF%90%E8%A1%8Cdocker%E5%AE%B9%E5%99%A8%E9%81%87%E5%88%B0%E7%9A%84%E5%9D%91/</guid>
+      <description>今天工作中，需要在本机启动consul、zipkin两个容器，参考docker和zipkin两个镜像的说明，很自然地敲出了以下命令： docker run -d -p</description>
+    </item>
+    
+    <item>
+      <title>使用TravisCI做个人博客的自动构建</title>
+      <link>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/</link>
+      <pubDate>Sun, 10 Mar 2019 10:30:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2019/03/%E4%BD%BF%E7%94%A8travisci%E5%81%9A%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA/</guid>
+      <description>今天又有朋友问我，这个博客是怎么搭建的。在回答后，顺便重新申视了下博客的构建部署方式，发现还是有一些改进空间的，刚好今天有点时间，就把它优化</description>
+    </item>
+    
+    <item>
+      <title>编译自定义Python二进制程序</title>
+      <link>https://jeremyxu2010.github.io/2018/12/%E7%BC%96%E8%AF%91%E8%87%AA%E5%AE%9A%E4%B9%89python%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Fri, 28 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/%E7%BC%96%E8%AF%91%E8%87%AA%E5%AE%9A%E4%B9%89python%E4%BA%8C%E8%BF%9B%E5%88%B6%E7%A8%8B%E5%BA%8F/</guid>
+      <description>工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都</description>
+    </item>
+    
+    <item>
+      <title>SSH的三种端口转发</title>
+      <link>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Sat, 15 Dec 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/ssh%E7%9A%84%E4%B8%89%E7%A7%8D%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91/</guid>
+      <description>最近工作中经常需要ssh登录到某台跳板机，再连接受限网络环境中的某台服务器。以前经常用SSH端口转发这一功能，但周围的同事好像对这个并不清楚</description>
+    </item>
+    
+    <item>
+      <title>arm64硬件架构支持总结</title>
+      <link>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Sat, 01 Dec 2018 18:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/12/arm64%E7%A1%AC%E4%BB%B6%E6%9E%B6%E6%9E%84%E6%94%AF%E6%8C%81%E6%80%BB%E7%BB%93/</guid>
+      <description>自从中兴事件后，国家开始在政策上大力支持国产硬软件，甚至在某些项目投标要求上都加上了隐性条件，软件系统必须能在国产硬软件基础上运行。而国产硬</description>
+    </item>
+    
+    <item>
+      <title>追查iptables规则失效原因</title>
+      <link>https://jeremyxu2010.github.io/2018/10/%E8%BF%BD%E6%9F%A5iptables%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E5%8E%9F%E5%9B%A0/</link>
+      <pubDate>Sat, 13 Oct 2018 22:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/%E8%BF%BD%E6%9F%A5iptables%E8%A7%84%E5%88%99%E5%A4%B1%E6%95%88%E5%8E%9F%E5%9B%A0/</guid>
+      <description>今天在工作中用到了一条iptables规则，虽然明白这条规则的意思，但结合之前对iptables的理解，想不明白为什么会这么工作，后来仔细研</description>
+    </item>
+    
+    <item>
+      <title>搭建ELFK日志采集系统</title>
+      <link>https://jeremyxu2010.github.io/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/</link>
+      <pubDate>Sat, 13 Oct 2018 17:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/%E6%90%AD%E5%BB%BAelfk%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86%E7%B3%BB%E7%BB%9F/</guid>
+      <description>最近的工作涉及搭建一套日志采集系统，采用了业界成熟的ELFK方案，这里将搭建过程记录一下。 环境准备 操作系统信息 系统系统：centos7.2 三</description>
+    </item>
+    
+    <item>
+      <title>mongodb高可用集群部署</title>
+      <link>https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 13 Oct 2018 12:50:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/10/mongodb%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
+      <description>最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记</description>
+    </item>
+    
+    <item>
+      <title>docker实战小结</title>
+      <link>https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/</link>
+      <pubDate>Mon, 18 Jun 2018 23:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/06/docker%E5%AE%9E%E6%88%98%E5%B0%8F%E7%BB%93/</guid>
+      <description>好长一段时间没有写博文了，最近的工作主要涉及docker及golang开发，这里输出两篇博文小结一下。 其实以前的工作也涉及过docker，只</description>
+    </item>
+    
+    <item>
+      <title>centos下无污染地打rpm包</title>
+      <link>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</link>
+      <pubDate>Sun, 01 Apr 2018 23:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/04/centos%E4%B8%8B%E6%97%A0%E6%B1%A1%E6%9F%93%E5%9C%B0%E6%89%93rpm%E5%8C%85/</guid>
+      <description>工作中要经常要给centos6, centos7打某应用程序的rpm包。原来安装了两个虚拟机专门干这个工作，但经常会因为打包给系统装上许多没用</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门之playbook</title>
+      <link>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</link>
+      <pubDate>Tue, 20 Mar 2018 22:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/03/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8%E4%B9%8Bplaybook/</guid>
+      <description>Playbooks 简介 Playbooks 与 adhoc 相比,是一种完全不同的运用 ansible 的方式,是非常之强大的. 简单来说,playbooks 是一种简单的配置管理系统与多机器部署系统的基础.</description>
+    </item>
+    
+    <item>
+      <title>ansible简易入门</title>
+      <link>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</link>
+      <pubDate>Mon, 26 Feb 2018 02:53:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/ansible%E7%AE%80%E6%98%93%E5%85%A5%E9%97%A8/</guid>
+      <description>工作中要使用ansible进行自动化部署，这两天花了点时间看了下ansible的文档，也稍稍体验了下，后面会用于项目实战，这里将实验过程中的</description>
+    </item>
+    
+    <item>
+      <title>高可用之keepalived&amp;haproxy</title>
+      <link>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</link>
+      <pubDate>Sun, 25 Feb 2018 21:27:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/%E9%AB%98%E5%8F%AF%E7%94%A8%E4%B9%8Bkeepalivedhaproxy/</guid>
+      <description>项目中用到了keepalived及haproxy来实现服务的高可用，防止单点故障。以前其实也用过keepalived及nginx实现类似的功</description>
+    </item>
+    
+    <item>
+      <title>MariaDB Galera Cluster部署实战</title>
+      <link>https://jeremyxu2010.github.io/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sat, 10 Feb 2018 21:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/mariadb-galera-cluster%E9%83%A8%E7%BD%B2%E5%AE%9E%E6%88%98/</guid>
+      <description>背景 项目中使用的mariadb+gelera集群模式部署，之前一直用的是mysql的master/slave方式部署数据库的，这种集群模式以</description>
+    </item>
+    
+    <item>
+      <title>CentOS6下rpm打包实战</title>
+      <link>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Tue, 06 Feb 2018 20:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/centos6%E4%B8%8Brpm%E6%89%93%E5%8C%85%E5%AE%9E%E6%88%98/</guid>
+      <description>最近的工作需要将以前编译安装的软件包打包成rpm包，这里将打包过程记录一下以备忘。 准备rpm打包环境 我这里用的操作系统是CentOS6.7，</description>
+    </item>
+    
+    <item>
+      <title>powershell学习备忘</title>
+      <link>https://jeremyxu2010.github.io/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Sat, 03 Feb 2018 23:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2018/02/powershell%E5%AD%A6%E4%B9%A0%E5%A4%87%E5%BF%98/</guid>
+      <description>背景 早就听说微软的powershell非常强大，凭借它可以全命令行操控windows服务器了。最近终于要在工作中用到它了，于是花了几个小时将</description>
+    </item>
+    
+    <item>
+      <title>docker排雷记</title>
+      <link>https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/</link>
+      <pubDate>Fri, 03 Feb 2017 20:20:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/02/docker%E6%8E%92%E9%9B%B7%E8%AE%B0/</guid>
+      <description>上周末使用docker做了一个简化应用分发的小例子，但今天在最新版本的docker上一运行就出错，研究了好半天，终于将这些坑都填过去了，这里</description>
+    </item>
+    
+    <item>
+      <title>分发JavaWeb项目之docker方案</title>
+      <link>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sat, 28 Jan 2017 23:08:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2017/01/%E5%88%86%E5%8F%91javaweb%E9%A1%B9%E7%9B%AE%E4%B9%8Bdocker%E6%96%B9%E6%A1%88/</guid>
+      <description>最近做了个小的Java Web脚手架工程。工程项目虽小，但算是一个很典型的Java Web项目，依赖于数据库，Java写的后端代码，JavaSc</description>
+    </item>
+    
+    <item>
+      <title>TCP细节分析</title>
+      <link>https://jeremyxu2010.github.io/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/</link>
+      <pubDate>Tue, 20 Sep 2016 23:44:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/tcp%E7%BB%86%E8%8A%82%E5%88%86%E6%9E%90/</guid>
+      <description>昨天阅读一篇讲tcpdump使用技巧的文章，里面简单提到了TCP握手挥手的流程，还附了一片图片。 虽然TCP握手挥手大学里学到，但很惭愧竟忘得</description>
+    </item>
+    
+    <item>
+      <title>tcpdump使用技巧（转载）</title>
+      <link>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</link>
+      <pubDate>Mon, 19 Sep 2016 23:54:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/tcpdump%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E8%BD%AC%E8%BD%BD/</guid>
+      <description>很早就用过Wireshark进行抓包分析，但当时写过滤表达式很是一知半解，多半是从网上抄来的，根本没理解过滤表达式的含义。今天有幸看到一篇t</description>
+    </item>
+    
+    <item>
+      <title>研究Open vSwitch</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</link>
+      <pubDate>Fri, 09 Sep 2016 01:48:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E7%A0%94%E7%A9%B6open-vswitch/</guid>
+      <description>概念 现在云计算大行其道，以kvm和docker为代表，极大地利用了机器的硬件资源，模拟了操作系统，而在海量虚拟机场景下，传统的硬件交换机越来</description>
+    </item>
+    
+    <item>
+      <title>云服务器上ssh服务安全加固</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</link>
+      <pubDate>Wed, 24 Aug 2016 22:00:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8Assh%E6%9C%8D%E5%8A%A1%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</guid>
+      <description>今天到一个朋友的创业公司进行技术交流，交流过程中，朋友提到他在阿里云上买的linux服务器上ssh服务经常被人暴力破解。我感觉很奇怪，一般来</description>
+    </item>
+    
+    <item>
+      <title>使用阿里云API刷新CDN缓存</title>
+      <link>https://jeremyxu2010.github.io/2016/08/%E4%BD%BF%E7%94%A8%E9%98%BF%E9%87%8C%E4%BA%91api%E5%88%B7%E6%96%B0cdn%E7%BC%93%E5%AD%98/</link>
+      <pubDate>Mon, 22 Aug 2016 22:45:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/08/%E4%BD%BF%E7%94%A8%E9%98%BF%E9%87%8C%E4%BA%91api%E5%88%B7%E6%96%B0cdn%E7%BC%93%E5%AD%98/</guid>
+      <description>本时工作中经常需要向阿里云环境部署新的版本，部署完毕之后需要到阿里云管理控制台刷新页面的CDN缓存。这个过程中部署部分我现在是使用bash脚</description>
+    </item>
+    
+    <item>
+      <title>Systemd 入门教程（转载）</title>
+      <link>https://jeremyxu2010.github.io/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/</link>
+      <pubDate>Mon, 04 Jul 2016 00:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/systemd-%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E8%BD%AC%E8%BD%BD/</guid>
+      <description>最近开始使用CentOS7了，跟CentOS6相比最大的变更可能就是守护进程由init改为了systemd。在网上看到阮一峰的“System</description>
+    </item>
+    
+    <item>
+      <title>使用cgroup控制系统资源</title>
+      <link>https://jeremyxu2010.github.io/2016/07/%E4%BD%BF%E7%94%A8cgroup%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90/</link>
+      <pubDate>Sun, 03 Jul 2016 23:43:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/07/%E4%BD%BF%E7%94%A8cgroup%E6%8E%A7%E5%88%B6%E7%B3%BB%E7%BB%9F%E8%B5%84%E6%BA%90/</guid>
+      <description>工作中需要对mongodb进程进行，控制它最多使用的内存，简单想了一下，想到可以使用linux中的cgroup完成此功能，于是研究了一下cg</description>
+    </item>
+    
+    <item>
+      <title>Web应用程序限速方法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Mon, 09 May 2016 00:15:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E9%99%90%E9%80%9F%E6%96%B9%E6%B3%95/</guid>
+      <description>一般来说Web应用程序的开发者不太关心网络限速的问题。所以通常写的程序逻辑基本认为用户提交上来的数据速率越快越好；用户下载文件时，下载越快越</description>
+    </item>
+    
+    <item>
+      <title>nginx使用备忘</title>
+      <link>https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</link>
+      <pubDate>Mon, 02 May 2016 01:35:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/nginx%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98/</guid>
+      <description>工作中经常要用到nginx，这里将使用nginx最常要用到的技巧记录下来以备忘。 安装 在linux或mac下安装nginx还是很简单的，我一般</description>
+    </item>
+    
+    <item>
+      <title>rsync配合ssh在不稳定网络下传输大文件</title>
+      <link>https://jeremyxu2010.github.io/2015/06/rsync%E9%85%8D%E5%90%88ssh%E5%9C%A8%E4%B8%8D%E7%A8%B3%E5%AE%9A%E7%BD%91%E7%BB%9C%E4%B8%8B%E4%BC%A0%E8%BE%93%E5%A4%A7%E6%96%87%E4%BB%B6/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/06/rsync%E9%85%8D%E5%90%88ssh%E5%9C%A8%E4%B8%8D%E7%A8%B3%E5%AE%9A%E7%BD%91%E7%BB%9C%E4%B8%8B%E4%BC%A0%E8%BE%93%E5%A4%A7%E6%96%87%E4%BB%B6/</guid>
+      <description>今天的工作需要将一个很大的文件传输出远程主机上，远程主机只开启了sshd服务，仅允许ssh登录，不允许安装其它软件，到远程主机的网络很不稳定</description>
+    </item>
+    
+    <item>
+      <title>使用fail2ban进行DDOS防护</title>
+      <link>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</link>
+      <pubDate>Tue, 30 Jun 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/06/%E4%BD%BF%E7%94%A8fail2ban%E8%BF%9B%E8%A1%8Cddos%E9%98%B2%E6%8A%A4/</guid>
+      <description>朋友公司一网站被DDOS攻击了，不得已在机房呆了两天作防护工作，才算临时解决了问题。想着自己公司线上也运行着一个系统，担心有一天也会被攻击，</description>
+    </item>
+    
+    <item>
+      <title>使用logrotate进行日志分割及滚动处理</title>
+      <link>https://jeremyxu2010.github.io/2015/04/%E4%BD%BF%E7%94%A8logrotate%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%88%86%E5%89%B2%E5%8F%8A%E6%BB%9A%E5%8A%A8%E5%A4%84%E7%90%86/</link>
+      <pubDate>Thu, 30 Apr 2015 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2015/04/%E4%BD%BF%E7%94%A8logrotate%E8%BF%9B%E8%A1%8C%E6%97%A5%E5%BF%97%E5%88%86%E5%89%B2%E5%8F%8A%E6%BB%9A%E5%8A%A8%E5%A4%84%E7%90%86/</guid>
+      <description>linux server上服务一般持续长久运行，以致服务的日志文件随着时间越来越大，如果日志处理得不好甚至有可能占满磁盘。幸好找到了logrotate</description>
+    </item>
+    
+    <item>
+      <title>nagios安装配置</title>
+      <link>https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Mon, 30 Jun 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/06/nagios%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE/</guid>
+      <description>上线的服务器有时会被人攻击，导致服务不可用，今天安装配置了nagios对上线服务器进行监控，简单记录一下 #安装必要的软件包 yum install -y gcc glibc glibc-common gd gd-devel xinetd</description>
+    </item>
+    
+    <item>
+      <title>linux下进行端口映射</title>
+      <link>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</link>
+      <pubDate>Wed, 30 Apr 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/04/linux%E4%B8%8B%E8%BF%9B%E8%A1%8C%E7%AB%AF%E5%8F%A3%E6%98%A0%E5%B0%84/</guid>
+      <description>工作需要将某个具有外网IP的server的某个端口映射到某个内网IP的server的相同端口上。 首先想到使用NAT，命令如下 echo &amp;#34;1&amp;#34; &amp;gt; /proc/sys/net/ipv4/ip_forward iptables -t nat -I</description>
+    </item>
+    
+    <item>
+      <title>linux下设置电信网通双线路IP地址</title>
+      <link>https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/</link>
+      <pubDate>Sun, 30 Mar 2014 01:40:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2014/03/linux%E4%B8%8B%E8%AE%BE%E7%BD%AE%E7%94%B5%E4%BF%A1%E7%BD%91%E9%80%9A%E5%8F%8C%E7%BA%BF%E8%B7%AFip%E5%9C%B0%E5%9D%80/</guid>
+      <description>工作上遇到需要在linux下设置电信网通双线路IP地址，操作系统为Suse Linux Enterprise Linux 11 SP2，简要记录下步骤： 编辑/etc/sysconfig/</description>
+    </item>
+    
+  </channel>
+</rss>

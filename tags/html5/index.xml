@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>html5 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/html5/</link>
+    <description>Recent content in html5 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Thu, 22 Sep 2016 22:51:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/html5/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>利用promise实现简单的前端cache</title>
+      <link>https://jeremyxu2010.github.io/2016/09/%E5%88%A9%E7%94%A8promise%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E5%89%8D%E7%AB%AFcache/</link>
+      <pubDate>Thu, 22 Sep 2016 22:51:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/09/%E5%88%A9%E7%94%A8promise%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E7%9A%84%E5%89%8D%E7%AB%AFcache/</guid>
+      <description>今天在工作中遇到一个关于promise有趣的小问题，这里分享一下分析的过程。 原始版本 //这个方法模拟从服务端加载数据 var loadData = function(){ return fetch(&amp;#39;/&amp;#39;).then(function(data){ return data.statusText }); }; loadData().then(function(data){ console.log(data);</description>
+    </item>
+    
+    <item>
+      <title>获取后台任务进度的另类办法</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</link>
+      <pubDate>Mon, 16 May 2016 01:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E8%8E%B7%E5%8F%96%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E7%9A%84%E5%8F%A6%E7%B1%BB%E5%8A%9E%E6%B3%95/</guid>
+      <description>今天看到jdeferred文档中一个关于Asynchronous Servlet的例子，如下 @WebServlet(value = &amp;#34;/AsyncServlet&amp;#34;, asyncSupported = true) public class AsyncServlet extends HttpServlet { private static final long serialVersionUID = 1L; private ExecutorService executorService = Executors.newCachedThreadPool(); private</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_07</title>
+      <link>https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/</link>
+      <pubDate>Sun, 15 May 2016 00:07:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_07/</guid>
+      <description>今天结合前面说到的前后端开发知识，做一个小工程，这个小工程并不完全具体的业务功能，但该工程包括前后端，可以作为以后复杂工程的起点。 前端代码 前</description>
+    </item>
+    
+    <item>
+      <title>Web跨域总结</title>
+      <link>https://jeremyxu2010.github.io/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Wed, 11 May 2016 00:46:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/05/web%E8%B7%A8%E5%9F%9F%E6%80%BB%E7%BB%93/</guid>
+      <description>什么是同源 浏览器安全的基石是&amp;quot;同源政策&amp;rdquo;，所有浏览器都实行这个政策。所谓两个网页&amp;quot;同源&amp;quot;指的两个网</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_05</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_05/</link>
+      <pubDate>Sun, 17 Apr 2016 23:41:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_05/</guid>
+      <description>本篇不开发新的功能，不过对目前的编译环境重新整理一下。 区别开发编译与生产编译 在webpack.config.js中添加读取环境变量NODE_</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_04</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_04/</link>
+      <pubDate>Sun, 17 Apr 2016 21:52:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_04/</guid>
+      <description>本篇使用redux结合react重写刚才那个很简单的hello world示例。 redux的理念 redux有三个重要的理念：单一数据源、状态是</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发系列教程_03</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_03/</link>
+      <pubDate>Sun, 17 Apr 2016 15:26:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8B_03/</guid>
+      <description>现在我们使用React重写昨天的hello world示例。本篇涉及了很多react的知识，如果不清楚，建议先看看react官方文档 安装rea</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发教程系列_02</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%B3%BB%E5%88%97_02/</link>
+      <pubDate>Sat, 16 Apr 2016 23:38:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%B3%BB%E5%88%97_02/</guid>
+      <description>引言 本文从一个很小的前端工程说起，慢慢推导出我目前多个项目前端实践的工程结构。 为Web前端项目建工程 Web工程需要建工程吗？不是建个目录就可</description>
+    </item>
+    
+    <item>
+      <title>现代Web开发教程系列_01</title>
+      <link>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%B3%BB%E5%88%97_01/</link>
+      <pubDate>Sat, 16 Apr 2016 23:37:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/04/%E7%8E%B0%E4%BB%A3web%E5%BC%80%E5%8F%91%E6%95%99%E7%A8%8B%E7%B3%BB%E5%88%97_01/</guid>
+      <description>##引言 工作大概9年了，就算不算上在学校里的写网页的经历，其实从事与Web前端有关的开发已经8年。这8年我自己也随着Web开发技术的革新，也</description>
+    </item>
+    
+  </channel>
+</rss>

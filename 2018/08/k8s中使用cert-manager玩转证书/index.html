@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>k8s中使用cert-manager玩转证书 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="k8s中使用cert-manager玩转证书" />
+<meta property="og:description" content="前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2018/08/k8s%E4%B8%AD%E4%BD%BF%E7%94%A8cert-manager%E7%8E%A9%E8%BD%AC%E8%AF%81%E4%B9%A6/" />
+<meta property="article:published_time" content="2018-08-26T12:30:00+08:00" />
+<meta property="article:modified_time" content="2018-08-26T12:30:00+08:00" />
+<meta itemprop="name" content="k8s中使用cert-manager玩转证书">
+<meta itemprop="description" content="前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很">
+<meta itemprop="datePublished" content="2018-08-26T12:30:00&#43;08:00" />
+<meta itemprop="dateModified" content="2018-08-26T12:30:00&#43;08:00" />
+<meta itemprop="wordCount" content="1632">
+
+
+
+<meta itemprop="keywords" content="kubernetes,tls," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="k8s中使用cert-manager玩转证书"/>
+<meta name="twitter:description" content="前几天写过一篇k8s加入TLS安全访问，其中说到用cfssl之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">k8s中使用cert-manager玩转证书</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-26 </span>
+        <div class="post-category">
+            
+              <a href="/categories/%E5%AE%B9%E5%99%A8%E7%BC%96%E6%8E%92/"> 容器编排 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1632 字 </span>
+        <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#cert-manager">cert-manager的架构</a></li>
+    <li><a href="#heading">把玩一下</a>
+      <ul>
+        <li><a href="#cert-manager-1">部署cert-manager</a></li>
+        <li><a href="#issuer">创建Issuer资源</a></li>
+        <li><a href="#certificate">创建Certificate资源</a></li>
+        <li><a href="#heading-1">使用建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-2">总结</a></li>
+    <li><a href="#heading-3">参考</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>前几天写过一篇<a href="k8s%E5%8A%A0%E5%85%A5TLS%E5%AE%89%E5%85%A8%E8%AE%BF%E9%97%AE.md">k8s加入TLS安全访问</a>，其中说到用<code>cfssl</code>之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很美好，但实际操作时却很痛苦，主要有以下几点缺陷：</p>
+<ol>
+<li>如果k8s集群上部署的应用较多，要为每个应用的不同域名生成https证书，操作太麻烦。</li>
+<li>上述这些手动操作没有跟k8s的deployment描述文件放在一起记录下来，很容易遗忘。</li>
+<li>证书过期后，又得手动执行命令重新生成证书。</li>
+</ol>
+<p>这样就迫切需要一个证书管理工具来完成以上需求。正好这几天浏览网站发现了<a href="https://cert-manager.readthedocs.io/en/latest/index.html">cert-manager</a>，一个k8s原生的证书管理控制器。</p>
+<blockquote>
+<p>cert-manager is a native <a href="https://kubernetes.io/">Kubernetes</a> certificate management controller. It can help with issuing certificates from a variety of sources, such as <a href="https://letsencrypt.org/">Let’s Encrypt</a>, <a href="https://www.vaultproject.io/">HashiCorp Vault</a>, a simple signing keypair, or self signed.</p>
+<p>It will ensure certificates are valid and up to date, and attempt to renew certificates at a configured time before expiry.</p>
+</blockquote>
+<p>周末有一点时间正好研究一下。</p>
+<h2 id="cert-manager">cert-manager的架构</h2>
+<p><img src="/images/20180826/high-level-overview.png" alt="_images/high-level-overview.png"></p>
+<p>上面是官方给出的架构图，可以看到cert-manager在k8s中定义了两个自定义类型资源：<code>Issuer</code>和<code>Certificate</code>。</p>
+<p>其中<code>Issuer</code>代表的是证书颁发者，可以定义各种提供者的证书颁发者，当前支持基于<code>Letsencrypt</code>、<code>vault</code>和<code>CA</code>的证书颁发者，还可以定义不同环境下的证书颁发者。</p>
+<p>而<code>Certificate</code>代表的是生成证书的请求，一般其中存入生成证书的元信息，如域名等等。</p>
+<p>一旦在k8s中定义了上述两类资源，部署的<code>cert-manager</code>则会根据<code>Issuer</code>和<code>Certificate</code>生成TLS证书，并将证书保存进k8s的<code>Secret</code>资源中，然后在<code>Ingress</code>资源中就可以引用到这些生成的<code>Secret</code>资源。对于已经生成的证书，还是定期检查证书的有效期，如即将超过有效期，还会自动续期。</p>
+<h2 id="heading">把玩一下</h2>
+<h3 id="cert-manager-1">部署cert-manager</h3>
+<p>部署cert-manager还是比较简单的，直接用helm部署就可以了：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">helm install <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --name cert-manager <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    --namespace kube-system <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    stable/cert-manager
+</code></pre></div><h3 id="issuer">创建Issuer资源</h3>
+<p>由于我试验环境是个人电脑，不能被外网访问，因此无法试验<code>Letsencrypt</code>类型的证书颁发者，而<code>vault</code>貌似部署起来很是麻烦，所以还是创建一个简单的CA类型Issuer资源。</p>
+<p>首先将根CA的key及证书文件存入一个secret中：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">kubectl create secret tls ca-key-pair <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>   --cert<span style="color:#f92672">=</span>ca.pem <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>   --key<span style="color:#f92672">=</span>ca-key.pem <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>   --namespace<span style="color:#f92672">=</span>kube-system
+</code></pre></div><p>上述操作中的ca.pem,  ca-key.pem文件还是用<code>cfssl</code>命令生成的。</p>
+<p>然后创建Issuer资源：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl create -f -
+</span><span style="color:#e6db74">apiVersion: certmanager.k8s.io/v1alpha1
+</span><span style="color:#e6db74">kind: ClusterIssuer
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: ca-issuer
+</span><span style="color:#e6db74">  namespace: kube-system
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  ca:
+</span><span style="color:#e6db74">    secretName: ca-key-pair
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>注意这里创建的资源类型是<code>ClusterIssuer</code>，这样这个证书颁发者就可以为整个集群中任意命名空间颁发证书。</p>
+<p>关于<code>ClusterIssuer</code>与<code>Issuer</code>的区别可以查阅<a href="https://cert-manager.readthedocs.io/en/latest/getting-started/3-configuring-first-issuer.html">这里</a>。</p>
+<h3 id="certificate">创建Certificate资源</h3>
+<p>然后创建Certificate资源：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cat <span style="color:#e6db74">&lt;&lt; EOF | kubectl create -f -
+</span><span style="color:#e6db74">apiVersion: certmanager.k8s.io/v1alpha1
+</span><span style="color:#e6db74">kind: Certificate
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  name: example-com
+</span><span style="color:#e6db74">  namespace: kube-system
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  secretName: example-com-tls
+</span><span style="color:#e6db74">  issuerRef:
+</span><span style="color:#e6db74">    name: ca-issuer
+</span><span style="color:#e6db74">    # We can reference ClusterIssuers by changing the kind here.
+</span><span style="color:#e6db74">    # The default value is Issuer (i.e. a locally namespaced Issuer)
+</span><span style="color:#e6db74">    kind: ClusterIssuer
+</span><span style="color:#e6db74">  commonName: example.com
+</span><span style="color:#e6db74">  dnsNames:
+</span><span style="color:#e6db74">  - example.com
+</span><span style="color:#e6db74">  - www.example.com
+</span><span style="color:#e6db74">EOF</span>
+</code></pre></div><p>稍等一会儿，就可以查询到cert-manager生成的证书secret：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; kubectl -n kube-system describe secret example-com-tls
+Name:         example-com-tls
+Namespace:    kube-system
+Labels:       certmanager.k8s.io/certificate-name<span style="color:#f92672">=</span>example-com
+Annotations:  certmanager.k8s.io/alt-names<span style="color:#f92672">=</span>example.com,www.example.com
+              certmanager.k8s.io/common-name<span style="color:#f92672">=</span>example.com
+              certmanager.k8s.io/issuer-kind<span style="color:#f92672">=</span>ClusterIssuer
+              certmanager.k8s.io/issuer-name<span style="color:#f92672">=</span>ca-issuer
+
+Type:  kubernetes.io/tls
+
+Data
+<span style="color:#f92672">=</span><span style="color:#f92672">=</span><span style="color:#f92672">=</span><span style="color:#f92672">=</span>
+tls.crt:  <span style="color:#ae81ff">2721</span> bytes
+tls.key:  <span style="color:#ae81ff">1679</span> bytes
+</code></pre></div><p>然后就可以在<code>Ingress</code>资源里引用该<code>Secret</code>了，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">apiVersion: extensions/v1beta1
+kind: Ingress
+....
+spec:
+  tls:
+  - hosts:
+    - www.example.com
+    secretName: example-com-tls
+  rules:
+    ...
+</code></pre></div><h3 id="heading-1">使用建议</h3>
+<p>实际生产环境中使用cert-manager可以考虑以下建议：</p>
+<ol>
+<li>将CA的<code>Secret</code>及<code>Issuer</code>放在某个独立的命名空间中，与其它业务的命名空间隔离起来。</li>
+<li>如果是CA类型的<code>Issuer</code>，要记得定期更新根CA证书。</li>
+<li>如果服务可被公网访问，同时又不想花钱买域名证书，可以采用<code>Letsencrypt</code>类型的<code>Issuer</code>，目前支持两种方式验证域名的所有权，基于<a href="https://cert-manager.readthedocs.io/en/latest/tutorials/acme/dns-validation.html">DNS记录的验证方案</a>和基于<a href="https://cert-manager.readthedocs.io/en/latest/tutorials/acme/http-validation.html">文件的HTTP验证方案</a>。</li>
+<li><code>cert-manager</code>还提供<code>ingress-shim</code>方式，自动为<code>Ingress</code>资源生成证书，只需要在<code>Ingress</code>资源上打上一些标签即可，很方便有木有，详细可参考<a href="https://cert-manager.readthedocs.io/en/latest/reference/ingress-shim.html">这里</a>。</li>
+</ol>
+<h2 id="heading-2">总结</h2>
+<p><code>cert-manager</code>要完成的功能不复杂，但恰好解决了原来比较麻烦的手工操作，因此还是带来的挺大价值的，所以说做产品功能不需要搞太高深的技术，只要解决刚需问题即可。</p>
+<h2 id="heading-3">参考</h2>
+<ol>
+<li><a href="https://cert-manager.readthedocs.io/en/latest/getting-started/2-installing.html">https://cert-manager.readthedocs.io/en/latest/getting-started/2-installing.html</a></li>
+<li><a href="https://cert-manager.readthedocs.io/en/latest/tutorials/ca/creating-ca-issuer.html">https://cert-manager.readthedocs.io/en/latest/tutorials/ca/creating-ca-issuer.html</a></li>
+</ol>
+
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-08-26</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/kubernetes/">kubernetes</a>
+          
+          <a href="/tags/tls/">tls</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2018/09/harbor%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">harbor源码解读</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2018/08/%E6%90%AD%E5%BB%BAk8s%E7%9A%84%E5%BC%80%E5%8F%91%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83/">
+            <span class="next-text nav-default">搭建k8s的开发调试环境</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>

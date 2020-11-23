@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>微服务 on jeremy的技术点滴</title>
+    <link>https://jeremyxu2010.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</link>
+    <description>Recent content in 微服务 on jeremy的技术点滴</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <copyright>&amp;copy; Copyright 2019 Jeremy Xu</copyright>
+    <lastBuildDate>Mon, 05 Dec 2016 19:58:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://jeremyxu2010.github.io/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>dubbo起步</title>
+      <link>https://jeremyxu2010.github.io/2016/12/dubbo%E8%B5%B7%E6%AD%A5/</link>
+      <pubDate>Mon, 05 Dec 2016 19:58:00 +0800</pubDate>
+      
+      <guid>https://jeremyxu2010.github.io/2016/12/dubbo%E8%B5%B7%E6%AD%A5/</guid>
+      <description>之前在项目中使用过dubbo，但很久没有再用，以致都忘了它的用法，今天看到当当网开源的一个项目dubbox, 觉得挺实用的。这里先将dubbo</description>
+    </item>
+    
+  </channel>
+</rss>

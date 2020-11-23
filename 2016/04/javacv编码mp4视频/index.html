@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>javacv编码mp4视频 - jeremy的技术点滴</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Jeremy Xu" />
+  <meta name="description" content="目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编" />
+
+
+
+
+<meta name="google-site-verification" content="Ol4gI1XKZ2qsa-efwwJvaGeDyXb91RL-pZBv-3uyY-A" />
+
+
+<meta name="generator" content="Hugo " />
+
+
+<link rel="canonical" href="https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.1.1" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+
+<link rel="stylesheet" href="/css/mathjax.css">
+
+
+<meta property="og:title" content="javacv编码mp4视频" />
+<meta property="og:description" content="目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jeremyxu2010.github.io/2016/04/javacv%E7%BC%96%E7%A0%81mp4%E8%A7%86%E9%A2%91/" />
+<meta property="article:published_time" content="2016-04-10T18:29:00+08:00" />
+<meta property="article:modified_time" content="2016-04-10T18:29:00+08:00" />
+<meta itemprop="name" content="javacv编码mp4视频">
+<meta itemprop="description" content="目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编">
+<meta itemprop="datePublished" content="2016-04-10T18:29:00&#43;08:00" />
+<meta itemprop="dateModified" content="2016-04-10T18:29:00&#43;08:00" />
+<meta itemprop="wordCount" content="1444">
+
+
+
+<meta itemprop="keywords" content="java,ffmpeg,javacv,h264," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="javacv编码mp4视频"/>
+<meta name="twitter:description" content="目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">jeremy的技术点滴</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/search/">
+        <li class="mobile-menu-item">Search</li>
+      </a>
+  </ul>
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">jeremy的技术点滴</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/search/">Search</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">javacv编码mp4视频</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2016-04-10 </span>
+        <div class="post-category">
+            
+              <a href="/categories/java%E5%BC%80%E5%8F%91/"> java开发 </a>
+            
+          </div>
+        <span class="more-meta"> 约 1444 字 </span>
+        <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents"></nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>目前在做的java项目里有一个需求，已经将用户在进行一个业务操作的操作行为记录下来了，形成了这些操作行为的指令文件，然后需要将这些指令文件编码为mp4视频。项目之前用的是xuggle来完成的，不过xuggle项目好像有四五年没有更新了，甚至我将OSX升级至10.11之后，xuggle就没法在我本机编译通过了，报了一大堆的错。上xuggle的github仓库一看，人家也说不维护了，推荐使用<code>https://github.com/artclarke/humble-video</code>了，不过我尝试了下，依然没能把<code>humble-video</code>在我本机编译通过。看来得找其它解决方案了。上网搜索过后，找到两个替代方案jcodec和javacv，对比编码性能后，最终选择了javacv，纯java方案相对于jni方案性能差得不是一星半点啊。不过在使用javacv过程中还是遇到了不少坑，在这里分享一下，也可以帮助一下正在这些坑里的兄弟们。</p>
+<p>首先参照javacv的文档，在pom.xml里添加</p>
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;org.bytedeco&lt;/groupId&gt;
+  &lt;artifactId&gt;javacv&lt;/artifactId&gt;
+  &lt;version&gt;1.1&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre><p>然后快速地写了个JavaCVMp4Encoder</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> test<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">JavaCVMp4Encoder</span> <span style="color:#66d9ef">implements</span> Mp4Encoder <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> String fileName<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> FFmpegFrameRecorder recorder<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">double</span> FRAME_RATE <span style="color:#f92672">=</span> 25<span style="color:#f92672">.</span><span style="color:#a6e22e">0</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">double</span> MOTION_FACTOR <span style="color:#f92672">=</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Java2DFrameConverter java2dConverter<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Logger log <span style="color:#f92672">=</span> LoggerFactory<span style="color:#f92672">.</span><span style="color:#a6e22e">getLogger</span><span style="color:#f92672">(</span>JavaCVMp4Encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">JavaCVMp4Encoder</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    	<span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">java2dConverter</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Java2DFrameConverter<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">make</span><span style="color:#f92672">(</span>String fileName<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">fileName</span> <span style="color:#f92672">=</span> fileName<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">configVideo</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> width<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> height<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        recorder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FFmpegFrameRecorder<span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">fileName</span><span style="color:#f92672">,</span> width<span style="color:#f92672">,</span> height<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setVideoCodec</span><span style="color:#f92672">(</span>avcodec<span style="color:#f92672">.</span><span style="color:#a6e22e">AV_CODEC_ID_H264</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setFrameRate</span><span style="color:#f92672">(</span>FRAME_RATE<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#75715e">/*
+</span><span style="color:#75715e">        * videoBitRate这个参数很重要，当然越大，越清晰，但最终的生成的视频也越大。查看一个资料，说均衡考虑建议设为videoWidth*videoHeight*frameRate*0.07*运动因子，运动因子则与视频中画面活动频繁程度有关，如果很频繁就设为4，不频繁则设为1
+</span><span style="color:#75715e">        */</span>
+        recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setVideoBitrate</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span><span style="color:#f92672">(</span><span style="color:#f92672">(</span>width<span style="color:#f92672">*</span>height<span style="color:#f92672">*</span>FRAME_RATE<span style="color:#f92672">)</span><span style="color:#f92672">*</span>MOTION_FACTOR<span style="color:#f92672">*</span>0<span style="color:#f92672">.</span><span style="color:#a6e22e">07</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setPixelFormat</span><span style="color:#f92672">(</span>avutil<span style="color:#f92672">.</span><span style="color:#a6e22e">AV_PIX_FMT_YUV420P</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setFormat</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;mp4&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder configure video error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">encodeFrame</span><span style="color:#f92672">(</span>BufferedImage image<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> timestamp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">record</span><span style="color:#f92672">(</span>java2dConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>image<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder encode frame error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>recorder <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">stop</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder stop error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">release</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder release error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>顺手写了个测试案例，还好是可以工作的</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#f92672">package</span> test<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">public</span> JavaCVMp4EncoderTest <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[</span><span style="color:#f92672">]</span> args<span style="color:#f92672">)</span><span style="color:#f92672">{</span>
+    	Mp4Encoder encoder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> JavaCVMp4Encoder<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">make</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/tmp/test.mp4&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">configVideo</span><span style="color:#f92672">(</span>1024<span style="color:#f92672">,</span> 768<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        BufferedImage img <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedImage<span style="color:#f92672">(</span>1024<span style="color:#f92672">,</span> 768<span style="color:#f92672">,</span> BufferedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE_3BYTE_BGR</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+        Java2DFrameConverter java2dConverter <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Java2DFrameConverter<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        Graphics2D g2 <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>Graphics2D<span style="color:#f92672">)</span>img<span style="color:#f92672">.</span><span style="color:#a6e22e">getGraphics</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> 25 <span style="color:#f92672">*</span> 20<span style="color:#f92672">;</span> i<span style="color:#f92672">+</span><span style="color:#f92672">+</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            g2<span style="color:#f92672">.</span><span style="color:#a6e22e">setColor</span><span style="color:#f92672">(</span>Color<span style="color:#f92672">.</span><span style="color:#a6e22e">white</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            g2<span style="color:#f92672">.</span><span style="color:#a6e22e">fillRect</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> 0<span style="color:#f92672">,</span> width<span style="color:#f92672">,</span> height<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            g2<span style="color:#f92672">.</span><span style="color:#a6e22e">setPaint</span><span style="color:#f92672">(</span>Color<span style="color:#f92672">.</span><span style="color:#a6e22e">black</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            g2<span style="color:#f92672">.</span><span style="color:#a6e22e">drawString</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;frame &#34;</span> <span style="color:#f92672">+</span> i<span style="color:#f92672">,</span> 10<span style="color:#f92672">,</span> 25<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+            encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">encodeFrame</span><span style="color:#f92672">(</span>java2dConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>img<span style="color:#f92672">)</span><span style="color:#f92672">,</span> System<span style="color:#f92672">.</span><span style="color:#a6e22e">currentTimeMillis</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">close</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>不过不久就发现在项目中转出的录像播放得太快了，检查代码发现<code>JavaCVMp4Encoder</code>的<code>encodeFrame</code>方法的第二个参数<code>timestamp</code>并没有用到，但在项目中进行mp4编码时，实际上是对每一帧指定的时间戳的，于是修改<code>encodeFrame</code>方法</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">encodeFrame</span><span style="color:#f92672">(</span>BufferedImage image<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> timestamp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">long</span> t <span style="color:#f92672">=</span> timestamp <span style="color:#f92672">*</span> 1000L<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>t <span style="color:#f92672">&gt;</span> recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">getTimestamp</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    	recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">setTimestamp</span><span style="color:#f92672">(</span>t<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    recorder<span style="color:#f92672">.</span><span style="color:#a6e22e">record</span><span style="color:#f92672">(</span>java2dConverter<span style="color:#f92672">.</span><span style="color:#a6e22e">convert</span><span style="color:#f92672">(</span>image<span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>FrameRecorder<span style="color:#f92672">.</span><span style="color:#a6e22e">Exception</span> e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    log<span style="color:#f92672">.</span><span style="color:#a6e22e">error</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;JavaCVMp4Encoder encode frame error.&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>终于转出的视频不再飞快播放了。</p>
+<p>又过了好几天，在正式环境上运行着，又出问题，进行mp4编码的Java进程crash了。crash日志时仅报了一下跟jni调用相关的错。</p>
+<pre><code>Stack: [0x00007f1932fb4000,0x00007f19330b5000],  sp=0x00007f19330b2d88,  free space=1019k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libswscale.so.3+0x52f41]  sws_getCachedContext+0x1471
+
+[error occurred during error reporting (printing native stack), id 0xb]
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  org.bytedeco.javacpp.swscale.sws_scale(Lorg/bytedeco/javacpp/swscale$SwsContext;Lorg/bytedeco/javacpp/PointerPointer;Lorg/bytedeco/javacpp/IntPointer;IILorg/bytedeco/javacpp/PointerPointer;Lorg/bytedeco/javacpp/IntPointer;)I+0
+j  org.bytedeco.javacv.FFmpegFrameRecorder.recordImage(IIIIII[Ljava/nio/Buffer;)Z+570
+j  org.bytedeco.javacv.FFmpegFrameRecorder.record(Lorg/bytedeco/javacv/Frame;I)V+70
+j  org.bytedeco.javacv.FFmpegFrameRecorder.record(Lorg/bytedeco/javacv/Frame;)V+3
+</code></pre><p>在网上查阅了很久，终于找到一个<a href="http://superuser.com/questions/728795/new-ffmpeg-swscaler-0xa314080-warning-data-is-not-aligned-this-can-lead/799987">线索</a>，说是跟下面的代码相关</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">if</span> ( (uintptr_t)dst[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> (uintptr_t)dst[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> (uintptr_t)dst[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span>
+	<span style="color:#f92672">|</span><span style="color:#f92672">|</span> (uintptr_t)src[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> (uintptr_t)src[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> (uintptr_t)src[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span>
+	<span style="color:#f92672">|</span><span style="color:#f92672">|</span> dstStride[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> dstStride[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> dstStride[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> dstStride[<span style="color:#ae81ff">3</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span>
+	<span style="color:#f92672">|</span><span style="color:#f92672">|</span> srcStride[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> srcStride[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> srcStride[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> srcStride[<span style="color:#ae81ff">3</span>]<span style="color:#f92672">%</span><span style="color:#ae81ff">16</span>
+	) {
+	<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> warnedAlready<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
+	<span style="color:#66d9ef">int</span> cpu_flags <span style="color:#f92672">=</span> av_get_cpu_flags();
+	<span style="color:#66d9ef">if</span> (HAVE_MMXEXT <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> (cpu_flags <span style="color:#f92672">&amp;</span> AV_CPU_FLAG_SSE2) <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#f92672">!</span>warnedAlready){
+		av_log(c, AV_LOG_WARNING, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Warning: data is not aligned! This can lead to a speedloss</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+  		warnedAlready<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;
+  }
+}
+</code></pre></div><p>意思是视频的宽度必须是16的倍数，否则ffmpeg可能因为无法对齐而crash。这么重要的事情，在ffmpeg文档上竟然从来没提出。但经我实际测试，发现视频的宽度必须是32的倍数，高度必须是2的倍数，于是写了点代码修正了<code>width</code>与<code>height</code>，然后问题就解决了。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">int</span> width <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+<span style="color:#66d9ef">int</span> height <span style="color:#f92672">=</span> <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>width <span style="color:#f92672">%</span> 32 <span style="color:#f92672">!</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> width <span style="color:#f92672">%</span> 32<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>j <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> 16<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    width <span style="color:#f92672">=</span> width <span style="color:#f92672">-</span> <span style="color:#f92672">(</span>width <span style="color:#f92672">%</span> 32<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+    width <span style="color:#f92672">=</span> width <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>32 <span style="color:#f92672">-</span> width <span style="color:#f92672">/</span> 32<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>height <span style="color:#f92672">%</span> 2 <span style="color:#f92672">!</span><span style="color:#f92672">=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> height <span style="color:#f92672">%</span> 4<span style="color:#f92672">;</span>
+  <span style="color:#66d9ef">switch</span> <span style="color:#f92672">(</span>j<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">case</span> 1<span style="color:#f92672">:</span>
+      height <span style="color:#f92672">=</span> height <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">case</span> 3<span style="color:#f92672">:</span>
+      height <span style="color:#f92672">=</span> height <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+      <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+  <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+Mp4Encoder encoder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> JavaCVMp4Encoder<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">make</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/tmp/test.mp4&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+encoder<span style="color:#f92672">.</span><span style="color:#a6e22e">configVideo</span><span style="color:#f92672">(</span>width<span style="color:#f92672">,</span> height<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+BufferedImage img <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedImage<span style="color:#f92672">(</span>width<span style="color:#f92672">,</span> height<span style="color:#f92672">,</span> BufferedImage<span style="color:#f92672">.</span><span style="color:#a6e22e">TYPE_3BYTE_BGR</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+</code></pre></div>
+    </div>
+
+    
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">Jeremy Xu</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2016-04-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">&copy; Copyright 2020 Jeremy Xu</span>
+  </p>
+</div>
+
+    
+    
+<div class="post-reward">
+  <input type="checkbox" name="reward" id="reward" hidden />
+  <label class="reward-button" for="reward">赞赏支持</label>
+  <div class="qr-code">
+    
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/wechat-qr-code.png">
+        <span>微信打赏</span>
+      </label>
+    
+      <label class="qr-code-image" for="reward">
+        <img class="image" src="/alipay-qr-code.png">
+        <span>支付宝打赏</span>
+      </label>
+  </div>
+</div>
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/java/">java</a>
+          
+          <a href="/tags/ffmpeg/">ffmpeg</a>
+          
+          <a href="/tags/javacv/">javacv</a>
+          
+          <a href="/tags/h264/">h264</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/2016/04/sed%E5%91%BD%E4%BB%A4%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E5%8F%8A%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">sed命令工作原理及命令备忘</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+          <a class="next" href="/2016/04/%E5%BC%80%E5%8F%91%E8%80%85%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%99%E4%BD%9C%E7%8E%AF%E5%A2%83/">
+            <span class="next-text nav-default">开发者的博客写作环境</span>
+            <span class="prev-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+
+<div id="utter-container"></div>
+<script src="https://utteranc.es/client.js" repo='jeremyxu2010/blog_comment'
+  issue-term="title" theme='github-light' crossorigin="anonymous" async>
+  </script>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:jeremyxu2010@gmail.com" class="iconfont icon-email" title="email"></a>
+      <a href="https://plus.google.com/u/0/103057094241630654183" class="iconfont icon-google" title="google"></a>
+      <a href="https://github.com/jeremyxu2010" class="iconfont icon-github" title="github"></a>
+  <a href="https://jeremyxu2010.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2016 - 
+    2020
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">&copy; Copyright 2019 Jeremy Xu</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.min.js?v=3.1.1"></script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\[\[','\]\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+           extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    }
+  });
+  
+  MathJax.Hub.Queue(function() {
+      
+      
+      
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+  </script>
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.0/fuse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js"></script>
+<script src="https://jeremyxu2010.github.io/js/search.js"></script>
+
+
+</body>
+</html>
