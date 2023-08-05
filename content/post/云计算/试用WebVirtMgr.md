@@ -140,17 +140,17 @@ exit
 
 访问`http://${webvirtmgr_host_ip}/servers/`，首先会要求登录，用之前安装时创建的帐户登入系统。然后添加一个连接，将被管物理机接入WebVirtMgr，如下图所示，这里IP输入被管物理机IP，用户名输入webvirtmgr就可以了。
 
-![create_libvirt_host.png](/images/20160807/create_libvirt_host.png)
+![create_libvirt_host.png](http://blog-images-1252238296.cosgz.myqcloud.com/create_libvirt_host.png)
 
 然后进入这台物理机的界面，在左侧可以看到几大功能，分别是：虚机实例管理、存储池管理、网络池管理、网络接口管理、密钥管理、物理机概览，如图。
 
-![webvirtmgr_host_detail.png](/images/20160807/webvirtmgr_host_detail.png)
+![webvirtmgr_host_detail.png](http://blog-images-1252238296.cosgz.myqcloud.com/webvirtmgr_host_detail.png)
 
 ### 网络接口管理
 
 原来我都是手工创建桥接网络接口配置的，虽然不难，但确实比较麻烦。在这里发现可以在界面上完成，如图。
 
-![webvirtmgr_create_bridge_interface.png](/images/20160807/webvirtmgr_create_bridge_interface.png)
+![webvirtmgr_create_bridge_interface.png](http://blog-images-1252238296.cosgz.myqcloud.com/webvirtmgr_create_bridge_interface.png)
 
 后来调查了下，发现原来libvirt自带这个功能的，命令如下
 
@@ -192,7 +192,7 @@ iso镜像卷一般是用来存放ISO镜像的。
 
 对虚拟机的管理，功能基本是覆盖virt-manager的功能，常用的功能都可以界面操作了，有些没有的功能也可以手工修改虚拟机xml配置文件实现，如图。
 
-![webvirtmgr_vm_mgt.png](/images/20160807/webvirtmgr_vm_mgt.png)
+![webvirtmgr_vm_mgt.png](http://blog-images-1252238296.cosgz.myqcloud.com/webvirtmgr_vm_mgt.png)
 
 ## 待改进的地方
 

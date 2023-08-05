@@ -5,8 +5,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-01-12 23:00:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190112
 ---
 
 今天在工作遇到一个docker日志丢失的问题，最终一步步查找到原因了，这里记录一下过程。

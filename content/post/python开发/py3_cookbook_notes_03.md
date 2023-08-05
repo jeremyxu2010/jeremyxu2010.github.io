@@ -6,7 +6,6 @@ tags:
   - python
 categories:
   - python开发
-typora-root-url: ../../../static
 ---
 
 ## 并发编程

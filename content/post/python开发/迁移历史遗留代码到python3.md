@@ -6,7 +6,6 @@ tags:
   - python
 categories:
   - python开发
-typora-root-url: ../../../static
 ---
 
 为了便于以后维护代码，最近花了些时间将历史遗留代码迁移到python3，整个迁移还是比较顺利的，在做这个的过程中有一些经验，这里记录一下。

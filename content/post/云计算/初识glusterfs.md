@@ -48,7 +48,7 @@ FUSE用户空间文件系统，原来只是知道，这次终于在glusterfs的�
 
 > Being a userspace filesystem, to interact with kernel VFS, GlusterFS makes use of FUSE (File System in Userspace). For a long time, implementation of a userspace filesystem was considered impossible. FUSE was developed as a solution for this. FUSE is a kernel module that support interaction between kernel VFS and non-privileged user applications and it has an API that can be accessed from userspace. Using this API, any type of filesystem can be written using almost any language you prefer as there are many bindings between FUSE and other languages.
 
-![FUSE工作原理](/images/20160725/fuse_diagram.png)
+![FUSE工作原理](http://blog-images-1252238296.cosgz.myqcloud.com/fuse_diagram.png)
 
 > This shows a filesystem "hello world" that is compiled to create a binary "hello". It is executed with a filesystem mount point /tmp/fuse. Then the user issues a command ls -l on the mount point /tmp/fuse. This command reaches VFS via glibc and since the mount /tmp/fuse corresponds to a FUSE based filesystem, VFS passes it over to FUSE module. The FUSE kernel module contacts the actual filesystem binary "hello" after passing through glibc and FUSE library in userspace(libfuse). The result is returned by the "hello" through the same path and reaches the ls -l command.
 
@@ -68,7 +68,7 @@ FUSE用户空间文件系统，原来只是知道，这次终于在glusterfs的�
 
 > When we mount the volume in the client, the client glusterfs process communicates with the servers’ glusterd process. Server glusterd process sends a configuration file (vol file) containing the list of client translators and another containing the information of each brick in the volume with the help of which the client glusterfs process can now directly communicate with each brick’s glusterfsd process. The setup is now complete and the volume is now ready for client's service.
 
-![glusterfs工作流程](/images/20160725/glustefs_overall_working.png)
+![glusterfs工作流程](http://blog-images-1252238296.cosgz.myqcloud.com/glustefs_overall_working.png)
 
 > When a system call (File operation or Fop) is issued by client in the mounted filesystem, the VFS (identifying the type of filesystem to be glusterfs) will send the request to the FUSE kernel module. The FUSE kernel module will in turn send it to the GlusterFS in the userspace of the client node via /dev/fuse (this has been described in FUSE section). The GlusterFS process on the client consists of a stack of translators called the client translators which are defined in the configuration file(vol file) send by the storage server glusterd process. The first among these translators being the FUSE translator which consists of the FUSE library(libfuse). Each translator has got functions corresponding to each file operation or fop supported by glusterfs. The request will hit the corresponding function in each of the translators. Main client translators include:
 
@@ -211,7 +211,6 @@ gluster volume heal img full
 ## 参考
 
 `http://gluster.readthedocs.io/en/latest/`
-
 
 
 

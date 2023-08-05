@@ -7,9 +7,6 @@ tags:
   - galera
 categories:
   - devops
-date: 2018-02-10 21:45:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180401
 ---
 
 # 背景
@@ -43,7 +40,7 @@ Galera 集群的复制功能基于 Galeralibrary 实现,为了让 MySQL 与 Gale
 
 Galera 插件保证集群同步数据，保持数据的一致性，靠的就是可认证的复制，工作原理如下图：
 
-![mariadb_galera_cluster](/images/20180210/mariadb_galera_cluster.png)
+![mariadb_galera_cluster](http://blog-images-1252238296.cosgz.myqcloud.com/mariadb_galera_cluster.png)
 
 当客户端发出一个 commit 的指令，在事务被提交之前，所有对数据库的更改都会被`write-set`收集起来,并且将 `write-set` 纪录的内容发送给其他节点。
 
@@ -385,7 +382,7 @@ backend vms-mysql
 
 这种部署模式的架构图如下：
 
-![mage-20180401214224](/images/20180401/image-201804012142243.png)
+![mage-20180401214224](http://blog-images-1252238296.cosgz.myqcloud.com/image-201804012142243.png)
 
 部署方法也比较简单：
 

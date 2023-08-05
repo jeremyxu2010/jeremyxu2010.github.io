@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2018-09-10 17:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180910
 ---
 
 [harbor](https://goharbor.io/)基本上是目前企业级docker registry唯一的开源方案了，之前就有接触，不过一直是当成一个功能丰富的镜像registry来用，并没有深入了解其实现原理。最近认领了一个任务，会涉及harbor代码级开发，这里提前阅读一下其源代码，提前了解其实现原理及细节。
@@ -16,7 +14,7 @@ typora-copy-images-to: ../../../static/images/20180910
 
 官方有一个[框架图](https://github.com/goharbor/harbor/wiki/Architecture-Overview-of-Harbor)，如下：
 
-![image-20180910192701065](/images/20180910/image-20180910192701065.png)
+![image-20180910192701065](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180910192701065.png)
 
 也简单说了下各组件完成的功能，如下：
 

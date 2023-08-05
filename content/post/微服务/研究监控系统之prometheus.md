@@ -6,8 +6,6 @@ tags:
 categories:
   - 微服务
 date: 2018-08-05 12:30:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180805
 ---
 
 这周的工作是要为已有的系统搭建一套监控系统，主要监控以下指标：
@@ -53,7 +51,7 @@ Prometheus生态包括了很多组件，它们中的一些是可选的：
 
 ### 架构
 
-下面这张图说明了Prometheus的整体架构，以及生态中的一些组件作用: ![Prometheus Arhitecture](/images/20180805/68747470733a2f2f70726f6d6574686575732e696f2f6173736574732f6172636869746563747572652e737667.svg)
+下面这张图说明了Prometheus的整体架构，以及生态中的一些组件作用: ![Prometheus Arhitecture](http://blog-images-1252238296.cosgz.myqcloud.com/68747470733a2f2f70726f6d6574686575732e696f2f6173736574732f6172636869746563747572652e737667.svg)
 
 Prometheus服务，可以直接通过目标拉取数据，或者间接地通过中间网关拉取数据。它在本地存储抓取的所有数据，并通过一定规则进行清理和整理数据，并把得到的结果存储到新的时间序列中，PromQL和其他API可视化地展示收集的数据
 
@@ -423,7 +421,7 @@ Prometheus integrates with remote storage systems in two ways:
 - Prometheus can write samples that it ingests to a remote URL in a standardized format.
 - Prometheus can read (back) sample data from a remote URL in a standardized format.
 
-![Remote read and write architecture](/images/20180805/remote_integrations.png)
+![Remote read and write architecture](http://blog-images-1252238296.cosgz.myqcloud.com/remote_integrations.png)
 
 目前支持的远端存储系统如下：
 

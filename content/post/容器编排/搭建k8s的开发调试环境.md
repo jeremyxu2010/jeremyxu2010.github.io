@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2018-08-21 18:07:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180821/
 ---
 
 最近准备阅读一下k8s的源码，为了辅助理解代码运行逻辑，顺手搭一个k8s的开发调试环境，后面就可以结合断点调试掌握代码的运行脉络。
@@ -1175,7 +1173,7 @@ firewall-cmd --reload
 
 最后在goland里新建一个远程调试任务，这里的`10.211.55.3`为虚拟机的IP，`39999`为dlv的远程调试端口。在`kubernetes/cmd/kube-apiserver/apiserver.go`的main方法处打上断点后，启动该远程调试任务，即可正常进行断点调试了。
 
-![image-20180821174438757](/images/20180821/image-20180821174438757.png)
+![image-20180821174438757](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180821174438757.png)
 
 OVER
 

@@ -117,21 +117,21 @@ Docker进入企业环境，第一个就是要运行Docker镜像，而且不是�
 
 如下图是Docker的发展历程，下面是Docker容器的进展，上面是CaaS(Container As a Servie)解决方案的并购和进展。有心人很容易发现，从2014年底开始，Docker密密麻麻的收购，全都投入在CaaS，无论是收购还是从产品到解决方案，可见Docker在CaaS上了大赌注。
 
-![docker_growup.png](/images/20160828/docker_growup.png)
+![docker_growup.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_growup.png)
 
 Docker进入企业级市场有比较宏大的目标，2014年10月，Docker收购持续集成服务商 Koality，Docker把Koality在企业市场方面的成熟经验引入到 Docker Hub企业版本中，瞄准的是企业市场。同月，Docker收购了总部位于伦敦的Orchard Laboratories，进入复杂应用编排功能的企业市场。2014年底推出Docker Machine、Swarm、Compose,　2015年对这三个产品持续升级。
 
 2015年3月，Docker收购SDN公司SocketPlane,解决Docker集群的网络问题。同月Docker收购了用于Docker管理的开源图形用户界面工具Kitematic，自动化了Docker安装和配置过程。2015年 10年，Docker收购Tutum，补充Docker Hub，补充对Docker运行时的支持。进入2016年，Docker再次动作频频，2016年1月，Docker收购Unikernel Systems,进入OS领域，把Docker容器带入最简OS内核。如下图，打造适合运行容器的最简OS, 整个容器所占的资源进一步减少，从而让机器跑的更快，把容器的价值发挥到极限，至于这是否适合企业应用还需要验证。
 
-![docker_os_kernel.png](/images/20160828/docker_os_kernel.png)
+![docker_os_kernel.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_os_kernel.png)
 
 向下，Docker侵入OS领域，向上，Docker挤占CaaS市场空间。
 
 2016年3月，Docker收购Conductant，入主Aurora，根据如下Docker的规划，Aurora直接和kubernetes以及Marathon竞争，特别是和Mesos的架构完全对应， Docker Aurora+Swarm直接和Marathon+Mesos竞争。使得Docker Swarm从小规模集群管理，扩展到大规模Docker集群管理。
 
-![docker_arch1.png](/images/20160828/docker_arch1.png)
+![docker_arch1.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_arch1.png)
 
-![docker_arch2.png](/images/20160828/docker_arch2.png)
+![docker_arch2.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_arch2.png)
 
 在这个Docker提供架构图，可以清楚的看到没有了Mesos,而是Docker Swarm+Aurora直接取代Mesos+Marathon。同时，看看下面来自[Docker的博客](https://blog.docker.com/2016/03/docker-welcomes-aurora-project-creators/)
 
@@ -147,7 +147,7 @@ Docker已经在抱怨有太多的Mesos商业发行版，搭了Docker便车，已
 
 2016年2月，Docker公布了其DDC(Docker DataCenter)的架构图和报价，如下图，蓝色部分是Docker的CaaS解决方案，青色部分是还需要第三代的产品或开源产品来补充形成完整的解决方案，青色部分所占比例还不小，可见Docker的CaaS上要走的路还很长，Docker的这个CaaS有不少模块是前面收购来的。既然是商业发行版，DDC也保留了部分模块不开源，走的甚至比CloudEra的发行版更远。Docker也很快给了个并不便宜公共订阅报价，难道是Docker在盈利上有急切的需求？
 
-![docker_arch3.png](/images/20160828/docker_arch3.png)
+![docker_arch3.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_arch3.png)
 
 ## Docker生态圈的演进
 

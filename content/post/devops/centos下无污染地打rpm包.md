@@ -7,8 +7,6 @@ tags:
 categories:
   - devops
 date: 2018-04-01 23:45:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180401
 ---
 
 工作中要经常要给centos6, centos7打某应用程序的rpm包。原来安装了两个虚拟机专门干这个工作，但经常会因为打包给系统装上许多没用的软件包，占用空间，而且要频繁在两个虚拟机间切换，很是麻烦。经同事介绍，发现[mock](https://github.com/rpm-software-management/mock)这个工具，终于较完美地解决了此问题。

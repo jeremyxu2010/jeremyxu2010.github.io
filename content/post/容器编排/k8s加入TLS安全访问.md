@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2018-08-12 12:30:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180812
 ---
 
 以前外部访问k8s里的服务，都是直接以http方式进行的，缺少TLS安全，今天抽空把这块处理一下。
@@ -108,7 +106,7 @@ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem --config=ca-config.json -profile=k8s
 
 用`Keychain Access`打开`ca.pem`文件，然后修改设置，信任该CA，如下图如示：
 
-![image-20180812220958311](/images/20180812/image-20180812220958311.png)
+![image-20180812220958311](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180812220958311.png)
 
 ## 在k8s里使用自签名证书
 
@@ -162,13 +160,13 @@ EOF
 
 最后在chrome浏览器中就可以以`https://k8s-dashboard.k8s.local`访问`k8s-dashboard`服务了，而且浏览器地址栏是安全的绿色哦。
 
-![image-20180812222040765](/images/20180812/image-20180812222040765.png)
+![image-20180812222040765](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180812222040765.png)
 
 ## 为何选nginx-ingress
 
 在上述过程中对比了k8s里两个比较重要的ingress controller：[traefik-ingress](https://docs.traefik.io/configuration/backends/kubernetes/)和[nginx-ingress](https://kubernetes.github.io/ingress-nginx/)，比较起来，还是[nginx-ingress](https://kubernetes.github.io/ingress-nginx/)功能更强大，与k8s整合更好一些，看来有k8s官方维护支持果然很强大。
 
-![image-20180812222558350](/images/20180812/image-20180812222558350.png)
+![image-20180812222558350](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180812222558350.png)
 
 [nginx-ingress](https://kubernetes.github.io/ingress-nginx/)的[用户指南](https://kubernetes.github.io/ingress-nginx/user-guide/)也写得很详细，以后可以多看看。
 

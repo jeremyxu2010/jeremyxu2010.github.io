@@ -7,8 +7,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-06-30 01:35:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190630
 ---
 
 ## k8s中使用underlay网络的障碍
@@ -120,7 +118,7 @@ default via 10.10.20.53 dev vetha0e043dd
 
 * 首先是画好网络拓扑图，示例如下。在这个拓扑图中要将同宿主机上的pod之间、pod及宿主机、跨主机上的pod之间网络流量如何流转描述清楚，这里需要了解较多的网络知识，如网络的二三层、路由表、nat、bridge、openvswith、sdn、policy route等。
 
-  ![image-20190630150148403](/images/20190630/image-20190630150148403.png)
+  ![image-20190630150148403](http://blog-images-1252238296.cosgz.myqcloud.com/image-20190630150148403.png)
 
 * 然后到[cni官方插件](https://github.com/containernetworking/plugins/tree/master/plugins)这里找一找，看看有没有满足需求的现成cni插件。除非需求很特殊，一般是可以找到现成插件的。
 

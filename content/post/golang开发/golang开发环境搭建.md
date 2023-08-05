@@ -75,7 +75,7 @@ src
 
 IDEA要开发go程序，需要安装Go语言支持，如下。
 
-![idea_golang.png](/images/20160925/idea_golang.png)
+![idea_golang.png](http://blog-images-1252238296.cosgz.myqcloud.com/idea_golang.png)
 
 然后就可以导入工程了。这里导入一下`gopl.io`这个工程，`Go语言圣经`这本书是引用这个工程的源码，把这个工程里源代码导入IDEA，以后查看代码会很方便。
 
@@ -91,5 +91,4 @@ touch ~/dev/gobook/.gopath
 ## 总结
 
 因为以前用过golang，简单看了下golang的入门教程还是大概知道怎么写go语言的代码了，接下来要再把书温习一翻，再多动手写点代码，争取早日将以前学过的go语言技巧都找回来。
-
 

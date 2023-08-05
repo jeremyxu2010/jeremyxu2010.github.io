@@ -108,13 +108,13 @@ watch -n 5 rrdtool graph /Users/jeremy/dev/git/webdriverdemo/test/testLeak1.png 
 
 heap使用情况如下图
 
-![testLeak1 Heap内存使用情况](/images/20160529/testLeak1.png)
+![testLeak1 Heap内存使用情况](http://blog-images-1252238296.cosgz.myqcloud.com/testLeak1.png)
 
 可以看到持续不断地有内存泄露，而且程序运行不到8分钟就OOM退出了。
 
 再用node-inspector抓几个Heap快照对比一下，发现内存泄露都与`ManagedPromise`有关。
 
-![testLeak1 Heap Dump情况](/images/20160529/testLeak1_heapdump.png)
+![testLeak1 Heap Dump情况](http://blog-images-1252238296.cosgz.myqcloud.com/testLeak1_heapdump.png)
 
 `ManagedPromise`是包含在`selenium-webdriver`库里的，源码在[这里](https://github.com/SeleniumHQ/selenium/blob/master/javascript/node/selenium-webdriver/lib/promise.js)。
 
@@ -193,7 +193,7 @@ setInterval(updateHeapUsed, 1000);
 
 还是泄露地厉害，如下图
 
-![testLeak2 Heap内存使用情况](/images/20160529/testLeak2.png)
+![testLeak2 Heap内存使用情况](http://blog-images-1252238296.cosgz.myqcloud.com/testLeak2.png)
 
 
 # 使用bluebird重写循环逻辑
@@ -244,7 +244,7 @@ function updateHeapUsed(){
 setInterval(updateHeapUsed, 1000);
 ```
 
-![testLeak3 Heap内存使用情况](/images/20160529/testLeak3.png)
+![testLeak3 Heap内存使用情况](http://blog-images-1252238296.cosgz.myqcloud.com/testLeak3.png)
 
 如上图所示，这次终于正常了。
 

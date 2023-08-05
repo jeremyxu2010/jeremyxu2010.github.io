@@ -10,8 +10,6 @@ tags:
 categories:
   - nodejs开发
 date: 2020-08-16 18:07:00+08:00
-typora-root-url: ../../../static/
-typora-copy-images-to: ../../../static/images/20200816/
 ---
 
 
@@ -31,7 +29,7 @@ $ vue create xx_frontend
 
 这里选择`Manually select features`，选择`Babel`、`TypeScript`、`Router`、`Vuex`、`CSS Pre-processors`、`Linter/Formatter`这些特征。
 
-![image-20200816213726968](/images/20200816/image-20200816213726968.png)
+![image-20200816213726968](http://blog-images-1252238296.cosgz.myqcloud.com/image-20200816213726968.png)
 
 ## 后端项目初始化
 

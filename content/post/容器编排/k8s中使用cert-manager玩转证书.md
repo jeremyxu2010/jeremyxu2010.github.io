@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2018-08-26 12:30:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180826
 ---
 
 前几天写过一篇[k8s加入TLS安全访问](k8s加入TLS安全访问.md)，其中说到用`cfssl`之类的工具手动生成TLS证书，这样就可以轻松搞定站点的https访问了。理想是很美好，但实际操作时却很痛苦，主要有以下几点缺陷：
@@ -26,7 +24,7 @@ typora-copy-images-to: ../../../static/images/20180826
 
 ## cert-manager的架构
 
-![_images/high-level-overview.png](/images/20180826/high-level-overview.png)
+![_images/high-level-overview.png](http://blog-images-1252238296.cosgz.myqcloud.com/high-level-overview.png)
 
 上面是官方给出的架构图，可以看到cert-manager在k8s中定义了两个自定义类型资源：`Issuer`和`Certificate`。
 

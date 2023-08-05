@@ -6,8 +6,6 @@ tags:
 categories:
   - 微服务
 date: 2018-07-22 12:30:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180722
 ---
 
 最近在做微服务构架里有关调用链跟踪（也有叫分布式追踪）的部分，有一些心得，这里总结一些。
@@ -47,13 +45,13 @@ typora-copy-images-to: ../../../static/images/20180722
 
 **openzipkin的架构图**
 
-![openzipkin的架构图](/images/20180722/architecture-1.png)
+![openzipkin的架构图](http://blog-images-1252238296.cosgz.myqcloud.com/architecture-1.png)
 
 
 
 **jaeger架构图**
 
-![jaeger架构图](/images/20180722/architecture.png)
+![jaeger架构图](http://blog-images-1252238296.cosgz.myqcloud.com/architecture.png)
 
 从以上架构图可以看出，jaeger将jaeger-agent从业务应用中抽出，部署在宿主机或容器中，专门负责向collector异步上报调用链跟踪数据，这样做将业务应用与collector解耦了，同时也减少了业务应用的第三方依赖。因此从架构上来看，明显jaeger胜出了。
 
@@ -170,13 +168,13 @@ volumes:
 
 跑起来后访问`http://127.0.0.1:8080/`，点击不同的按钮，用以模拟不同的客户订购car。
 
-![](/images/20180722/1*tLGZLrpEE8gz6RZEVJRCbA.png)
+![](http://blog-images-1252238296.cosgz.myqcloud.com/1%2AtLGZLrpEE8gz6RZEVJRCbA.png)
 
 然后访问`http://127.0.0.1:16686/`，即可查询调用链信息。
 
-![](/images/20180722/1*KXMjUpiQMMjXJjjK1GDAoA.png)
+![](http://blog-images-1252238296.cosgz.myqcloud.com/1%2AKXMjUpiQMMjXJjjK1GDAoA.png)
 
-![](/images/20180722/1*ph6PiyKcEXv42UP1BXhZMA.png)
+![](http://blog-images-1252238296.cosgz.myqcloud.com/1%2Aph6PiyKcEXv42UP1BXhZMA.png)
 
 基本功能大概就是这样了，一些强悍的功能可以查看[这篇文章](https://medium.com/opentracing/take-opentracing-for-a-hotrod-ride-f6e3141f7941)。
 
@@ -311,7 +309,7 @@ func (c *HTTPClient) GetJSON(ctx context.Context, endpoint string, url string, o
 
 这样在jaeger的UI上展开这个Span时，即可看到一些详细的信息。
 
-![image-20180722234642553](/images/20180722/image-20180722234642553.png)
+![image-20180722234642553](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180722234642553.png)
 
 ### 给Span添加相关的log
 
@@ -364,7 +362,7 @@ d.logger.For(ctx).Info("Loading customer", zap.String("customer_id", customerID)
 
 这样在jaeger的UI里展开Span就可看到该Span相关的日志。
 
-![image-20180722235354858](/images/20180722/image-20180722235354858.png)
+![image-20180722235354858](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180722235354858.png)
 
 ### 其它接口调用的Trace Instrumentation
 

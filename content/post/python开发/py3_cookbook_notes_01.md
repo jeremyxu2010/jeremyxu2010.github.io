@@ -6,7 +6,6 @@ tags:
   - python
 categories:
   - python开发
-typora-root-url: ../../../static
 ---
 
 最近在看[Python Cookbook第三版](http://python3-cookbook.readthedocs.io/zh_CN/latest/)，将看书过程中一些平时不太容易注意的知识点记录下来。

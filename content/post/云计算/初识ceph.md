@@ -14,7 +14,7 @@ ceph作为新一代的PB级高可靠性分布存储系统已经流行很长时�
 
 相对于其它分布式存储系统，它开创性地用统一的系统提供了对象、块、和文件存储功能，它可靠性高、管理简便、并且是自由软件。Ceph提供了一个可无限伸缩的Ceph存储集群，它基于RADOS[A Scalable, Reliable Storage Service for Petabyte-scale Storage Clusters](http://ceph.com/papers/weil-rados-pdsw07.pdf)
 
-![ceph_stack.png](/images/20160817/ceph_stack.png)
+![ceph_stack.png](http://blog-images-1252238296.cosgz.myqcloud.com/ceph_stack.png)
 
 从上面Ceph的架构图可以看到，底层都是RADOS，通过不同的Client（RADOSGW、RBD、CEPHFS）让应用上层识别为一个对象存储系统、块设备、Posix兼容的文件，另外LIBRADOS也使得各种开发语言都可以操作RADOS。
 
@@ -35,7 +35,7 @@ Ceph客户端要进行IO读写操作流程如下:
 * Ceph客户端根据对象的ID及存储池的ID计算得出目标PG的ID
 * Ceph客户端得到目标PG的主OSD地址，连接该OSD进行读写操作
 
-![ceph_data_op.png](/images/20160817/ceph_data_op.png)
+![ceph_data_op.png](http://blog-images-1252238296.cosgz.myqcloud.com/ceph_data_op.png)
 
 从上面的流程可以看出与glusterfs相比，存储池与OSD之间有PG这么一个中间层。这个中间层使客户端与OSD之间松耦合了，从客户端的角色来看，它只知道对象被存储在某个PG里了，至于对象最终要存储在哪个OSD里它是不感知的。这样当新的OSD上线时，Ceph可以更方便地进行重均衡。
 
@@ -46,7 +46,7 @@ Ceph客户端要进行IO读写操作流程如下:
 ## 实操
 
 我是在5台CentOS6上进行Ceph在安装的，部署节点的拓扑结构如下:
-![ceph_deploy_graph.png](/images/20160817/ceph_deploy_graph.png)
+![ceph_deploy_graph.png](http://blog-images-1252238296.cosgz.myqcloud.com/ceph_deploy_graph.png)
 
 ### 预检
 

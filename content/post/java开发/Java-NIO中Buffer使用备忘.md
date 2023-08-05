@@ -58,7 +58,7 @@ NIO的Buffer与Netty的不一样，它是单指针的，Buffer在不同模式下
 
 position和limit的含义取决于Buffer处在读模式还是写模式。不管Buffer处在什么模式，capacity的含义总是一样的。
 
-![NIO Buffer模式说明](/images/20160503/buffers-modes.png)
+![NIO Buffer模式说明](http://blog-images-1252238296.cosgz.myqcloud.com/buffers-modes.png)
 
 * capacity
 

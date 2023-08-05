@@ -8,8 +8,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-07-20 18:00:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190720
 ---
 
 工作中需要以kubernetes原生的方式构建API接口服务，并将构建出的API接口直接聚合到kubernetes的apiserver服务上。本周花了不少时间研究这个，这里记录一下。

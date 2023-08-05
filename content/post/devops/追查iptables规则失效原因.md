@@ -6,8 +6,6 @@ tags:
 categories:
   - devops
 date: 2018-10-13 22:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20181013
 ---
 
 今天在工作中用到了一条iptables规则，虽然明白这条规则的意思，但结合之前对iptables的理解，想不明白为什么会这么工作，后来仔细研读iptables的官方文档，终于从字里行间找到原因了，这里记录下问题的追踪过程。
@@ -64,15 +62,15 @@ curl http://$host_ip:8888
 
 数据包在netfilter中的流转可参考下图：
 
-![image-20181014012501981](/images/20181013/image-20181014012501981.png)
+![image-20181014012501981](http://blog-images-1252238296.cosgz.myqcloud.com/image-20181014012501981.png)
 
 TCP连接的建立过程参照下图：
 
-![image-20181014012627013](/images/20181013/image-20181014012627013.png)
+![image-20181014012627013](http://blog-images-1252238296.cosgz.myqcloud.com/image-20181014012627013.png)
 
 由上述两图可知，curl命令发送HTTP请求至服务端，首先得建立TCP连接，而建立TCP连接的过程，客户端先向服务器发送了一个SYN包，服务端要回一个SYN+ACK包，但这个回应数据包会经过NAT表的OUTPUT链：
 
-![image-20181014013039823](/images/20181013/image-20181014013039823.png)
+![image-20181014013039823](http://blog-images-1252238296.cosgz.myqcloud.com/image-20181014013039823.png)
 
 而NAT表的OUTPUT链中第一条规则就是将这个数据重定向到本机9999端口，而本机的9999端口现在并没有任何程序在监听，因而这个数据包就丢了，而客户端收不到SYN+ACK包，连TCP连接都建立不了，更谈不上进行HTTP协议的其它处理。
 
@@ -187,7 +185,7 @@ Oct 13 13:53:00 centos-linux kernel: nat-output-log IN= OUT=eth0 SRC=10.211.55.1
 >
 > 一个数据包到达时,是怎么依次穿过各个链和表的。
 >
-> ![image-20181014025406085](/images/20181013/image-20181014025406085.png)
+> ![image-20181014025406085](http://blog-images-1252238296.cosgz.myqcloud.com/image-20181014025406085.png)
 >
 > 基本步骤如下：
 >

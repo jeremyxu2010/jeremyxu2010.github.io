@@ -7,8 +7,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-03-15 01:35:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/201910315
 ---
 
 工作中一个第三方软件使用了Posgresql数据库，而在我们的场景里，我们需要保证Posgresql数据库的高可用，网上查找了一下，发现[stolon](https://github.com/sorintlab/stolon)这个高可用，在使用前，先研究一下它的原理。
@@ -23,7 +21,7 @@ typora-copy-images-to: ../../../static/images/201910315
 >
 > For more details and requirements see [Stolon Architecture and Requirements](https://github.com/sorintlab/stolon/blob/master/doc/architecture.md)
 >
-> ![Stolon architecture](/images/20190315/architecture_small.png)
+> ![Stolon architecture](http://blog-images-1252238296.cosgz.myqcloud.com/architecture_small.png)
 
 上面是Stolon项目Readme中的说明，可以看到其本质与[Redis Sentinel](https://redis.io/topics/sentinel)的方案比较类似，都是哨兵模式。
 

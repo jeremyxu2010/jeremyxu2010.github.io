@@ -6,8 +6,6 @@ tags:
 categories:
   - devops
 date: 2018-10-13 12:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20181013
 ---
 
 最近比较忙，而且国庆节回了趟老家，各种事情比较多，博客又有一个月没有更新了。这周末有一些时间，所以计划分几篇文章把近一个月技术上的一些实践记录一下，这第一篇记录一下mongodb的高可用集群部署。

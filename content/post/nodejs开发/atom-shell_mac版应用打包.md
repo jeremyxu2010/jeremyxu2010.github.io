@@ -52,7 +52,7 @@ cp pingDemoApp/{index.html,jquery.js,main.js,package.json,ping.js} PingDemo.app/
 
 使用Property List Editor打开PingDemo.app/Contents/Info.plist, 将CFBundleName属性值修改为PingDemo, 添加一个属性CFBundleExecutable，值为Atom，如下图
 
-![修改plist文件](/images/20140331/change_plist.png)
+![修改plist文件](http://blog-images-1252238296.cosgz.myqcloud.com/change_plist.png)
 
 保存之后，就可以打开`PingDemo.app`这个应用了。
 

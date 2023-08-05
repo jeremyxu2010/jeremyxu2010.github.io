@@ -8,8 +8,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-07-07 18:00:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190707
 ---
 
 这周遇到了两个因pvc无法attach导致pod一直没法正常启动的问题，这里记录一下解决的过程。
@@ -84,7 +82,7 @@ $ rbd unmap /dev/rbd4
 - attach，卷挂载在对应worker node，这个操作为`AttachDetachController`完成
 - mount，卷挂载为文件系统并且映射给对应Pod，这个操作为`VolumeManager`完成
 
-![image-20190707214026773](/images/20190707/image-20190707214026773.png)
+![image-20190707214026773](http://blog-images-1252238296.cosgz.myqcloud.com/image-20190707214026773.png)
 
 k8s里volume的卸载过程跟上述场景完全相反：
 

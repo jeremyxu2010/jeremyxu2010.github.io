@@ -8,8 +8,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-07-14 18:00:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190714
 ---
 
 上周解决pvc无法mount的问题，其实留了一个尾巴，当时只是知道由于未知的原因，`AttachDetachController`执行`detach`操作失败了。这周这个问题又出现了，这次追查了一下根源，这里记录下。

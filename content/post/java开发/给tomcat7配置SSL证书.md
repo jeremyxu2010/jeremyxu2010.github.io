@@ -68,7 +68,7 @@ openssl pkcs12 -export -inkey test.com.key -in test.com.crt -chain -CAfile ca_bu
 
 用portecle打开看一下，这个KeyPair的证书详情表明CA链上确实有4个证书。
 
-![p12_portecle_open.png](/images/20161107/p12_portecle_open.png)
+![p12_portecle_open.png](http://blog-images-1252238296.cosgz.myqcloud.com/p12_portecle_open.png)
 
 再将p12的keystore转化为jks的keystore。
 

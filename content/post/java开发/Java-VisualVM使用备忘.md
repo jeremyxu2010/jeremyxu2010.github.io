@@ -18,15 +18,15 @@ categories:
 
 默认带的功能看起来还不如jconsole，但其实装上插件就很强大了。不过我本机默认配置的插件更新地址还是java.net的，根本没法安装插件，在[这里](https://visualvm.github.io/pluginscenters.html)找到了对应版本的更新地址，比如我本机是JDK1.8.0_102自带的VisualVM，因此选择[https://visualvm.github.io/archive/uc/8u40/updates.xml.gz](https://visualvm.github.io/archive/uc/8u40/updates.html)，将其填到下图的位置：
 
-![visualvm插件更新地址设置](/images/20171001/visualvm_setting.png)
+![visualvm插件更新地址设置](http://blog-images-1252238296.cosgz.myqcloud.com/visualvm_setting.png)
 
 然后就可以安装插件了，[这里](https://visualvm.github.io/plugins.html)有主要插件的描述，可以根据需要自行安装，我本机安装了以下这些插件：
 
-![本机安装的插件](/images/20171001/visualvm_plugins.png)
+![本机安装的插件](http://blog-images-1252238296.cosgz.myqcloud.com/visualvm_plugins.png)
 
 安装后，VisualVM的功能看起来就很强大了，比jconsole强不少了，还美观。
 
-![visualvm最终效果](/images/20171001/visualvm_display.png)
+![visualvm最终效果](http://blog-images-1252238296.cosgz.myqcloud.com/visualvm_display.png)
 
 ## 连接远程JVM
 

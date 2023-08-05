@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-06-23 01:35:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/201910623
 ---
 
 上周在kubernetes里发布了一个redis PaaS服务，不过其它同学简单测了一下，虽说功能上没啥问题，但性能相比物理上运行的Redis集群差太远，而且随着redis的分片数增加，性能并不能很好地线性增长，增长到一定程度就停止了，这个是需求方不能接受的，于是本周接了活，对部署在kubernetes中的redis服务进行性能优化。

@@ -7,8 +7,6 @@ tags:
 categories:
   - 微服务
 date: 2018-07-06 10:53:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180708
 ---
 
 之前一直是将consul当成一个服务发现、分布式KV服务、服务健康检查服务等，不过前几天[consul发布了1.2版本](https://www.hashicorp.com/blog/consul-1-2-service-mesh)，宣称其实现了Service Mesh方案，最近在做Service Mesh相关的工作，正好有一点时间，就花时间研究一下。
@@ -221,7 +219,7 @@ hello, world!
 
 当给consul的服务配置里添加了`"connect": { "proxy": { } }`后，consul将会为每个服务实例创建一个专门的隧道代理，如下图所示：
 
-![image-20180708231726604](/images/20180708/image-20180708231726604.png)
+![image-20180708231726604](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180708231726604.png)
 
 隧道代理的作用是当以connect模式连入时，会自动建立一条到原服务实例的tcp隧道，后面tcp层以上的应用协议数据流将在这条tcp隧道上传输，具体代码在`https://github.com/hashicorp/consul/blob/master/connect/proxy/listener.go#NewPublicListener`。
 
@@ -247,7 +245,7 @@ hello, world!
 
 1. 目前的负载均衡算法还很简单，就是随机，见下面：
 
-   ![image-20180708231828625](/images/20180708/image-20180708231828625.png)
+   ![image-20180708231828625](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180708231828625.png)
 
 2. 一些微服务框架的基本功能还不具备，如超时、重试、熔断、流量分配等，可以从`https://github.com/hashicorp/consul/blob/master/connect/proxy/listener.go#handleConn`这里开始扩展。
 

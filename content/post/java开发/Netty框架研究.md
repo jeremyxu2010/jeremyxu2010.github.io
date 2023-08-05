@@ -147,7 +147,7 @@ public class SocketIOServer {
 
 它的线程模型如下图所示：
 
-![netty线程模型](/images/20160618/netty_thread_model.png)
+![netty线程模型](http://blog-images-1252238296.cosgz.myqcloud.com/netty_thread_model.png)
 
 这里结合代码解释一下这里说到的概念
 

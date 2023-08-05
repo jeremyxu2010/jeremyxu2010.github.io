@@ -1,6 +1,4 @@
 ---
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180521/
 title: consul基础运维-备份还原导入导出
 author: Jeremy Xu
 tags:

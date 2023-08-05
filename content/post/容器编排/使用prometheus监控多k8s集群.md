@@ -6,8 +6,6 @@ tags:
 categories:
   - 容器编排
 date: 2018-11-18 15:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20181118
 ---
 
 最近在做k8s相关的开发工作，涉及不少k8s的相关知识，这里记录下。
@@ -465,7 +463,7 @@ job="kubernetes-service-endpoints"
 
 上述的endpoint信息交由prometheus，prometheus就可以得到抓取地址了，为`__scheme__://__address____metrics_path__`，也即`http://192.168.65.3:9100/metrics`，最终在prometheus的targets里会看到：
 
-![image-20181118145221626](/images/20181118/image-20181118145221626-2523941.png)
+![image-20181118145221626](http://blog-images-1252238296.cosgz.myqcloud.com/image-20181118145221626-2523941.png)
 
 `http://192.168.65.3:9100/metrics`这个地址在k8s集群外部是无法被访问的，但在k8s集群内部可被访问：
 

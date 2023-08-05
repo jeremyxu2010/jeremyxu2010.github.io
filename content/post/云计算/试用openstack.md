@@ -59,7 +59,7 @@ openstack作为云计算IaaS的一站式解决方案，总的来说架构还是�
 * 对虚拟机libvirt细粒度的调整能力不足，比如想调整某个虚拟机的xml定义变得很复杂。
 * 组件过多，比较消耗系统资源，如图
 
-![openstack相关进程消耗](/images/20160802/openstack_processes.png)
+![openstack相关进程消耗](http://blog-images-1252238296.cosgz.myqcloud.com/openstack_processes.png)
 
 其实这几天我一直在思考在目前研发这个环境中，最适合的私有云管理平台是什么，可以肯定openstack肯定是不太适合。经过几天的思考，大致有一个方案，接下来我会将这个方案实践一下，如果成功，我会将这个方案写出来。
 

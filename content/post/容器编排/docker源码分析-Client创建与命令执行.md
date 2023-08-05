@@ -421,8 +421,8 @@ git clone https://github.com/docker/docker.git
 
 最后在IDEA里设置该项目的GOPATH，如下图。
 
-![docker_gopath.png](/images/20161005/docker_gopath.png)
+![docker_gopath.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_gopath.png)
 
 有时看不清楚代码的执行逻辑，打个断点调试一下也是不错的办法，可以在IDEA里建一个运行项目，如下图。
 
-![docker_launch.png](/images/20161005/docker_launch.png)
+![docker_launch.png](http://blog-images-1252238296.cosgz.myqcloud.com/docker_launch.png)

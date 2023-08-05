@@ -1,6 +1,4 @@
 ---
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20180518
 title: consul安全加固
 author: Jeremy Xu
 tags:
@@ -36,7 +34,7 @@ date: 2018-05-18 20:15:00+08:00
 
 consul 的架构是什么，官方给出了一个很直观的图片：
 
-![image-20180518182958181](/images/20180518/image-20180518182958181.png)
+![image-20180518182958181](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180518182958181.png)
 
 这里存在两个数据中心：DATACENTER1、DATACENTER2。每个数据中心有着 3 到 5 台 server（该数量使得在故障转移和性能之间达到平衡）。
 
@@ -85,7 +83,7 @@ systemctl restart consul.service
 
 再登录consul的web ui，即可看到datacenter的名称发生了改变。
 
-![image-20180518161915805](/images/20180518/image-20180518161915805.png)
+![image-20180518161915805](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180518161915805.png)
 
 ## 启用consul ACL
 
@@ -153,9 +151,9 @@ Consul默认没有启用ACL（Access Control List），任何连上consul的node
 
 5. 验证ACL，在consul的web ui中配置访问时所用的token，观察使用该token是否只能使用正确的功能。配置浏览器访问时所用的token方法如下图所示：
 
-   ![image-20180518181759727](/images/20180518/image-20180518181759727.png)
+   ![image-20180518181759727](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180518181759727.png)
 
-   ![image-20180518181914004](/images/20180518/image-20180518181914004.png)
+   ![image-20180518181914004](http://blog-images-1252238296.cosgz.myqcloud.com/image-20180518181914004.png)
 
 6. 如token的权限是正常的，则可以将`acl_default_policy`设置为`deny`，并将client token分发给客户端，连上consul的node节点必需使用该token才可能使用权限指定的功能。
 

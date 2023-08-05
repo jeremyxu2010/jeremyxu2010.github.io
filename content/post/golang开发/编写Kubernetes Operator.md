@@ -8,8 +8,6 @@ tags:
 categories:
   - golang开发
 date: 2019-05-12 10:31:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190512
 ---
 
 这周的工作主要是验证几个Kubernetes Operator：
@@ -35,7 +33,7 @@ Operator 基于 Third Party Resources 扩展了新的应用资源，并通过控
 2. 分析当前状态与期望状态的差别；
 3. 调用 etcd 集群管理 API 或 Kubernetes API 消除这些差别。
 
-![image-20190512225440863](/images/20190512/image-20190512225440863.png)
+![image-20190512225440863](http://blog-images-1252238296.cosgz.myqcloud.com/image-20190512225440863.png)
 
 Operator 是一个感知应用状态的控制器，所以实现一个 Operator 最关键的就是把管理应用状态的所有操作封装到配置资源和控制器中。通常来说 Operator 需要包括以下功能：
 
@@ -322,7 +320,7 @@ func (r *ReconcileMemcached) Reconcile(request reconcile.Request) (reconcile.Res
 
 官方是希望通过Operator封装大部分基础服务软件的运维操作的，但目前很多Operator并不完善。比如虽然形式上给Operator划分了5个成熟度等级，但实际上大部分Operator仅只能完成安装部署而已。
 
-![img](/images/20190512/capability-level-diagram.svg)
+![img](http://blog-images-1252238296.cosgz.myqcloud.com/capability-level-diagram.svg)
 
 还有很多Operator明确说明目前只是alpha状态，目前不建议投入生产。
 

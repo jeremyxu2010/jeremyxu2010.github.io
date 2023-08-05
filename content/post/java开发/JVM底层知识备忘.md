@@ -10,7 +10,7 @@ date: 2016-04-14 00:28:00+08:00
 
 ## JVM组成
 
-![JVM组成](/images/20160414/jvm_all.png)
+![JVM组成](http://blog-images-1252238296.cosgz.myqcloud.com/jvm_all.png)
 
 **JVM = 类加载器 classloader + 执行引擎 execution engine + 运行时数据区域 runtime data area**
 
@@ -38,7 +38,7 @@ date: 2016-04-14 00:28:00+08:00
 
 ### 类加载器的层次结构
 
-![类加载器的层次结构](/images/20160414/classloaders.png)
+![类加载器的层次结构](http://blog-images-1252238296.cosgz.myqcloud.com/classloaders.png)
 
     1. Bootstrap class loader: 当运行 java 虚拟机时，这个类加载器被创建，它负责加载虚拟机的核心类库，如 java.lang.* 等。例如 java.lang.Object 就是由根类加载器加载的。
     2. Extension class loader: 这个加载器加载出了基本 API 之外的一些拓展类。
@@ -64,26 +64,26 @@ GC只能回收通过new关键字申请的堆内内存，但是堆上的内存并
 JVM 运行时数据区 (JVM Runtime Area) 其实就是指 JVM在运行期间，其对JVM内存空间的划分和分配。JVM在运行时将数据划分为了6个区域来存储。
 程序员写的所有程序都被加载到运行时数据区域中，不同类别存放在heap, java stack, native method stack, PC register, method area.
 
-![运行时数据区域](/images/20160414/runtime_data_area.png)
+![运行时数据区域](http://blog-images-1252238296.cosgz.myqcloud.com/runtime_data_area.png)
 
     1. PC程序计数器
     一块较小的内存空间，可以看做是当前线程所执行的字节码的行号指示器, NAMELY存储每个线程下一步将执行的JVM指令，如该方法为native的，则PC寄存器中不存储任何信息。Java 的多线程机制离不开程序计数器，每个线程都有一个自己的PC，以便完成不同线程上下文环境的切换。
-
+    
     2. java虚拟机栈
     与 PC 一样，java 虚拟机栈也是线程私有的。每一个 JVM 线程都有自己的java 虚拟机栈，这个栈与线程同时创建，它的生命周期与线程相同。虚拟机栈描述的是Java方法执行的内存模型：每个方法被执行的时候都会同时创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法被调用直至执行完成的过程就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
-
+    
     3. 本地方法栈
     与虚拟机栈的作用相似，虚拟机栈为虚拟机执行执行java方法服务，而本地方法栈则为虚拟机使用到的本地方法服务。
-
+    
     4. Java堆
     被所有线程共享的一块存储区域，在虚拟机启动时创建，它是JVM用来存储对象实例以及数组值的区域，可以认为Java中所有通过new创建的对象的内存都在此分配。
     Java堆在JVM启动的时候就被创建，堆中储存了各种对象，这些对象被Garbage Collector（垃圾回收器）所管理。这些对象无需、也无法显示地被销毁。
     Java堆分为两块：新生代New Generation和旧生代Old Generation
-
+    
     5. 方法区
     方法区和堆区域一样，是各个线程共享的内存区域，它用于存储每一个类的结构信息，例如运行时常量池，成员变量和方法数据，构造函数和普通函数的字节码内容，还包括一些在类、实例、接口初始化时用到的特殊方法。当开发人员在程序中通过Class对象中的getName、isInstance等方法获取信息时，这些数据都来自方法区。
     方法区也是全局共享的，在虚拟机启动时候创建。在一定条件下它也会被GC。这块区域对应Permanent Generation 持久代。 XX：PermSize指定大小。
-
+    
     6. 运行时常量池
     其空间从方法区中分配，存放的为类中固定的常量信息、方法和域的引用信息。
 
@@ -95,7 +95,7 @@ JVM 运行时数据区 (JVM Runtime Area) 其实就是指 JVM在运行期间，�
 
 由于GC需要消耗一些资源和时间的，Java在对对象的生命周期特征进行分析后，采用了分代的方式来进行对象的收集，即按照新生代、旧生代的方式来对对象进行收集，以尽可能的缩短GC对应用造成的暂停. heap 的组成有三区域/世代：
 
-![Java Heap Memory](/images/20160414/java_heap.png)
+![Java Heap Memory](http://blog-images-1252238296.cosgz.myqcloud.com/java_heap.png)
 
     1. 新生代 Young Generation
         1.1 Eden Space 任何新进入运行时数据区域的实例都会存放在此
@@ -106,7 +106,7 @@ JVM 运行时数据区 (JVM Runtime Area) 其实就是指 JVM在运行期间，�
 
 ### JVM收集器
 
-![JVM收集器](/images/20160414/jvm_heap_gens.jpg)
+![JVM收集器](http://blog-images-1252238296.cosgz.myqcloud.com/jvm_heap_gens.jpg)
 
 上面有7中收集器，分为两块，上面为新生代收集器，下面是老年代收集器。如果两个收集器之间存在连线，就说明它们可以搭配使用。
 

@@ -13,7 +13,7 @@ date: 2017-03-09 18:00:00+08:00
 
 ### 胖服务端
 
-![fat_server.png](/images/20170309/fat_server.png)
+![fat_server.png](http://blog-images-1252238296.cosgz.myqcloud.com/fat_server.png)
 
 这个架构的特点：
 
@@ -30,7 +30,7 @@ date: 2017-03-09 18:00:00+08:00
 
 ### 胖客户端
 
-![fat_client.png](/images/20170309/fat_client.png)
+![fat_client.png](http://blog-images-1252238296.cosgz.myqcloud.com/fat_client.png)
 
 这个架构的特点：
 
@@ -50,7 +50,7 @@ date: 2017-03-09 18:00:00+08:00
 
 ### 前端架构模式－MVC
 
-![web_mvc.png](/images/20170309/web_mvc.png)
+![web_mvc.png](http://blog-images-1252238296.cosgz.myqcloud.com/web_mvc.png)
 
 - 用户可以向 View 发送指令（DOM 事件），再由 View 直接要求 Model 改变状态。
 - 用户也可以直接向 Controller 发送指令（改变 URL 触发 hashChange 事件），再由 Controller 发送给 View。
@@ -60,7 +60,7 @@ date: 2017-03-09 18:00:00+08:00
 
 ### 前端架构模式－MVP
 
-![web_mvp.png](/images/20170309/web_mvp.png)
+![web_mvp.png](http://blog-images-1252238296.cosgz.myqcloud.com/web_mvp.png)
 
 - MVP 模式将 Controller 改名为 Presenter，同时改变了通信方向。
 - 各部分之间的通信，都是双向的。
@@ -71,7 +71,7 @@ date: 2017-03-09 18:00:00+08:00
 
 ### 前端架构模式－MVVM
 
-![web_mvvm.png](/images/20170309/web_mvvm.png)
+![web_mvvm.png](http://blog-images-1252238296.cosgz.myqcloud.com/web_mvvm.png)
 
 MVVM 模式将 Presenter 改名为 ViewModel，基本上与 MVP 模式完全一致。唯一的区别是，它采用双向绑定（data-binding）：View的变动，自动反映在 ViewModel，反之亦然。这种双向绑定功能一般借助于ReactJS、VueJS、AngularJS之类的UI框架。
 
@@ -238,7 +238,7 @@ componentWillUnmount()
 
 ### 简单示例
 
-![react_sample.png](/images/20170309/react_sample.png)
+![react_sample.png](http://blog-images-1252238296.cosgz.myqcloud.com/react_sample.png)
 
 更多示例代码见 `https://facebook.github.io/react`
 

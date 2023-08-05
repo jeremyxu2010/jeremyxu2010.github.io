@@ -7,8 +7,6 @@ tags:
 categories:
   - devops
 date: 2019-03-12 10:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190313
 ---
 
 很早以前就听说过redis社区推崇一种哨兵模式的高可用集群部署模式，今天花时间研究了一下，正好记录下来。
@@ -33,7 +31,7 @@ typora-copy-images-to: ../../../static/images/20190313
 
 典型的哨兵架构图如下所示：
 
-![image-20190313234434034](/images/20190313/image-20190313234434034.png)
+![image-20190313234434034](http://blog-images-1252238296.cosgz.myqcloud.com/image-20190313234434034.png)
 
 它由两部分组成，哨兵节点和数据节点：
 

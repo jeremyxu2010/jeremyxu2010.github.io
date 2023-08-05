@@ -8,8 +8,6 @@ tags:
 categories:
   - devops
 date: 2019-05-26 20:14:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190526
 ---
 
 
@@ -26,7 +24,7 @@ MySQL Router 是访问路由转发中间件，提供应用程序访问的failove
 
 > MySQL InnoDB cluster provides a complete high availability solution for MySQL. [MySQL Shell](https://dev.mysql.com/doc/mysql-shell/8.0/en/) includes AdminAPI which enables you to easily configure and administer a group of at least three MySQL server instances to function as an InnoDB cluster. Each MySQL server instance runs MySQL Group Replication, which provides the mechanism to replicate data within InnoDB clusters, with built-in failover. AdminAPI removes the need to work directly with Group Replication in InnoDB clusters, but for more information see [Chapter 17, *Group Replication*](https://dev.mysql.com/doc/refman/5.7/en/group-replication.html) which explains the details. [MySQL Router](https://dev.mysql.com/doc/mysql-router/8.0/en/) can automatically configure itself based on the cluster you deploy, connecting client applications transparently to the server instances. In the event of an unexpected failure of a server instance the cluster reconfigures automatically. In the default single-primary mode, an InnoDB cluster has a single read-write server instance - the primary. Multiple secondary server instances are replicas of the primary. If the primary fails, a secondary is automatically promoted to the role of primary. MySQL Router detects this and forwards client applications to the new primary. Advanced users can also configure a cluster to have multiple-primaries.
 >
-> ![img](/images/20190526/innodb_cluster_overview.png)
+> ![img](http://blog-images-1252238296.cosgz.myqcloud.com/innodb_cluster_overview.png)
 
 上面这张图看着比较清楚，通过MySQL Shell可以配置出一个高可用自动进行故障转移的MySQL InnoDB Cluster，在后续运维过程中也可以通过MySQL Shell对集群进行状态监控及管理维护。通过MySQL Router向应用层屏蔽底层集群的细节，以应用层将普通的MySQL协议访问集群。
 

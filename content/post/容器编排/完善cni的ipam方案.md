@@ -8,8 +8,6 @@ tags:
 categories:
   - 容器编排
 date: 2019-07-07 14:00:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190707
 ---
 
 上两周，为了优化k8s的网络性能，最终选择了`macvlan+ptp`方案，最终性能也达到标准了。但其实存在一个问题，macvlan的pod的IP其实不太好分配。

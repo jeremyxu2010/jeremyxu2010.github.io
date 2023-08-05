@@ -7,8 +7,6 @@ tags:
 categories:
   - devops
 date: 2018-12-28 18:07:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20181228/
 ---
 
 工作中需要自行编译一个Python二进制程序，并尽量减少该程序依赖的库文件，使之在相同CPU架构上有更良好的可移植性。先找了下网上的资料，都不太详尽，经过探索最终还是成功了，这里记录一下过程以备忘。

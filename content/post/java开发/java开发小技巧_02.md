@@ -8,7 +8,6 @@ tags:
 categories:
   - java开发
 date: 2017-10-24 21:10:00+08:00
-typora-root-url: ../../../static
 ---
 
 最近阿里发布了一个插件[p3c](https://github.com/alibaba/p3c)，用于进行Java开发规约的检查扫描。由于插件的代码是开源，于是第一时间也翻查了代码，发现目前实现的检查规则主要在`/p3c-pmd/src/main/resources/rulesets`、`/idea-plugin/p3c-common/src/main/kotlin/com/alibaba/p3c/idea/inspection/standalone`目录下。将规则大致看了下，这里将自己平时开发不太注意但它提到的几点记录一下。
@@ -258,7 +257,7 @@ Integer[] b = (Integer [])c.toArray(new Integer[c.size()]);
 
 * 高度注意 Map 类集合 K/V 能不能存储 null 值的情况，如下表格:
 
-  ![map_key_value_nullable](/images/20171024/map_key_value_nullable.png)
+  ![map_key_value_nullable](http://blog-images-1252238296.cosgz.myqcloud.com/map_key_value_nullable.png)
 
 ## 总结
 

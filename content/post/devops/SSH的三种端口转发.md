@@ -6,8 +6,6 @@ tags:
 categories:
   - devops
 date: 2018-12-15 17:50:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20181215
 ---
 
 最近工作中经常需要ssh登录到某台跳板机，再连接受限网络环境中的某台服务器。以前经常用SSH端口转发这一功能，但周围的同事好像对这个并不清楚，这里记录一下以备其它同事询问。

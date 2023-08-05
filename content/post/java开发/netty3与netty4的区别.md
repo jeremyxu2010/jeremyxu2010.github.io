@@ -28,7 +28,7 @@ Inbound：主要包括链路建立事件、链路激活事件、读事件、I/O�
 Outbound：主要包括写事件、连接事件、监听绑定事件、刷新事件等。
 我们首先分析下Inbound操作的线程模型：
 
-![netty3_inbound.png](/images/20161031/netty3_inbound.png)
+![netty3_inbound.png](http://blog-images-1252238296.cosgz.myqcloud.com/netty3_inbound.png)
 
 从上图可以看出，Inbound操作的主要处理流程如下：
 
@@ -42,7 +42,7 @@ Outbound：主要包括写事件、连接事件、监听绑定事件、刷新事
 
 下面我们继续分析Outbound操作的线程模型：
 
-![netty3_outbound.png](/images/20161031/netty3_outbound.png)
+![netty3_outbound.png](http://blog-images-1252238296.cosgz.myqcloud.com/netty3_outbound.png)
 
 从上图可以看出，Outbound操作的主要处理流程如下：
 
@@ -57,7 +57,7 @@ Outbound：主要包括写事件、连接事件、监听绑定事件、刷新事
 
 相比于Netty 3.X系列版本，Netty 4.X的I/O操作线程模型比较简答，它的原理图如下所示：
 
-![netty4_inoutbound.png](/images/20161031/netty4_inoutbound.png)
+![netty4_inoutbound.png](http://blog-images-1252238296.cosgz.myqcloud.com/netty4_inoutbound.png)
 
 从上图可以看出，Outbound操作的主要处理流程如下：
 

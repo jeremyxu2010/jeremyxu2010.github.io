@@ -9,7 +9,7 @@ date: 2016-09-20 23:44:00+08:00
 ---
 昨天阅读一篇讲tcpdump使用技巧的文章，里面简单提到了TCP握手挥手的流程，还附了一片图片。
 
-![tcp_state_machine.jpg](/images/20160920/tcp_state_machine.jpg)
+![tcp_state_machine.jpg](http://blog-images-1252238296.cosgz.myqcloud.com/tcp_state_machine.jpg)
 
 虽然TCP握手挥手大学里学到，但很惭愧竟忘得差不多了。今天抽了点时间将这些细节重新复习一下。
 
@@ -21,11 +21,11 @@ date: 2016-09-20 23:44:00+08:00
 
 具体的关于TCP是什么，我不打算详细的说了；当你看到这篇文章时，我想你也知道TCP的概念了，想要更深入的了解TCP的工作，我们就继续。它只是一个超级麻烦的协议，而它又是互联网的基础，也是每个程序员必备的基本功。首先来看看OSI的七层模型：
 
-![network_osi.jpg](/images/20160920/network_osi.jpg)
+![network_osi.jpg](http://blog-images-1252238296.cosgz.myqcloud.com/network_osi.jpg)
 
 我们需要知道TCP工作在网络OSI的七层模型中的第四层——Transport层，IP在第三层——Network层，ARP在第二层——Data Link层；在第二层上的数据，我们把它叫Frame，在第三层上的数据叫Packet，第四层的数据叫Segment。 同时，我们需要简单的知道，数据从应用层发下来，会在每一层都会加上头部信息，进行封装，然后再发送到数据接收端。这个基本的流程你需要知道，就是每个数据都会经过数据的封装和解封装的过程。 在OSI七层模型中，每一层的作用和对应的协议如下：
 
-![network_protocol.gif](/images/20160920/network_protocol.gif)
+![network_protocol.gif](http://blog-images-1252238296.cosgz.myqcloud.com/network_protocol.gif)
 
 TCP是一个协议，那这个协议是如何定义的，它的数据格式是什么样子的呢？要进行更深层次的剖析，就需要了解，甚至是熟记TCP协议中每个字段的含义。哦，来吧。
 
@@ -77,7 +77,7 @@ TCP是一个协议，那这个协议是如何定义的，它的数据格式是�
 
 TCP是面向连接的，无论哪一方向另一方发送数据之前，都必须先在双方之间建立一条连接。其实，`网络上的传输是没有连接的，包括TCP也是一样的。而TCP所谓的“连接”，其实只不过是在通讯的双方维护一个“连接状态”，让它看上去好像有连接一样`。所以，TCP的状态变换是非常重要的。在TCP/IP协议中，TCP协议提供可靠的连接服务，连接是通过三次握手进行初始化的。三次握手的目的是同步连接双方的序列号和确认号并交换 TCP窗口大小信息。这就是面试中经常会被问到的TCP三次握手。只是了解TCP三次握手的概念，对你获得一份工作是没有任何帮助的，你需要去了解TCP三次握手中的一些细节。先来看图说话。
 
-![tcp_diagram.jpg](/images/20160920/tcp_diagram.jpg)
+![tcp_diagram.jpg](http://blog-images-1252238296.cosgz.myqcloud.com/tcp_diagram.jpg)
 
 多么清晰的一张图，当然了，也不是我画的，我也只是引用过来说明问题了。
 

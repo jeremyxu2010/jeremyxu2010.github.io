@@ -117,7 +117,7 @@ Markdown 的粗体和斜体也非常简单，用两个`*`包含一段文本就�
 
 语法介绍完了，下面就说一下写markdown的工具，市面上markdown编辑器很多，但因为我是一个开发人员，电脑里intellij idea会常年打开，因此就直接用idea写markdown了。idea的直接还挺好，在IDE里新建一个md文档，直接打开就可以了，而且默认分为两块面板，左边写markdown, 右边就直接显示markdown最终的显示效果，爽歪歪啊。
 
-![idea编辑markdown文件](/images/20170115/idea_edit_markdown.png)
+![idea编辑markdown文件](http://blog-images-1252238296.cosgz.myqcloud.com/idea_edit_markdown.png)
 
 ## 写博文工具
 
@@ -169,27 +169,27 @@ git push -u master
 
 在idea里新建一个Static Web的Module，Module的路径就指定为hexo的source目录，然后就可以在idea里进行博文的编辑了。
 
-![idea新建静态Web模块](/images/20170115/idea_create_static_web_module.png)
+![idea新建静态Web模块](http://blog-images-1252238296.cosgz.myqcloud.com/idea_create_static_web_module.png)
 
 ### 编辑博文的一点小规范
 
 - 直接在_posts目录下新建md文件即是创建了一篇新的博文，如下图。
 
-![创建博文](/images/20170115/create_post.png)
+![创建博文](http://blog-images-1252238296.cosgz.myqcloud.com/create_post.png)
 
 - 博文最上面使用`Front-matter`指定博文的一些元信息，如下面。
 
-![博文的front-matter](/images/20170115/post_front_matter.png)
+![博文的front-matter](http://blog-images-1252238296.cosgz.myqcloud.com/post_front_matter.png)
 
 `Front-matter`的详细语法见[这里](https://hexo.io/zh-cn/docs/front-matter.html)。
 
 - 为确保博客不依赖于某个域名，以后可切换域名，博文中引用的图片（如引用外部站点图片，则指明外部站点的完整URL）全部使用相对于根的URL，见下面所示。
 
-![博文中引用图片URL](/images/20170115/post_image_1.png)
+![博文中引用图片URL](http://blog-images-1252238296.cosgz.myqcloud.com/post_image_1.png)
 
 - 为避免两篇博文的图片冲突，建议引用图片时，按博文的日期将图片放在不同的目录下。
 
-![博文中引用图片URL](/images/20170115/post_image_1.png)
+![博文中引用图片URL](http://blog-images-1252238296.cosgz.myqcloud.com/post_image_1.png)
 
 ## 运行博客
 
@@ -213,7 +213,6 @@ git push -u master
 ## 总结
 
 这是篇工具使用说明，好像没什么可说明的。
-
 
 
 

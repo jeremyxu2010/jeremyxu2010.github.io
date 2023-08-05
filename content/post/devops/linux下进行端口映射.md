@@ -34,5 +34,5 @@ ssh -Nfq -c arcfour  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 最后附一张iptables数据包流转图
 
-![iptables数据包流转](/images/20140431/iptables_overview.gif)
+![iptables数据包流转](http://blog-images-1252238296.cosgz.myqcloud.com/iptables_overview.gif)
 

@@ -6,7 +6,6 @@ tags:
   - python
 categories:
   - python开发
-typora-root-url: ../../../static
 ---
 
 # 写py2、py3兼容的代码

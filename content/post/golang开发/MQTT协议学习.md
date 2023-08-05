@@ -7,8 +7,6 @@ tags:
 categories:
   - golang开发
 date: 2019-08-24 20:20:00+08:00
-typora-root-url: ../../../static
-typora-copy-images-to: ../../../static/images/20190824
 ---
 
 
@@ -21,7 +19,7 @@ typora-copy-images-to: ../../../static/images/20190824
 >
 > MQTT是一个基于客户端-服务器的消息发布/订阅传输协议。MQTT协议是轻量、简单、开放和易于实现的，这些特点使它适用范围非常广泛。在很多情况下，包括受限的环境中，如：机器与机器（M2M）通信和物联网（IoT）。其在，通过卫星链路通信传感器、偶尔拨号的医疗设备、智能家居、及一些小型化设备中已广泛使用。
 
-![mqtt-arch](/images/20190824/mqtt-fidge-2.png)
+![mqtt-arch](http://blog-images-1252238296.cosgz.myqcloud.com/mqtt-fidge-2.png)
 
 从上面的架构图来看，MQTT其实跟传统的MQ很像，也是消息队列。但MQTT协议工作在低带宽、不可靠的网络的远程传感器和控制设备通讯而设计的协议，跟传统MQ相比，它具有以下主要的几项特性：
 
@@ -163,7 +161,7 @@ make start-mqtt-client
 
 将得到的dmp文件，使用`wireshark`打开，再用`mqtt`协议过滤规则过滤一下，就可以很清楚地看到MQTT的数据包了，如下图：
 
-![wireshark](/images/20190824/wireshark.png)
+![wireshark](http://blog-images-1252238296.cosgz.myqcloud.com/wireshark.png)
 
 大概看了下各类型的数据包，果然是相当的精练，基本找不到信息冗余。
 
@@ -217,17 +215,17 @@ MQTT发布消息QoS保证不是端到端的，是客户端与服务器之间的�
 
 Qos0消息发布订阅
 
-![qos-0](/images/20190824/qos-0.png)
+![qos-0](http://blog-images-1252238296.cosgz.myqcloud.com/qos-0.png)
 
 
 Qos1消息发布订阅
 
-![qos-1](/images/20190824/qos-1.png)
+![qos-1](http://blog-images-1252238296.cosgz.myqcloud.com/qos-1.png)
 
 
 Qos2消息发布订阅
 
-![qos-2](/images/20190824/qos-2.png)
+![qos-2](http://blog-images-1252238296.cosgz.myqcloud.com/qos-2.png)
 
 可以看到为了满足越来越高的QoS，消息传递过程增加了很多保障性的控制指令。
 
